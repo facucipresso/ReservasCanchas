@@ -1,0 +1,6 @@
+@ReservasCanchas.Controller_HostAddress = http://localhost:5147
+
+GET {{ReservasCanchas.Controller_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
