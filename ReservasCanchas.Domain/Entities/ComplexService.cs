@@ -1,0 +1,22 @@
+﻿using ReservasCanchas.Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Security.Principal;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ReservasCanchas.Domain.Entities
+{
+    public class ComplexService
+    {
+        [Key]
+        public int Id { get; set; }
+        public int ComplexId { get; set; }
+        public ComplexServices Service { get; set; }
+
+        //Propiedad de navegacion
+        public Complejo Complejo { get; set; } = null!;
+    }
+}
