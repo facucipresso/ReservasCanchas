@@ -29,9 +29,15 @@ namespace ReservasCanchas.Domain.Entities
         public ComplexState Estado { get; set; }
         public bool Active { get; set; }
 
-        // La relacion con los servicios que ofrece cada complejo
-        public ICollection<ComplexService> Services { get; set; } = new List<ComplexService>();
+        // Relacion muchos a muchos con Service
+        public ICollection<Service> Services { get; set; } = new List<Service>();
 
+        // Relacion 1 a muchos con canchas
+        // En relaciones 1 a n no puedo inicializar la propiedad de navegacion
+        public ICollection<Field> Fields { get; set; } = null!;
+
+        //Referencia 1 a 1 con TimeSlotComplex, esto me permitiria hacer t
+        public TimeSlotComplex TimeSlotComplex { get; set; } = new TimeSlotComplex();
 
     }
 }

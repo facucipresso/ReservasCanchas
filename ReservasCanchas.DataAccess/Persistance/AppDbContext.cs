@@ -14,26 +14,48 @@ namespace ReservasCanchas.DataAccess.Persistance
         public AppDbContext(DbContextOptions<AppDbContext> options) : base (options) { }
 
         public DbSet<Complejo> Complejo {  get; set; }
-        public DbSet<ComplexService> ComplexService { get; set; }
+        public DbSet<Service> Service { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            //Modelo relacion 1 a N entre Complejo y ComplexService
-            modelBuilder.Entity<ComplexService>()
-                .HasOne(cs => cs.Complejo)
-                .WithMany(c => c.Services)
-                .HasForeignKey(cs => cs.ComplexId);
+            //Modelo la relacion muchos a muchos, dejo que EF Core me cree la tabla intermedia 'ComplexService' automaticamente
+            modelBuilder.Entity<Complejo>()
+                .HasMany(c => c.Services)
+                .WithMany(s => s.Complexes)
+                .UsingEntity(j => j.ToTable("ComplexService"));
 
-            //Guardo el enum como string en la BBDD
-            modelBuilder.Entity<ComplexService>()
-                .Property(cs => cs.Service)
-                .HasConversion<string>();
+            // Modelo la relacion 1 a 1 de complejo con la franja horaria del complejo
+            modelBuilder.Entity<Complejo>()
+                .HasOne(c => c.TimeSlotComplex)
+                .WithOne(t => t.Complex)
+                .HasForeignKey<TimeSlotComplex>(j => j.ComplexId);
 
-            //Para que la PK sea compuesta y no tenga id autoincremental
-            modelBuilder.Entity<ComplexService>()
-                .HasKey(cs => new { cs.ComplexId, cs.Service });
+
+            // Modelo la relacion 1 a muchos de complejo y canchas
+            modelBuilder.Entity<Complejo>()
+                .HasMany(c => c.Fields)
+                .WithOne(c => c.Complex)
+                .HasForeignKey(f => f.ComplexId);
+
+            // Modelo relacion 1 a 1 entre cancha y franja horaria de la cancha
+            modelBuilder.Entity<Field>()
+                .HasOne(c => c.TimeSlotField)
+                .WithOne(t => t.Field)
+                .HasForeignKey<TimeSlotField>(j => j.FieldId);
+
+            // Modelo relacion 1 a muchos entre cancha y los bloqueos recurrentes
+            modelBuilder.Entity<Field>()
+                .HasMany(c => c.recurringCourtBlocks)
+                .WithOne(t => t.Field)
+                .HasForeignKey(f => f.FieldId);
+
+            // Modelo relacion 1 a muchos entre cancha y reservas
+            modelBuilder.Entity<Field>()
+                .HasMany(c => c.Reservations)
+                .WithOne(t => t.Field)
+                .HasForeignKey(f => f.FieldId);
         }
     }
 }

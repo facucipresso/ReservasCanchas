@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.Domain.Enums
 {
-    public enum ComplexServices
+    public enum FieldType
     {
-        wifi = 0,
-        Estacionamiento = 1,
-        Vestuarios = 2,
-        Asador = 3
+        Cancha5 = 0,
+        Cancha7 = 1,
+        Cancha11 = 2
     }
 }
