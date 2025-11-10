@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.Domain.Entities
 {
-    public class RecurringCourtBlock
+    public class RecurringFieldBlock
     {
         [Key]
         public int Id { get; set; }
