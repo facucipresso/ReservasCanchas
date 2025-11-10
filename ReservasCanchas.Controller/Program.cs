@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.DataAccess.Persistance;
 using System;
 
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // registro DbContext con Postgre
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//agrego la dependendia
+builder.Services.AddScoped<ServiceBusinessLogic>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
