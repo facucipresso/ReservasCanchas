@@ -16,39 +16,39 @@ namespace ReservasCanchas.BusinessLogic
         private readonly AppDbContext _context;
         //ver como invovo a Domain
 
-        public ServiceBusinessLogic(AppDbContext contnext)
+        public ServiceBusinessLogic(AppDbContext context)
         {
-            _context = contnext;
+            _context = context;
         }
 
-        public async Task<List<ServiceDto>> getAll()
+        public async Task<List<ServiceResponseDTO>> getAll()
         {
             var services = await _context.Service.ToListAsync();
             
             var servicesDto = services
-                .Select(ServiceMapper.FromServiceToServiceDto)
+                .Select(ServiceMapper.ToServiceResponseDTO)
                 .ToList();
 
             return servicesDto;
         }
 
-        public async Task<Service?> create(ServiceDto serviceDto)
+        public async Task<ServiceResponseDTO> create(ServiceRequestDTO serviceDTO)
         {
-            var service = ServiceMapper.FromServiceDtoToService(serviceDto);
-            var result = await _context.Service.AddAsync(service);
+            var service = ServiceMapper.ToService(serviceDTO);
+            _context.Service.AddAsync(service);
             await _context.SaveChangesAsync();
-            return result.Entity;
+            return ServiceMapper.ToServiceResponseDTO(service);
         }
 
-        public async Task<ServiceDto?> GetById(int id)
+        public async Task<ServiceResponseDTO?> GetById(int id)
         {
             var service = await _context.Service.FindAsync(id);
             if (service == null)
             {
                 return null;
             }
-            var serviceDto = ServiceMapper.FromServiceToServiceDto(service);
-            return serviceDto;
+            var serviceDTO = ServiceMapper.ToServiceResponseDTO(service);
+            return serviceDTO;
         }
     }
 }

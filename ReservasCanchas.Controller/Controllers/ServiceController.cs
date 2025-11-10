@@ -6,7 +6,7 @@ using ReservasCanchas.BusinessLogic.Mappers;
 
 namespace ReservasCanchas.Controller.Controllers
 {
-    [Route("api/service")]
+    [Route("api/services")]
     [ApiController]
     public class ServiceController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> getAllServices()
+        public async Task<ActionResult<ServiceResponseDTO>> getAllServices()
         {
             var servicesDtos = await _serviceBusinessLogic.getAll();
 
@@ -27,19 +27,19 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> getServiceById([FromRoute] int id)
+        public async Task<ActionResult<ServiceResponseDTO>> getServiceById([FromRoute] int id)
         {
             var serviceDto = await _serviceBusinessLogic.GetById(id);
             if(serviceDto == null)
             {
-                return NotFound("Servicio no encontrado");
+                return NotFound("Servicio con id " + id + " no encontrado");
             }
 
             return Ok(serviceDto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> createService([FromBody] ServiceDto serviceDto)
+        public async Task<ActionResult<ServiceResponseDTO>> createService([FromBody] ServiceRequestDTO serviceDto)
         {
             var serviceCreated = await _serviceBusinessLogic.create(serviceDto);
 

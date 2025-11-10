@@ -10,15 +10,16 @@ namespace ReservasCanchas.BusinessLogic.Mappers
 {
     public class ServiceMapper
     {
-        public static ServiceDto FromServiceToServiceDto(Service ser)
+        public static ServiceResponseDTO ToServiceResponseDTO(Service service)
         {
-            return new ServiceDto
+            return new ServiceResponseDTO
             {
-               ServiceDescription = ser.ServiceDescription
+                Id = service.Id,
+                ServiceDescription = service.ServiceDescription
             };
         }
 
-        public static Service FromServiceDtoToService(ServiceDto serviceDto)
+        public static Service ToService(ServiceRequestDTO serviceDto)
         {
             return new Service { ServiceDescription = serviceDto.ServiceDescription };
         }
