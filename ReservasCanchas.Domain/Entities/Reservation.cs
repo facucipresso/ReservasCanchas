@@ -12,8 +12,8 @@ namespace ReservasCanchas.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
-        //Todavia no agregado
-        //public int UserId { get; set; }
+        //Implementado de manera parcial
+        public int UserId { get; set; }
         public int FieldId { get; set; }
         public DateOnly Date {  get; set; }
         public TimeOnly InitTime { get; set; }
@@ -26,7 +26,10 @@ namespace ReservasCanchas.Domain.Entities
 
 
         // Propiedad de navegacion
-        public Field Field { get; set; } = new Field();
+        public Usuario Usuario { get; set; } = null!;
+        public Field Field { get; set; } = null!;
+        // Puede ser nula si el usuario que hizo la reserva no deja reseña
+        public Review? Review { get; set; }
 
     }
 }

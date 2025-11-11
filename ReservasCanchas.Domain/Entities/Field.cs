@@ -23,7 +23,7 @@ namespace ReservasCanchas.Domain.Entities
         public bool Active { get; set; }
 
         // Propiedad de navegacion
-        public Complejo Complex { get; set; } = new Complejo();
+        public Complejo Complex { get; set; } = null!;
 
         //Referencia 1 a 1 con TimeSlotComplex, esto me permitiria hacer t
         public TimeSlotField TimeSlotField { get; set; } = new TimeSlotField(); 

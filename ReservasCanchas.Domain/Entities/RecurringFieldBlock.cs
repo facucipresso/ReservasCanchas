@@ -19,6 +19,6 @@ namespace ReservasCanchas.Domain.Entities
         public string Reason {  get; set; } = string.Empty;
 
         //Propiedad de navegacion
-        public Field Field { get; set; } = new Field();
+        public Field Field { get; set; } = null!;
     }
 }

@@ -13,8 +13,8 @@ namespace ReservasCanchas.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
-        // Todavia no armamos nada para usuario
-        //public int UserId { get; set; }
+        // Usuario tranqui
+        public int UserId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Province { get; set; } = string.Empty;
@@ -29,14 +29,16 @@ namespace ReservasCanchas.Domain.Entities
         public ComplexState Estado { get; set; }
         public bool Active { get; set; }
 
+        // Propiedad de navegacion Usuario, esta es la que tiene que ser null, sino cada vez que se crea un complejo, crea un usuario nuevo
+        public Usuario Usuario { get; set; } = null!;
+
         // Relacion muchos a muchos con Service
         public ICollection<Service> Services { get; set; } = new List<Service>();
 
         // Relacion 1 a muchos con canchas
-        // En relaciones 1 a n no puedo inicializar la propiedad de navegacion
-        public ICollection<Field> Fields { get; set; } = null!;
+        public ICollection<Field> Fields { get; set; } = new List<Field>();
 
-        //Referencia 1 a 1 con TimeSlotComplex, esto me permitiria hacer t
+        //Referencia 1 a 1 con TimeSlotComplex, esto me permitiria hacer t, aca tamben lo puedo inincializar
         public TimeSlotComplex TimeSlotComplex { get; set; } = new TimeSlotComplex();
 
     }

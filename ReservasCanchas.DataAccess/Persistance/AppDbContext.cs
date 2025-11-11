@@ -39,6 +39,31 @@ namespace ReservasCanchas.DataAccess.Persistance
                 .WithOne(c => c.Complex)
                 .HasForeignKey(f => f.ComplexId);
 
+            // Modelo relacion 1 a muchos de complejo y usuario
+            modelBuilder.Entity<Complejo>()
+                .HasOne(u => u.Usuario)
+                .WithMany(c => c.Complejos)
+                .HasForeignKey(c => c.UserId);
+
+            // Modelo la relacion 1 a muchos de usuario y reservas
+            modelBuilder.Entity<Reservation>()
+                .HasOne(u => u.Usuario)
+                .WithMany(r => r.Reservations)
+                .HasForeignKey(u => u.UserId);
+
+            // Modelo la relacion 1 a muchos de usuario y reserñas
+            modelBuilder.Entity<Review>()
+                .HasOne(u => u.Usuario)
+                .WithMany(r => r.Reviews)
+                .HasForeignKey(u => u.IdUsuario);
+
+            // Modelo la relacion 1 a 0..1 de reseña y reserva
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Reservation)
+                .WithOne(a => a.Review)
+                .HasForeignKey<Review>(j => j.ReservationId)
+                .IsRequired(false);
+
             // Modelo relacion 1 a 1 entre cancha y franja horaria de la cancha
             modelBuilder.Entity<Field>()
                 .HasOne(c => c.TimeSlotField)
