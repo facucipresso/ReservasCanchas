@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.DataAccess.Persistance;
+using ReservasCanchas.DataAccess.Repositories;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//agrego la dependendia
+//agrego la dependencia
 builder.Services.AddScoped<ServiceBusinessLogic>();
+builder.Services.AddScoped<ServiceRepository>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

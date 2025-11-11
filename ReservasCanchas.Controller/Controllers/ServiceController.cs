@@ -49,5 +49,15 @@ namespace ReservasCanchas.Controller.Controllers
             }
             return CreatedAtAction(nameof(getServiceById), new { id = serviceCreated.Id }, serviceCreated);
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ServiceResponseDTO>> updateSerice([FromRoute] int id, [FromBody] ServiceRequestDTO serviceDto)
+        {
+            var serviceUpdated = await _serviceBusinessLogic.update(id, serviceDto);
+            if (serviceUpdated == null) return BadRequest("No se pudo actualizar el servicio");
+
+            return Ok(serviceUpdated);
+        }
+
     }
 }

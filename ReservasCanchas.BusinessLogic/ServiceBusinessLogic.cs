@@ -26,10 +26,10 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<ServiceResponseDTO?> GetById(int id)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(id);
-            if (service == null)
-            {
-                return null;
-            }
+            if (service == null) return null;
+
+            if (service.Active == false) return null; //ver como devolver eso para diferenciarlo de cuando no existe
+            
             var serviceDTO = ServiceMapper.ToServiceResponseDTO(service);
             return serviceDTO;
         }
@@ -39,16 +39,44 @@ namespace ReservasCanchas.BusinessLogic
             var services = await _serviceRepository.GetAllServicesAsync();
             
             var servicesDto = services
+                .Where(s => s.Active)
                 .Select(ServiceMapper.ToServiceResponseDTO)
                 .ToList();
 
             return servicesDto;
         }
 
-        public async Task<ServiceResponseDTO> create(ServiceRequestDTO serviceDTO)
+        public async Task<ServiceResponseDTO?> create(ServiceRequestDTO serviceDTO)
         {
+            var services = await _serviceRepository.GetAllServicesAsync();
+            foreach (var item in services)
+            {
+                if(item.ServiceDescription == serviceDTO.ServiceDescription)
+                {
+                    return null; //excepcion de servicio ya existente
+                }
+            }
+
             var service = ServiceMapper.ToService(serviceDTO);
-            _serviceRepository.AddServiceAsync(service);
+            await _serviceRepository.AddServiceAsync(service);
+            await _context.SaveChangesAsync();
+            return ServiceMapper.ToServiceResponseDTO(service);
+        }
+
+        public async Task<ServiceResponseDTO?> update(int id, ServiceRequestDTO serviceDTO)
+        {
+            var services = await _serviceRepository.GetAllServicesAsync();
+            foreach (var item in services)
+            {
+                if (item.ServiceDescription == serviceDTO.ServiceDescription)
+                {
+                    return null; //excepcion de servicio ya existente
+                }
+            }
+            var service = await _serviceRepository.GetServiceByIdAsync(id);
+            if (service == null) return null; // servicio no encontrado
+
+            service.ServiceDescription = serviceDTO.ServiceDescription;
             await _context.SaveChangesAsync();
             return ServiceMapper.ToServiceResponseDTO(service);
         }
