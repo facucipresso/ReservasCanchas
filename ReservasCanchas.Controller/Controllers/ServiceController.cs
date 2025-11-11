@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos;
 using ReservasCanchas.BusinessLogic.Mappers;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 
 namespace ReservasCanchas.Controller.Controllers
 {
@@ -57,6 +59,16 @@ namespace ReservasCanchas.Controller.Controllers
             if (serviceUpdated == null) return BadRequest("No se pudo actualizar el servicio");
 
             return Ok(serviceUpdated);
+        }
+
+        [HttpDelete("{id}")]
+        //uso la interfaz de action result para solo confirmar la eliminacion
+        public async Task<IActionResult> deleteService([FromRoute] int id)
+        {
+            var serviceDeleted = await _serviceBusinessLogic.delete(id);
+            if (serviceDeleted == null) return BadRequest("No se pudo eliminar el servicio");
+
+            return NoContent();
         }
 
     }

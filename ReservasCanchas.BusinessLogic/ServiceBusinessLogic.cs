@@ -58,6 +58,7 @@ namespace ReservasCanchas.BusinessLogic
             }
 
             var service = ServiceMapper.ToService(serviceDTO);
+            service.Active = true;
             await _serviceRepository.AddServiceAsync(service);
             await _context.SaveChangesAsync();
             return ServiceMapper.ToServiceResponseDTO(service);
@@ -77,6 +78,16 @@ namespace ReservasCanchas.BusinessLogic
             if (service == null) return null; // servicio no encontrado
 
             service.ServiceDescription = serviceDTO.ServiceDescription;
+            await _context.SaveChangesAsync();
+            return ServiceMapper.ToServiceResponseDTO(service);
+        }
+
+        public async Task<ServiceResponseDTO?> delete(int id)
+        {
+            var service = await _serviceRepository.GetServiceByIdAsync(id);
+            if (service == null) return null; // servicio no encontrado
+
+            service.Active = false;
             await _context.SaveChangesAsync();
             return ServiceMapper.ToServiceResponseDTO(service);
         }

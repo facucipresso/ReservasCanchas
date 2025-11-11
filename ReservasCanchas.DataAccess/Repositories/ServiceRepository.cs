@@ -34,7 +34,5 @@ namespace ReservasCanchas.DataAccess.Repositories
             return await _context.Service.AddAsync(service);
         }
 
-
-
     }
 }
