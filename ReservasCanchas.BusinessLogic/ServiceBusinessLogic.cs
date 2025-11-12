@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.BusinessLogic.Dtos;
+using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Persistance;
 using ReservasCanchas.DataAccess.Repositories;
@@ -14,82 +15,79 @@ namespace ReservasCanchas.BusinessLogic
 {
     public class ServiceBusinessLogic
     {
-        private readonly AppDbContext _context;
+
         private readonly ServiceRepository _serviceRepository;
 
-        public ServiceBusinessLogic(AppDbContext context, ServiceRepository serviceRepository)
+        public ServiceBusinessLogic( ServiceRepository serviceRepository)
         {
-            _context = context;
             _serviceRepository = serviceRepository;
         }
 
         public async Task<ServiceResponseDTO?> GetById(int id)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(id);
-            if (service == null) return null;
 
-            if (service.Active == false) return null; //ver como devolver eso para diferenciarlo de cuando no existe
-            
+            if (service == null)
+            {
+                throw new NotFoundException("Servicio con id " + id + " no encontrado");
+            }
+
             var serviceDTO = ServiceMapper.ToServiceResponseDTO(service);
             return serviceDTO;
         }
 
-        public async Task<List<ServiceResponseDTO>> getAll()
+        public async Task<List<ServiceResponseDTO>> GetAll()
         {
             var services = await _serviceRepository.GetAllServicesAsync();
             
             var servicesDto = services
-                .Where(s => s.Active)
                 .Select(ServiceMapper.ToServiceResponseDTO)
                 .ToList();
 
             return servicesDto;
         }
 
-        public async Task<ServiceResponseDTO?> create(ServiceRequestDTO serviceDTO)
+        public async Task<ServiceResponseDTO?> Create(ServiceRequestDTO serviceDTO)
         {
-            var services = await _serviceRepository.GetAllServicesAsync();
-            foreach (var item in services)
+            if (await _serviceRepository.ExistsByNameAsync(serviceDTO.ServiceDescription))
             {
-                if(item.ServiceDescription == serviceDTO.ServiceDescription)
-                {
-                    return null; //excepcion de servicio ya existente
-                }
+                throw new BadRequestException("Ya existe un servicio con la descripcion " + serviceDTO.ServiceDescription);
             }
 
             var service = ServiceMapper.ToService(serviceDTO);
             service.Active = true;
-            await _serviceRepository.AddServiceAsync(service);
-            await _context.SaveChangesAsync();
+            await _serviceRepository.CreateServiceAsync(service);
             return ServiceMapper.ToServiceResponseDTO(service);
         }
 
-        public async Task<ServiceResponseDTO?> update(int id, ServiceRequestDTO serviceDTO)
+        public async Task<ServiceResponseDTO> Update(int id, ServiceRequestDTO serviceDTO)
         {
-            var services = await _serviceRepository.GetAllServicesAsync();
-            foreach (var item in services)
-            {
-                if (item.ServiceDescription == serviceDTO.ServiceDescription)
-                {
-                    return null; //excepcion de servicio ya existente
-                }
-            }
             var service = await _serviceRepository.GetServiceByIdAsync(id);
-            if (service == null) return null; // servicio no encontrado
+            if (service == null) 
+            { 
+                throw new NotFoundException("Servicio con id " + id + " no encontrado");
+            }
+
+            if (await _serviceRepository.ExistsByNameAsync(serviceDTO.ServiceDescription)) 
+            {
+                throw new BadRequestException("Ya existe un servicio con la descripcion " + serviceDTO.ServiceDescription);
+            }
 
             service.ServiceDescription = serviceDTO.ServiceDescription;
-            await _context.SaveChangesAsync();
+            await _serviceRepository.UpdateServiceAsync(service);
             return ServiceMapper.ToServiceResponseDTO(service);
         }
 
-        public async Task<ServiceResponseDTO?> delete(int id)
+        public async Task Delete(int id)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(id);
-            if (service == null) return null; // servicio no encontrado
+            if (service == null)
+            {
+                throw new NotFoundException("Servicio con id " + id + " no encontrado");
+            }
 
             service.Active = false;
-            await _context.SaveChangesAsync();
-            return ServiceMapper.ToServiceResponseDTO(service);
+            await _serviceRepository.UpdateServiceAsync(service);
         }
     }
 }

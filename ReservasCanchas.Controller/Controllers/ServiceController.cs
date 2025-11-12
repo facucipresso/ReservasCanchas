@@ -23,7 +23,7 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpGet]
         public async Task<ActionResult<ServiceResponseDTO>> getAllServices()
         {
-            var servicesDtos = await _serviceBusinessLogic.getAll();
+            var servicesDtos = await _serviceBusinessLogic.GetAll();
 
             return Ok(servicesDtos);
         }
@@ -32,42 +32,27 @@ namespace ReservasCanchas.Controller.Controllers
         public async Task<ActionResult<ServiceResponseDTO>> getServiceById([FromRoute] int id)
         {
             var serviceDto = await _serviceBusinessLogic.GetById(id);
-            if(serviceDto == null)
-            {
-                return NotFound("Servicio con id " + id + " no encontrado");
-            }
-
             return Ok(serviceDto);
         }
 
         [HttpPost]
         public async Task<ActionResult<ServiceResponseDTO>> createService([FromBody] ServiceRequestDTO serviceDto)
         {
-            var serviceCreated = await _serviceBusinessLogic.create(serviceDto);
-
-            if(serviceCreated == null)
-            {
-                return BadRequest("No se pudo crear el servicio");
-            }
+            var serviceCreated = await _serviceBusinessLogic.Create(serviceDto);
             return CreatedAtAction(nameof(getServiceById), new { id = serviceCreated.Id }, serviceCreated);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<ServiceResponseDTO>> updateSerice([FromRoute] int id, [FromBody] ServiceRequestDTO serviceDto)
         {
-            var serviceUpdated = await _serviceBusinessLogic.update(id, serviceDto);
-            if (serviceUpdated == null) return BadRequest("No se pudo actualizar el servicio");
-
+            var serviceUpdated = await _serviceBusinessLogic.Update(id, serviceDto);
             return Ok(serviceUpdated);
         }
 
         [HttpDelete("{id}")]
-        //uso la interfaz de action result para solo confirmar la eliminacion
         public async Task<IActionResult> deleteService([FromRoute] int id)
         {
-            var serviceDeleted = await _serviceBusinessLogic.delete(id);
-            if (serviceDeleted == null) return BadRequest("No se pudo eliminar el servicio");
-
+            await _serviceBusinessLogic.Delete(id);
             return NoContent();
         }
 

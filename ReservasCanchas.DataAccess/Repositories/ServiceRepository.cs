@@ -21,17 +21,34 @@ namespace ReservasCanchas.DataAccess.Repositories
 
         public async Task<Service?> GetServiceByIdAsync(int id)
         {
-            return await _context.Service.FindAsync(id);
+            return await _context.Service
+                .Where(s => s.Id == id && s.Active)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<List<Service>> GetAllServicesAsync()
         {
-            return await _context.Service.ToListAsync();
+            return await _context.Service
+                .Where(s => s.Active)
+                .ToListAsync();
         }
 
-        public async Task<EntityEntry<Service>> AddServiceAsync(Service service)
+        public async Task<Service> CreateServiceAsync(Service service)
         {
-            return await _context.Service.AddAsync(service);
+            _context.Service.Add(service);
+            await _context.SaveChangesAsync();
+            return service;
+        }
+
+        public async Task<Service> UpdateServiceAsync(Service service)
+        {
+            await  _context.SaveChangesAsync();
+            return service;
+        }
+
+        public async Task<bool> ExistsByNameAsync(string serviceDescription)
+        {
+            return await _context.Service.AnyAsync(s => s.ServiceDescription.ToLower() == serviceDescription.ToLower() && s.Active);
         }
 
     }

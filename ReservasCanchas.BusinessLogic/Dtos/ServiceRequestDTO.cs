@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -9,7 +10,8 @@ namespace ReservasCanchas.BusinessLogic.Dtos
 {
     public class ServiceRequestDTO
     {
-            public string ServiceDescription { get; set; } = string.Empty;
+        [Required(ErrorMessage ="La descripción del servicio es obligatoria")]
+        public string ServiceDescription { get; set; } = string.Empty;
 
     }
 }
