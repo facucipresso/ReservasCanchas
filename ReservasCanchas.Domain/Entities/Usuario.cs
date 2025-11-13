@@ -13,7 +13,7 @@ namespace ReservasCanchas.Domain.Entities
         public string Name { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string? Phone { get; set; }
+        public string Phone { get; set; }
         public UserStatus Status { get; set; }
         //public Rol Rol { get; set; }
 
