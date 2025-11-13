@@ -47,7 +47,7 @@ namespace ReservasCanchas.BusinessLogic
             return servicesDto;
         }
 
-        public async Task<ServiceResponseDTO?> Create(ServiceRequestDTO serviceDTO)
+        public async Task<ServiceResponseDTO> Create(ServiceRequestDTO serviceDTO)
         {
             if (await _serviceRepository.ExistsByNameAsync(serviceDTO.ServiceDescription))
             {

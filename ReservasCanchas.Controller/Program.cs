@@ -16,6 +16,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ServiceBusinessLogic>();
 builder.Services.AddScoped<ServiceRepository>();
 
+builder.Services.AddScoped<UsuarioBusinessLogic>();
+builder.Services.AddScoped<UsuarioRepository>();
+
 // Configurar respuestas de error de validación de modelo
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

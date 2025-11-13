@@ -15,6 +15,13 @@ namespace ReservasCanchas.DataAccess.Persistance
 
         public DbSet<Complejo> Complejo {  get; set; }
         public DbSet<Service> Service { get; set; }
+        public DbSet<Usuario> Usuario { get; set; }
+        public DbSet<Field> Field { get; set; }
+        public DbSet<RecurringFieldBlock> RecurringFieldBlock { get; set; }
+        public DbSet<Reservation> Reservation { get; set; }
+        public DbSet<Review> Review { get; set; }
+        public DbSet<TimeSlotComplex> TimeSlotComplex { get; set; }
+        public DbSet<TimeSlotField> timeSlotField { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

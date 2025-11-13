@@ -38,6 +38,11 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceResponseDTO>> createService([FromBody] ServiceRequestDTO serviceDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var serviceCreated = await _serviceBusinessLogic.Create(serviceDto);
             return CreatedAtAction(nameof(getServiceById), new { id = serviceCreated.Id }, serviceCreated);
         }
@@ -45,6 +50,11 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<ServiceResponseDTO>> updateSerice([FromRoute] int id, [FromBody] ServiceRequestDTO serviceDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var serviceUpdated = await _serviceBusinessLogic.Update(id, serviceDto);
             return Ok(serviceUpdated);
         }
