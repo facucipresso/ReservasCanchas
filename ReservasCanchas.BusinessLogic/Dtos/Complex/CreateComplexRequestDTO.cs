@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReservasCanchas.BusinessLogic.Dtos
+namespace ReservasCanchas.BusinessLogic.Dtos.Complex
 {
     public class CreateComplexRequestDTO
     {

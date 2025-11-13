@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
-using ReservasCanchas.BusinessLogic.Dtos;
+using ReservasCanchas.BusinessLogic.Dtos.Service;
 using ReservasCanchas.BusinessLogic.Mappers;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -21,7 +21,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ServiceResponseDTO>> getAllServices()
+        public async Task<ActionResult<List<ServiceResponseDTO>>> getAllServices()
         {
             var servicesDtos = await _serviceBusinessLogic.GetAll();
 
@@ -38,11 +38,6 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceResponseDTO>> createService([FromBody] ServiceRequestDTO serviceDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var serviceCreated = await _serviceBusinessLogic.Create(serviceDto);
             return CreatedAtAction(nameof(getServiceById), new { id = serviceCreated.Id }, serviceCreated);
         }
@@ -50,11 +45,6 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<ServiceResponseDTO>> updateSerice([FromRoute] int id, [FromBody] ServiceRequestDTO serviceDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var serviceUpdated = await _serviceBusinessLogic.Update(id, serviceDto);
             return Ok(serviceUpdated);
         }

@@ -14,10 +14,11 @@ namespace ReservasCanchas.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
         public int ComplexId { get; set; }
         public FieldType FieldType { get; set; }
         public FloorType FloorType { get; set; }
-        public int HourPrice {  get; set; }
+        public decimal HourPrice {  get; set; }
         public bool Ilumination { get; set; }
         public bool Covered { get; set; }
         public bool Active { get; set; }
@@ -25,8 +26,8 @@ namespace ReservasCanchas.Domain.Entities
         // Propiedad de navegacion
         public Complejo Complex { get; set; } = null!;
 
-        //Referencia 1 a 1 con TimeSlotComplex, esto me permitiria hacer t
-        public TimeSlotField TimeSlotField { get; set; } = new TimeSlotField(); 
+        //Referencia 1 a n con TimeSlotField
+        public List<TimeSlotField> TimeSlotsField { get; set; } = new List<TimeSlotField>(); 
 
         // Referencia 1 a n con los bloqueos recurrentes
         public ICollection<RecurringFieldBlock> recurringCourtBlocks { get; set; } = null!;

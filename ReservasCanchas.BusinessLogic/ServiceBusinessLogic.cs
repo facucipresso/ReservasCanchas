@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ReservasCanchas.BusinessLogic.Dtos;
+using ReservasCanchas.BusinessLogic.Dtos.Service;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Persistance;
@@ -23,7 +23,7 @@ namespace ReservasCanchas.BusinessLogic
             _serviceRepository = serviceRepository;
         }
 
-        public async Task<ServiceResponseDTO?> GetById(int id)
+        public async Task<ServiceResponseDTO> GetById(int id)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(id);
 

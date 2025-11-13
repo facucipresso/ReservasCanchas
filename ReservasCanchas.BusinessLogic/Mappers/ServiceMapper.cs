@@ -1,4 +1,4 @@
-﻿using ReservasCanchas.BusinessLogic.Dtos;
+﻿using ReservasCanchas.BusinessLogic.Dtos.Service;
 using ReservasCanchas.Domain.Entities;
 using System;
 using System.Collections.Generic;

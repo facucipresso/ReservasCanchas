@@ -21,7 +21,7 @@ namespace ReservasCanchas.DataAccess.Repositories
 
         public async Task<Service?> GetServiceByIdAsync(int id)
         {
-            return await _context.Service.FirstOrDefaultAsync(s => s.Id == id && s.Active == true);
+            return await _context.Service.FirstOrDefaultAsync(s => s.Id == id && s.Active);
         }
 
         public async Task<List<Service>> GetAllServicesAsync()
