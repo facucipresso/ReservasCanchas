@@ -20,9 +20,8 @@ namespace ReservasCanchas.DataAccess.Repositories
         }
         public async Task<Usuario?> GetUserByIdAsync(int id)
         {
-            // Ver esto porque creo que el unico que podria ver todos los usurios es el superadmin y capaz quiere ver todos
             return await _context.Usuario
-                .Where(s => s.Id == id && s.Status == UserStatus.Activo)
+                .Where(s => s.Id == id)
                 .FirstOrDefaultAsync();
         }
 
@@ -47,10 +46,14 @@ namespace ReservasCanchas.DataAccess.Repositories
         }
 
 
-        public async Task<bool> ExistUserAsync(string name, string lastName, string email)
+        public async Task<bool> ExistByEmailAsync(string email)
         {
-            // Que pasa si el usuario existe pero esta bloqueado?
-            return await _context.Usuario.AnyAsync(s => s.Name.ToLower() == name.ToLower() && s.LastName.ToLower() == lastName.ToLower() && s.Email.ToLower() == email.ToLower() && s.Status == UserStatus.Activo);
+            return await _context.Usuario.AnyAsync(s =>  s.Email.ToLower() == email.ToLower());
+        }
+
+        public async Task<bool> ExistByPhoneAsync(string phone)
+        {
+            return await _context.Usuario.AnyAsync(u => u.Phone.ToLower() == phone.ToLower());
         }
     }
 }

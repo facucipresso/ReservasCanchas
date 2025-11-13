@@ -46,10 +46,19 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<UsuarioResponseDTO> Create(UsuarioRequestDTO usuarioRequest)
         {
-            if (await _userRepo.ExistUserAsync(usuarioRequest.Name, usuarioRequest.LastName, usuarioRequest.Email))
+            if ((await _userRepo.ExistByPhoneAsync(usuarioRequest.Phone) && await _userRepo.ExistByEmailAsync(usuarioRequest.Email)))
             {
-                throw new BadRequestException("Ya existe un usuario con los datos ingresados: " + usuarioRequest.Name+" , "+ usuarioRequest.LastName + " y " + usuarioRequest.Email);
+                throw new BadRequestException("Ya existe un usuario con ese email y telefono ingresados: " + usuarioRequest.Email + " , " + usuarioRequest.Phone);
             }
+            if (await _userRepo.ExistByEmailAsync(usuarioRequest.Email))
+            {
+                throw new BadRequestException("Ya existe un usuario con ese email ingresados: "+ usuarioRequest.Email);
+            }
+            if(await _userRepo.ExistByPhoneAsync(usuarioRequest.Phone))
+            {
+                throw new BadRequestException("Ya existe un usuario con ese telefono ingresados: " + usuarioRequest.Phone);
+            }
+            
 
             var usuario = UsuarioMapper.ToUsuario(usuarioRequest);
             await _userRepo.CreateUserAsync(usuario);
@@ -63,11 +72,19 @@ namespace ReservasCanchas.BusinessLogic
             {
                 throw new NotFoundException("Usuario con id " + id + " no encontrado");
             }
-
-            if (await _userRepo.ExistUserAsync(userDTO.Name, userDTO.LastName, userDTO.Email))
+            if ((await _userRepo.ExistByPhoneAsync(userDTO.Phone) && await _userRepo.ExistByEmailAsync(userDTO.Email)))
             {
-                throw new BadRequestException("Ya existe un usuario con los datos ingresados: " + userDTO.Name + " , " + userDTO.LastName + " y " + userDTO.Email);
+                throw new BadRequestException("Ya existe un usuario con ese email y telefono ingresados: " + userDTO.Email + " , " + userDTO.Phone);
             }
+            if (await _userRepo.ExistByEmailAsync(userDTO.Email))
+            {
+                throw new BadRequestException("Ya existe un usuario con ese email ingresados: " + userDTO.Email);
+            }
+            if (await _userRepo.ExistByPhoneAsync(userDTO.Phone))
+            {
+                throw new BadRequestException("Ya existe un usuario con ese telefono ingresados: " + userDTO.Phone);
+            }
+            
 
             user.Name = userDTO.Name;
             user.LastName = userDTO.LastName;
