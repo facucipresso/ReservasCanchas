@@ -21,9 +21,7 @@ namespace ReservasCanchas.DataAccess.Repositories
 
         public async Task<Service?> GetServiceByIdAsync(int id)
         {
-            return await _context.Service
-                .Where(s => s.Id == id && s.Active)
-                .FirstOrDefaultAsync();
+            return await _context.Service.FirstOrDefaultAsync(s => s.Id == id && s.Active == true);
         }
 
         public async Task<List<Service>> GetAllServicesAsync()
@@ -40,10 +38,9 @@ namespace ReservasCanchas.DataAccess.Repositories
             return service;
         }
 
-        public async Task<Service> UpdateServiceAsync(Service service)
+        public async Task SaveAsync()
         {
             await  _context.SaveChangesAsync();
-            return service;
         }
 
         public async Task<bool> ExistsByNameAsync(string serviceDescription)

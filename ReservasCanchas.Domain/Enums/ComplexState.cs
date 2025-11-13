@@ -8,7 +8,8 @@ namespace ReservasCanchas.Domain.Enums
 {
     public enum ComplexState
     {
-        Habilitado = 0,
-        Bloqueado = 1
+        Pendiente = 0,
+        Habilitado = 1,
+        Bloqueado = 2
     }
 }

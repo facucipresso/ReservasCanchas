@@ -8,7 +8,7 @@ namespace ReservasCanchas.Domain.Enums
 {
     public enum ReservationType
     {
-        Blocked = 0,
-        Match = 1
+        Bloqueo = 0,
+        Partido = 1
     }
 }

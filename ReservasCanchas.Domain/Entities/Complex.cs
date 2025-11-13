@@ -26,11 +26,11 @@ namespace ReservasCanchas.Domain.Entities
         public int PercentageSign { get; set; }
         public TimeOnly StartIlumination { get; set; }
         public int AditionalIlumination { get; set; }
-        public ComplexState Estado { get; set; }
+        public ComplexState State { get; set; }
         public bool Active { get; set; }
 
         // Propiedad de navegacion Usuario, esta es la que tiene que ser null, sino cada vez que se crea un complejo, crea un usuario nuevo
-        public Usuario Usuario { get; set; } = null!;
+        public Usuario User { get; set; } = null!;
 
         // Relacion muchos a muchos con Service
         public ICollection<Service> Services { get; set; } = new List<Service>();

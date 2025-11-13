@@ -74,7 +74,7 @@ namespace ReservasCanchas.BusinessLogic
             }
 
             service.ServiceDescription = serviceDTO.ServiceDescription;
-            await _serviceRepository.UpdateServiceAsync(service);
+            await _serviceRepository.SaveAsync();
             return ServiceMapper.ToServiceResponseDTO(service);
         }
 
@@ -87,7 +87,7 @@ namespace ReservasCanchas.BusinessLogic
             }
 
             service.Active = false;
-            await _serviceRepository.UpdateServiceAsync(service);
+            await _serviceRepository.SaveAsync();
         }
     }
 }

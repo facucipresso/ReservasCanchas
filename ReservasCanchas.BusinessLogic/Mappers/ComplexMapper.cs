@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReservasCanchas.Domain.Enums
+namespace ReservasCanchas.BusinessLogic.Mappers
 {
-    public enum Rol
+    internal class ComplexMapper
     {
-        Usuario = 0,
-        AdminComplejo = 1,
-        SuperAdmin = 2
     }
 }
