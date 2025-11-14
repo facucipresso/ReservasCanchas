@@ -27,6 +27,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         public ComplexState State { get; set; }
         public ICollection<ServiceResponseDTO> Services { get; set; } = new List<ServiceResponseDTO>();
         public ICollection<FieldResponseDTO> Fields { get; set; } = new List<FieldResponseDTO>();
-        public ICollection<TimeSlotResponseDTO> TimeSlots { get; set; } = new List<TimeSlotResponseDTO>();
+        public ICollection<TimeSlotComplexResponseDTO> TimeSlots { get; set; } = new List<TimeSlotComplexResponseDTO>();
     }
 }

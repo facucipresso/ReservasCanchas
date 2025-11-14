@@ -1,11 +1,13 @@
-﻿using ReservasCanchas.DataAccess.Persistance;
+﻿using Microsoft.EntityFrameworkCore;
+using ReservasCanchas.DataAccess.Persistance;
+using ReservasCanchas.Domain.Entities;
+using ReservasCanchas.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using ReservasCanchas.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace ReservasCanchas.DataAccess.Repositories
 {
@@ -69,5 +71,22 @@ namespace ReservasCanchas.DataAccess.Repositories
         {
             return await _context.Complejo.AnyAsync(c => c.Phone.ToLower() == phone.ToLower() && c.Active);
         }
+
+        public async Task<List<Complejo>> GetComplexesForSearchAsync(string locality)
+        {
+            return await _context.Complejo
+                .Include(c => c.TimeSlots)
+                .Include(c => c.Fields)
+                    .ThenInclude(f => f.Reservations)
+                .Include(c => c.Fields)
+                    .ThenInclude(f => f.recurringCourtBlocks)
+                .Where(c =>
+                    c.Locality == locality &&
+                    c.Active &&
+                    c.State == ComplexState.Habilitado
+                )
+                .ToListAsync();
+        }
+
     }
 }
