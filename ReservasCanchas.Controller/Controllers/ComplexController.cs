@@ -19,9 +19,15 @@ namespace ReservasCanchas.Controller.Controllers
         {
             //Recuperariamos el id del admin con _authService.GetUserId();
             int adminComplexId = 1; //Valor para probar
-            var complexesDtos = await _complexBusinessLogic.GetComplexesForAdminComplexAsync(adminComplexId);
+            var complexesDtos = await _complexBusinessLogic.GetComplexesForAdminComplexIdAsync(adminComplexId);
             return Ok(complexesDtos);
         }     
+
+        public async Task<ActionResult<ComplexDetailResponseDTO>> CreateComplex([FromBody] CreateComplexRequestDTO complexDTO)
+        {
+            var createdComplexDto = await _complexBusinessLogic.CreateComplexAsync(complexDTO);
+            return CreatedAtAction(nameof(CreateComplex), new { id = createdComplexDto.Id }, createdComplexDto);
+        }
 
 
     }

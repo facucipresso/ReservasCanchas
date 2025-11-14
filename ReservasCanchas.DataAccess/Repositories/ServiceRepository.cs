@@ -31,6 +31,13 @@ namespace ReservasCanchas.DataAccess.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Service>> GetServicesByIdsAsync(List<int> ids)
+        {
+            return await _context.Service
+                .Where(s => ids.Contains(s.Id) && s.Active)
+                .ToListAsync();
+        }
+
         public async Task<Service> CreateServiceAsync(Service service)
         {
             _context.Service.Add(service);

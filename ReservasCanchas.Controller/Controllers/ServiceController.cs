@@ -50,7 +50,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> deleteService([FromRoute] int id)
+        public async Task<ActionResult> deleteService([FromRoute] int id)
         {
             await _serviceBusinessLogic.Delete(id);
             return NoContent();

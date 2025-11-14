@@ -41,12 +41,33 @@ namespace ReservasCanchas.DataAccess.Repositories
 
         public async Task<Complejo> CreateComplexAsync(Complejo complex)
         {
-            return null;
+            _context.Complejo.Add(complex);
+            await _context.SaveChangesAsync();
+            return complex;
         }
 
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> ExistsByNameAsync(string complexName)
+        {
+            return await _context.Complejo.AnyAsync(c => c.Name.ToLower() == complexName.ToLower() && c.Active);
+        }
+
+        public async Task<bool> ExistsByAddressAsync(string street, string number, string locality, string province)
+        {
+            return await _context.Complejo.AnyAsync(c => c.Street.ToLower() == street.ToLower() &&
+                                                        c.Number.ToLower() == number.ToLower() &&
+                                                        c.Locality.ToLower() == locality.ToLower() &&
+                                                        c.Province.ToLower() == province.ToLower() &&
+                                                        c.Active);
+        }
+
+        public async Task<bool> ExistsByPhoneAsync(string phone)
+        {
+            return await _context.Complejo.AnyAsync(c => c.Phone.ToLower() == phone.ToLower() && c.Active);
         }
     }
 }

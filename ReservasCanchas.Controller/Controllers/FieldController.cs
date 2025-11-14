@@ -29,6 +29,27 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(fieldsDTOs);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<FieldResponseDTO>> CreateField([FromQuery] int complexId, [FromBody] FieldRequestDTO fieldDTO)
+        {
+            var createdFieldDTO = await _fieldBusinessLogic.Create(complexId, fieldDTO);
+            return CreatedAtAction(nameof(GetFieldById), new { id = createdFieldDTO.Id }, createdFieldDTO);
+        }
+
+        [HttpPatch("/{id}")]
+        public async Task<ActionResult<FieldResponseDTO>> UpdateField([FromRoute] int id, [FromBody] FieldUpdateRequestDTO fieldDTO)
+        {
+            var updatedFieldDTO = await _fieldBusinessLogic.Update(id, fieldDTO);
+            return Ok(updatedFieldDTO);
+        }
+
+        [HttpDelete("/{id}")]
+        public async Task<ActionResult> DeleteField([FromRoute] int id)
+        {
+            await _fieldBusinessLogic.Delete(id);
+            return NoContent();
+        }
+
 
     }
 }

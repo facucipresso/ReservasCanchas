@@ -23,6 +23,28 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 ImagePath = complex.ImagePath
             };
         }
+
+        public static ComplexDetailResponseDTO toComplexDetailResponseDTO(Complejo complex)
+        {
+            return new ComplexDetailResponseDTO
+            {
+                Id = complex.Id,
+                Name = complex.Name,
+                Province = complex.Province,
+                Locality = complex.Locality,
+                Street = complex.Street,
+                Number = complex.Number,
+                Phone = complex.Phone,
+                ImagePath = complex.ImagePath,
+                PercentageSign = complex.PercentageSign,
+                StartIlumination = complex.StartIlumination,
+                AditionalIlumination = complex.AditionalIlumination,
+                State = complex.State,
+                Services = complex.Services.Select(ServiceMapper.ToServiceResponseDTO).ToList(),
+                Fields = complex.Fields.Select(FieldMapper.ToFieldResponseDTO).ToList(),
+                TimeSlots = complex.TimeSlots.Select(ToTimeSlotComplexResponseDTO).ToList()
+            };
+        }
         public static ComplexSuperAdminResponseDTO toComplexSuperAdminResponseDTO(Complejo complex)
         {
             return new ComplexSuperAdminResponseDTO
@@ -37,6 +59,46 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Phone = complex.Phone,
                 State = complex.State,
                 Active = complex.Active
+            };
+        }
+
+        public static Complejo toComplex(CreateComplexRequestDTO complexDTO)
+        {
+            return new Complejo
+            {
+                UserId = complexDTO.UserId,
+                Name = complexDTO.Name,
+                Province = complexDTO.Province,
+                Locality = complexDTO.Locality,
+                Street = complexDTO.Street,
+                Number = complexDTO.Number,
+                Phone = complexDTO.Phone,
+                ImagePath = complexDTO.ImagePath,
+                PercentageSign = complexDTO.PercentageSign,
+                StartIlumination = complexDTO.StartIlumination,
+                AditionalIlumination = complexDTO.AditionalIlumination,
+                TimeSlots = complexDTO.TimeSlots.Select(ToTimeSlotComplex).ToList()
+            };
+        }
+
+        public static TimeSlotComplex ToTimeSlotComplex(TimeSlotComplexRequestDTO timeSlotDTO)
+        {
+            return new TimeSlotComplex
+            {
+                WeekDay = timeSlotDTO.WeekDay,
+                InitTime = timeSlotDTO.InitTime,
+                EndTime = timeSlotDTO.EndTime
+            };
+        }
+
+        public static TimeSlotComplexResponseDTO ToTimeSlotComplexResponseDTO(TimeSlotComplex timeSlot)
+        {
+            return new TimeSlotComplexResponseDTO
+            {
+                Id = timeSlot.Id,
+                WeekDay = timeSlot.WeekDay,
+                InitTime = timeSlot.InitTime,
+                EndTime = timeSlot.EndTime
             };
         }
     }
