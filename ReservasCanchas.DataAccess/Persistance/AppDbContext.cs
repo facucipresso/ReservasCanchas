@@ -21,7 +21,7 @@ namespace ReservasCanchas.DataAccess.Persistance
         public DbSet<Reservation> Reservation { get; set; }
         public DbSet<Review> Review { get; set; }
         public DbSet<TimeSlotComplex> TimeSlotComplex { get; set; }
-        public DbSet<TimeSlotField> timeSlotField { get; set; }
+        public DbSet<TimeSlotField> TimeSlotField { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,9 +35,16 @@ namespace ReservasCanchas.DataAccess.Persistance
 
             // Modelo la relacion 1 a 1 de complejo con la franja horaria del complejo
             modelBuilder.Entity<Complejo>()
-                .HasOne(c => c.TimeSlotComplex)
+                .HasMany(c => c.TimeSlots)
                 .WithOne(t => t.Complex)
-                .HasForeignKey<TimeSlotComplex>(j => j.ComplexId);
+                .HasForeignKey(j => j.ComplexId);
+
+            // Modelo la relacion 1 a n de complejo con la franja horaria
+            /*modelBuilder.Entity<TimeSlotComplex>()
+                .HasOne(c => c.Complex)
+                .WithMany(t => t.TimeSlots)
+                .HasForeignKey(j => j.ComplexId);*/
+
 
 
             // Modelo la relacion 1 a muchos de complejo y canchas
@@ -48,7 +55,7 @@ namespace ReservasCanchas.DataAccess.Persistance
 
             // Modelo relacion 1 a muchos de complejo y usuario
             modelBuilder.Entity<Complejo>()
-                .HasOne(u => u.Usuario)
+                .HasOne(u => u.User)
                 .WithMany(c => c.Complejos)
                 .HasForeignKey(c => c.UserId);
 
@@ -73,9 +80,9 @@ namespace ReservasCanchas.DataAccess.Persistance
 
             // Modelo relacion 1 a 1 entre cancha y franja horaria de la cancha
             modelBuilder.Entity<Field>()
-                .HasOne(c => c.TimeSlotField)
+                .HasMany(c => c.TimeSlotsField)
                 .WithOne(t => t.Field)
-                .HasForeignKey<TimeSlotField>(j => j.FieldId);
+                .HasForeignKey(j => j.FieldId);
 
             // Modelo relacion 1 a muchos entre cancha y los bloqueos recurrentes
             modelBuilder.Entity<Field>()

@@ -17,6 +17,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Usuario
         [EmailAddress(ErrorMessage = "El formato del email no es válido")]
         public string Email { get; set; } = string.Empty;
         [Required(ErrorMessage = "El telefono del usuario es obligatorio")]
-        public string Phone { get; set; }
+        public string Phone { get; set; } = string.Empty;
     }
 }

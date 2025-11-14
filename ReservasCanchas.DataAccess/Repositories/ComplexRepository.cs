@@ -12,12 +12,12 @@ namespace ReservasCanchas.DataAccess.Repositories
     public class ComplexRepository
     {
         private readonly AppDbContext _context;
-        public ComplexRepository(AppDbContext context) 
+        public ComplexRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Complejo> GetComplexByIdAsync(int id) 
+        public async Task<Complejo> GetComplexByIdAsync(int id)
         {
             return null;
         }
@@ -27,7 +27,7 @@ namespace ReservasCanchas.DataAccess.Repositories
             return null;
         }
 
-        public async Task<List<Complejo>> GetAllComplexesAsync() 
+        public async Task<List<Complejo>> GetAllComplexesAsync()
         {
             return null;
         }
@@ -39,13 +39,14 @@ namespace ReservasCanchas.DataAccess.Repositories
                          .ToListAsync();
         }
 
-        public async Task<Complejo> CreateComplexAsync(Complejo complex) 
+        public async Task<Complejo> CreateComplexAsync(Complejo complex)
         {
             return null;
         }
 
-        public async Task SaveAsync() 
+        public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
         }
+    }
 }

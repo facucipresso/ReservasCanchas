@@ -21,7 +21,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<List<ComplexCardResponseDTO>> GetComplexesForAdminComplexAsync(int adminComplexId)
         {
-            List<Complejo> complexes = await _complexRepository.getComplexesByUserIdAsync(adminComplexId);
+            List<Complejo> complexes = await _complexRepository.GetComplexesByUserIdAsync(adminComplexId);
             var complexescardsdto = complexes.Select(ComplexMapper.toComplexCardResponseDTO).ToList();
             return complexescardsdto;
         }

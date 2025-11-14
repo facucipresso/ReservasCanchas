@@ -39,7 +39,7 @@ namespace ReservasCanchas.Domain.Entities
         public ICollection<Field> Fields { get; set; } = new List<Field>();
 
         //Referencia 1 a 1 con TimeSlotComplex, esto me permitiria hacer t, aca tamben lo puedo inincializar
-        public ICollection<TimeSlotComplex> timeSlots { get; set; } = new List<TimeSlotComplex>();
+        public ICollection<TimeSlotComplex> TimeSlots { get; set; } = new List<TimeSlotComplex>(); 
 
     }
 }

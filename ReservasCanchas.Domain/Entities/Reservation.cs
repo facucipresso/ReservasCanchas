@@ -18,11 +18,12 @@ namespace ReservasCanchas.Domain.Entities
         public DateOnly Date {  get; set; }
         public TimeOnly InitTime { get; set; }
         public DateTimeOffset CreationDate { get; set; }
-        // public PayType PayType { get; set; }
+        public PayType PayType { get; set; }
         public int TotalPrice { get; set; }
         public int PrecioPagado { get; set; }
         public ReservationType ReservationType { get; set; }
         public string BlockReason { get; set; } = string.Empty;
+        public ReservationState ReservationState { get; set; }
 
 
         // Propiedad de navegacion
