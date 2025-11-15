@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Field;
+using ReservasCanchas.Domain.Entities;
 
 namespace ReservasCanchas.Controller.Controllers
 {
@@ -29,6 +30,7 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(fieldsDTOs);
         }
 
+        // Aca no tendria que venir ya de entrada con la franja horaria seteada?
         [HttpPost]
         public async Task<ActionResult<FieldResponseDTO>> CreateField([FromQuery] int complexId, [FromBody] FieldRequestDTO fieldDTO)
         {
@@ -41,6 +43,25 @@ namespace ReservasCanchas.Controller.Controllers
         {
             var updatedFieldDTO = await _fieldBusinessLogic.Update(id, fieldDTO);
             return Ok(updatedFieldDTO);
+        }
+
+        [HttpPut("{id}/addRecurridBlock")]
+        public async Task<ActionResult<FieldResponseDTO>> AddRecurridFieldBlockToField([FromRoute] int id, RecurringFieldBlockRequestDTO recurridBlockDTO)
+        {
+            // ver como tomo en la realidad el id del usuario que hace la request y el id del complejo, ahora los simulo
+            int AdminComplexId = 1;
+            int ComplexId = 1;
+            var updateFieldDTO = await _fieldBusinessLogic.AddRecurridFieldBlockAsinc(AdminComplexId, ComplexId, id, recurridBlockDTO);
+            return Ok(updateFieldDTO);
+        }
+
+        [HttpPut("{id}/deleteRecurridBloc/{idrb}")]
+        public async Task<ActionResult<FieldResponseDTO>> DeleteRecurridFieldBlockToField([FromRoute] int id, [FromRoute] int idrb)
+        {
+            int AdminComplexId = 1; 
+            int ComplexId = 1;
+            await _fieldBusinessLogic.DeleteRecurridFieldBlockAsinc(AdminComplexId, ComplexId, id, idrb);
+            return NoContent();
         }
 
         [HttpDelete("/{id}")]

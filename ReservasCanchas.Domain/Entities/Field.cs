@@ -30,7 +30,7 @@ namespace ReservasCanchas.Domain.Entities
         public List<TimeSlotField> TimeSlotsField { get; set; } = new List<TimeSlotField>(); 
 
         // Referencia 1 a n con los bloqueos recurrentes
-        public ICollection<RecurringFieldBlock> recurringCourtBlocks { get; set; } = null!;
+        public ICollection<RecurringFieldBlock> RecurringCourtBlocks { get; set; } = null!;
 
         // Referencia 1 a N con las reservas
         public ICollection<Reservation> Reservations { get; set; } = null!;

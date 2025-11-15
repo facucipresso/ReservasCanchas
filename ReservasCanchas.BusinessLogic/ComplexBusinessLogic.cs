@@ -262,7 +262,7 @@ namespace ReservasCanchas.BusinessLogic
                         return false;
 
                     // Checkeo que no tenga un bloqueo reccurrente en ese dia y hora
-                    bool isBlocked = field.recurringCourtBlocks.Any(b =>
+                    bool isBlocked = field.RecurringCourtBlocks.Any(b =>
                         b.WeekDay == weekDay &&
                         b.InitHour <= hour &&
                         b.EndHour > hour

@@ -22,6 +22,13 @@ namespace ReservasCanchas.DataAccess.Repositories
             return await _context.Field.FirstOrDefaultAsync(f => f.Id == id && f.Active);
         }
 
+        public Task<Field?> GetFieldByIdWithBlocksAsync(int id)
+        {
+            return _context.Field
+                .Include(f => f.RecurringCourtBlocks)
+                .FirstOrDefaultAsync(f => f.Id == id);
+        }
+
         public async Task<List<Field>> GetAllFieldsAsync()
         {
             return await _context.Field

@@ -74,12 +74,15 @@ namespace ReservasCanchas.DataAccess.Repositories
 
         public async Task<List<Complejo>> GetComplexesForSearchAsync(string locality)
         {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var limit = today.AddDays(7);
+
             return await _context.Complejo
                 .Include(c => c.TimeSlots)
-                .Include(c => c.Fields)
-                    .ThenInclude(f => f.Reservations)
-                .Include(c => c.Fields)
-                    .ThenInclude(f => f.recurringCourtBlocks)
+                .Include(c => c.Fields.Where(f => f.Active)) //traigo solo las canchas activas
+                    .ThenInclude(f => f.Reservations.Where(r => r.Date >= today && r.Date <= limit)) //traigo solo las reservas que tienen fecha de hoy +7 dias
+                .Include(c => c.Fields.Where(f => f.Active))
+                    .ThenInclude(f => f.RecurringCourtBlocks)
                 .Where(c =>
                     c.Locality == locality &&
                     c.Active &&

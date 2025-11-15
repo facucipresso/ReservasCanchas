@@ -86,7 +86,7 @@ namespace ReservasCanchas.DataAccess.Persistance
 
             // Modelo relacion 1 a muchos entre cancha y los bloqueos recurrentes
             modelBuilder.Entity<Field>()
-                .HasMany(c => c.recurringCourtBlocks)
+                .HasMany(c => c.RecurringCourtBlocks)
                 .WithOne(t => t.Field)
                 .HasForeignKey(f => f.FieldId);
 
