@@ -10,14 +10,11 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
 {
     public class UpdateTimeSlotComplexDTO
     {
-        [Required(ErrorMessage = "Los time slots del complejo es obligatoria")]
-
+        [Required(ErrorMessage = "El día de la semana es obligatorio")]
         public WeekDay WeekDay { get; set; }
-        [Required(ErrorMessage = "Los time slots del complejo es obligatoria")]
-
-        public TimeOnly StartTime { get; set; }
-        [Required(ErrorMessage = "Los time slots del complejo es obligatoria")]
-
+        [Required(ErrorMessage = "El horario de inicio de la franja horaria es obligatorio")]
+        public TimeOnly InitTime { get; set; }
+        [Required(ErrorMessage = "El horario de fin de la franja horaria es obligatorio")]
         public TimeOnly EndTime { get; set; }
     }
 }

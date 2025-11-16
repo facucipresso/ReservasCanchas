@@ -9,7 +9,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
 {
     public class UpdateTimeSlotComplexRequestDTO
     {
-        [Required(ErrorMessage = "Los time slots del complejo es obligatoria")]
+        [Length(7, 7, ErrorMessage = "Se debe especificar una franja horaria por día")]
         public List<UpdateTimeSlotComplexDTO> TimeSlots { get; set; }
     }
 }

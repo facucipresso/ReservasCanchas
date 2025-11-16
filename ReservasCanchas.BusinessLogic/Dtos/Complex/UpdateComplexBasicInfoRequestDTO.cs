@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Complex
 {
-    public class UpdateComplexRequestDTO
+    public class UpdateComplexBasicInfoRequestDTO
     {
         [Required(ErrorMessage = "El nombre del complejo es obligatorio")]
         public string Name { get; set; } = string.Empty;
