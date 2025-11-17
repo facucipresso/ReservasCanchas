@@ -20,11 +20,11 @@ namespace ReservasCanchas.Domain.Entities
         public DateTime CreationDate { get; set; }
         public PayType PayType { get; set; }
         public int TotalPrice { get; set; }
-        public int PrecioPagado { get; set; }
+        public int PricePaid { get; set; }
         public ReservationType ReservationType { get; set; }
         public string BlockReason { get; set; } = string.Empty;
         public ReservationState ReservationState { get; set; }
-        public string voucherPath { get; set; } = string.Empty;
+        public string VoucherPath { get; set; } = string.Empty;
 
 
         // Propiedad de navegacion

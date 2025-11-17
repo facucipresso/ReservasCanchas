@@ -106,5 +106,15 @@ namespace ReservasCanchas.BusinessLogic
             user.Status = UserStatus.Bloqueado;
             await _userRepo.UpdateUserAsync(user);
         }
+
+        public async Task<bool> ExistUser(int id)
+        {
+            var user = await _userRepo.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                throw new NotFoundException("Usuario con id " + id + " no encontrado");
+            }
+            return true;
+        }
     }
 }

@@ -13,9 +13,9 @@ namespace ReservasCanchas.Domain.Entities
         public string Name { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string Phone { get; set; }
+        public string Phone { get; set; } = string.Empty;
         public UserStatus Status { get; set; }
-        //public Rol Rol { get; set; }
+        public Rol Rol { get; set; }
 
 
         // Relacion con complejos
