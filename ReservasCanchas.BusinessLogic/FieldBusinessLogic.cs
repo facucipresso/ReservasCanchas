@@ -99,7 +99,7 @@ namespace ReservasCanchas.BusinessLogic
             return FieldMapper.ToFieldDetailResponseDTO(field);
         }
 
-        public async Task<FieldDetailResponseDTO> UpdateTimeSlots(int complexId, int fieldId, int complexAdminId, UpdateTimeSlotFieldRequestDTO updateTimeSlotFieldRequestDTO)
+        public async Task<FieldDetailResponseDTO> UpdateTimeSlots(int complexId, int fieldId, UpdateTimeSlotFieldRequestDTO updateTimeSlotFieldRequestDTO)
         {
             var field = await FieldValidityCheck(fieldId, complexId);
             _complexBusinessLogic.ComplexValidityStateCheck(field.Complex);
@@ -147,7 +147,7 @@ namespace ReservasCanchas.BusinessLogic
             await _fieldRepository.SaveAsync();
         }
 
-        public async Task<FieldDetailResponseDTO> AddRecurringFieldBlockAsync(int complexId, int fieldId, RecurringFieldBlockRequestDTO recurridBlockDTO)
+        public async Task<FieldDetailResponseDTO> AddRecurringFieldBlockAsync(int complexId, int fieldId, RecurringFieldBlockRequestDTO recurringBlockDTO)
         {
             //QUE HACER SI SE CREA UN BLOQUEO RECURRENTE Y LA CANCHA TIENE RESERVAS SIN COMPLETAR EN ESE HORARIO?
             var field = await FieldValidityCheck(fieldId, complexId);
@@ -157,12 +157,12 @@ namespace ReservasCanchas.BusinessLogic
             var adminComplexId = 1;
             _complexBusinessLogic.ComplexValidityAdmin(field.Complex, adminComplexId);
 
-            if (recurridBlockDTO.InitHour >= recurridBlockDTO.EndHour) throw new BadRequestException("La hora inicial debe ser menor que la hora final");
+            if (recurringBlockDTO.InitHour >= recurringBlockDTO.EndHour) throw new BadRequestException("La hora inicial debe ser menor que la hora final");
 
-            var recurridBlockExisting = field.RecurringCourtBlocks;
-            foreach (var rbe in recurridBlockExisting)
+            var recurringBlockExisting = field.RecurringCourtBlocks;
+            foreach (var rbe in recurringBlockExisting)
             {
-                bool solapamiento = rbe.WeekDay == recurridBlockDTO.WeekDay && rbe.InitHour < recurridBlockDTO.EndHour && rbe.EndHour > recurridBlockDTO.InitHour;
+                bool solapamiento = rbe.WeekDay == recurringBlockDTO.WeekDay && rbe.InitHour < recurringBlockDTO.EndHour && rbe.EndHour > recurringBlockDTO.InitHour;
                 if(solapamiento)
                 {
                     throw new BadRequestException("No se puede crear el bloqueo porque se superpone con otro existente");
@@ -171,10 +171,10 @@ namespace ReservasCanchas.BusinessLogic
             field.RecurringCourtBlocks.Add(new RecurringFieldBlock
             {
                 FieldId = fieldId,
-                WeekDay = recurridBlockDTO.WeekDay,
-                InitHour = recurridBlockDTO.InitHour,
-                EndHour = recurridBlockDTO.EndHour,
-                Reason = recurridBlockDTO.Reason
+                WeekDay = recurringBlockDTO.WeekDay,
+                InitHour = recurringBlockDTO.InitHour,
+                EndHour = recurringBlockDTO.EndHour,
+                Reason = recurringBlockDTO.Reason
              });
             await _fieldRepository.SaveAsync();
 
@@ -189,9 +189,9 @@ namespace ReservasCanchas.BusinessLogic
             //var adminComplexId = _authService.GetUserIdFromToken();
             var adminComplexId = 1;
             _complexBusinessLogic.ComplexValidityAdmin(field.Complex, adminComplexId);
-            var recurridBlockExisting = field.RecurringCourtBlocks.FirstOrDefault(f => f.Id == idrb);
-            if (recurridBlockExisting == null) throw new NotFoundException($"El bloqueo recurrente con el id {idrb} no existe");
-            field.RecurringCourtBlocks.Remove(recurridBlockExisting);
+            var recurringBlockExisting = field.RecurringCourtBlocks.FirstOrDefault(f => f.Id == idrb);
+            if (recurringBlockExisting == null) throw new NotFoundException($"El bloqueo recurrente con el id {idrb} no existe");
+            field.RecurringCourtBlocks.Remove(recurringBlockExisting);
             await _fieldRepository.SaveAsync();
             return FieldMapper.ToFieldDetailResponseDTO(field);
         }

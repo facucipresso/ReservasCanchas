@@ -60,7 +60,7 @@ namespace ReservasCanchas.Controller.Controllers
         public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateBasicInfoComplex([FromRoute] int id,[FromBody] UpdateComplexBasicInfoRequestDTO updateComplexRequestDTO)
         {
             int adminComplexId = 1;
-            var updatedComplexDto = await _complexBusinessLogic.UpdateComplexAsync(adminComplexId, id, updateComplexRequestDTO);
+            var updatedComplexDto = await _complexBusinessLogic.UpdateComplexAsync(id, updateComplexRequestDTO);
             return Ok(updatedComplexDto);
         }
 
@@ -68,7 +68,7 @@ namespace ReservasCanchas.Controller.Controllers
         public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateTimeSlotsComplex([FromRoute] int id, [FromBody] UpdateTimeSlotComplexRequestDTO request)
         {
             int adminComplexId = 1;
-            var updatedComplex = await _complexBusinessLogic.UpdateTimeSlotsAsync(adminComplexId, id, request);
+            var updatedComplex = await _complexBusinessLogic.UpdateTimeSlotsAsync(id, request);
             return Ok(updatedComplex);
         }
 
@@ -77,7 +77,7 @@ namespace ReservasCanchas.Controller.Controllers
         {
             //simulo el id del usuario sacado del token
             int adminComplexId = 1;
-            var updatedComplex = await _complexBusinessLogic.UpdateServicesAsync(adminComplexId, id, request.ServicesIds);
+            var updatedComplex = await _complexBusinessLogic.UpdateServicesAsync(id, request.ServicesIds);
             return Ok(updatedComplex);
         }
 
@@ -86,7 +86,7 @@ namespace ReservasCanchas.Controller.Controllers
         {
             //simulo el id del usuario sacado del token
             int superAdminId = 1;
-            var updatedComplexDTO = await _complexBusinessLogic.ChangeStateComplexAsync(superAdminId, id, newStateDTO.State);
+            var updatedComplexDTO = await _complexBusinessLogic.ChangeStateComplexAsync(id, newStateDTO.State);
 
             return Ok(updatedComplexDTO);
         }
@@ -97,7 +97,7 @@ namespace ReservasCanchas.Controller.Controllers
             //Chequeamos rol de admin complejo.
             //Obtenemos id del admin complejo desde el token
             int adminComplexId = 1;
-            await _complexBusinessLogic.DeleteComplexAsync(adminComplexId, id);
+            await _complexBusinessLogic.DeleteComplexAsync(id);
             return NoContent();
         }
 

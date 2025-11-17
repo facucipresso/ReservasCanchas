@@ -45,6 +45,13 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(updatedFieldDTO);
         }
 
+        [HttpPut("{fieldId}/time-slots")]
+        public async Task<ActionResult<FieldDetailResponseDTO>> UpdateFieldTimeSlots([FromRoute] int complexId, [FromRoute] int fieldId, UpdateTimeSlotFieldRequestDTO timeSlotUpdateDTO)
+        {
+            var updatedFieldDTO = await _fieldBusinessLogic.UpdateTimeSlots(complexId, fieldId, timeSlotUpdateDTO);
+            return Ok(updatedFieldDTO);
+        }
+
         [HttpPost("{fieldId}/add-recurring-block")]
         public async Task<ActionResult<FieldDetailResponseDTO>> AddRecurringFieldBlockToField([FromRoute] int complexId, [FromRoute] int fieldId, RecurringFieldBlockRequestDTO recurridBlockDTO)
         {

@@ -11,6 +11,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Field
     {
         [Required(ErrorMessage = "La lista de franjas horarias es obligatoria")]
         [Length(7, 7, ErrorMessage = "Se debe especificar una franja horaria por día")]
-        public List<UpdateTimeSlotFieldDTO> TimeSlotsField { get; set; } = new List<UpdateTimeSlotFieldDTO>();
+        public List<TimeSlotFieldRequestDTO> TimeSlotsField { get; set; } = new List<TimeSlotFieldRequestDTO>();
     }
 }
