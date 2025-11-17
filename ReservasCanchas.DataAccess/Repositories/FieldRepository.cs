@@ -22,11 +22,37 @@ namespace ReservasCanchas.DataAccess.Repositories
             return await _context.Field.FirstOrDefaultAsync(f => f.Id == id && f.Active);
         }
 
+        public Task<Field?> GetFieldByIdWithRelationsAsync(int id)
+        {
+            return _context.Field
+                .Include(f => f.TimeSlotsField)
+                .Include(f => f.RecurringCourtBlocks)
+                .Include(f => f.Complex)
+                .FirstOrDefaultAsync(f => f.Id == id && f.Active);
+        }
+
+        public Task<List<Field>> GetAllFieldsByComplexIdWithRelationsAsync(int complexId)
+        {
+            return _context.Field
+                .Where(f => f.ComplexId == complexId && f.Active)
+                .Include(f => f.TimeSlotsField)
+                .Include(f => f.RecurringCourtBlocks)
+                .Include(f => f.Complex)
+                .ToListAsync();
+        }
+
         public Task<Field?> GetFieldByIdWithBlocksAsync(int id)
         {
             return _context.Field
                 .Include(f => f.RecurringCourtBlocks)
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id && f.Active);
+        }
+
+        public Task<Field?> GetFieldByIdWithTimeSlotsAsync(int id)
+        {
+            return _context.Field
+                .Include(f => f.TimeSlotsField)
+                .FirstOrDefaultAsync(f => f.Id == id && f.Active);
         }
 
         public async Task<List<Field>> GetAllFieldsAsync()

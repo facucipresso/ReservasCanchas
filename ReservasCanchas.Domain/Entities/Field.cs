@@ -34,5 +34,6 @@ namespace ReservasCanchas.Domain.Entities
 
         // Referencia 1 a N con las reservas
         public ICollection<Reservation> Reservations { get; set; } = null!;
+
     }
 }

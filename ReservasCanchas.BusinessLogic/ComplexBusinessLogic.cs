@@ -137,10 +137,6 @@ namespace ReservasCanchas.BusinessLogic
 
             var slots = updateTimeSlotComplexRequestDTO.TimeSlots;
 
-            if (slots.Count() != 7)
-            {
-                throw new BadRequestException($"Debes enviar exactamente 7 franjas horarias, uno por cada día de la semana.");
-            }
             if (slots.Select(s => s.WeekDay).Distinct().Count() != slots.Count())
             {
                 throw new BadRequestException($"No se pueden repetir dias de la semana en los horarios del complejo");
@@ -284,6 +280,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task DeleteComplexAsync(int adminId, int id)
         {
+            //QUE HACER SI EL COMPLEJO TIENE CANCHAS CON RESERVAS SIN COMPLETAR?
             var complejo = await _complexRepository.GetComplexByIdWithRelationsAsync(id);
             EnsureComplexExists(complejo, id);
             EnsureOwner(complejo, adminId);
