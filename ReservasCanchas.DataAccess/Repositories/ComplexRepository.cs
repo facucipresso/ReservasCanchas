@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Complex = ReservasCanchas.Domain.Entities.Complex;
 
 namespace ReservasCanchas.DataAccess.Repositories
 {
@@ -34,6 +35,15 @@ namespace ReservasCanchas.DataAccess.Repositories
                                         .Include(c => c.TimeSlots)
                                         .FirstOrDefaultAsync(c => c.Id == id && c.Active);
             return complexWithRelations;
+        }
+
+        public async Task<Complex?> GetComplexByIdWithReservationsAsync(int id)
+        {
+            return await _context.Complejo
+                        .Include(c => c.Fields)
+                            .ThenInclude(f => f.Reservations)
+                                .ThenInclude(r => r.Usuario)
+                        .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<List<Domain.Entities.Complex>> GetAllComplexesAsync()

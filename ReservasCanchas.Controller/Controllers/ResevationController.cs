@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Reservation;
+using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
 
 namespace ReservasCanchas.Controller.Controllers
@@ -18,7 +19,7 @@ namespace ReservasCanchas.Controller.Controllers
 
         // Usuario ver sus reservas 
         [HttpGet]
-        public async Task<ActionResult<ReservationsForUserResponseDTO>> GetAllReservationsByUserId()
+        public async Task<ActionResult<List<ReservationForUserResponseDTO>>> GetAllReservationsByUserId()
         {
             int userId = 1; //GetUserIdFromToken()
             var result = await _reservationBusinessLogic.GetReservationsForUserAsync(userId);
@@ -34,10 +35,11 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         // SuperUser puede ver las reservas de una cancha en particular de un complejo 'X', o ComplexAdmin puede ver las reservas de una cancha de un complejo suyo
-        [HttpGet]
-        public async Task<ActionResult<List<ReservationForFieldResponseDTO>>> GetAllReservationsByIdField()
+        [HttpGet("complex/{complexId}/field/{fieldId}")]
+        public async Task<ActionResult<List<ReservationForFieldResponseDTO>>> GetAllReservationsByIdField([FromRoute] int complexId, [FromRoute] int fieldId)
         {
-
+            var result = await _reservationBusinessLogic.GetReservationsForFieldAsync(complexId, fieldId); 
+            return Ok(result);
         }
     }
 }

@@ -371,6 +371,13 @@ namespace ReservasCanchas.BusinessLogic
             return complex;
         }
 
+        public async Task<Complex> ComplexValidityExistenceCheck2(int complexId)
+        {
+            var complex = await _complexRepository.GetComplexByIdWithReservationsAsync(complexId);
+            EnsureComplexExists(complex, complexId);
+            return complex;
+        }
+
         public void ComplexValidityAdmin(Complex complex, int adminComplexId)
         {
             EnsureOwner(complex, adminComplexId);

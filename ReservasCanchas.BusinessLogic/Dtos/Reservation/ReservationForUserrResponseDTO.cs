@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 {
-    public class ReservationForUserDTO
+    public class ReservationForUserResponseDTO
     {
         public int ReservationId { get; set; }
 
