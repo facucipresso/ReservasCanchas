@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.Domain.Entities
 {
-    public class Usuario
+    public class User
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -19,7 +19,7 @@ namespace ReservasCanchas.Domain.Entities
 
 
         // Relacion con complejos
-        public ICollection<Complejo> Complejos { get; set; } = new List<Complejo>();
+        public ICollection<Complex> Complejos { get; set; } = new List<Complex>();
         // Relacion con reservas
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
         // Relacion con reseñas

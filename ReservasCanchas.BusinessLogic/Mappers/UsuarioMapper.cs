@@ -12,7 +12,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
 {
     public class UsuarioMapper
     {
-        public static UsuarioResponseDTO ToUsusarioResponseDTO(Usuario user)
+        public static UsuarioResponseDTO ToUsusarioResponseDTO(User user)
         {
             return new UsuarioResponseDTO
             {
@@ -24,9 +24,9 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static Usuario ToUsuario(UsuarioRequestDTO usuarioRequest)
+        public static User ToUsuario(UsuarioRequestDTO usuarioRequest)
         {
-            return new Usuario 
+            return new User 
             {
                 Name = usuarioRequest.Name,
                 LastName = usuarioRequest.LastName,

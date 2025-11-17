@@ -19,14 +19,14 @@ namespace ReservasCanchas.DataAccess.Repositories
             _context = context;
         }
 
-        public async Task<Complejo?> GetComplexByIdAsync(int id)
+        public async Task<Domain.Entities.Complex?> GetComplexByIdAsync(int id)
         {
             var complex = await _context.Complejo
                                 .FirstOrDefaultAsync(c => c.Id == id && c.Active);
             return complex;
         }
 
-        public async Task<Complejo?> GetComplexByIdWithRelationsAsync(int id)
+        public async Task<Domain.Entities.Complex?> GetComplexByIdWithRelationsAsync(int id)
         {
             var complexWithRelations = await _context.Complejo
                                         .Include(c => c.Fields)
@@ -36,7 +36,7 @@ namespace ReservasCanchas.DataAccess.Repositories
             return complexWithRelations;
         }
 
-        public async Task<List<Complejo>> GetAllComplexesAsync()
+        public async Task<List<Domain.Entities.Complex>> GetAllComplexesAsync()
         {
             //Solo lo llama el SUPERADMIN por lo cual puede ver eliminados y deshabilitados/bloqueados
             var complexes = await _context.Complejo
@@ -44,14 +44,14 @@ namespace ReservasCanchas.DataAccess.Repositories
             return complexes;
         }
 
-        public async Task<List<Complejo>> GetComplexesByUserIdAsync(int userId)
+        public async Task<List<Domain.Entities.Complex>> GetComplexesByUserIdAsync(int userId)
         {
             return await _context.Complejo
                          .Where(c => c.UserId == userId && c.Active)
                          .ToListAsync();
         }
 
-        public async Task<Complejo> CreateComplexAsync(Complejo complex)
+        public async Task<Domain.Entities.Complex> CreateComplexAsync(Domain.Entities.Complex complex)
         {
             _context.Complejo.Add(complex);
             await _context.SaveChangesAsync();
@@ -82,7 +82,7 @@ namespace ReservasCanchas.DataAccess.Repositories
             return await _context.Complejo.AnyAsync(c => c.Phone.ToLower() == phone.ToLower() && c.Active);
         }
 
-        public async Task<List<Complejo>> GetComplexesForSearchAsync(string province, string locality, FieldType fieldType)
+        public async Task<List<Domain.Entities.Complex>> GetComplexesForSearchAsync(string province, string locality, FieldType fieldType)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
             var limit = today.AddDays(7);

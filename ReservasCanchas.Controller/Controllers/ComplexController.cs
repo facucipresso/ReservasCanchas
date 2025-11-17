@@ -15,13 +15,13 @@ namespace ReservasCanchas.Controller.Controllers
             _complexBusinessLogic = complexBusinessLogic;
         }
 
-        [HttpGet("my-complexes")]
+        [HttpGet("my")]
         public async Task<ActionResult<List<ComplexCardResponseDTO>>> GetMyComplexes()
         {
             //Recuperariamos el id del admin con _authService.GetUserId();
             int adminComplexId = 1; //Valor para probar
-            var complexesDtos = await _complexBusinessLogic.GetComplexesForAdminComplexIdAsync(adminComplexId);
-            return Ok(complexesDtos);
+            var complexes = await _complexBusinessLogic.GetComplexesForAdminComplexIdAsync(adminComplexId);
+            return Ok(complexes);
         }
 
         // Devuelvo las cards de complejos
@@ -29,66 +29,66 @@ namespace ReservasCanchas.Controller.Controllers
         // Yo deberia filtrar por ciudad, de esos complejos que me da, que se fije si el complejo tiene en ese horario abierto (que habria que fijarse en el TimeSlotComplex)
         // Y despues ver si en ese complejo que paso el filtro anterior no tiene reservas de canchar a esa hora
         // Y si tampoco tiene RecurridFieldBlocks en ese horario
-        [HttpGet]
-        public async Task<ActionResult<List<ComplexCardResponseDTO>>> GetAllComplexWithFilters([FromQuery] ComplexSearchRequestDTO complexSearchDTO)
+        [HttpGet("filters")]
+        public async Task<ActionResult<List<ComplexCardResponseDTO>>> GetComplexesWithFilters([FromQuery] ComplexSearchRequestDTO filters)
         {
-            var complejosCardDto = await _complexBusinessLogic.SearchAvailableComplexes(complexSearchDTO);
-            return Ok(complejosCardDto);
+            var complexes = await _complexBusinessLogic.SearchAvailableComplexes(filters);
+            return Ok(complexes);
         }
         [HttpGet("super-admin")]
         public async Task<ActionResult<List<ComplexSuperAdminResponseDTO>>> GetAllComplexesForSuperAdmin()
         {
             //Chequeo de rol superadmin.
-            var complexesDtos = await _complexBusinessLogic.GetAllComplexesBySuperAdminAsync();
-            return Ok(complexesDtos);
+            var complexes = await _complexBusinessLogic.GetAllComplexesBySuperAdminAsync();
+            return Ok(complexes);
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<ComplexDetailResponseDTO>> GetComplexById([FromRoute] int id)
         {
-            var complexDto = await _complexBusinessLogic.GetComplexByIdAsync(id);
-            return Ok(complexDto);
+            var complex = await _complexBusinessLogic.GetComplexByIdAsync(id);
+            return Ok(complex);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ComplexDetailResponseDTO>> CreateComplex([FromBody] CreateComplexRequestDTO complexDTO)
+        public async Task<ActionResult<ComplexDetailResponseDTO>> CreateComplex([FromBody] CreateComplexRequestDTO requestCreateDTO)
         {
-            var createdComplexDto = await _complexBusinessLogic.CreateComplexAsync(complexDTO);
-            return CreatedAtAction(nameof(CreateComplex), new { id = createdComplexDto.Id }, createdComplexDto);
+            var created = await _complexBusinessLogic.CreateComplexAsync(requestCreateDTO);
+            return CreatedAtAction(nameof(CreateComplex), new { id = created.Id }, created);
         }
 
         [HttpPatch("{id}/basic-info")]
-        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateBasicInfoComplex([FromRoute] int id,[FromBody] UpdateComplexBasicInfoRequestDTO updateComplexRequestDTO)
+        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexBasicInfo([FromRoute] int id,[FromBody] UpdateComplexBasicInfoRequestDTO requestUpdateDTO)
         {
             int adminComplexId = 1;
-            var updatedComplexDto = await _complexBusinessLogic.UpdateComplexAsync(id, updateComplexRequestDTO);
-            return Ok(updatedComplexDto);
+            var updatedComplexDTO = await _complexBusinessLogic.UpdateComplexAsync(id, requestUpdateDTO);
+            return Ok(updatedComplexDTO);
         }
 
         [HttpPut("{id}/time-slots")]
-        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateTimeSlotsComplex([FromRoute] int id, [FromBody] UpdateTimeSlotComplexRequestDTO request)
+        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexTimeSlots([FromRoute] int id, [FromBody] UpdateTimeSlotComplexRequestDTO requestUpdateDTO)
         {
             int adminComplexId = 1;
-            var updatedComplex = await _complexBusinessLogic.UpdateTimeSlotsAsync(id, request);
-            return Ok(updatedComplex);
+            var updated = await _complexBusinessLogic.UpdateTimeSlotsAsync(id, requestUpdateDTO);
+            return Ok(updated);
         }
 
         [HttpPut("{id}/services")]
-        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateServicesComplex([FromRoute] int id, [FromBody] UpdateComplexServiceRequestDTO request)
+        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexServices([FromRoute] int id, [FromBody] UpdateComplexServiceRequestDTO requestUpdateDTO)
         {
             //simulo el id del usuario sacado del token
             int adminComplexId = 1;
-            var updatedComplex = await _complexBusinessLogic.UpdateServicesAsync(id, request.ServicesIds);
-            return Ok(updatedComplex);
+            var updated = await _complexBusinessLogic.UpdateServicesAsync(id, requestUpdateDTO.ServicesIds);
+            return Ok(updated);
         }
 
         [HttpPatch("{id}/state")]
-        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateStateComplex([FromRoute] int id, [FromBody] UpdateComplexStateDTO newStateDTO)
+        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexState([FromRoute] int id, [FromBody] UpdateComplexStateDTO requestUpdateDTO)
         {
             //simulo el id del usuario sacado del token
             int superAdminId = 1;
-            var updatedComplexDTO = await _complexBusinessLogic.ChangeStateComplexAsync(id, newStateDTO.State);
+            var updated = await _complexBusinessLogic.ChangeStateComplexAsync(id, requestUpdateDTO.State);
 
-            return Ok(updatedComplexDTO);
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]

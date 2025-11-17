@@ -13,9 +13,9 @@ namespace ReservasCanchas.DataAccess.Persistance
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base (options) { }
 
-        public DbSet<Complejo> Complejo {  get; set; }
+        public DbSet<Domain.Entities.Complex> Complejo {  get; set; }
         public DbSet<Service> Service { get; set; }
-        public DbSet<Usuario> Usuario { get; set; }
+        public DbSet<User> Usuario { get; set; }
         public DbSet<Field> Field { get; set; }
         public DbSet<RecurringFieldBlock> RecurringFieldBlock { get; set; }
         public DbSet<Reservation> Reservation { get; set; }
@@ -28,13 +28,13 @@ namespace ReservasCanchas.DataAccess.Persistance
             base.OnModelCreating(modelBuilder);
 
             //Modelo la relacion muchos a muchos, dejo que EF Core me cree la tabla intermedia 'ComplexService' automaticamente
-            modelBuilder.Entity<Complejo>()
+            modelBuilder.Entity<Domain.Entities.Complex>()
                 .HasMany(c => c.Services)
                 .WithMany(s => s.Complexes)
                 .UsingEntity(j => j.ToTable("ComplexService"));
 
             // Modelo la relacion 1 a 1 de complejo con la franja horaria del complejo
-            modelBuilder.Entity<Complejo>()
+            modelBuilder.Entity<Domain.Entities.Complex>()
                 .HasMany(c => c.TimeSlots)
                 .WithOne(t => t.Complex)
                 .HasForeignKey(j => j.ComplexId);
@@ -48,13 +48,13 @@ namespace ReservasCanchas.DataAccess.Persistance
 
 
             // Modelo la relacion 1 a muchos de complejo y canchas
-            modelBuilder.Entity<Complejo>()
+            modelBuilder.Entity<Domain.Entities.Complex>()
                 .HasMany(c => c.Fields)
                 .WithOne(c => c.Complex)
                 .HasForeignKey(f => f.ComplexId);
 
             // Modelo relacion 1 a muchos de complejo y usuario
-            modelBuilder.Entity<Complejo>()
+            modelBuilder.Entity<Domain.Entities.Complex>()
                 .HasOne(u => u.User)
                 .WithMany(c => c.Complejos)
                 .HasForeignKey(c => c.UserId);

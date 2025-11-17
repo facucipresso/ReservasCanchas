@@ -10,7 +10,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
 {
     public class ComplexMapper
     {
-        public static ComplexCardResponseDTO toComplexCardResponseDTO(Complejo complex)
+        public static ComplexCardResponseDTO toComplexCardResponseDTO(Complex complex)
         {
             return new ComplexCardResponseDTO
             {
@@ -24,7 +24,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static ComplexDetailResponseDTO toComplexDetailResponseDTO(Complejo complex)
+        public static ComplexDetailResponseDTO toComplexDetailResponseDTO(Complex complex)
         {
             return new ComplexDetailResponseDTO
             {
@@ -44,7 +44,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 TimeSlots = complex.TimeSlots.Select(ToTimeSlotComplexResponseDTO).ToList()
             };
         }
-        public static ComplexSuperAdminResponseDTO toComplexSuperAdminResponseDTO(Complejo complex)
+        public static ComplexSuperAdminResponseDTO toComplexSuperAdminResponseDTO(Complex complex)
         {
             return new ComplexSuperAdminResponseDTO
             {
@@ -61,9 +61,9 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static Complejo toComplex(CreateComplexRequestDTO complexDTO)
+        public static Complex toComplex(CreateComplexRequestDTO complexDTO)
         {
-            return new Complejo
+            return new Complex
             {
                 UserId = complexDTO.UserId,
                 Name = complexDTO.Name,

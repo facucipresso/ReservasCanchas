@@ -28,7 +28,7 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<List<ComplexCardResponseDTO>> GetComplexesForAdminComplexIdAsync(int adminComplexId)
         { //El admin del complejo puede ver todos sus complejos (Active = true), en cualquier estado.
             //chequear que tenga rol admincomplex
-            List<Complejo> complexes = await _complexRepository.GetComplexesByUserIdAsync(adminComplexId);
+            List<Complex> complexes = await _complexRepository.GetComplexesByUserIdAsync(adminComplexId);
             var complexescardsdto = complexes.Select(ComplexMapper.toComplexCardResponseDTO).ToList();
             return complexescardsdto;
         }
@@ -335,7 +335,7 @@ namespace ReservasCanchas.BusinessLogic
             };
         }
 
-        private void EnsureOwner(Complejo complex, int adminComplexId)
+        private void EnsureOwner(Complex complex, int adminComplexId)
         {
             if (complex.UserId != adminComplexId)
             {
@@ -343,7 +343,7 @@ namespace ReservasCanchas.BusinessLogic
             }
         }
 
-        private void EnsureComplexEditable(Complejo complex)
+        private void EnsureComplexEditable(Complex complex)
         {
             if (complex.State == ComplexState.Pendiente || complex.State == ComplexState.Bloqueado)
             {
@@ -351,7 +351,7 @@ namespace ReservasCanchas.BusinessLogic
             }
         }
 
-        private void EnsureComplexExists(Complejo complex, int id)
+        private void EnsureComplexExists(Complex complex, int id)
         {
             if (complex == null)
             {
@@ -359,19 +359,19 @@ namespace ReservasCanchas.BusinessLogic
             }
         }
 
-        public void ComplexValidityStateCheck(Complejo complex)
+        public void ComplexValidityStateCheck(Complex complex)
         {
             EnsureComplexEditable(complex);
         }
 
-        public async Task<Complejo> ComplexValidityExistenceCheck(int complexId)
+        public async Task<Complex> ComplexValidityExistenceCheck(int complexId)
         {
             var complex =  await _complexRepository.GetComplexByIdAsync(complexId);
             EnsureComplexExists(complex, complexId);
             return complex;
         }
 
-        public void ComplexValidityAdmin(Complejo complex, int adminComplexId)
+        public void ComplexValidityAdmin(Complex complex, int adminComplexId)
         {
             EnsureOwner(complex, adminComplexId);
         }

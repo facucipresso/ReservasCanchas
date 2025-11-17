@@ -18,28 +18,28 @@ namespace ReservasCanchas.DataAccess.Repositories
         {
             _context = context;
         }
-        public async Task<Usuario?> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _context.Usuario
                 .Where(s => s.Id == id)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<Usuario>> GetAllUsersAsync()
+        public async Task<List<User>> GetAllUsersAsync()
         {
             return await _context.Usuario
                 .Where(u => u.Status == UserStatus.Activo)
                 .ToListAsync();
         }
 
-        public async Task<Usuario> CreateUserAsync(Usuario user)
+        public async Task<User> CreateUserAsync(User user)
         {
             _context.Usuario.Add(user);
             await _context.SaveChangesAsync();
             return user;
         }
 
-        public async Task<Usuario> UpdateUserAsync(Usuario user)
+        public async Task<User> UpdateUserAsync(User user)
         {
             await _context.SaveChangesAsync();
             return user;

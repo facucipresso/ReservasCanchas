@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.Domain.Entities
 {
-    public class Complejo
+    public class Complex
     {
         [Key]
         public int Id { get; set; }
@@ -30,7 +30,7 @@ namespace ReservasCanchas.Domain.Entities
         public bool Active { get; set; }
 
         // Propiedad de navegacion Usuario, esta es la que tiene que ser null, sino cada vez que se crea un complejo, crea un usuario nuevo
-        public Usuario User { get; set; } = null!;
+        public User User { get; set; } = null!;
 
         // Relacion muchos a muchos con Service
         public ICollection<Service> Services { get; set; } = new List<Service>();

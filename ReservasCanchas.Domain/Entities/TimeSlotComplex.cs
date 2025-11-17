@@ -18,6 +18,6 @@ namespace ReservasCanchas.Domain.Entities
         public TimeOnly EndTime { get; set; }
 
         // Propiedad de navegacion
-        public Complejo Complex {  get; set; } = null!;
+        public Complex Complex {  get; set; } = null!;
     }
 }

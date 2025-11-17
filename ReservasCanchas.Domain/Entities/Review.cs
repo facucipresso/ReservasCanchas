@@ -14,7 +14,7 @@ namespace ReservasCanchas.Domain.Entities
         public string Comment { get; set; } = string.Empty;
 
         // Propiedad de navegacion
-        public Usuario Usuario { get; set; } = null!;
+        public User Usuario { get; set; } = null!;
         public Reservation Reservation { get; set; } = null!;
         
     }

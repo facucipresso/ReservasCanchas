@@ -11,9 +11,9 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
     public class ComplexSearchRequestDTO
     {
         [Required(ErrorMessage = "La provincia es obligatoria")]
-        public string Province { get; set; }
+        public string Province { get; set; } = string.Empty;
         [Required(ErrorMessage = "La localidad es obligatoria")]
-        public string Locality { get; set; }
+        public string Locality { get; set; } = string.Empty;
         [Required(ErrorMessage = "El dia es obligatorio")]
         public DateOnly Date { get; set; }
         [Required(ErrorMessage = "La hora es obligatoria")]

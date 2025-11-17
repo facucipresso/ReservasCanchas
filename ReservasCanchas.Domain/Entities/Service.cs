@@ -15,6 +15,6 @@ namespace ReservasCanchas.Domain.Entities
         public bool Active { get; set; }
 
         //Relacion muchos a muchos con Complex
-        public ICollection<Complejo> Complexes { get; set; } = new List<Complejo>();
+        public ICollection<Complex> Complexes { get; set; } = new List<Complex>();
     }
 }
