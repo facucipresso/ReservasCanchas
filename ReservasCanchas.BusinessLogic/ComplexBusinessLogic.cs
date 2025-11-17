@@ -26,22 +26,37 @@ namespace ReservasCanchas.BusinessLogic
         }
 
         public async Task<List<ComplexCardResponseDTO>> GetComplexesForAdminComplexIdAsync(int adminComplexId)
-        {
+        { //El admin del complejo puede ver todos sus complejos (Active = true), en cualquier estado.
+            //chequear que tenga rol admincomplex
             List<Complejo> complexes = await _complexRepository.GetComplexesByUserIdAsync(adminComplexId);
             var complexescardsdto = complexes.Select(ComplexMapper.toComplexCardResponseDTO).ToList();
             return complexescardsdto;
         }
 
         public async Task<List<ComplexSuperAdminResponseDTO>> GetAllComplexesBySuperAdminAsync()
-        {
+        { //El  SuperAdmin puede ver todos, existentes o eliminados y en cualquier estado
+            //chequear que tenga rol superadmin
             var complexes = await _complexRepository.GetAllComplexesAsync();
             return complexes.Select(ComplexMapper.toComplexSuperAdminResponseDTO).ToList();
         }
 
+        public async Task<ComplexDetailResponseDTO> GetComplexByIdForAdminComplexAsync(int id)
+        { //Solo trae activos, cuando un Admin de complejo accede a un complejo especifico de los suyos (En cualquier estado)
+            //Debemos obtener el adminid y chequear si coincide con el usuario admin del complejo
+            var complex = await _complexRepository.GetComplexByIdWithRelationsAsync(id);
+            //Chequeamos owner
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var complexAdminId = 1;
+            EnsureComplexExists(complex, id);
+            EnsureOwner(complex, complexAdminId);
+            return ComplexMapper.toComplexDetailResponseDTO(complex);
+        }
+
         public async Task<ComplexDetailResponseDTO> GetComplexByIdAsync(int id)
-        {
+        { //Este solo trae activos, cuando un usuario selecciona un complejo para acceder a su detalle. (Solo HABILITADOS)
             var complex = await _complexRepository.GetComplexByIdWithRelationsAsync(id);
             EnsureComplexExists(complex, id);
+            EnsureComplexEditable(complex);
             return ComplexMapper.toComplexDetailResponseDTO(complex);
         }
 
@@ -88,14 +103,17 @@ namespace ReservasCanchas.BusinessLogic
             return ComplexMapper.toComplexDetailResponseDTO(complex);
         }
 
-        public async Task<ComplexDetailResponseDTO> UpdateComplexAsync(int adminComplexId, int id, UpdateComplexBasicInfoRequestDTO complexDTO)
+        public async Task<ComplexDetailResponseDTO> UpdateComplexAsync(int id, UpdateComplexBasicInfoRequestDTO complexDTO)
         {
             // FALTARIA LA VALIDACION DE QUE EL ID DEL USUARIO QUE QUIERE EDITAR SEA EL MISMO ID QUE ESTA
             // EN LA COMPLEJO COMO UsuarioId, PERO ESO LO SACAMOS DEL TOKEN
 
-            var complejo = await _complexRepository.GetComplexByIdAsync(id);
+            var complejo = await _complexRepository.GetComplexByIdWithRelationsAsync(id);
+            //Chequeamos owner
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var complexAdminId = 1;
             EnsureComplexExists(complejo, id);
-            EnsureOwner(complejo, adminComplexId);
+            EnsureOwner(complejo, complexAdminId);
             EnsureComplexEditable(complejo);
             // Verificar que estas tres validaciones estan correctas
             if (await _complexRepository.ExistsByNameAsync(complexDTO.Name) && complejo.Name != complexDTO.Name)
@@ -125,14 +143,17 @@ namespace ReservasCanchas.BusinessLogic
             return ComplexMapper.toComplexDetailResponseDTO(complejo);
         }
 
-        public async Task<ComplexDetailResponseDTO> UpdateTimeSlotsAsync(int adminComplexId, int id, UpdateTimeSlotComplexRequestDTO updateTimeSlotComplexRequestDTO)
+        public async Task<ComplexDetailResponseDTO> UpdateTimeSlotsAsync(int id, UpdateTimeSlotComplexRequestDTO updateTimeSlotComplexRequestDTO)
         {
             // FALTARIA LA VALIDACION DE QUE EL ID DEL USUARIO QUE QUIERE EDITAR SEA EL MISMO ID QUE ESTA
             // EN LA COMPLEJO COMO UsuarioId, PERO ESO LO SACAMOS DEL TOKEN
 
-            var complejo = await _complexRepository.GetComplexByIdAsync(id);
+            var complejo = await _complexRepository.GetComplexByIdWithRelationsAsync(id);
+            //Chequeamos owner
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var complexAdminId = 1;
             EnsureComplexExists(complejo, id);
-            EnsureOwner(complejo, adminComplexId);
+            EnsureOwner(complejo, complexAdminId);
             EnsureComplexEditable(complejo);
 
             var slots = updateTimeSlotComplexRequestDTO.TimeSlots;
@@ -161,13 +182,16 @@ namespace ReservasCanchas.BusinessLogic
 
         }
 
-        public async Task<ComplexDetailResponseDTO> UpdateServicesAsync(int adminComplexId, int id, List<int> servicesIds)
+        public async Task<ComplexDetailResponseDTO> UpdateServicesAsync(int id, List<int> servicesIds)
         {
             // FALTARIA LA VALIDACION DE QUE EL ID DEL USUARIO QUE QUIERE EDITAR SEA EL MISMO ID QUE ESTA
             // EN LA COMPLEJO COMO UsuarioId, PERO ESO LO SACAMOS DEL TOKEN
             var complejo = await _complexRepository.GetComplexByIdWithRelationsAsync(id);
+            //Chequeamos owner
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var complexAdminId = 1;
             EnsureComplexExists(complejo, id);
-            EnsureOwner(complejo, adminComplexId);
+            EnsureOwner(complejo, complexAdminId);
             EnsureComplexEditable(complejo);
             var services = await _serviceRepository.GetServicesByIdsAsync(servicesIds);
             complejo.Services = services;
@@ -175,7 +199,7 @@ namespace ReservasCanchas.BusinessLogic
             return ComplexMapper.toComplexDetailResponseDTO(complejo);
         }
 
-        public async Task<ComplexDetailResponseDTO> ChangeStateComplexAsync(int superUserId, int id, ComplexState newState)
+        public async Task<ComplexDetailResponseDTO> ChangeStateComplexAsync(int id, ComplexState newState)
         {
             //Con chequear rol ya funcionaria.
             /*var user = await _usuarioRepository.GetUserByIdAsync(superUserId);
@@ -184,7 +208,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException($"No tiene los permisos para hacer esta operacion");
             }*/
 
-            var complejo = await _complexRepository.GetComplexByIdAsync(id);
+            var complejo = await _complexRepository.GetComplexByIdWithRelationsAsync(id);
             EnsureComplexExists(complejo, id);
 
             if (complejo.State == newState)
@@ -278,12 +302,15 @@ namespace ReservasCanchas.BusinessLogic
             return result;
         }
 
-        public async Task DeleteComplexAsync(int adminId, int id)
+        public async Task DeleteComplexAsync(int id)
         {
             //QUE HACER SI EL COMPLEJO TIENE CANCHAS CON RESERVAS SIN COMPLETAR?
             var complejo = await _complexRepository.GetComplexByIdWithRelationsAsync(id);
+            //Chequeamos owner
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var complexAdminId = 1;
             EnsureComplexExists(complejo, id);
-            EnsureOwner(complejo, adminId);
+            EnsureOwner(complejo, complexAdminId);
             complejo.Active = false;
             foreach (var field in complejo.Fields)
             {
@@ -318,10 +345,6 @@ namespace ReservasCanchas.BusinessLogic
 
         private void EnsureComplexEditable(Complejo complex)
         {
-            if (!complex.Active)
-            {
-                throw new BadRequestException($"No se pueden actualizar datos de un complejo que no se encuentra activo");
-            }
             if (complex.State == ComplexState.Pendiente || complex.State == ComplexState.Bloqueado)
             {
                 throw new BadRequestException($"No se pueden actualizar datos de un complejo que no se encuentra habilitado");
@@ -335,5 +358,24 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException($"No existe un complejo con el id {id}");
             }
         }
+
+        public void ComplexValidityStateCheck(Complejo complex)
+        {
+            EnsureComplexEditable(complex);
+        }
+
+        public async Task<Complejo> ComplexValidityExistenceCheck(int complexId)
+        {
+            var complex =  await _complexRepository.GetComplexByIdAsync(complexId);
+            EnsureComplexExists(complex, complexId);
+            return complex;
+        }
+
+        public void ComplexValidityAdmin(Complejo complex, int adminComplexId)
+        {
+            EnsureOwner(complex, adminComplexId);
+        }
+
+
     }
 }

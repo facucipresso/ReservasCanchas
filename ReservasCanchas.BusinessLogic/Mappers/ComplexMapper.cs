@@ -41,7 +41,6 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 AditionalIlumination = complex.AditionalIlumination,
                 State = complex.State,
                 Services = complex.Services.Select(ServiceMapper.ToServiceResponseDTO).ToList(),
-                Fields = complex.Fields.Select(FieldMapper.ToFieldResponseDTO).ToList(),
                 TimeSlots = complex.TimeSlots.Select(ToTimeSlotComplexResponseDTO).ToList()
             };
         }

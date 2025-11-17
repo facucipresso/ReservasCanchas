@@ -1,4 +1,5 @@
-﻿using ReservasCanchas.Domain.Enums;
+﻿using ReservasCanchas.BusinessLogic.Dtos.Complex;
+using ReservasCanchas.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,5 +24,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Field
         public bool Ilumination { get; set; }
         [Required(ErrorMessage = "El cerramiento de la cancha es obligatorio")]
         public bool Covered { get; set; }
+        [Length(7, 7, ErrorMessage = "Se debe especificar una franja horaria por día")]
+        public ICollection<TimeSlotFieldRequestDTO> TimeSlotsField { get; set; } = new List<TimeSlotFieldRequestDTO>();
     }
 }

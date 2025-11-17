@@ -34,6 +34,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 HourPrice = fieldRequestDTO.HourPrice,
                 Ilumination = fieldRequestDTO.Ilumination,
                 Covered = fieldRequestDTO.Covered,
+                TimeSlotsField = fieldRequestDTO.TimeSlots.Select(toTimeSlotField).ToList()
             };
         }
 
@@ -57,22 +58,48 @@ namespace ReservasCanchas.BusinessLogic.Mappers
 
         public static TimeSlotFieldResponseDTO toTimeSlotFieldResponseDTO(TimeSlotField timeSlotField)
         {
-            return null;
+            return new TimeSlotFieldResponseDTO
+            {
+                Id = timeSlotField.Id,
+                FieldId = timeSlotField.FieldId,
+                WeekDay = timeSlotField.WeekDay,
+                InitTime = timeSlotField.InitTime,
+                EndTime = timeSlotField.EndTime
+            };
         }
 
         public static TimeSlotField toTimeSlotField(TimeSlotFieldRequestDTO timeSlotFieldRequestDTO)
         {
-            return null;
+            return new TimeSlotField
+            {
+                WeekDay = timeSlotFieldRequestDTO.WeekDay,
+                InitTime = timeSlotFieldRequestDTO.InitTime,
+                EndTime = timeSlotFieldRequestDTO.EndTime
+            };
         }
 
         public static RecurringFieldBlockResponseDTO toRecurringFieldBlockResponseDTO(RecurringFieldBlock recurringFieldBlock)
         {
-            return null;
+            return new RecurringFieldBlockResponseDTO
+            {
+                Id = recurringFieldBlock.Id,
+                FieldId = recurringFieldBlock.FieldId,
+                WeekDay = recurringFieldBlock.WeekDay,
+                InitHour = recurringFieldBlock.InitHour,
+                EndHour = recurringFieldBlock.EndHour,
+                Reason = recurringFieldBlock.Reason
+            };
         }
 
         public static RecurringFieldBlock toRecurringFieldBlock(RecurringFieldBlockRequestDTO recurringFieldBlockRequestDTO)
         {
-            return null;
+            return new RecurringFieldBlock
+            {
+                WeekDay = recurringFieldBlockRequestDTO.WeekDay,
+                InitHour = recurringFieldBlockRequestDTO.InitHour,
+                EndHour = recurringFieldBlockRequestDTO.EndHour,
+                Reason = recurringFieldBlockRequestDTO.Reason
+            };
         }
     }
 }

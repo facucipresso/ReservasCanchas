@@ -26,14 +26,14 @@ namespace ReservasCanchas.DataAccess.Repositories
             return complex;
         }
 
-        public async Task<Complejo> GetComplexByIdWithRelationsAsync(int id)
+        public async Task<Complejo?> GetComplexByIdWithRelationsAsync(int id)
         {
             var complexWithRelations = await _context.Complejo
                                         .Include(c => c.Fields)
                                         .Include(c => c.Services)
                                         .Include(c => c.TimeSlots)
-                                        .FirstOrDefaultAsync(c => c.Id == id && c.Active && c.State == ComplexState.Habilitado);
-            return null;
+                                        .FirstOrDefaultAsync(c => c.Id == id && c.Active);
+            return complexWithRelations;
         }
 
         public async Task<List<Complejo>> GetAllComplexesAsync()

@@ -15,47 +15,30 @@ using System.Threading.Tasks;
 namespace ReservasCanchas.BusinessLogic
 {
     public class FieldBusinessLogic
-    { //PARA MI ESTA TODO MAL, TENER LOGICA DE COMPLEJO EN LAS CANCHAS??, HAY QUE REVISAR BIEN ESTO
+    {
         private readonly FieldRepository _fieldRepository;
-        private readonly ComplexRepository _complexRepository;
-        public FieldBusinessLogic(FieldRepository fieldRepository, ComplexRepository complexRepository)
+        private readonly ComplexBusinessLogic _complexBusinessLogic;
+        public FieldBusinessLogic(FieldRepository fieldRepository, ComplexBusinessLogic complexBusinessLogic)
         {
             _fieldRepository = fieldRepository;
-            _complexRepository = complexRepository;
+            _complexBusinessLogic = complexBusinessLogic;
         }
-        public async Task<FieldDetailResponseDTO?> GetById(int complexId, int fieldId)
-        {
-                
-            var field = await _fieldRepository.GetFieldByIdWithRelationsAsync(fieldId);
-
-            if (field == null)
-            {
-                throw new NotFoundException($"La cancha con id {fieldId} no existe en el complejo con id {complexId}");
-            }
-
-            if (field.ComplexId != complexId)
-            {
-                throw new NotFoundException($"La cancha con id {fieldId} no pertenece al complejo con id {complexId}");
-            }
+        public async Task<FieldDetailResponseDTO> GetById(int complexId, int fieldId)
+        { //Este metodo seria para cuando el admin del complejo quiere ver una cancha en particular y editarla o hacer algo.
+            var field = await FieldValidityCheck(fieldId, complexId);
+            _complexBusinessLogic.ComplexValidityStateCheck(field.Complex);
+            //Obtenemos el adminId del token
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var adminComplexId = 1;
+            _complexBusinessLogic.ComplexValidityAdmin(field.Complex, adminComplexId);
             var fieldDTO = FieldMapper.ToFieldDetailResponseDTO(field);
             return fieldDTO;
         }
 
         public async Task<List<FieldDetailResponseDTO>> GetAllByComplexId(int complexId)
         {
-            var complex = await _complexRepository.GetComplexByIdAsync(complexId);
-            if (complex == null)
-            {
-                throw new NotFoundException("Complejo con id " + complexId + " no encontrado");
-            }
-            if (!complex.Active)
-            {
-                throw new BadRequestException("El complejo no está activo.");
-            }
-            if(complex.State != ComplexState.Habilitado)
-            {
-                throw new BadRequestException("El complejo no está habilitado.");
-            }
+            var complex = await _complexBusinessLogic.ComplexValidityExistenceCheck(complexId);
+            _complexBusinessLogic.ComplexValidityStateCheck(complex);
             var fields = await _fieldRepository.GetAllFieldsByComplexIdWithRelationsAsync(complexId);
             var fieldsDTO = fields
                 .Select(FieldMapper.ToFieldDetailResponseDTO)
@@ -65,19 +48,23 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<FieldDetailResponseDTO> Create(int complexId, FieldRequestDTO fieldDTO)
         {
-            //CHEQUEAR SI EL COMPLEJO PERTENECE AL ADMIN QUE CREA LA CANCHA
-            var complex = await _complexRepository.GetComplexByIdAsync(complexId);
-            if (complex == null)
+            var complex = await _complexBusinessLogic.ComplexValidityExistenceCheck(complexId);
+            _complexBusinessLogic.ComplexValidityStateCheck(complex);
+            //Obtenemos el adminId del token
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var adminComplexId = 1;
+            _complexBusinessLogic.ComplexValidityAdmin(complex, adminComplexId);
+            var slots = fieldDTO.TimeSlotsField;
+            if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
             {
-                throw new NotFoundException("Complejo con id " + complexId + " no encontrado");
+                throw new BadRequestException($"No se pueden repetir dias de la semana en los horarios del complejo");
             }
-            if (!complex.Active)
+            foreach (var slot in slots)
             {
-                throw new BadRequestException("El complejo no está activo.");
-            }
-            if (complex.State != ComplexState.Habilitado)
-            {
-                throw new BadRequestException("El complejo no está habilitado.");
+                if(slot.EndTime <= slot.InitTime)
+                {
+                    throw new BadRequestException($"El horario de fin debe ser mayor al horario de inicio para el día {slot.WeekDay}");
+                }
             }
             var field = FieldMapper.ToField(fieldDTO);
             field.Name = $"Cancha {await _fieldRepository.CountFieldsByComplexAsync(complexId) + 1} {field.FieldType}";
@@ -88,26 +75,13 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<FieldDetailResponseDTO> Update(int complexId, int fieldId, FieldUpdateRequestDTO fieldUpdateDTO)
         {
-            //CHEQUEAR SI EL COMPLEJO PERTENECE AL ADMIN QUE MODIFICA LA CANCHA
-            var field = await _fieldRepository.GetFieldByIdWithRelationsAsync(fieldId);
-            if (field == null)
-            {
-                throw new NotFoundException("La cancha con id " + fieldId + " no existe");
-            }
+            var field = await FieldValidityCheck(fieldId, complexId);
 
-            if (field.ComplexId != complexId)
-            {
-                throw new NotFoundException($"La cancha {fieldId} no pertenece al complejo {complexId}");
-            }
-
-            if (!field.Complex.Active)
-            {
-                throw new BadRequestException("El complejo no está activo.");
-            }
-            if (field.Complex.State != ComplexState.Habilitado)
-            {
-                throw new BadRequestException("El complejo no está habilitado.");
-            }
+            _complexBusinessLogic.ComplexValidityStateCheck(field.Complex);
+            //Obtenemos el adminId del token
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var adminComplexId = 1;
+            _complexBusinessLogic.ComplexValidityAdmin(field.Complex, adminComplexId);
 
             if (fieldUpdateDTO.HourPrice.HasValue)
             {
@@ -127,33 +101,15 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<FieldDetailResponseDTO> UpdateTimeSlots(int complexId, int fieldId, int complexAdminId, UpdateTimeSlotFieldRequestDTO updateTimeSlotFieldRequestDTO)
         {
-            Field field = await _fieldRepository.GetFieldByIdWithRelationsAsync(fieldId);
-            if(field == null)
-            {
-                throw new NotFoundException($"La cancha con id {fieldId} no existe");
-            }
-            Complejo complex = await _complexRepository.GetComplexByIdAsync(field.ComplexId);
-            if(complexAdminId != complex.UserId)
-            {
-                throw new BadRequestException($"No se pueden actualizar complejos ajenos");
-            }
-
-            if (field.ComplexId != complexId)
-            {
-                throw new NotFoundException($"La cancha {fieldId} no pertenece al complejo {complexId}");
-            }
-
-            if (!field.Complex.Active)
-            {
-                throw new BadRequestException("El complejo no está activo.");
-            }
-            if (field.Complex.State != ComplexState.Habilitado)
-            {
-                throw new BadRequestException("El complejo no está habilitado.");
-            }
+            var field = await FieldValidityCheck(fieldId, complexId);
+            _complexBusinessLogic.ComplexValidityStateCheck(field.Complex);
+            //Obtenemos el adminId del token
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var adminComplexId = 1;
+            _complexBusinessLogic.ComplexValidityAdmin(field.Complex, adminComplexId);
 
             var slots = updateTimeSlotFieldRequestDTO.TimeSlotsField;
-            if (slots.Select(s => s.WeekDay).Distinct().Count() != slots.Count())
+            if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
             {
                 throw new BadRequestException($"No se pueden repetir dias de la semana en los horarios del complejo");
             }
@@ -180,51 +136,28 @@ namespace ReservasCanchas.BusinessLogic
         public async Task Delete (int complexId, int fieldId)
         {
             //QUE HACER SI LA CANCHA TIENE RESERVAS SIN COMPLETAR?
-            //CHEQUEAR SI EL COMPLEJO PERTENECE AL ADMIN QUE ELIMINA LA CANCHA
-            var field = await _fieldRepository.GetFieldByIdWithRelationsAsync(fieldId);
-            if (field == null)
-            {
-                throw new NotFoundException("La cancha con id " + fieldId + " no existe");
-            }
+            var field = await FieldValidityCheck(fieldId, complexId);
 
-            if (field.ComplexId != complexId)
-            {
-                throw new NotFoundException($"La cancha {fieldId} no pertenece al complejo {complexId}");
-            }
-
-            if (!field.Complex.Active)
-            {
-                throw new BadRequestException("El complejo no está activo.");
-            }
-            if (field.Complex.State != ComplexState.Habilitado)
-            {
-                throw new BadRequestException("El complejo no está habilitado.");
-            }
+            _complexBusinessLogic.ComplexValidityStateCheck(field.Complex);
+            //Obtenemos el adminId del token
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var adminComplexId = 1;
+            _complexBusinessLogic.ComplexValidityAdmin(field.Complex, adminComplexId);
             field.Active = false;
             await _fieldRepository.SaveAsync();
         }
 
-        public async Task<FieldResponseDTO> AddRecurridFieldBlockAsinc(int adminComplexId, int complexId, int id, RecurringFieldBlockRequestDTO recurridBlockDTO)
+        public async Task<FieldDetailResponseDTO> AddRecurringFieldBlockAsync(int complexId, int fieldId, RecurringFieldBlockRequestDTO recurridBlockDTO)
         {
             //QUE HACER SI SE CREA UN BLOQUEO RECURRENTE Y LA CANCHA TIENE RESERVAS SIN COMPLETAR EN ESE HORARIO?
-            var complex = await _complexRepository.GetComplexByIdAsync(complexId);
-            if(complex == null) throw new NotFoundException("El complejo con el id " + id + " no existe");
+            var field = await FieldValidityCheck(fieldId, complexId);
+            _complexBusinessLogic.ComplexValidityStateCheck(field.Complex);
+            //Obtenemos el adminId del token
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var adminComplexId = 1;
+            _complexBusinessLogic.ComplexValidityAdmin(field.Complex, adminComplexId);
 
-            if (complex.UserId != adminComplexId)
-            {
-                throw new NotFoundException("No tiene permisos para realizar esta operacion");
-            }
-            var field = await _fieldRepository.GetFieldByIdAsync(id);
-            if(field == null)
-            {
-                throw new NotFoundException("El cancha con el id " + id + " no existe");
-            }
-            if(field.ComplexId != complexId)
-            {
-                throw new NotFoundException("La cancha no pertenece al complejo especificado");
-            }
-
-            if(recurridBlockDTO.InitHour >= recurridBlockDTO.EndHour) throw new BadRequestException("La hora inicial debe ser menor que la hora final");
+            if (recurridBlockDTO.InitHour >= recurridBlockDTO.EndHour) throw new BadRequestException("La hora inicial debe ser menor que la hora final");
 
             var recurridBlockExisting = field.RecurringCourtBlocks;
             foreach (var rbe in recurridBlockExisting)
@@ -237,7 +170,7 @@ namespace ReservasCanchas.BusinessLogic
             }
             field.RecurringCourtBlocks.Add(new RecurringFieldBlock
             {
-                FieldId = id,
+                FieldId = fieldId,
                 WeekDay = recurridBlockDTO.WeekDay,
                 InitHour = recurridBlockDTO.InitHour,
                 EndHour = recurridBlockDTO.EndHour,
@@ -245,53 +178,37 @@ namespace ReservasCanchas.BusinessLogic
              });
             await _fieldRepository.SaveAsync();
 
-            return FieldMapper.ToFieldResponseDTO(field);
+            return FieldMapper.ToFieldDetailResponseDTO(field);
         }
 
-        public async Task DeleteRecurridFieldBlockAsinc(int adminComplexId, int complexId, int id, int idrb)
+        public async Task<FieldDetailResponseDTO> DeleteRecurringFieldBlockAsync(int complexId, int fieldId, int idrb)
         {
-            var complex = await _complexRepository.GetComplexByIdAsync(complexId);
-
-            if (complex == null) throw new NotFoundException($"El complejo con id {complexId} no existe"); 
-
-            if (complex.UserId != adminComplexId)
-            {
-                throw new NotFoundException("No tiene permisos para realizar esta operacion");
-            }
-            var field = await _fieldRepository.GetFieldByIdWithBlocksAsync(id);
-            if (field == null)
-            {
-                throw new NotFoundException("La cancha con el id " + id + " no existe");
-            }
-            if (field.ComplexId != complexId)
-            {
-                throw new NotFoundException("La cancha no pertenece al complejo especificado");
-            }
+            var field = await FieldValidityCheck(fieldId, complexId);
+            _complexBusinessLogic.ComplexValidityStateCheck(field.Complex);
+            //Obtenemos el adminId del token
+            //var adminComplexId = _authService.GetUserIdFromToken();
+            var adminComplexId = 1;
+            _complexBusinessLogic.ComplexValidityAdmin(field.Complex, adminComplexId);
             var recurridBlockExisting = field.RecurringCourtBlocks.FirstOrDefault(f => f.Id == idrb);
-            if (recurridBlockExisting == null) throw new NotFoundException("El bloqueo recurrente con el id " + id + " no existe");
-
+            if (recurridBlockExisting == null) throw new NotFoundException($"El bloqueo recurrente con el id {idrb} no existe");
             field.RecurringCourtBlocks.Remove(recurridBlockExisting);
             await _fieldRepository.SaveAsync();
+            return FieldMapper.ToFieldDetailResponseDTO(field);
         }
 
-        private void ValidateFieldWithComplex(Field field, int complexId, int adminComplexId)
+        public async Task<Field?> FieldValidityCheck(int fieldId, int complexId)
         {
+            var field = await _fieldRepository.GetFieldByIdWithRelationsAsync(fieldId);
             if (field == null)
-                throw new NotFoundException($"La cancha no existe.");
+            {
+                throw new NotFoundException($"La cancha con id {fieldId} no existe");
+            }
 
-            var complex = field.Complex;
-
-            if (complex.Id != complexId)
-                throw new NotFoundException($"La cancha con id {field.Id} no existe en el complejo con id {complexId}");
-
-            if (!complex.Active)
-                throw new BadRequestException("El complejo no está activo.");
-
-            if (complex.State != ComplexState.Habilitado)
-                throw new BadRequestException("El complejo no está habilitado.");
-
-            if (complex.UserId != adminComplexId)
-                throw new BadRequestException("No tenés permiso para modificar esta cancha.");
+            if (field.ComplexId != complexId)
+            {
+                throw new NotFoundException($"La cancha {fieldId} no pertenece al complejo {complexId}");
+            }
+            return field;
         }
     }
 }
