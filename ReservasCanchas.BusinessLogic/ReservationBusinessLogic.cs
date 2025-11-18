@@ -8,6 +8,7 @@ using ReservasCanchas.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,6 +31,51 @@ namespace ReservasCanchas.BusinessLogic
             _complexRepository = complexRepository;
             _complexBusinessLogic = complexBusinessLogic;
             _fieldBusinessLogic = fieldBusinessLogic;
+        }
+
+        public async Task CancelReservationByIdAsync(int reservationId)
+        {
+            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
+            var userId = 1; //_authService.GetUserIdFromToken();
+
+            var reservation = await _reservationRepository.GetReservationByIdReservationAsync(reservationId);
+
+            if (reservation == null)
+                throw new BadRequestException($"No existe la reserva con el id {reservationId}");
+
+            if (userRol == Rol.AdminComplejo)
+                throw new BadRequestException($"Los administradores de complejos no pueden eliminar reservas");
+            
+            if(userRol != Rol.SuperAdmin)
+            {
+                if(userId == reservation.UserId)
+                    throw new BadRequestException($"Las reservas solo pueden ser eliminadas por el usuario que la creo");
+            }
+
+            // aca falta validad el momento en que hace la cancelacion
+            // si la cancelacion se hace hasta una hora antes, se le devuleve la plata
+            // si la cancelacion se hace entre 1hs antes y el horario del partido no se devuleve la plata
+
+            var now = DateTime.Now;
+            var reservationStart = reservation.Date.ToDateTime(reservation.InitTime);
+
+            if (now >= reservationStart)
+                throw new BadRequestException("No se puede cancelar una reserva que ya comenzó o ya pasó.");
+
+            var timeToMatch = reservationStart - now;
+
+            if (timeToMatch.TotalHours > 1)
+            {
+                // Cancelación hecha con más de 1 hora de anticipación
+                reservation.ReservationState = ReservationState.CanceladoConDevolucion;
+            }
+            else
+            {
+                // Cancelación hecha faltando 1 hora o menos
+                reservation.ReservationState = ReservationState.CanceladoSinDevolucion;
+            }
+
+            await _reservationRepository.UpdateAsync(reservation);
         }
 
         public async Task<CreateReservationResponseDTO> CreateReservationAsync(int complexId, int fieldId, CreateReservationRequestDTO request)
@@ -66,10 +112,10 @@ namespace ReservasCanchas.BusinessLogic
             if (timeSlot == null)
                 throw new BadRequestException("El complejo no tiene horarios configurados para este día.");
 
-            //seria la hora de finalizacion de mi reserva
+            //seria la hora de finalizacion de la reserva
             var endTime = request.InitTime.AddHours(1);
 
-            // la reserva tiene que estar dentro del horario
+            // la reserva tiene que estar dentro del horario del timeslot de ese dia
             if (request.InitTime < timeSlot.InitTime || endTime > timeSlot.EndTime)
                 throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
 
@@ -113,6 +159,14 @@ namespace ReservasCanchas.BusinessLogic
             await _reservationRepository.CreateReservationAsync(reservation);
 
             return ReservationMapper.ToCreateReservationResponseDTO(reservation);
+        }
+
+        public async Task<ReservationForUserResponseDTO> GetReservationsByIdAsync(int reservationId)
+        {
+            var reservation = await _reservationRepository.GetReservationByIdReservationAsync(reservationId);
+            if(reservation == null)
+                throw new NotFoundException($"La reserva con id {reservationId} no existe");
+            return ReservationMapper.ToReservationForUserDTO(reservation);
         }
 
         public async Task<List<ReservationForComplexResponseDTO>> GetReservationsForComplexAsync(int userId, int complexId)
@@ -177,11 +231,10 @@ namespace ReservasCanchas.BusinessLogic
 
             WeekDay requestWeekDay = _complexBusinessLogic.ConvertToWeekDay(reservationRequest.Date);
 
-            // FALTARIA QUE TRAIGA LAS RESERVAS EN EL ESTADO QUE QUIERO (APROBADAS Y PENDIENTES) YA QUE LAS DOS CANCELADAS SE PUEDEN VOLVER A RESERVAR
             // Filtro las reservas del día
             var reservations = validFields
                 .SelectMany(f => f.Reservations)
-                .Where(r => r.Date == reservationRequest.Date)
+                .Where(r => r.Date == reservationRequest.Date && (r.ReservationState == ReservationState.Pendiente || r.ReservationState == ReservationState.Aprobada))
                 .ToList();
 
             // Filtro ls bloqueos recurrentes del día

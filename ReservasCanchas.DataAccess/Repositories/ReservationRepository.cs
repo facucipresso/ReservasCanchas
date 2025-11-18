@@ -24,6 +24,12 @@ namespace ReservasCanchas.DataAccess.Repositories
             return reservation;
         }
 
+        public async Task<Reservation?> GetReservationByIdReservationAsync(int reservationId)
+        {
+            var reservation = await _context.Reservation.FindAsync(reservationId);
+            return reservation;
+        }
+
         public async Task<List<Reservation>> GetReservationsByUserAsync(int userId)
         {
             var reservations = await _context.Reservation
@@ -33,6 +39,12 @@ namespace ReservasCanchas.DataAccess.Repositories
                                         .Where(r => r.UserId == userId)
                                         .ToListAsync();
             return reservations; 
+        }
+
+        public async Task UpdateAsync(Reservation reservation)
+        {
+            _context.Reservation.Update(reservation);
+            await _context.SaveChangesAsync();
         }
     }
 }

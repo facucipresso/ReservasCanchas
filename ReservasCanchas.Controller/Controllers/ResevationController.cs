@@ -25,6 +25,14 @@ namespace ReservasCanchas.Controller.Controllers
             var result = await _reservationBusinessLogic.GetReservationsForUserAsync(userId);
             return Ok(result);
         }
+
+        [HttpGet("{reservationId}")]
+        public async Task<ActionResult<ReservationForUserResponseDTO>> GetReservationById([FromRoute] int reservationId)
+        {
+            var result = await _reservationBusinessLogic.GetReservationsByIdAsync(reservationId);
+            return Ok(result);
+        }
+
         // SuperUser puede ver las reservas de cualquier complejo, o ComplexAdmin puede ver todas las reservas SOLO de sus complejos
         [HttpGet("/complex/{complexId}")]
         public async Task<ActionResult<List<ReservationForComplexResponseDTO>>> GetAllReservationsByIdComplex([FromRoute] int complexId)
@@ -54,8 +62,15 @@ namespace ReservasCanchas.Controller.Controllers
         public async Task<ActionResult<CreateReservationResponseDTO>> CreateReservation([FromRoute] int complexId, [FromRoute] int fieldId, [FromBody] CreateReservationRequestDTO request)
         {
             var reservationCreated = await _reservationBusinessLogic.CreateReservationAsync(complexId, fieldId, request);
-            return Ok(reservationCreated);
-            //return CreatedAtAction(nameof(GetReservationById), new { reservationId = reservationCreated.ReservationId }, reservationCreated); 
+            //return Ok(reservationCreated);
+            return CreatedAtAction(nameof(GetReservationById), new { reservationId = reservationCreated.ReservationId }, reservationCreated); 
+        }
+
+        [HttpDelete("{reservationId}/cancelReservation")]
+        public async Task<ActionResult> CancelReservationById([FromRoute] int reservationId)
+        {
+            await _reservationBusinessLogic.CancelReservationByIdAsync(reservationId);
+            return NoContent();
         }
     }
 }
