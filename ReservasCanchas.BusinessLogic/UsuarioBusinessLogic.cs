@@ -33,6 +33,24 @@ namespace ReservasCanchas.BusinessLogic
             return usuarioDto;
         }
 
+        public async Task<UsuarioResponseDTO?> GetByIdIfIsEnabled(int id)
+        {
+            var user = await _userRepo.GetUserByIdAsync(id);
+
+            if (user == null)
+            {
+                throw new NotFoundException("Usuario con id " + id + " no encontrado");
+            }
+
+            if(user.Status != UserStatus.Activo)
+            {
+                throw new BadRequestException("Usuario bloqueado, no puede realizar operaciones");
+            }
+
+            var usuarioDto = UsuarioMapper.ToUsusarioResponseDTO(user);
+            return usuarioDto;
+        }
+
         public async Task<List<UsuarioResponseDTO>> GetAll()
         {
             var users = await _userRepo.GetAllUsersAsync();

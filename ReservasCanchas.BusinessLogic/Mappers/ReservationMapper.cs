@@ -85,5 +85,19 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 EndTime = b.EndHour
             };
         }
+
+        public static CreateReservationResponseDTO ToCreateReservationResponseDTO(Reservation r)
+        {
+            return new CreateReservationResponseDTO
+            {
+                ReservationId = r.Id,
+                FieldId = r.FieldId,
+                Date = r.Date,
+                InitTime = r.InitTime,
+                EndTime = r.InitTime.AddHours(1),
+                State = r.ReservationState,
+                TotalPrice = r.TotalPrice,
+            };
+        }
     }
 }

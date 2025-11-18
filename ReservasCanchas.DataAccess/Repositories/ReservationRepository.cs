@@ -16,6 +16,14 @@ namespace ReservasCanchas.DataAccess.Repositories
         {
             _context = context;
         }
+
+        public async Task<Reservation> CreateReservationAsync(Reservation reservation)
+        {
+            _context.Reservation.Add(reservation);
+            await _context.SaveChangesAsync();
+            return reservation;
+        }
+
         public async Task<List<Reservation>> GetReservationsByUserAsync(int userId)
         {
             var reservations = await _context.Reservation

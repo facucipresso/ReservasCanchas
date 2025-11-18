@@ -347,7 +347,8 @@ namespace ReservasCanchas.BusinessLogic
         {
             if (complex.State == ComplexState.Pendiente || complex.State == ComplexState.Bloqueado)
             {
-                throw new BadRequestException($"No se pueden actualizar datos de un complejo que no se encuentra habilitado");
+                //throw new BadRequestException($"No se pueden actualizar datos de un complejo que no se encuentra habilitado");
+                throw new BadRequestException($"El complejo no se encuentra habilitado");
             }
         }
 

@@ -3,6 +3,7 @@ using ReservasCanchas.BusinessLogic.Dtos.Reservation;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
+using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -19,14 +20,99 @@ namespace ReservasCanchas.BusinessLogic
         private readonly UsuarioRepository _usuarioRepository;
         private readonly ComplexRepository _complexRepository;
         private readonly ComplexBusinessLogic _complexBusinessLogic;
+        private readonly FieldBusinessLogic _fieldBusinessLogic;
 
-        public ReservationBusinessLogic(ReservationRepository reservationRepository, UsuarioBusinessLogic usurioBusinessLogic, UsuarioRepository usuarioRepository, ComplexRepository complexRepository, ComplexBusinessLogic complexBusinessLogic)
+        public ReservationBusinessLogic(ReservationRepository reservationRepository, UsuarioBusinessLogic usurioBusinessLogic, UsuarioRepository usuarioRepository, ComplexRepository complexRepository, ComplexBusinessLogic complexBusinessLogic, FieldBusinessLogic fieldBusinessLogic)
         {
             _reservationRepository = reservationRepository;
             _usurioBusinessLogic = usurioBusinessLogic;
             _usuarioRepository = usuarioRepository;
             _complexRepository = complexRepository;
             _complexBusinessLogic = complexBusinessLogic;
+            _fieldBusinessLogic = fieldBusinessLogic;
+        }
+
+        public async Task<CreateReservationResponseDTO> CreateReservationAsync(int complexId, int fieldId, CreateReservationRequestDTO request)
+        {
+            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
+            var userId = 1; //_authService.GetUserIdFromToken();
+
+            // Esto me da un usuario Dto, que si no existe o si no esta habilitado me tira solo el error
+            var user = await _usurioBusinessLogic.GetByIdIfIsEnabled(userId);
+
+            // obtengo el complejo
+            var complex = await _complexRepository.GetComplexByIdAsync(complexId);
+
+            // si no existe me da error o si no esta activo
+            if (complex == null || complex.Active == false) throw new BadRequestException($"No existe un complejo con el id {complexId} o no se encuentra activo el complejo");
+
+            // si no esta habilitado me da error
+            _complexBusinessLogic.ComplexValidityStateCheck(complex);
+
+            // ya checkea que este activa la cancha y que pertenezca al complejo, osea tambien tiene que existir el complejo
+            var field = await _fieldBusinessLogic.FieldValidityCheck(fieldId, complexId);
+
+            // que no sea una fecha pasada
+            if (request.Date < DateOnly.FromDateTime(DateTime.Today))
+                throw new BadRequestException("La fecha no puede ser anterior al día de hoy.");
+
+            // convierto a nuestro enum
+            var weekDay = _complexBusinessLogic.ConvertToWeekDay(request.Date);
+
+            // me traigo el timeSlto de ese dia
+            var timeSlot = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
+
+            // lo valido
+            if (timeSlot == null)
+                throw new BadRequestException("El complejo no tiene horarios configurados para este día.");
+
+            //seria la hora de finalizacion de mi reserva
+            var endTime = request.InitTime.AddHours(1);
+
+            // la reserva tiene que estar dentro del horario
+            if (request.InitTime < timeSlot.InitTime || endTime > timeSlot.EndTime)
+                throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
+
+            // traigo posibles reservas existenten a ese horario
+            var overlappingReservation = field.Reservations
+                .Where(r => r.Date == request.Date)
+                .Any(r => r.InitTime == request.InitTime && r.ReservationState != ReservationState.CanceladoConDevolucion && r.ReservationState != ReservationState.CanceladoSinDevolucion);
+            
+            // lo valido
+            if (overlappingReservation)
+                throw new BadRequestException("Ya existe una reserva en ese horario.");
+
+            // checkeo los bloqueos recurrentes que no se solapen
+            var overlappingBlock = field.RecurringCourtBlocks
+                .Where(b => b.WeekDay == weekDay)
+                .Any(b => request.InitTime >= b.InitHour && request.InitTime < b.EndHour);
+
+            if (overlappingBlock)
+                throw new BadRequestException("El horario está bloqueado por un bloqueo recurrente.");
+
+            // defino el estado de la reserva segun quien la haga CHARLARLO
+            var initialState = userRol == Rol.AdminComplejo || userRol == Rol.SuperAdmin
+                ? ReservationState.Aprobada
+                : ReservationState.Pendiente;
+
+            var reservation = new Reservation
+            {
+                UserId = userId,
+                FieldId = fieldId,
+                Date = request.Date,
+                InitTime = request.InitTime,
+                CreationDate = DateTime.Now,// capaz esto puede venir del front
+                PayType = request.PayType,
+                TotalPrice = field.HourPrice,
+                PricePaid = request.PricePaid,
+                ReservationType = ReservationType.Partido,
+                ReservationState = initialState,
+                VoucherPath = "" // ver como manejamos esto
+            };
+
+            await _reservationRepository.CreateReservationAsync(reservation);
+
+            return ReservationMapper.ToCreateReservationResponseDTO(reservation);
         }
 
         public async Task<List<ReservationForComplexResponseDTO>> GetReservationsForComplexAsync(int userId, int complexId)
@@ -91,6 +177,7 @@ namespace ReservasCanchas.BusinessLogic
 
             WeekDay requestWeekDay = _complexBusinessLogic.ConvertToWeekDay(reservationRequest.Date);
 
+            // FALTARIA QUE TRAIGA LAS RESERVAS EN EL ESTADO QUE QUIERO (APROBADAS Y PENDIENTES) YA QUE LAS DOS CANCELADAS SE PUEDEN VOLVER A RESERVAR
             // Filtro las reservas del día
             var reservations = validFields
                 .SelectMany(f => f.Reservations)

@@ -7,20 +7,14 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 {
-    public class ReservationForUserResponseDTO
+    public class CreateReservationResponseDTO
     {
         public int ReservationId { get; set; }
-
+        public int FieldId { get; set; }
         public DateOnly Date { get; set; }
         public TimeOnly InitTime { get; set; }
+        public TimeOnly EndTime { get; set; }
         public ReservationState State { get; set; }
-
-        public string ComplexName { get; set; } = string.Empty;
-        public string FieldName { get; set; } = string.Empty;
-
         public decimal TotalPrice { get; set; }
-        public int PricePaid { get; set; }
-
-        public bool CanReview { get; set; }
     }
 }

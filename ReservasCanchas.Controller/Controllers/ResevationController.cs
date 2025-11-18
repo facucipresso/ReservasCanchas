@@ -48,5 +48,14 @@ namespace ReservasCanchas.Controller.Controllers
             var reservationsAndRecurridBLocks = await _reservationBusinessLogic.GetReservationsForDaysAsync(complexId, reservationRequest);
             return Ok(reservationsAndRecurridBLocks);
         }
+
+
+        [HttpPost("complex/{complexId}/field/{fieldId}")]
+        public async Task<ActionResult<CreateReservationResponseDTO>> CreateReservation([FromRoute] int complexId, [FromRoute] int fieldId, [FromBody] CreateReservationRequestDTO request)
+        {
+            var reservationCreated = await _reservationBusinessLogic.CreateReservationAsync(complexId, fieldId, request);
+            return Ok(reservationCreated);
+            //return CreatedAtAction(nameof(GetReservationById), new { reservationId = reservationCreated.ReservationId }, reservationCreated); 
+        }
     }
 }
