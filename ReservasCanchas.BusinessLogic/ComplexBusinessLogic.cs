@@ -320,7 +320,7 @@ namespace ReservasCanchas.BusinessLogic
         }
 
         // Funcion auxiliar para asegurarme que se matchee bien DayOfWeek con nuesto enum y para no modificar el enum
-        private WeekDay ConvertToWeekDay(DateOnly date)
+        public WeekDay ConvertToWeekDay(DateOnly date)
         {
             return date.DayOfWeek switch
             {

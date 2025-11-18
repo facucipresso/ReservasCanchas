@@ -56,6 +56,66 @@ namespace ReservasCanchas.BusinessLogic
 
         }
 
+        public async Task<DayAvailabilityResponseDTO> GetReservationsForDaysAsync(int complexId, ReservationForDayRequest reservationRequest)
+        {
+            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
+            var userId = 1; //_authService.GetUserIdFromToken();
+            
+            // Esto me da un usuario Dto, que si no existe me tira solo el error
+            var user = await _usurioBusinessLogic.GetById(userId);
+
+            //si no me lo traigo del repositorio no puedo validarlo con ComplexValidityAdmin() porque toma un Complex, no el DTO que devuelve GetComplexByIdAsync()
+            var complex = await _complexRepository.GetComplexByIdWithReservationsAsync(complexId);
+
+            if (complex == null)
+                throw new BadRequestException($"No existe un complejo con el id {complexId}");
+
+            if (userRol != Rol.SuperAdmin)
+                _complexBusinessLogic.ComplexValidityAdmin(complex, userId);
+
+            // vaido la fecha
+            if (reservationRequest.Date < DateOnly.FromDateTime(DateTime.Today))
+                throw new BadRequestException("La fecha no puede ser anterior al día actual.");
+
+            // Filtrar por canchas activas, tipo de cancha y tipo de suelo
+            var validFields = complex.Fields
+                .Where(f =>
+                    f.Active &&
+                    f.FieldType == reservationRequest.FieldType &&
+                    f.FloorType == reservationRequest.FloorType)
+                .ToList();
+
+            if (!validFields.Any())
+                throw new NotFoundException(
+                    $"No hay canchas activas en este complejo con tipo {reservationRequest.FieldType} y piso {reservationRequest.FloorType}");
+
+            WeekDay requestWeekDay = _complexBusinessLogic.ConvertToWeekDay(reservationRequest.Date);
+
+            // Filtro las reservas del día
+            var reservations = validFields
+                .SelectMany(f => f.Reservations)
+                .Where(r => r.Date == reservationRequest.Date)
+                .ToList();
+
+            // Filtro ls bloqueos recurrentes del día
+            var recurringBlocks = validFields
+                .SelectMany(f => f.RecurringCourtBlocks)
+                .Where(b => b.WeekDay == requestWeekDay)
+                .ToList();
+
+            DayAvailabilityResponseDTO response = new DayAvailabilityResponseDTO
+            {
+                ComplexId = complex.Id,
+                Date = reservationRequest.Date
+            };
+
+            response.Reservations = reservations.Select(ReservationMapper.ToDayReservationDTO).ToList();
+
+            response.RecurringBlocks = recurringBlocks.Select(ReservationMapper.ToDayRecurringBlockDTO).ToList();
+
+            return response;
+        }
+
         public async Task<List<ReservationForFieldResponseDTO>> GetReservationsForFieldAsync(int complexId, int fieldId)
         {
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();

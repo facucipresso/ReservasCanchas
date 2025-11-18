@@ -41,5 +41,12 @@ namespace ReservasCanchas.Controller.Controllers
             var result = await _reservationBusinessLogic.GetReservationsForFieldAsync(complexId, fieldId); 
             return Ok(result);
         }
+
+        [HttpGet("complex/{complexId}")]
+        public async Task<ActionResult<DayAvailabilityResponseDTO>> GetReservationsForDays([FromRoute] int complexId, [FromBody] ReservationForDayRequest reservationRequest)
+        {
+            var reservationsAndRecurridBLocks = await _reservationBusinessLogic.GetReservationsForDaysAsync(complexId, reservationRequest);
+            return Ok(reservationsAndRecurridBLocks);
+        }
     }
 }

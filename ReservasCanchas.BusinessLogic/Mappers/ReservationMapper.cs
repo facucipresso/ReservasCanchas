@@ -63,5 +63,27 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 PayType = r.PayType
             };
         }
+
+        public static DayReservationDTO ToDayReservationDTO(Reservation r)
+        {
+            return new DayReservationDTO
+            {
+                ReservationId = r.Id,
+                FieldId = r.FieldId,
+                InitTime = r.InitTime,
+                EndTime = r.InitTime.AddHours(1)
+            };
+        }
+
+        public static DayRecurringBlockDTO ToDayRecurringBlockDTO(RecurringFieldBlock b)
+        {
+            return new DayRecurringBlockDTO
+            {
+                RecurringBlockId = b.Id,
+                FieldId = b.FieldId,
+                InitTime = b.InitHour,
+                EndTime = b.EndHour
+            };
+        }
     }
 }

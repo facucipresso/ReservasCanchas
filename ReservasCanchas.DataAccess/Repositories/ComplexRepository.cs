@@ -43,7 +43,13 @@ namespace ReservasCanchas.DataAccess.Repositories
                         .Include(c => c.Fields)
                             .ThenInclude(f => f.Reservations)
                                 .ThenInclude(r => r.Usuario)
-                        .FirstOrDefaultAsync(c => c.Id == id);
+
+                        .Include(c => c.Fields)
+                            .ThenInclude(f => f.RecurringCourtBlocks)
+
+                        .Include(c => c.TimeSlots)
+
+                        .FirstOrDefaultAsync(c => c.Id == id && c.Active && c.State == ComplexState.Habilitado);
         }
 
         public async Task<List<Domain.Entities.Complex>> GetAllComplexesAsync()
