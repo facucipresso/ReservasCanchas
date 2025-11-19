@@ -33,6 +33,42 @@ namespace ReservasCanchas.BusinessLogic
             _fieldBusinessLogic = fieldBusinessLogic;
         }
 
+        public async Task ChangeStateReservationAsync(int complexId, int fieldId, int reservationId, ChangeStateReservationRequest request)
+        {
+            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
+            var userId = 1; //_authService.GetUserIdFromToken();
+
+            // Esto me da un usuario Dto, que si no existe o si no esta habilitado me tira solo el error
+            var user = await _usurioBusinessLogic.GetByIdIfIsEnabled(userId);
+
+            // obtengo el complejo
+            var complex = await _complexBusinessLogic.GetComplexByIdIfIsActiveAsync(complexId);
+
+            // si no existe me da error o si no esta activo
+            if (complex == null || complex.Active == false) throw new BadRequestException($"No existe un complejo con el id {complexId} o no se encuentra activo el complejo");
+
+            // si no es SuperUser o ComplexAdmin no puede 
+            if (userRol != Rol.SuperAdmin)
+                _complexBusinessLogic.ComplexValidityAdmin(complex, userId);
+
+            // si no esta habilitado me da error
+            _complexBusinessLogic.ComplexValidityStateCheck(complex);
+
+            // ya checkea que este activa la cancha y que pertenezca al complejo, osea tambien tiene que existir el complejo
+            var field = await _fieldBusinessLogic.FieldValidityCheck(fieldId, complexId);
+
+            // obtengo y ckeckeo que exista la reserva
+            var reservation = await _reservationRepository.GetReservationByIdReservationAsync(reservationId);
+
+            if (reservation == null)
+                throw new BadRequestException($"No existe la reserva con el id {reservationId}");
+
+            reservation.ReservationState = ReservationState.CanceladoSinDevolucion;
+            await _reservationRepository.UpdateAsync(reservation);
+
+
+        }
+
         public async Task CancelReservationByIdAsync(int reservationId)
         {
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
@@ -51,10 +87,6 @@ namespace ReservasCanchas.BusinessLogic
                 if(userId == reservation.UserId)
                     throw new BadRequestException($"Las reservas solo pueden ser eliminadas por el usuario que la creo");
             }
-
-            // aca falta validad el momento en que hace la cancelacion
-            // si la cancelacion se hace hasta una hora antes, se le devuleve la plata
-            // si la cancelacion se hace entre 1hs antes y el horario del partido no se devuleve la plata
 
             var now = DateTime.Now;
             var reservationStart = reservation.Date.ToDateTime(reservation.InitTime);
@@ -87,7 +119,7 @@ namespace ReservasCanchas.BusinessLogic
             var user = await _usurioBusinessLogic.GetByIdIfIsEnabled(userId);
 
             // obtengo el complejo
-            var complex = await _complexRepository.GetComplexByIdAsync(complexId);
+            var complex = await _complexBusinessLogic.GetComplexByIdIfIsActiveAsync(complexId);
 
             // si no existe me da error o si no esta activo
             if (complex == null || complex.Active == false) throw new BadRequestException($"No existe un complejo con el id {complexId} o no se encuentra activo el complejo");
@@ -161,6 +193,85 @@ namespace ReservasCanchas.BusinessLogic
             return ReservationMapper.ToCreateReservationResponseDTO(reservation);
         }
 
+        public async Task<CreateReservationResponseDTO> CreateReservationBlockingAsync(int complexId, int fieldId, ReservationBlockingRequestDto blocking)
+        {
+            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
+            var userId = 1; //_authService.GetUserIdFromToken();
+
+            // Esto me da un usuario Dto, que si no existe o si no esta habilitado me tira solo el error
+            var user = await _usurioBusinessLogic.GetByIdIfIsEnabled(userId);
+
+            // obtengo el complejo
+            var complex = await _complexBusinessLogic.GetComplexByIdIfIsActiveAsync(complexId);
+
+            // si no existe me da error o si no esta activo
+            if (complex == null || complex.Active == false) throw new BadRequestException($"No existe un complejo con el id {complexId} o no se encuentra activo el complejo");
+
+            // si no es SuperUser o ComplexAdmin no puede 
+            if (userRol != Rol.SuperAdmin)
+                _complexBusinessLogic.ComplexValidityAdmin(complex, userId);
+
+            // si no esta habilitado me da error
+            _complexBusinessLogic.ComplexValidityStateCheck(complex);
+
+            // ya checkea que este activa la cancha y que pertenezca al complejo, osea tambien tiene que existir el complejo
+            var field = await _fieldBusinessLogic.FieldValidityCheck(fieldId, complexId);
+
+            // que no sea una fecha pasada
+            if (blocking.Date < DateOnly.FromDateTime(DateTime.Today))
+                throw new BadRequestException("La fecha no puede ser anterior al día de hoy.");
+
+            // convierto a nuestro enum
+            var weekDay = _complexBusinessLogic.ConvertToWeekDay(blocking.Date);
+
+            // me traigo el timeSlto de ese dia
+            var timeSlot = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
+
+            // lo valido
+            if (timeSlot == null)
+                throw new BadRequestException("El complejo no tiene horarios configurados para este día.");
+
+            //seria la hora de finalizacion de la reserva
+            var endTime = blocking.InitTime.AddHours(1);
+
+            // la reserva tiene que estar dentro del horario del timeslot de ese dia
+            if (blocking.InitTime < timeSlot.InitTime || endTime > timeSlot.EndTime)
+                throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
+
+            // traigo posibles reservas existenten a ese horario
+            var overlappingReservation = field.Reservations
+                .Where(r => r.Date == blocking.Date)
+                .Any(r => r.InitTime == blocking.InitTime && r.ReservationState != ReservationState.CanceladoConDevolucion && r.ReservationState != ReservationState.CanceladoSinDevolucion);
+
+            // lo valido
+            if (overlappingReservation)
+                throw new BadRequestException("Ya existe una reserva en ese horario.");
+
+            // checkeo los bloqueos recurrentes que no se solapen
+            var overlappingBlock = field.RecurringCourtBlocks
+                .Where(b => b.WeekDay == weekDay)
+                .Any(b => blocking.InitTime >= b.InitHour && blocking.InitTime < b.EndHour);
+
+            if (overlappingBlock)
+                throw new BadRequestException("El horario está bloqueado por un bloqueo recurrente.");
+
+
+            var reservation = new Reservation
+            {
+                UserId = userId,
+                FieldId = fieldId,
+                Date = blocking.Date,
+                InitTime = blocking.InitTime,
+                CreationDate = DateTime.Now,// capaz esto puede venir del front
+                ReservationType = ReservationType.Bloqueo,
+                ReservationState = ReservationState.Aprobada,
+            };
+
+            await _reservationRepository.CreateReservationAsync(reservation);
+
+            return ReservationMapper.ToCreateReservationResponseDTO(reservation);
+        }
+
         public async Task<ReservationForUserResponseDTO> GetReservationsByIdAsync(int reservationId)
         {
             var reservation = await _reservationRepository.GetReservationByIdReservationAsync(reservationId);
@@ -204,8 +315,8 @@ namespace ReservasCanchas.BusinessLogic
             // Esto me da un usuario Dto, que si no existe me tira solo el error
             var user = await _usurioBusinessLogic.GetById(userId);
 
-            //si no me lo traigo del repositorio no puedo validarlo con ComplexValidityAdmin() porque toma un Complex, no el DTO que devuelve GetComplexByIdAsync()
-            var complex = await _complexRepository.GetComplexByIdWithReservationsAsync(complexId);
+            //resuelto
+            var complex = await _complexBusinessLogic.GetComplexByIdIfIsActiveAsync(complexId);
 
             if (complex == null)
                 throw new BadRequestException($"No existe un complejo con el id {complexId}");
@@ -263,8 +374,8 @@ namespace ReservasCanchas.BusinessLogic
             
             var user = await _usurioBusinessLogic.GetById(userId);
 
-            //si no me lo traigo del repositorio no puedo validarlo con ComplexValidityAdmin() porque toma un Complex, no el DTO que devuelve GetComplexByIdAsync()
-            var complex = await _complexRepository.GetComplexByIdWithRelationsAsync(complexId);
+            // resuelto
+            var complex = await _complexBusinessLogic.GetComplexByIdIfIsActiveAsync(complexId);
 
             if (complex == null) 
                 throw new BadRequestException($"No existe un complejo con el id {complexId}");
@@ -300,6 +411,14 @@ namespace ReservasCanchas.BusinessLogic
                 result.Add(dtto);
             }
             return result;
+        }
+
+        public async Task<Reservation> GetReservationWithReviewAsync(int reservationId)
+        {
+            var reservation = await _reservationRepository.GetReservationWithReviewByIdAsync(reservationId);
+            if(reservation == null)
+                throw new NotFoundException($"La reservacion con id {reservationId} no fue encontrada");
+            return reservation;
         }
     }
 }

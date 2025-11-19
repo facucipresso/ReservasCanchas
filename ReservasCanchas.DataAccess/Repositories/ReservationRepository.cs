@@ -41,6 +41,14 @@ namespace ReservasCanchas.DataAccess.Repositories
             return reservations; 
         }
 
+        public async Task<Reservation?> GetReservationWithReviewByIdAsync(int reservationId)
+        {
+            var reservation = await _context.Reservation
+                            .Include(r => r.Review)
+                            .FirstOrDefaultAsync(r => r.Id == reservationId);
+            return reservation;
+        }
+
         public async Task UpdateAsync(Reservation reservation)
         {
             _context.Reservation.Update(reservation);

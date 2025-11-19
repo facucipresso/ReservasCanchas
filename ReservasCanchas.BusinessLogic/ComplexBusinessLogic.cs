@@ -319,6 +319,14 @@ namespace ReservasCanchas.BusinessLogic
             await _complexRepository.SaveAsync();
         }
 
+        public async Task<Complex> GetComplexByIdIfIsActiveAsync(int complexId)
+        {
+            var complex = await _complexRepository.GetComplexByIdWithRelationsAsync(complexId);
+            EnsureComplexExists(complex, complexId);
+            EnsureComplexEditable(complex);
+            return complex;
+        }
+
         // Funcion auxiliar para asegurarme que se matchee bien DayOfWeek con nuesto enum y para no modificar el enum
         public WeekDay ConvertToWeekDay(DateOnly date)
         {

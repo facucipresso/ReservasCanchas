@@ -96,7 +96,22 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 InitTime = r.InitTime,
                 EndTime = r.InitTime.AddHours(1),
                 State = r.ReservationState,
+                ReservationType = r.ReservationType,
                 TotalPrice = r.TotalPrice,
+            };
+        }
+
+        public static ReservationBlockingResponseDTO ToCreateReservationBlockingResponseDTO(Reservation r)
+        {
+            return new ReservationBlockingResponseDTO
+            {
+                ReservationId = r.Id,
+                FieldId = r.FieldId,
+                Date = r.Date,
+                InitTime = r.InitTime,
+                EndTime = r.InitTime.AddHours(1),
+                ReservationType = r.ReservationType,
+                BlockReason = r.BlockReason
             };
         }
     }
