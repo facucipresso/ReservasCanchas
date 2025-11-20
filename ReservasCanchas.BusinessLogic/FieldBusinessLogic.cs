@@ -38,12 +38,25 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<List<FieldDetailResponseDTO>> GetAllByComplexId(int complexId)
         {
             var complex = await _complexBusinessLogic.ComplexValidityExistenceCheck(complexId);
-            _complexBusinessLogic.ComplexValidityStateCheck(complex);
-            var fields = await _fieldRepository.GetAllFieldsByComplexIdWithRelationsAsync(complexId);
-            var fieldsDTO = fields
-                .Select(FieldMapper.ToFieldDetailResponseDTO)
-                .ToList();
-            return fieldsDTO;
+            //obtener complexAdminId del token
+            int complexAdminId = 1;
+            if (complex.UserId == complexAdminId)
+            {
+                var fields = await _fieldRepository.GetAllFieldsByComplexIdWithRelationsAsync(complexId);
+                var fieldsDTO = fields
+                    .Select(FieldMapper.ToFieldDetailResponseDTO)
+                    .ToList();
+                return fieldsDTO;
+            }
+            else
+            {
+                var fields = await _fieldRepository.GetAllFieldsByComplexIdWithRelationsAsync(complexId);
+                var fieldsDTO = fields
+                    .Where(f => f.FieldState == FieldState.Habilitado)
+                    .Select(FieldMapper.ToFieldDetailResponseDTO)
+                    .ToList();
+                return fieldsDTO;
+            }
         }
 
         public async Task<FieldDetailResponseDTO> Create(int complexId, FieldRequestDTO fieldDTO)
@@ -69,6 +82,7 @@ namespace ReservasCanchas.BusinessLogic
             var field = FieldMapper.ToField(fieldDTO);
             field.Name = $"Cancha {await _fieldRepository.CountFieldsByComplexAsync(complexId) + 1} {field.FieldType}";
             field.Active = true;
+            field.FieldState = FieldState.Habilitado;
             await _fieldRepository.CreateFieldAsync(field);
             return FieldMapper.ToFieldDetailResponseDTO(field);
         }
@@ -138,11 +152,17 @@ namespace ReservasCanchas.BusinessLogic
             //QUE HACER SI LA CANCHA TIENE RESERVAS SIN COMPLETAR?
             var field = await FieldValidityCheck(fieldId, complexId);
 
+
             _complexBusinessLogic.ComplexValidityStateCheck(field.Complex);
             //Obtenemos el adminId del token
             //var adminComplexId = _authService.GetUserIdFromToken();
             var adminComplexId = 1;
             _complexBusinessLogic.ComplexValidityAdmin(field.Complex, adminComplexId);
+
+            if (await _fieldRepository.HasActiveReservationsInFieldAsync(fieldId))
+            {
+              throw new BadRequestException("No se puede eliminar la cancha porque tiene reservas activas asociadas");
+            }
             field.Active = false;
             await _fieldRepository.SaveAsync();
         }

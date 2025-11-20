@@ -6,7 +6,7 @@ using ReservasCanchas.Domain.Enums;
 
 namespace ReservasCanchas.Controller.Controllers
 {
-    [Route("api/reservations")]
+    [Route("api")]
     [ApiController]
     public class ResevationController : ControllerBase
     {
@@ -18,7 +18,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         // Usuario ver sus reservas 
-        [HttpGet]
+        [HttpGet("reservations")]
         public async Task<ActionResult<List<ReservationForUserResponseDTO>>> GetAllReservationsByUserId()
         {
             int userId = 1; //GetUserIdFromToken()
@@ -26,7 +26,7 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{reservationId}")]
+        [HttpGet("reservations/{reservationId}")]
         public async Task<ActionResult<ReservationForUserResponseDTO>> GetReservationById([FromRoute] int reservationId)
         {
             var result = await _reservationBusinessLogic.GetReservationsByIdAsync(reservationId);
@@ -34,7 +34,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         // SuperUser puede ver las reservas de cualquier complejo, o ComplexAdmin puede ver todas las reservas SOLO de sus complejos
-        [HttpGet("/complexes/{complexId}")]
+        [HttpGet("/complexes/{complexId}/reservations")]
         public async Task<ActionResult<List<ReservationForComplexResponseDTO>>> GetAllReservationsByIdComplex([FromRoute] int complexId)
         {
             int userId = 1; //GetUserIdFromToken()
@@ -43,14 +43,14 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         // SuperUser puede ver las reservas de una cancha en particular de un complejo 'X', o ComplexAdmin puede ver las reservas de una cancha de un complejo suyo
-        [HttpGet("complexes/{complexId}/fields/{fieldId}")]
+        [HttpGet("complexes/{complexId}/fields/{fieldId}/reservations")]
         public async Task<ActionResult<List<ReservationForFieldResponseDTO>>> GetAllReservationsByIdField([FromRoute] int complexId, [FromRoute] int fieldId)
         {
             var result = await _reservationBusinessLogic.GetReservationsForFieldAsync(complexId, fieldId); 
             return Ok(result);
         }
 
-        [HttpGet("complexes/{complexId}")]
+        [HttpGet("complexes/{complexId}/reservations")] //HAY 2 ENDPOINTS IGUALES, CAMBIAR ESTE POR ALGO, para que seria este endpoint? elimnarlo / cambiarlo.
         public async Task<ActionResult<DayAvailabilityResponseDTO>> GetReservationsForDays([FromRoute] int complexId, [FromBody] ReservationForDayRequest reservationRequest)
         {
             var reservationsAndRecurridBLocks = await _reservationBusinessLogic.GetReservationsForDaysAsync(complexId, reservationRequest);
@@ -84,7 +84,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
 
-        [HttpDelete("{reservationId}/cancelReservation")]
+        [HttpDelete("complexes/{complexId}/fields/{fieldId}/reservation/{reservationId}")]
         public async Task<ActionResult> CancelReservationById([FromRoute] int reservationId)
         {
             await _reservationBusinessLogic.CancelReservationByIdAsync(reservationId);

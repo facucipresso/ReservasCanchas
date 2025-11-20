@@ -57,7 +57,6 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Number = complex.Number,
                 Phone = complex.Phone,
                 State = complex.State,
-                Active = complex.Active
             };
         }
 

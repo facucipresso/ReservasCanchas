@@ -271,7 +271,7 @@ namespace ReservasCanchas.BusinessLogic
 
             return ReservationMapper.ToCreateReservationResponseDTO(reservation);
         }
-
+        //Cualquiera puede obtener una reserva por id, esta bien?****
         public async Task<ReservationForUserResponseDTO> GetReservationsByIdAsync(int reservationId)
         {
             var reservation = await _reservationRepository.GetReservationByIdReservationAsync(reservationId);
@@ -308,7 +308,22 @@ namespace ReservasCanchas.BusinessLogic
         }
 
         public async Task<DayAvailabilityResponseDTO> GetReservationsForDaysAsync(int complexId, ReservationForDayRequest reservationRequest)
-        {
+        { //EN REALIDAD ESTE ES PARA CHEQUEAR LA DISPONIBILIDAD DE LA CANCHA PARA EL DIA EN Q EL USUARIO QUIERE RESERVAR.
+            /* devolver algo asi.
+  "complexId": 3,
+  "date": "2025-11-20",
+  "fields": [
+    {
+      "fieldId": 1,
+      "availableHours": ["08:00", "09:00", "11:00"]
+    },
+    {
+      "fieldId": 2,
+      "availableHours": ["10:00", "12:00"]
+    }
+  ]
+}
+             */
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
             var userId = 1; //_authService.GetUserIdFromToken();
             
@@ -417,7 +432,7 @@ namespace ReservasCanchas.BusinessLogic
         {
             var reservation = await _reservationRepository.GetReservationWithReviewByIdAsync(reservationId);
             if(reservation == null)
-                throw new NotFoundException($"La reservacion con id {reservationId} no fue encontrada");
+                throw new NotFoundException($"La reserva con id {reservationId} no fue encontrada");
             return reservation;
         }
     }

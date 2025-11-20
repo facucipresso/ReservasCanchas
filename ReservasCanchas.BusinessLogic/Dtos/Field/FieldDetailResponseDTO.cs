@@ -19,6 +19,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Field
         public bool Ilumination { get; set; }
         public bool Covered { get; set; }
         public bool Active { get; set; }
+        public FieldState FieldState { get; set; }
 
         public ICollection<TimeSlotFieldResponseDTO> TimeSlotsField { get; set; } = new List<TimeSlotFieldResponseDTO>();
         public ICollection<RecurringFieldBlockResponseDTO> RecurringCourtBlocks { get; set; } = new List<RecurringFieldBlockResponseDTO>();

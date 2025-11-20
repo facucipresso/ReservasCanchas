@@ -21,7 +21,8 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 FloorType = field.FloorType,
                 HourPrice = field.HourPrice,
                 Ilumination = field.Ilumination,
-                Covered = field.Covered
+                Covered = field.Covered,
+                FieldState = field.FieldState
             };
         }
         public static Field ToField(FieldRequestDTO fieldRequestDTO)
@@ -51,6 +52,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Ilumination = field.Ilumination,
                 Covered = field.Covered,
                 Active = field.Active,
+                FieldState = field.FieldState,
                 TimeSlotsField = field.TimeSlotsField.Select(toTimeSlotFieldResponseDTO).ToList(),
                 RecurringCourtBlocks = field.RecurringCourtBlocks.Select(toRecurringFieldBlockResponseDTO).ToList()
             };

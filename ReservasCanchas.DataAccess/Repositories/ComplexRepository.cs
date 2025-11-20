@@ -52,22 +52,23 @@ namespace ReservasCanchas.DataAccess.Repositories
                         .FirstOrDefaultAsync(c => c.Id == id && c.Active && c.State == ComplexState.Habilitado);
         }
 
-        public async Task<List<Domain.Entities.Complex>> GetAllComplexesAsync()
+        public async Task<List<Complex>> GetAllComplexesAsync()
         {
-            //Solo lo llama el SUPERADMIN por lo cual puede ver eliminados y deshabilitados/bloqueados
+            //Solo lo llama el SUPERADMIN
             var complexes = await _context.Complejo
+                                .Where(c => c.Active)
                                 .ToListAsync();
             return complexes;
         }
 
-        public async Task<List<Domain.Entities.Complex>> GetComplexesByUserIdAsync(int userId)
+        public async Task<List<Complex>> GetComplexesByUserIdAsync(int userId)
         {
             return await _context.Complejo
                          .Where(c => c.UserId == userId && c.Active)
                          .ToListAsync();
         }
 
-        public async Task<Domain.Entities.Complex> CreateComplexAsync(Domain.Entities.Complex complex)
+        public async Task<Complex> CreateComplexAsync(Complex complex)
         {
             _context.Complejo.Add(complex);
             await _context.SaveChangesAsync();
@@ -98,7 +99,7 @@ namespace ReservasCanchas.DataAccess.Repositories
             return await _context.Complejo.AnyAsync(c => c.Phone.ToLower() == phone.ToLower() && c.Active);
         }
 
-        public async Task<List<Domain.Entities.Complex>> GetComplexesForSearchAsync(string province, string locality, FieldType fieldType)
+        public async Task<List<Complex>> GetComplexesForSearchAsync(string province, string locality, FieldType fieldType)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
             var limit = today.AddDays(7);
@@ -116,6 +117,15 @@ namespace ReservasCanchas.DataAccess.Repositories
                     c.State == ComplexState.Habilitado
                 )
                 .ToListAsync();
+        }
+
+        public async Task<bool> HasActiveReservationsInComplexAsync (int id)
+        {
+            return await _context.Complejo
+                        .Where(c => c.Id == id && c.Active)
+                            .AnyAsync(c => c.Fields
+                                .Any(f => f.Reservations
+                                    .Any(r => r.ReservationState == ReservationState.Aprobada)));
         }
 
     }

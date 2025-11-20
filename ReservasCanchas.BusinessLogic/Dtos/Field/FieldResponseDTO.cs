@@ -17,5 +17,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Field
         public decimal HourPrice { get; set; }
         public bool Ilumination { get; set; }
         public bool Covered { get; set; }
+        public FieldState FieldState { get; set; }
     }
 }

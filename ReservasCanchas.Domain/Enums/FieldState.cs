@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.Domain.Enums
 {
-    public enum ComplexState
+    public enum FieldState
     {
-        Pendiente = 0,
-        Habilitado = 1,
-        Deshabilitado= 2,
-        Bloqueado = 3,
-        Rechazado = 4
+        Habilitado = 0,
+        Deshabilitado = 1
     }
 }

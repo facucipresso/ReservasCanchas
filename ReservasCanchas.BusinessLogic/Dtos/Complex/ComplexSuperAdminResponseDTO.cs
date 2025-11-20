@@ -19,6 +19,5 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         public string Number { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
         public ComplexState State { get; set; }
-        public bool Active { get; set; }
     }
 }

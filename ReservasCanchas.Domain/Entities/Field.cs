@@ -23,6 +23,8 @@ namespace ReservasCanchas.Domain.Entities
         public bool Covered { get; set; }
         public bool Active { get; set; }
 
+        public FieldState FieldState { get; set; }
+
         // Propiedad de navegacion
         public Complex Complex { get; set; } = null!;
 
