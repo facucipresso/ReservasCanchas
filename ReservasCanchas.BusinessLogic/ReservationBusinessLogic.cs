@@ -69,7 +69,7 @@ namespace ReservasCanchas.BusinessLogic
 
         }
 
-        public async Task CancelReservationByIdAsync(int reservationId)
+        public async Task CancelReservationByIdAsync(int reservationId, CancelReservationDTO cancelReservarionDTO)
         {
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
             var userId = 1; //_authService.GetUserIdFromToken();
@@ -79,13 +79,18 @@ namespace ReservasCanchas.BusinessLogic
             if (reservation == null)
                 throw new BadRequestException($"No existe la reserva con el id {reservationId}");
 
+            // el admin puede cancelar
             if (userRol == Rol.AdminComplejo)
-                throw new BadRequestException($"Los administradores de complejos no pueden eliminar reservas");
-            
+            {
+                reservation.BlockReason = cancelReservarionDTO.ReasonCancel;
+                reservation.ReservationState = ReservationState.CanceladoPorAdmin;
+            }
+
+
             if(userRol != Rol.SuperAdmin)
             {
                 if(userId == reservation.UserId)
-                    throw new BadRequestException($"Las reservas solo pueden ser eliminadas por el usuario que la creo");
+                    throw new BadRequestException($"Las reservas solo pueden ser eliminadas por el usuario o el administrador del complejo que la creo");
             }
 
             var now = DateTime.Now;
@@ -101,7 +106,8 @@ namespace ReservasCanchas.BusinessLogic
                 // Cancelación hecha con más de 1 hora de anticipación
                 reservation.ReservationState = ReservationState.CanceladoConDevolucion;
             }
-            else
+
+            if(timeToMatch.TotalHours < 1)
             {
                 // Cancelación hecha faltando 1 hora o menos
                 reservation.ReservationState = ReservationState.CanceladoSinDevolucion;
@@ -289,7 +295,9 @@ namespace ReservasCanchas.BusinessLogic
                 throw new NotFoundException("Usuario con id " + userId + " no encontrado");
             }
 
-            var complex = await _complexBusinessLogic.ComplexValidityExistenceCheck2(complexId);
+            await _complexBusinessLogic.ComplexValidityExistenceCheck(complexId);
+
+            var complex = await _complexBusinessLogic.GetComplexByIdWithReservationsAsync(complexId);
 
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
 
@@ -310,19 +318,19 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<DayAvailabilityResponseDTO> GetReservationsForDaysAsync(int complexId, ReservationForDayRequest reservationRequest)
         { //EN REALIDAD ESTE ES PARA CHEQUEAR LA DISPONIBILIDAD DE LA CANCHA PARA EL DIA EN Q EL USUARIO QUIERE RESERVAR.
             /* devolver algo asi.
-  "complexId": 3,
-  "date": "2025-11-20",
-  "fields": [
-    {
-      "fieldId": 1,
-      "availableHours": ["08:00", "09:00", "11:00"]
-    },
-    {
-      "fieldId": 2,
-      "availableHours": ["10:00", "12:00"]
-    }
-  ]
-}
+                  "complexId": 3,
+                  "date": "2025-11-20",
+                  "fields": [
+                    {
+                      "fieldId": 1,
+                      "availableHours": ["08:00", "09:00", "11:00"]
+                    },
+                    {
+                      "fieldId": 2,
+                      "availableHours": ["10:00", "12:00"]
+                    }
+                  ]
+                }
              */
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
             var userId = 1; //_authService.GetUserIdFromToken();
@@ -369,7 +377,54 @@ namespace ReservasCanchas.BusinessLogic
                 .Where(b => b.WeekDay == requestWeekDay)
                 .ToList();
 
-            DayAvailabilityResponseDTO response = new DayAvailabilityResponseDTO
+            // ==================================================================================
+
+            var response = new DayAvailabilityResponseDTO
+            {
+                ComplexId = complex.Id,
+                Date = reservationRequest.Date
+            };
+
+            //ahora agrupo por cancha
+            foreach (var field in validFields)
+            {
+                var dto = new ReservationForFieldDTO
+                {
+                    FieldId = field.Id
+                };
+
+                //primero agrego las reservas normales
+                var fieldReservations = reservations
+                    .Where(r => r.FieldId == field.Id)
+                    .Select(r => r.InitTime);
+
+                dto.ReservedHours.AddRange(fieldReservations);
+
+                //agrego las horas segmentadas de bloqueos recurrentes
+                var fieldBlocks = recurringBlocks
+                    .Where(b => b.FieldId == field.Id);
+
+                foreach (var block in fieldBlocks)
+                {
+                    var current = block.InitHour;
+                    while(current < block.EndHour)
+                    {
+                        dto.ReservedHours.Add(current);
+                        current = current.AddHours(1);
+                    }
+                }
+
+                //ordeno las horas
+                dto.ReservedHours = dto.ReservedHours
+                    .OrderBy(h => h)
+                    .ToList();
+
+                response.FieldsAvailability.Add(dto);
+            }
+
+            return response;
+
+            /*DayAvailabilityResponseDTO response = new DayAvailabilityResponseDTO
             {
                 ComplexId = complex.Id,
                 Date = reservationRequest.Date
@@ -379,7 +434,7 @@ namespace ReservasCanchas.BusinessLogic
 
             response.RecurringBlocks = recurringBlocks.Select(ReservationMapper.ToDayRecurringBlockDTO).ToList();
 
-            return response;
+            return response;*/
         }
 
         public async Task<List<ReservationForFieldResponseDTO>> GetReservationsForFieldAsync(int complexId, int fieldId)

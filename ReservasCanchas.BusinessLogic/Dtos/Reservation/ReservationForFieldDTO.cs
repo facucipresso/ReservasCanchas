@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 {
-    public class DayRecurringBlockDTO
+    public class ReservationForFieldDTO
     {
-        public int RecurringBlockId { get; set; }
         public int FieldId { get; set; }
 
-        public TimeOnly InitTime { get; set; }
-        public TimeOnly EndTime { get; set; }
+        // todos los horarios reservados/bloqueados en ese día, de 1h cada uno
+        public List<TimeOnly> ReservedHours { get; set; } = new();
     }
 }

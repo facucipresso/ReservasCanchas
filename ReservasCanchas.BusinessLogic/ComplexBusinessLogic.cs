@@ -409,10 +409,11 @@ namespace ReservasCanchas.BusinessLogic
             return complex;
         }
 
-        public async Task<Complex> ComplexValidityExistenceCheck2(int complexId)
+        public async Task<Complex> GetComplexByIdWithReservationsAsync(int complexId)
         {
             var complex = await _complexRepository.GetComplexByIdWithReservationsAsync(complexId);
-            EnsureComplexExists(complex, complexId);
+            if(complex == null)
+                throw new NotFoundException($"El complejo con id {complexId} no existe");
             return complex;
         }
 

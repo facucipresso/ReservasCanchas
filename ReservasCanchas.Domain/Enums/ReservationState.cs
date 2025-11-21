@@ -12,6 +12,7 @@ namespace ReservasCanchas.Domain.Enums
         Aprobada = 1,
         CanceladoConDevolucion = 2,
         CanceladoSinDevolucion = 3,
-        Completada = 4
+        Completada = 4,
+        CanceladoPorAdmin = 5
     }
 }

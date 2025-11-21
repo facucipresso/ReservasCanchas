@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 {
+    //sacar este metodo, que venga el date en una consuta
     public class ReservationForDayRequest
     {
         public DateOnly Date {  get; set; }

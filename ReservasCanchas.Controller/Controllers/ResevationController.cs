@@ -85,9 +85,9 @@ namespace ReservasCanchas.Controller.Controllers
 
 
         [HttpDelete("complexes/{complexId}/fields/{fieldId}/reservation/{reservationId}")]
-        public async Task<ActionResult> CancelReservationById([FromRoute] int reservationId)
+        public async Task<ActionResult> CancelReservationById([FromRoute] int reservationId, [FromBody] CancelReservationDTO cancelReservarionDTO)
         {
-            await _reservationBusinessLogic.CancelReservationByIdAsync(reservationId);
+            await _reservationBusinessLogic.CancelReservationByIdAsync(reservationId, cancelReservarionDTO);
             return NoContent();
         }
     }

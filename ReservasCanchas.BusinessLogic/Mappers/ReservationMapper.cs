@@ -64,7 +64,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static DayReservationDTO ToDayReservationDTO(Reservation r)
+        /*public static DayReservationDTO ToDayReservationDTO(Reservation r)
         {
             return new DayReservationDTO
             {
@@ -84,7 +84,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 InitTime = b.InitHour,
                 EndTime = b.EndHour
             };
-        }
+        }*/
 
         public static CreateReservationResponseDTO ToCreateReservationResponseDTO(Reservation r)
         {
