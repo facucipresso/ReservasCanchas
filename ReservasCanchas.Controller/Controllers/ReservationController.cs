@@ -48,11 +48,10 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(result);
         }
 
-        [HttpGet("by-day")]
-        public async Task<ActionResult<DailyReservationsForComplexResponseDTO>> GetReservationsByDateForComplex ([FromBody] ReservationsForDayRequestDTO reservationsForDayDTO)
+        [HttpGet("complex/{complexId}/by-date")]
+        public async Task<ActionResult<DailyReservationsForComplexResponseDTO>> GetReservationsByDateForComplex ([FromRoute] int complexId, [FromQuery] DateOnly date)
         {
-            var reservationsAndRecurringBLocks = await _reservationBusinessLogic
-                .GetReservationsByDateForComplexAsync(reservationsForDayDTO);
+            var reservationsAndRecurringBLocks = await _reservationBusinessLogic.GetReservationsByDateForComplexAsync(complexId, date);
             return Ok(reservationsAndRecurringBLocks);
         }
 
