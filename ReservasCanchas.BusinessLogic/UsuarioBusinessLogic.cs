@@ -3,6 +3,7 @@ using ReservasCanchas.BusinessLogic.Dtos.Usuario;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
+using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace ReservasCanchas.BusinessLogic
             _userRepo = userRepo;
         }
 
-        public async Task<UsuarioResponseDTO?> GetById(int id)
+        public async Task<UsuarioResponseDTO?> GetUserByIdAsync(int id)
         {
             var user = await _userRepo.GetUserByIdAsync(id);
 
@@ -125,14 +126,14 @@ namespace ReservasCanchas.BusinessLogic
             await _userRepo.UpdateUserAsync(user);
         }
 
-        public async Task<bool> ExistUser(int id)
+        public async Task<User?> GetUserOrThrow(int id)
         {
             var user = await _userRepo.GetUserByIdAsync(id);
             if (user == null)
             {
                 throw new NotFoundException("Usuario con id " + id + " no encontrado");
             }
-            return true;
+            return user;
         }
     }
 }

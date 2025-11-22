@@ -61,7 +61,7 @@ namespace ReservasCanchas.DataAccess.Persistance
 
             // Modelo la relacion 1 a muchos de usuario y reservas
             modelBuilder.Entity<Reservation>()
-                .HasOne(u => u.Usuario)
+                .HasOne(u => u.User)
                 .WithMany(r => r.Reservations)
                 .HasForeignKey(u => u.UserId);
 

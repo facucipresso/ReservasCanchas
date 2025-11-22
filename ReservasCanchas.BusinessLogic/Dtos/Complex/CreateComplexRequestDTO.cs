@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -27,8 +28,8 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         public string Number { get; set; } = string.Empty;
         [Required(ErrorMessage ="El teléfono del complejo es obligatorio")]
         public string Phone { get; set; } = string.Empty;
-        [Required(ErrorMessage ="La imagen del complejo es obligatoria")]
-        public string ImagePath { get; set; } = string.Empty;
+        [Required(ErrorMessage = "La imagen del complejo es obligatoria")]
+        public IFormFile Image { get; set; } = null!;
         [Required(ErrorMessage ="El porcentaje de seña es obligatorio")]
         [Range(0, 100, ErrorMessage = "El porcentaje de seña debe estar entre 0 y 100")]
         public int PercentageSign { get; set; }

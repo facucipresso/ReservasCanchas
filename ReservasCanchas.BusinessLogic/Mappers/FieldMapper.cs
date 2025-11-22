@@ -10,22 +10,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
 {
     public class FieldMapper
     {
-        public static FieldResponseDTO ToFieldResponseDTO(Field field)
-        {
-            return new FieldResponseDTO
-            {
-                Id = field.Id,
-                Name = field.Name,
-                ComplexId = field.ComplexId,
-                FieldType = field.FieldType,
-                FloorType = field.FloorType,
-                HourPrice = field.HourPrice,
-                Ilumination = field.Ilumination,
-                Covered = field.Covered,
-                FieldState = field.FieldState
-            };
-        }
-        public static Field ToField(FieldRequestDTO fieldRequestDTO)
+        public static Field ToField(CreateFieldRequestDTO fieldRequestDTO)
         {
             return new Field
             {
@@ -35,7 +20,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 HourPrice = fieldRequestDTO.HourPrice,
                 Ilumination = fieldRequestDTO.Ilumination,
                 Covered = fieldRequestDTO.Covered,
-                TimeSlotsField = fieldRequestDTO.TimeSlotsField.Select(toTimeSlotField).ToList()
+                TimeSlotsField = fieldRequestDTO.TimeSlotsField.Select(ToTimeSlotField).ToList()
             };
         }
 
@@ -53,12 +38,12 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Covered = field.Covered,
                 Active = field.Active,
                 FieldState = field.FieldState,
-                TimeSlotsField = field.TimeSlotsField.Select(toTimeSlotFieldResponseDTO).ToList(),
-                RecurringCourtBlocks = field.RecurringCourtBlocks.Select(toRecurringFieldBlockResponseDTO).ToList()
+                TimeSlotsField = field.TimeSlotsField.Select(ToTimeSlotFieldResponseDTO).ToList(),
+                RecurringCourtBlocks = field.RecurringCourtBlocks.Select(ToRecurringFieldBlockResponseDTO).ToList()
             };
         }
 
-        public static TimeSlotFieldResponseDTO toTimeSlotFieldResponseDTO(TimeSlotField timeSlotField)
+        public static TimeSlotFieldResponseDTO ToTimeSlotFieldResponseDTO(TimeSlotField timeSlotField)
         {
             return new TimeSlotFieldResponseDTO
             {
@@ -70,7 +55,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static TimeSlotField toTimeSlotField(TimeSlotFieldRequestDTO timeSlotFieldRequestDTO)
+        public static TimeSlotField ToTimeSlotField(TimeSlotFieldRequestDTO timeSlotFieldRequestDTO)
         {
             return new TimeSlotField
             {
@@ -80,7 +65,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static RecurringFieldBlockResponseDTO toRecurringFieldBlockResponseDTO(RecurringFieldBlock recurringFieldBlock)
+        public static RecurringFieldBlockResponseDTO ToRecurringFieldBlockResponseDTO(RecurringFieldBlock recurringFieldBlock)
         {
             return new RecurringFieldBlockResponseDTO
             {
@@ -93,7 +78,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static RecurringFieldBlock toRecurringFieldBlock(RecurringFieldBlockRequestDTO recurringFieldBlockRequestDTO)
+        public static RecurringFieldBlock ToRecurringFieldBlock(RecurringFieldBlockRequestDTO recurringFieldBlockRequestDTO)
         {
             return new RecurringFieldBlock
             {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Field
 {
-    public class FieldUpdateRequestDTO
+    public class UpdateFieldRequestDTO
     {
         [Range(0, (double)decimal.MaxValue, ErrorMessage = "El precio por hora no puede ser negativo")]
         public decimal? HourPrice { get; set; }

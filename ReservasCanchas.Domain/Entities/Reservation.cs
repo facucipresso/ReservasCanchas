@@ -28,7 +28,7 @@ namespace ReservasCanchas.Domain.Entities
 
 
         // Propiedad de navegacion
-        public User Usuario { get; set; } = null!;
+        public User User { get; set; } = null!;
         public Field Field { get; set; } = null!;
         // Puede ser nula si el usuario que hizo la reserva no deja reseña
         public Review? Review { get; set; }

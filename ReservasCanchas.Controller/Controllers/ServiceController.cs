@@ -21,38 +21,38 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ServiceResponseDTO>>> getAllServices()
+        public async Task<ActionResult<List<ServiceResponseDTO>>> GetAllServices()
         {
-            var servicesDtos = await _serviceBusinessLogic.GetAll();
+            var servicesDtos = await _serviceBusinessLogic.GetAllServicesAsync();
 
             return Ok(servicesDtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponseDTO>> getServiceById([FromRoute] int id)
+        public async Task<ActionResult<ServiceResponseDTO>> GetServiceById([FromRoute] int id)
         {
-            var serviceDto = await _serviceBusinessLogic.GetById(id);
+            var serviceDto = await _serviceBusinessLogic.GetServiceByIdAsync(id);
             return Ok(serviceDto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ServiceResponseDTO>> createService([FromBody] ServiceRequestDTO serviceDto)
+        public async Task<ActionResult<ServiceResponseDTO>> CreateService([FromBody] ServiceRequestDTO serviceDto)
         {
-            var serviceCreated = await _serviceBusinessLogic.Create(serviceDto);
+            var serviceCreated = await _serviceBusinessLogic.CreateServiceAsync(serviceDto);
             return CreatedAtAction(nameof(getServiceById), new { id = serviceCreated.Id }, serviceCreated);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ServiceResponseDTO>> updateSerice([FromRoute] int id, [FromBody] ServiceRequestDTO serviceDto)
+        public async Task<ActionResult<ServiceResponseDTO>> UpdateService([FromRoute] int id, [FromBody] ServiceRequestDTO serviceDto)
         {
-            var serviceUpdated = await _serviceBusinessLogic.Update(id, serviceDto);
+            var serviceUpdated = await _serviceBusinessLogic.UpdateServiceAsync(id, serviceDto);
             return Ok(serviceUpdated);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> deleteService([FromRoute] int id)
+        public async Task<ActionResult> DeleteService([FromRoute] int id)
         {
-            await _serviceBusinessLogic.Delete(id);
+            await _serviceBusinessLogic.DeleteServiceAsync(id);
             return NoContent();
         }
 

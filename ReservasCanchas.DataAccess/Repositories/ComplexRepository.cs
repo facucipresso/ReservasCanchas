@@ -20,17 +20,20 @@ namespace ReservasCanchas.DataAccess.Repositories
             _context = context;
         }
 
-        public async Task<Domain.Entities.Complex?> GetComplexByIdAsync(int id)
+        public async Task<Complex?> GetComplexByIdWithBasicInfoAsync(int id)
         {
             var complex = await _context.Complejo
+                                .Include(c => c.TimeSlots)
+                                .Include(c => c.Services)
                                 .FirstOrDefaultAsync(c => c.Id == id && c.Active);
             return complex;
         }
 
-        public async Task<Domain.Entities.Complex?> GetComplexByIdWithRelationsAsync(int id)
+        public async Task<Complex?> GetComplexByIdWithFieldsAsync(int id)
         {
             var complexWithRelations = await _context.Complejo
-                                        .Include(c => c.Fields)
+                                        .Include(c => c.Fields.Where(f => f.Active))
+                                            .ThenInclude(f => f.RecurringCourtBlocks)
                                         .Include(c => c.Services)
                                         .Include(c => c.TimeSlots)
                                         .FirstOrDefaultAsync(c => c.Id == id && c.Active);
@@ -42,7 +45,7 @@ namespace ReservasCanchas.DataAccess.Repositories
             return await _context.Complejo
                         .Include(c => c.Fields)
                             .ThenInclude(f => f.Reservations)
-                                .ThenInclude(r => r.Usuario)
+                                .ThenInclude(r => r.User)
 
                         .Include(c => c.Fields)
                             .ThenInclude(f => f.RecurringCourtBlocks)
@@ -99,14 +102,14 @@ namespace ReservasCanchas.DataAccess.Repositories
             return await _context.Complejo.AnyAsync(c => c.Phone.ToLower() == phone.ToLower() && c.Active);
         }
 
-        public async Task<List<Complex>> GetComplexesForSearchAsync(string province, string locality, FieldType fieldType)
+        public async Task<List<Complex>> GetComplexesWithFiltersAsync(string province, string locality, FieldType fieldType)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
             var limit = today.AddDays(7);
 
             return await _context.Complejo
                 .Include(c => c.TimeSlots)
-                .Include(c => c.Fields.Where(f => f.Active && f.FieldType == fieldType)) //traigo solo las canchas activas del tipo que me pasaron
+                .Include(c => c.Fields.Where(f => f.Active && f.FieldType == fieldType && f.FieldState == FieldState.Habilitado)) //traigo solo las canchas activas del tipo que me pasaron
                     .ThenInclude(f => f.Reservations.Where(r => r.Date >= today && r.Date <= limit)) //traigo solo las reservas que tienen fecha de hoy +7 dias
                 .Include(c => c.Fields.Where(f => f.Active))
                     .ThenInclude(f => f.RecurringCourtBlocks)

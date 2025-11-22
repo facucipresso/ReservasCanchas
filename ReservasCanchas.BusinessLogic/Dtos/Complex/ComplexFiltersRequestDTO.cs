@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Complex
 {
-    public class ComplexSearchRequestDTO
+    public class ComplexFiltersRequestDTO
     {
         [Required(ErrorMessage = "La provincia es obligatoria")]
         public string Province { get; set; } = string.Empty;

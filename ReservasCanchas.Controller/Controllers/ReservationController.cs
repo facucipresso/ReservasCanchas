@@ -6,55 +6,54 @@ using ReservasCanchas.Domain.Enums;
 
 namespace ReservasCanchas.Controller.Controllers
 {
-    [Route("api")]
+    [Route("api/reservations")]
     [ApiController]
-    public class ResevationController : ControllerBase
+    public class ReservationController : ControllerBase
     {
         private readonly ReservationBusinessLogic _reservationBusinessLogic;
 
-        public ResevationController(ReservationBusinessLogic reservationBusinessLogic)
+        public ReservationController(ReservationBusinessLogic reservationBusinessLogic)
         {
             _reservationBusinessLogic = reservationBusinessLogic;
         }
 
         // Usuario ver sus reservas 
-        [HttpGet("reservations")]
-        public async Task<ActionResult<List<ReservationForUserResponseDTO>>> GetAllReservationsByUserId()
+        [HttpGet("my")]
+        public async Task<ActionResult<List<ReservationForUserResponseDTO>>> GetMyReservations()
         {
-            int userId = 1; //GetUserIdFromToken()
-            var result = await _reservationBusinessLogic.GetReservationsForUserAsync(userId);
+            var result = await _reservationBusinessLogic.GetReservationsByUserIdAsync();
             return Ok(result);
         }
 
-        [HttpGet("reservations/{reservationId}")]
+        [HttpGet("{reservationId}")]
         public async Task<ActionResult<ReservationForUserResponseDTO>> GetReservationById([FromRoute] int reservationId)
         {
-            var result = await _reservationBusinessLogic.GetReservationsByIdAsync(reservationId);
+            var result = await _reservationBusinessLogic.GetReservationByIdAsync(reservationId);
             return Ok(result);
         }
 
         // SuperUser puede ver las reservas de cualquier complejo, o ComplexAdmin puede ver todas las reservas SOLO de sus complejos
-        [HttpGet("/complexes/{complexId}/reservations")]
-        public async Task<ActionResult<List<ReservationForComplexResponseDTO>>> GetAllReservationsByIdComplex([FromRoute] int complexId)
+        [HttpGet("by-complex/{complexId}")]
+        public async Task<ActionResult<List<ReservationForComplexResponseDTO>>> GetAllReservationsByComplexId([FromRoute] int complexId)
         {
-            int userId = 1; //GetUserIdFromToken()
-            var result = await _reservationBusinessLogic.GetReservationsForComplexAsync(userId, complexId);
+            var result = await _reservationBusinessLogic.GetReservationsByComplexIdAsync(complexId);
             return Ok(result);
         }
 
         // SuperUser puede ver las reservas de una cancha en particular de un complejo 'X', o ComplexAdmin puede ver las reservas de una cancha de un complejo suyo
-        [HttpGet("complexes/{complexId}/fields/{fieldId}/reservations")]
-        public async Task<ActionResult<List<ReservationForFieldResponseDTO>>> GetAllReservationsByIdField([FromRoute] int complexId, [FromRoute] int fieldId)
+        [HttpGet("by-field/{fieldId}")]
+        public async Task<ActionResult<List<ReservationForFieldResponseDTO>>> GetAllReservationsByFieldId([FromRoute] int fieldId)
         {
-            var result = await _reservationBusinessLogic.GetReservationsForFieldAsync(complexId, fieldId); 
+            var result = await _reservationBusinessLogic.GetReservationsByFieldIdAsync(fieldId); 
             return Ok(result);
         }
 
-        [HttpGet("complexes/{complexId}/reservations")] //HAY 2 ENDPOINTS IGUALES, CAMBIAR ESTE POR ALGO, para que seria este endpoint? elimnarlo / cambiarlo.
-        public async Task<ActionResult<DayAvailabilityResponseDTO>> GetReservationsForDays([FromRoute] int complexId, [FromBody] ReservationForDayRequest reservationRequest)
+        [HttpGet("by-day")]
+        public async Task<ActionResult<DailyReservationsForComplexResponseDTO>> GetReservationsByDateForComplex ([FromBody] ReservationsForDayRequestDTO reservationsForDayDTO)
         {
-            var reservationsAndRecurridBLocks = await _reservationBusinessLogic.GetReservationsForDaysAsync(complexId, reservationRequest);
-            return Ok(reservationsAndRecurridBLocks);
+            var reservationsAndRecurringBLocks = await _reservationBusinessLogic
+                .GetReservationsByDateForComplexAsync(reservationsForDayDTO);
+            return Ok(reservationsAndRecurringBLocks);
         }
 
 

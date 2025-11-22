@@ -71,7 +71,6 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Street = complexDTO.Street,
                 Number = complexDTO.Number,
                 Phone = complexDTO.Phone,
-                ImagePath = complexDTO.ImagePath,
                 PercentageSign = complexDTO.PercentageSign,
                 StartIlumination = complexDTO.StartIlumination,
                 AditionalIlumination = complexDTO.AditionalIlumination,

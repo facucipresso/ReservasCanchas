@@ -5,7 +5,7 @@ using ReservasCanchas.Domain.Entities;
 
 namespace ReservasCanchas.Controller.Controllers
 {
-    [Route("api/complexes/{complexId}/fields")]
+    [Route("api/fields")]
     [ApiController]
     public class FieldController : ControllerBase
     {
@@ -16,65 +16,60 @@ namespace ReservasCanchas.Controller.Controllers
             _fieldBusinessLogic = fieldBusinessLogic;
         }
         [HttpGet("{fieldId}")]
-        public async Task<ActionResult<FieldDetailResponseDTO>> GetFieldById([FromRoute] int complexId,[FromRoute]int fieldId)
+        public async Task<ActionResult<FieldDetailResponseDTO>> GetFieldById([FromRoute]int fieldId)
         {
-            var fieldDTO = await _fieldBusinessLogic.GetById(complexId,fieldId);
+            var fieldDTO = await _fieldBusinessLogic.GetFieldByIdAsync(fieldId);
             return Ok(fieldDTO);
 
         }
 
-        [HttpGet]
+        [HttpGet("by-complex/{complexId}")]
         public async Task<ActionResult<List<FieldDetailResponseDTO>>> GetFieldsByComplexId([FromRoute] int complexId)
         {
-            var fieldsDTOs = await _fieldBusinessLogic.GetAllByComplexId(complexId);
+            var fieldsDTOs = await _fieldBusinessLogic.GetAllFieldsByComplexIdAsync(complexId);
             return Ok(fieldsDTOs);
         }
 
-        // Aca no tendria que venir ya de entrada con la franja horaria seteada?
         [HttpPost]
-        public async Task<ActionResult<FieldDetailResponseDTO>> CreateField([FromRoute] int complexId, [FromBody] FieldRequestDTO fieldDTO)
+        public async Task<ActionResult<FieldDetailResponseDTO>> CreateField([FromBody] CreateFieldRequestDTO fieldDTO)
         {
-            var createdFieldDTO = await _fieldBusinessLogic.Create(complexId, fieldDTO);
-            return CreatedAtAction(nameof(GetFieldById), new {complexId = complexId, id = createdFieldDTO.Id }, createdFieldDTO);
+            var createdFieldDTO = await _fieldBusinessLogic.CreateFieldAsync(fieldDTO);
+            return CreatedAtAction(nameof(GetFieldById), createdFieldDTO);
         }
 
         [HttpPatch("{fieldId}")]
-        public async Task<ActionResult<FieldDetailResponseDTO>> UpdateField([FromRoute] int complexId, [FromRoute] int fieldId, [FromBody] FieldUpdateRequestDTO fieldDTO)
+        public async Task<ActionResult<FieldDetailResponseDTO>> UpdateField([FromRoute] int fieldId, [FromBody] UpdateFieldRequestDTO fieldDTO)
         {
-            var updatedFieldDTO = await _fieldBusinessLogic.Update(complexId, fieldId, fieldDTO);
+            var updatedFieldDTO = await _fieldBusinessLogic.UpdateFieldAsync(fieldId, fieldDTO);
             return Ok(updatedFieldDTO);
         }
 
         [HttpPut("{fieldId}/time-slots")]
-        public async Task<ActionResult<FieldDetailResponseDTO>> UpdateFieldTimeSlots([FromRoute] int complexId, [FromRoute] int fieldId, UpdateTimeSlotFieldRequestDTO timeSlotUpdateDTO)
+        public async Task<ActionResult<FieldDetailResponseDTO>> UpdateFieldTimeSlots([FromRoute] int fieldId, UpdateTimeSlotFieldRequestDTO timeSlotUpdateDTO)
         {
-            var updatedFieldDTO = await _fieldBusinessLogic.UpdateTimeSlots(complexId, fieldId, timeSlotUpdateDTO);
+            var updatedFieldDTO = await _fieldBusinessLogic.UpdateTimeSlotsFieldAsync(fieldId, timeSlotUpdateDTO);
             return Ok(updatedFieldDTO);
         }
 
-        [HttpPost("{fieldId}/add-recurring-block")]
-        public async Task<ActionResult<FieldDetailResponseDTO>> AddRecurringFieldBlockToField([FromRoute] int complexId, [FromRoute] int fieldId, RecurringFieldBlockRequestDTO recurridBlockDTO)
+        [HttpDelete("{fieldId}")]
+        public async Task<ActionResult> DeleteField([FromRoute] int fieldId)
         {
-            var updateFieldDTO = await _fieldBusinessLogic.AddRecurringFieldBlockAsync(complexId, fieldId, recurridBlockDTO);
+            await _fieldBusinessLogic.DeleteFieldAsync(fieldId);
+            return NoContent();
+        }
+
+        [HttpPost("{fieldId}/recurring-block")]
+        public async Task<ActionResult<FieldDetailResponseDTO>> AddRecurringFieldBlockToField([FromRoute] int fieldId, RecurringFieldBlockRequestDTO recurridBlockDTO)
+        {
+            var updateFieldDTO = await _fieldBusinessLogic.AddRecurringFieldBlockAsync(fieldId, recurridBlockDTO);
             return Ok(updateFieldDTO);
         }
 
-        [HttpDelete("{fieldId}/delete-recurring-block/{idRb}")]
-        public async Task<ActionResult<FieldDetailResponseDTO>> DeleteRecurridFieldBlockToField([FromRoute] int complexId, [FromRoute] int fieldId, [FromRoute] int idRb)
+        [HttpDelete("{fieldId}/recurring-block/{idRb}")]
+        public async Task<ActionResult<FieldDetailResponseDTO>> DeleteRecurridFieldBlockToField([FromRoute] int fieldId, [FromRoute] int idRb)
         {
-            await _fieldBusinessLogic.DeleteRecurringFieldBlockAsync(complexId, fieldId, idRb);
+            await _fieldBusinessLogic.DeleteRecurringFieldBlockAsync(fieldId, idRb);
             return NoContent();
         }
-
-        [HttpDelete("{fieldId}")]
-        public async Task<ActionResult> DeleteField([FromRoute] int complexId, [FromRoute] int fieldId)
-        {
-            await _fieldBusinessLogic.Delete(complexId,fieldId);
-            return NoContent();
-        }
-
-
-
-
     }
 }

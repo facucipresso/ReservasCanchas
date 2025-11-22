@@ -23,7 +23,7 @@ namespace ReservasCanchas.BusinessLogic
             _serviceRepository = serviceRepository;
         }
 
-        public async Task<ServiceResponseDTO> GetById(int id)
+        public async Task<ServiceResponseDTO> GetServiceByIdAsync(int id)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(id);
 
@@ -36,7 +36,12 @@ namespace ReservasCanchas.BusinessLogic
             return serviceDTO;
         }
 
-        public async Task<List<ServiceResponseDTO>> GetAll()
+        public async Task<List<Service>> GetServicesByIdsAsync(List<int> ids)
+        {
+            return await _serviceRepository.GetServicesByIdsAsync(ids);
+        }
+
+        public async Task<List<ServiceResponseDTO>> GetAllServicesAsync()
         {
             var services = await _serviceRepository.GetAllServicesAsync();
             
@@ -47,7 +52,7 @@ namespace ReservasCanchas.BusinessLogic
             return servicesDto;
         }
 
-        public async Task<ServiceResponseDTO> Create(ServiceRequestDTO serviceDTO)
+        public async Task<ServiceResponseDTO> CreateServiceAsync(ServiceRequestDTO serviceDTO)
         {
             if (await _serviceRepository.ExistsByNameAsync(serviceDTO.ServiceDescription))
             {
@@ -60,7 +65,7 @@ namespace ReservasCanchas.BusinessLogic
             return ServiceMapper.ToServiceResponseDTO(service);
         }
 
-        public async Task<ServiceResponseDTO> Update(int id, ServiceRequestDTO serviceDTO)
+        public async Task<ServiceResponseDTO> UpdateServiceAsync(int id, ServiceRequestDTO serviceDTO)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(id);
             if (service == null) 
@@ -78,7 +83,7 @@ namespace ReservasCanchas.BusinessLogic
             return ServiceMapper.ToServiceResponseDTO(service);
         }
 
-        public async Task Delete(int id)
+        public async Task DeleteServiceAsync(int id)
         {
             var service = await _serviceRepository.GetServiceByIdAsync(id);
             if (service == null)

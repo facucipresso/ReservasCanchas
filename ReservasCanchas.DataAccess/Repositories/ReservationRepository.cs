@@ -24,13 +24,17 @@ namespace ReservasCanchas.DataAccess.Repositories
             return reservation;
         }
 
-        public async Task<Reservation?> GetReservationByIdReservationAsync(int reservationId)
+        public async Task<Reservation?> GetReservationByIdWithRelationsAsync(int reservationId)
         {
-            var reservation = await _context.Reservation.FindAsync(reservationId);
-            return reservation;
+            return await _context.Reservation
+                         .Include(r => r.Field)
+                             .ThenInclude(f => f.Complex)
+                         .Include(r => r.User)
+                         .Include(r => r.Review)
+                         .FirstOrDefaultAsync(r => r.Id == reservationId);
         }
 
-        public async Task<List<Reservation>> GetReservationsByUserAsync(int userId)
+        public async Task<List<Reservation>> GetReservationsByUserIdAsync(int userId)
         {
             var reservations = await _context.Reservation
                                         .Include(r => r.Field)
@@ -39,6 +43,31 @@ namespace ReservasCanchas.DataAccess.Repositories
                                         .Where(r => r.UserId == userId)
                                         .ToListAsync();
             return reservations; 
+        }
+
+        public async Task<List<Reservation>> GetReservationsByComplexIdAsync(int complexId)
+        {
+            var reservations = await _context.Reservation
+                                        .Include(r => r.Field)
+                                            .ThenInclude(f => f.Complex)
+                                        .Include(r => r.User)
+                                        .Include(r => r.Review)
+                                        .Where(r => r.Field.Complex.Id == complexId)
+                                        .ToListAsync();
+            return reservations;
+        }
+
+
+        public async Task<List<Reservation>> GetReservationsByFieldId(int fieldId)
+        {
+            var reservations = await _context.Reservation
+                                        .Include(r => r.Field)
+                                            .ThenInclude(f => f.Complex)
+                                        .Include(r => r.User)
+                                        .Include(r => r.Review)
+                                        .Where(r => r.Field.Id == fieldId)
+                                        .ToListAsync();
+            return reservations;
         }
 
         public async Task<Reservation?> GetReservationWithReviewByIdAsync(int reservationId)

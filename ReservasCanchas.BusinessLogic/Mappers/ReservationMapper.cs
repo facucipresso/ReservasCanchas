@@ -23,7 +23,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 FieldId = r.FieldId,
                 FieldName = r.Field.Name,
                 UserId = r.UserId,
-                UserName = r.Usuario.Name,
+                UserName = r.User.Name,
                 PayType = r.PayType,
                 TotalPrice = r.TotalPrice,
                 PricePaid = r.PricePaid
@@ -58,7 +58,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 State = r.ReservationState,
 
                 UserId = r.UserId,
-                UserName = r.Usuario.Name,
+                UserName = r.User.Name,
 
                 PayType = r.PayType
             };

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Field
 {
-    public class FieldRequestDTO
+    public class CreateFieldRequestDTO
     {
         [Required(ErrorMessage = "El Id del complejo es obligatorio")]
         public int ComplexId { get; set; }

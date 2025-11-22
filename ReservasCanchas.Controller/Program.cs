@@ -19,6 +19,11 @@ builder.Services.AddScoped<ServiceRepository>();
 builder.Services.AddScoped<UsuarioBusinessLogic>();
 builder.Services.AddScoped<UsuarioRepository>();
 
+builder.Services.AddScoped<ComplexBusinessLogic>();
+builder.Services.AddScoped<ComplexRepository>();
+
+builder.Services.AddScoped<FieldBusinessLogic>();
+builder.Services.AddScoped<FieldRepository>();
 // Configurar respuestas de error de validación de modelo
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
