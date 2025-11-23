@@ -344,14 +344,6 @@ namespace ReservasCanchas.BusinessLogic
             await _complexRepository.SaveAsync();
         }
 
-        public async Task<Complex> GetComplexByIdIfIsActiveAsync(int complexId)
-        {
-            var complex = await _complexRepository.GetComplexByIdWithRelationsAsync(complexId);
-            EnsureComplexExists(complex, complexId);
-            EnsureComplexEditable(complex);
-            return complex;
-        }
-
         // Funcion auxiliar para asegurarme que se matchee bien DayOfWeek con nuesto enum y para no modificar el enum
         public WeekDay ConvertToWeekDay(DateOnly date)
         {
@@ -367,65 +359,6 @@ namespace ReservasCanchas.BusinessLogic
                 _ => throw new BadRequestException("Día inválido")
             };
         }
-
-        private void EnsureOwner(Complex complex, int adminComplexId)
-        {
-            if (complex.UserId != adminComplexId)
-            {
-                throw new BadRequestException($"No se pueden actualizar complejos ajenos");
-            }
-        }
-
-        private void EnsureComplexEditable(Complex complex)
-        {
-            if (complex.State == ComplexState.Pendiente || complex.State == ComplexState.Bloqueado)
-            {
-                //throw new BadRequestException($"No se pueden actualizar datos de un complejo que no se encuentra habilitado");
-                throw new BadRequestException($"El complejo no se encuentra habilitado");
-            }
-        }
-
-        private void EnsureComplexExists(Complex complex, int id)
-        {
-            if (complex == null)
-            {
-                throw new BadRequestException($"No existe un complejo con el id {id}");
-            }
-        }
-
-        private void EnsureComplexForUser(Complex complex)
-        {
-            if (complex.State != ComplexState.Habilitado)
-            {
-                throw new BadRequestException($"El complejo no se encuentra habilitado");
-            }
-        }
-
-        public void ComplexValidityStateCheck(Complex complex)
-        {
-            EnsureComplexEditable(complex);
-        }
-
-        public async Task<Complex> ComplexValidityExistenceCheck(int complexId)
-        {
-            var complex = await _complexRepository.GetComplexByIdAsync(complexId);
-            EnsureComplexExists(complex, complexId);
-            return complex;
-        }
-
-        public async Task<Complex> GetComplexByIdWithReservationsAsync(int complexId)
-        {
-            var complex = await _complexRepository.GetComplexByIdWithReservationsAsync(complexId);
-            if (complex == null)
-                throw new NotFoundException($"El complejo con id {complexId} no existe");
-            return complex;
-        }
-
-        public void ComplexValidityAdmin(Complex complex, int adminComplexId)
-        {
-            EnsureOwner(complex, adminComplexId);
-        }
-
         public async Task<Complex?> GetComplexBasicOrThrow(int complexId)
         {
             var complex = await _complexRepository.GetComplexByIdWithBasicInfoAsync(complexId);

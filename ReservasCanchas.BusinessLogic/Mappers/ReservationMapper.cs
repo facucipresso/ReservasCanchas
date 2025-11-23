@@ -98,6 +98,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 State = r.ReservationState,
                 ReservationType = r.ReservationType,
                 TotalPrice = r.TotalPrice,
+                PricePaid = r.PricePaid,
             };
         }
 

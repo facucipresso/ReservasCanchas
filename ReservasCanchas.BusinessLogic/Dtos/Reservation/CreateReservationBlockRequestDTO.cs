@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 {
-    public class ReservationBlockingRequestDto
+    public class CreateReservationBlockRequestDTO
     {
         public int FieldId { get; set; }
         public DateOnly Date { get; set; }

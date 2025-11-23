@@ -240,5 +240,11 @@ namespace ReservasCanchas.BusinessLogic
             }
             return field;
         }
+
+        public void ValidateStatusField(Field field)
+        {
+            if (field.FieldState == FieldState.Deshabilitado)
+                throw new BadRequestException($"La cancha con id {field.Id} esta inhabilitada");
+        }
     }
 }

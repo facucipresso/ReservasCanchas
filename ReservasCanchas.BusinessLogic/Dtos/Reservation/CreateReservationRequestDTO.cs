@@ -12,7 +12,10 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public int FieldId { get; set; }
         public DateOnly Date { get; set; }
         public TimeOnly InitTime { get; set; }
-        public PayType PayType { get; set; }
+        public PayType? PayType { get; set; }
         public int PricePaid { get; set; }
+
+        public bool IsBlock { get; set; }
+        public string? BlockReason { get; set; } = string.Empty;
     }
 }

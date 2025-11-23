@@ -21,7 +21,7 @@ namespace ReservasCanchas.DataAccess.Repositories
         public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _context.Usuario
-                .Where(s => s.Id == id)
+                .Where(s => s.Id == id && s.Status == UserStatus.Activo)
                 .FirstOrDefaultAsync();
         }
 

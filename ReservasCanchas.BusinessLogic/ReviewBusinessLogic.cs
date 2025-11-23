@@ -33,7 +33,7 @@ namespace ReservasCanchas.BusinessLogic
             var user = await _usurioBusinessLogic.GetByIdIfIsEnabled(userId);
 
             // si no existe me patea
-            var reservation = await _reservationBusinessLogic.GetReservationWithReviewAsync(reservationId);
+            var reservation = await _reservationBusinessLogic.GetReservationWithRelationsOrThrow(reservationId);
 
             if(reservation.UserId != userId)
                 throw new BadRequestException("Solo el usuario que realizó la reserva puede dejar una review.");

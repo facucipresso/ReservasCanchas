@@ -78,9 +78,8 @@ namespace ReservasCanchas.DataAccess.Repositories
             return reservation;
         }
 
-        public async Task UpdateAsync(Reservation reservation)
+        public async Task SaveAsync()
         {
-            _context.Reservation.Update(reservation);
             await _context.SaveChangesAsync();
         }
     }

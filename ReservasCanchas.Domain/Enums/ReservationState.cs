@@ -10,9 +10,10 @@ namespace ReservasCanchas.Domain.Enums
     {
         Pendiente = 0,
         Aprobada = 1,
-        CanceladoConDevolucion = 2,
-        CanceladoSinDevolucion = 3,
-        Completada = 4,
-        CanceladoPorAdmin = 5
+        Rechazada = 2,
+        CanceladoConDevolucion = 3,
+        CanceladoSinDevolucion = 4,
+        Completada = 5,
+        CanceladoPorAdmin = 6
     }
 }

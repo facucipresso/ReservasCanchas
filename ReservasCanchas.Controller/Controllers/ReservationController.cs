@@ -56,36 +56,17 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
 
-        [HttpPost("complexes/{complexId}/fields/{fieldId}")]
-        public async Task<ActionResult<CreateReservationResponseDTO>> CreateReservation([FromRoute] int complexId, [FromRoute] int fieldId, [FromBody] CreateReservationRequestDTO request)
+        [HttpPost]
+        public async Task<ActionResult<CreateReservationResponseDTO>> CreateReservation([FromBody] CreateReservationRequestDTO request)
         {
-            var reservationCreated = await _reservationBusinessLogic.CreateReservationAsync(complexId, fieldId, request);
-            //return Ok(reservationCreated);
-            return CreatedAtAction(nameof(GetReservationById), new { reservationId = reservationCreated.ReservationId }, reservationCreated); 
+            var reservationCreated = await _reservationBusinessLogic.CreateReservationAsync(request);
+            return CreatedAtAction(nameof(GetReservationById), new { reservationId = reservationCreated.ReservationId }, reservationCreated);
         }
 
-        // Hacer reservas de tipo bloqueo, que el admin del complejo
-        [HttpPost("complexes/{complexId}/fieldes/{fieldId}/blocking")]
-        public async Task<ActionResult<CreateReservationResponseDTO>> CreateReservationBlocking([FromRoute] int complexId, [FromRoute] int fieldId, ReservationBlockingRequestDto blocking)
+        [HttpPatch("{reservationId}/state")]
+        public async Task<ActionResult> ChangeStateReservation ([FromRoute] int reservationId, ChangeStateReservationRequestDTO request)
         {
-            var reservationBlockingCreated = await _reservationBusinessLogic.CreateReservationBlockingAsync(complexId, fieldId, blocking);
-            //return Ok(reservationCreated);
-            return CreatedAtAction(nameof(GetReservationById), new { reservationId = reservationBlockingCreated.ReservationId }, reservationBlockingCreated);
-        }
-
-        // El admin del complejo cambia el estado de una reserva
-        [HttpPost("complexes/{complexId}/fields/{fieldId}/reservation/{reservationId}")]
-        public async Task<ActionResult> ChangeStateReservation ([FromRoute] int complexId, [FromRoute] int fieldId, [FromRoute] int reservationId, ChangeStateReservationRequest request)
-        {
-            await _reservationBusinessLogic.ChangeStateReservationAsync(complexId, fieldId, reservationId, request); 
-            return NoContent();
-        }
-
-
-        [HttpDelete("complexes/{complexId}/fields/{fieldId}/reservation/{reservationId}")]
-        public async Task<ActionResult> CancelReservationById([FromRoute] int reservationId, [FromBody] CancelReservationDTO cancelReservarionDTO)
-        {
-            await _reservationBusinessLogic.CancelReservationByIdAsync(reservationId, cancelReservarionDTO);
+            await _reservationBusinessLogic.ChangeStateReservationAsync(reservationId, request); 
             return NoContent();
         }
     }

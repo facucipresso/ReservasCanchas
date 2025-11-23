@@ -8,6 +8,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 {
     public class CancelReservationDTO 
     {
-        public string ReasonCancel { get; set; } = string.Empty;
+        public string CancelReason { get; set; } = string.Empty;
     }
 }
