@@ -15,7 +15,7 @@ namespace ReservasCanchas.DataAccess.Persistance
 
         public DbSet<Domain.Entities.Complex> Complejo {  get; set; }
         public DbSet<Service> Service { get; set; }
-        public DbSet<User> Usuario { get; set; }
+        public DbSet<User> User { get; set; }
         public DbSet<Field> Field { get; set; }
         public DbSet<RecurringFieldBlock> RecurringFieldBlock { get; set; }
         public DbSet<Reservation> Reservation { get; set; }
@@ -67,9 +67,9 @@ namespace ReservasCanchas.DataAccess.Persistance
 
             // Modelo la relacion 1 a muchos de usuario y reserñas
             modelBuilder.Entity<Review>()
-                .HasOne(u => u.Usuario)
+                .HasOne(u => u.User)
                 .WithMany(r => r.Reviews)
-                .HasForeignKey(u => u.IdUsuario);
+                .HasForeignKey(u => u.UserId);
 
             // Modelo la relacion 1 a 0..1 de reseña y reserva
             modelBuilder.Entity<Review>()

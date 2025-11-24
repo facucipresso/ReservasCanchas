@@ -39,7 +39,7 @@ namespace ReservasCanchas.Controller.Controllers
         public async Task<ActionResult<ServiceResponseDTO>> CreateService([FromBody] ServiceRequestDTO serviceDto)
         {
             var serviceCreated = await _serviceBusinessLogic.CreateServiceAsync(serviceDto);
-            return CreatedAtAction(nameof(getServiceById), new { id = serviceCreated.Id }, serviceCreated);
+            return CreatedAtAction(nameof(GetServiceById), new { id = serviceCreated.Id }, serviceCreated);
         }
 
         [HttpPut("{id}")]

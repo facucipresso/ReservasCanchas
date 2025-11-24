@@ -17,14 +17,14 @@ namespace ReservasCanchas.BusinessLogic
     public class ReservationBusinessLogic
     {
         private readonly ReservationRepository _reservationRepository;
-        private readonly UsuarioBusinessLogic _usuarioBusinessLogic;
+        private readonly UserBusinessLogic _userBusinessLogic;
         private readonly ComplexBusinessLogic _complexBusinessLogic;
         private readonly FieldBusinessLogic _fieldBusinessLogic;
 
-        public ReservationBusinessLogic(ReservationRepository reservationRepository, UsuarioBusinessLogic usurioBusinessLogic, ComplexBusinessLogic complexBusinessLogic, FieldBusinessLogic fieldBusinessLogic)
+        public ReservationBusinessLogic(ReservationRepository reservationRepository, UserBusinessLogic usurioBusinessLogic, ComplexBusinessLogic complexBusinessLogic, FieldBusinessLogic fieldBusinessLogic)
         {
             _reservationRepository = reservationRepository;
-            _usuarioBusinessLogic = usurioBusinessLogic;
+            _userBusinessLogic = usurioBusinessLogic;
             _complexBusinessLogic = complexBusinessLogic;
             _fieldBusinessLogic = fieldBusinessLogic;
         }
@@ -155,7 +155,8 @@ namespace ReservasCanchas.BusinessLogic
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
             var userId = 1; //_authService.GetUserIdFromToken();
 
-            var user = await _usuarioBusinessLogic.GetUserOrThrow(userId);
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            _userBusinessLogic.ValidateUserState(user);
 
             var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(request.FieldId);
             _fieldBusinessLogic.ValidateStatusField(field);
@@ -225,7 +226,8 @@ namespace ReservasCanchas.BusinessLogic
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
             var userId = 1; //_authService.GetUserIdFromToken();
 
-            var user = await _usuarioBusinessLogic.GetUserOrThrow(userId);
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            _userBusinessLogic.ValidateUserState(user);
 
             var reservation = await GetReservationWithRelationsOrThrow(reservationId);
 

@@ -17,13 +17,13 @@ namespace ReservasCanchas.BusinessLogic
     {
         private readonly ComplexRepository _complexRepository;
         private readonly ServiceBusinessLogic _serviceBusinessLogic;
-        private readonly UsuarioBusinessLogic _usuarioBusinessLogic;
+        private readonly UserBusinessLogic _userBusinessLogic;
 
-        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, UsuarioBusinessLogic usuarioBusinessLogic)
+        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, UserBusinessLogic usuarioBusinessLogic)
         {
             _complexRepository = complexRepository;
             _serviceBusinessLogic = serviceBusinessLogic;
-            _usuarioBusinessLogic = usuarioBusinessLogic;
+            _userBusinessLogic = usuarioBusinessLogic;
         }
 
         public async Task<List<ComplexCardResponseDTO>> GetComplexesForAdminComplexIdAsync()
@@ -74,7 +74,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException("No se pueden repetir dias de la semana en los horarios del complejo");
             }
 
-            if (await _usuarioBusinessLogic.GetUserByIdAsync(createComplexDTO.UserId) == null)
+            if (await _userBusinessLogic.GetUserByIdAsync(createComplexDTO.UserId) == null)
             {
                 throw new NotFoundException($"No se encontró el usuario con id {createComplexDTO.UserId} asociado al complejo");
             }

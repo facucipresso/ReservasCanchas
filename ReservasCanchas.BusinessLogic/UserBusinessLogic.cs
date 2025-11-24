@@ -13,15 +13,15 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic
 {
-    public class UsuarioBusinessLogic
+    public class UserBusinessLogic
     {
-        private readonly UsuarioRepository _userRepo;
-        public UsuarioBusinessLogic(UsuarioRepository userRepo)
+        private readonly UserRepository _userRepo;
+        public UserBusinessLogic(UserRepository userRepo)
         {
             _userRepo = userRepo;
         }
 
-        public async Task<UsuarioResponseDTO?> GetUserByIdAsync(int id)
+        public async Task<UserResponseDTO?> GetUserByIdAsync(int id)
         {
             var user = await _userRepo.GetUserByIdAsync(id);
 
@@ -30,40 +30,22 @@ namespace ReservasCanchas.BusinessLogic
                 throw new NotFoundException("Usuario con id " + id + " no encontrado");
             }
 
-            var usuarioDto = UsuarioMapper.ToUsusarioResponseDTO(user);
+            var usuarioDto = UserMapper.ToUsusarioResponseDTO(user);
             return usuarioDto;
         }
 
-        public async Task<UsuarioResponseDTO?> GetByIdIfIsEnabled(int id)
-        {
-            var user = await _userRepo.GetUserByIdAsync(id);
-
-            if (user == null)
-            {
-                throw new NotFoundException("Usuario con id " + id + " no encontrado");
-            }
-
-            if(user.Status != UserStatus.Activo)
-            {
-                throw new BadRequestException("Usuario bloqueado, no puede realizar operaciones");
-            }
-
-            var usuarioDto = UsuarioMapper.ToUsusarioResponseDTO(user);
-            return usuarioDto;
-        }
-
-        public async Task<List<UsuarioResponseDTO>> GetAll()
+        public async Task<List<UserResponseDTO>> GetAllUsersAsync()
         {
             var users = await _userRepo.GetAllUsersAsync();
 
             var usersDto = users
-                .Select(UsuarioMapper.ToUsusarioResponseDTO)
+                .Select(UserMapper.ToUsusarioResponseDTO)
                 .ToList();
 
             return usersDto;
         }
 
-        public async Task<UsuarioResponseDTO> Create(UsuarioRequestDTO usuarioRequest)
+        public async Task<UserResponseDTO> CreateUserAsync(UserRequestDTO usuarioRequest)
         {
             if ((await _userRepo.ExistByPhoneAsync(usuarioRequest.Phone) && await _userRepo.ExistByEmailAsync(usuarioRequest.Email)))
             {
@@ -79,12 +61,12 @@ namespace ReservasCanchas.BusinessLogic
             }
             
 
-            var usuario = UsuarioMapper.ToUsuario(usuarioRequest);
+            var usuario = UserMapper.ToUser(usuarioRequest);
             await _userRepo.CreateUserAsync(usuario);
-            return UsuarioMapper.ToUsusarioResponseDTO(usuario);
+            return UserMapper.ToUsusarioResponseDTO(usuario);
         }
 
-        public async Task<UsuarioResponseDTO> Update(int id, UsuarioRequestDTO userDTO)
+        public async Task<UserResponseDTO> UpdateUserAsync(int id, UserRequestDTO userDTO)
         {
             var user = await _userRepo.GetUserByIdAsync(id);
             if (user == null)
@@ -110,20 +92,35 @@ namespace ReservasCanchas.BusinessLogic
             user.Email = userDTO.Email;
             user.Phone = userDTO.Phone;
 
-            await _userRepo.UpdateUserAsync(user);
-            return UsuarioMapper.ToUsusarioResponseDTO(user);
+            await _userRepo.SaveAsync();
+            return UserMapper.ToUsusarioResponseDTO(user);
         }
 
-        public async Task BlockUser(int id)
+        public async Task BlockUserAsync(int id)
         {
             var user = await _userRepo.GetUserByIdAsync(id);
             if (user == null)
-            {
                 throw new NotFoundException("Usuario con id " + id + " no encontrado");
-            }
 
             user.Status = UserStatus.Bloqueado;
-            await _userRepo.UpdateUserAsync(user);
+            await _userRepo.SaveAsync();
+        }
+
+        public async Task DeleteUserAsync(int id)
+        {
+            int userId = 1; // _authService.GetUserId();
+
+            var user = await GetUserOrThrow(id);
+
+            if(userId != id)
+                throw new BadRequestException($"Solo el usuario dueño del perfil puede eliminarlo");
+
+            if (await _userRepo.HasActiveReservationsAsync(userId))
+                throw new BadRequestException($"No puedes eliminar tu perfil porque tienes reservas activas");
+
+            user.Active = false;
+
+            await _userRepo.SaveAsync();
         }
 
         public async Task<User?> GetUserOrThrow(int id)
@@ -132,9 +129,12 @@ namespace ReservasCanchas.BusinessLogic
             if (user == null)
                 throw new NotFoundException($"Usuario no encontrado con id {id}");
 
-            if (user.Status == UserStatus.Bloqueado)
-                throw new BadRequestException($"El usuario con id {id} esta bloqueado");
             return user;
+        }
+        public async Task ValidateUserState(User user)
+        {
+            if (user.Status == UserStatus.Bloqueado)
+                throw new BadRequestException($"El usuario con id {user.Id} esta bloqueado");
         }
     }
 }

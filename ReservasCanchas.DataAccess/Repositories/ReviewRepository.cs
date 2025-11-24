@@ -33,5 +33,39 @@ namespace ReservasCanchas.DataAccess.Repositories
             return review;
         }
 
+        public async Task<Review?> GetReviewByReservationIdAsync(int reservationId)
+        {
+            return await _context.Review
+                .Where(r =>  reservationId == r.ReservationId)
+                .Include(r => r.User)
+                .Include(r => r.Reservation)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Review>> GetReviewsByComplexIdAsync(int complexId)
+        {
+            return await _context.Review
+                .Include(r => r.User)
+                .Include(r => r.Reservation)
+                    .ThenInclude(res => res.Field)
+                .Where(r => r.Reservation.Field.ComplexId == complexId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Review>> GetReviewsByUserIdAsync(int userId)
+        {
+            return await _context.Review
+                .Include(r => r.User)
+                .Include(r => r.Reservation)
+                .Where(r =>  userId == r.UserId)
+                .ToListAsync();
+        }
+
+        public async Task DeleteReviewAsync(Review review)
+        {
+            _context.Review.Remove(review);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

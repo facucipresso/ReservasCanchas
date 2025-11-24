@@ -17,6 +17,8 @@ namespace ReservasCanchas.Domain.Entities
         public UserStatus Status { get; set; }
         public Rol Rol { get; set; }
 
+        public bool Active { get; set; }
+
 
         // Relacion con complejos
         public ICollection<Complex> Complejos { get; set; } = new List<Complex>();

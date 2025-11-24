@@ -11,18 +11,6 @@ namespace ReservasCanchas.BusinessLogic.Mappers
 {
     public class ReviewMapper
     {
-        public static CreateReviewResponseDTO ToCreateReviewResponseDTO(Review r)
-        {
-            return new CreateReviewResponseDTO
-            {
-                ReviewId = r.Id,
-                ReservationId = r.ReservationId,
-                UserId = r.UserId,
-                Comment = r.Comment,
-                CreationDate = r.CreationDate
-            };
-        }
-
         public static Review ToReview(CreateReviewRequestDTO createReviewDTO, int userId)
         {
             return new Review
@@ -35,13 +23,15 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static ReviewResponseDTO toReviewResponseDTO(Review r)
+        public static ReviewResponseDTO ToReviewResponseDTO(Review r)
         {
             return new ReviewResponseDTO
             {
                 Id = r.Id,
                 ReservationId = r.ReservationId,
                 UserId = r.UserId,
+                Name = r.User.Name,
+                LastName = r.User.LastName,
                 Comment = r.Comment,
                 Score = r.Score,
                 CreationDate = r.CreationDate

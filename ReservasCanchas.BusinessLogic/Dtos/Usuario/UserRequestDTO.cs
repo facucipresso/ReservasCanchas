@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Usuario
 {
-    public class UsuarioRequestDTO
+    public class UserRequestDTO
     {
         [Required(ErrorMessage = "El nombre del usuario es obligatorio")]
         public string Name { get; set; } = string.Empty;

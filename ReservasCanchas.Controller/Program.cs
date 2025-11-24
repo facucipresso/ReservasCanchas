@@ -16,14 +16,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ServiceBusinessLogic>();
 builder.Services.AddScoped<ServiceRepository>();
 
-builder.Services.AddScoped<UsuarioBusinessLogic>();
-builder.Services.AddScoped<UsuarioRepository>();
+builder.Services.AddScoped<UserBusinessLogic>();
+builder.Services.AddScoped<UserRepository>();
 
 builder.Services.AddScoped<ComplexBusinessLogic>();
 builder.Services.AddScoped<ComplexRepository>();
 
 builder.Services.AddScoped<FieldBusinessLogic>();
 builder.Services.AddScoped<FieldRepository>();
+
+builder.Services.AddScoped<ReservationBusinessLogic>();
+builder.Services.AddScoped<ReservationRepository>();
+
+builder.Services.AddScoped<ReviewBusinessLogic>();
+builder.Services.AddScoped<ReviewRepository>();
 // Configurar respuestas de error de validación de modelo
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

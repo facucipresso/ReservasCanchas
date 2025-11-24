@@ -15,18 +15,46 @@ namespace ReservasCanchas.Controller.Controllers
             _reviewBusinessLogic = reviewBusinessLogic;
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<ReviewResponseDTO>> GetReviewById([FromRoute] int id)
         {
-            ReviewResponseDTO review = await _reviewBusinessLogic.GetReviewByIdAsync(id);
+            var review = await _reviewBusinessLogic.GetReviewByIdAsync(id);
             return Ok(review);
         }
 
+        [HttpGet("my")]
+        public async Task<ActionResult<ReviewResponseDTO>> GetMyReviews()
+        {
+            var reviews = await _reviewBusinessLogic.GetReviewsByUserAsync();
+            return Ok(reviews);
+        }
+
+        [HttpGet("by-reservation/{reservationId}")]
+        public async Task<ActionResult<ReviewResponseDTO>> GetReviewByReservationId([FromRoute] int reservationId)
+        {
+            var review = await _reviewBusinessLogic.GetReviewByReservationIdAsync(reservationId);
+            return Ok(review);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ReviewResponseDTO>> GetReviewsByComplexId([FromQuery] int complexId)
+        {
+            var reviews = await _reviewBusinessLogic.GetReviewsByComplexIdAsync(complexId);
+            return Ok(reviews);
+        }
+
         [HttpPost]
-        public async Task<ActionResult<CreateReviewResponseDTO>> CreateReview([FromBody] CreateReviewRequestDTO createReviewDTO)
+        public async Task<ActionResult<ReviewResponseDTO>> CreateReview([FromBody] CreateReviewRequestDTO createReviewDTO)
         {
             var reviewCreated = await _reviewBusinessLogic.CreateReviewAsync(createReviewDTO);
-            return CreatedAtAction(nameof(GetReviewById), new { reviewId = reviewCreated.ReviewId }, reviewCreated);
+            return CreatedAtAction(nameof(GetReviewById), new { id = reviewCreated.Id }, reviewCreated);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteReview([FromRoute] int id)
+        {
+            await _reviewBusinessLogic.DeleteReview(id);
+            return NoContent();
         }
     }
 }

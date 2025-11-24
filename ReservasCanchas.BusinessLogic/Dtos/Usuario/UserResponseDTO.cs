@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Usuario
 {
-    public class UsuarioResponseDTO
+    public class UserResponseDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

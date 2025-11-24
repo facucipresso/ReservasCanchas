@@ -10,6 +10,8 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Review
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public string Name { get; set; }
+        public string LastName { get; set; }
         public int ReservationId { get; set; }
         public string? Comment { get; set; }
         public int Score { get; set; }

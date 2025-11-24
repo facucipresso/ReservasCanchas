@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Mappers
 {
-    public class UsuarioMapper
+    public class UserMapper
     {
-        public static UsuarioResponseDTO ToUsusarioResponseDTO(User user)
+        public static UserResponseDTO ToUsusarioResponseDTO(User user)
         {
-            return new UsuarioResponseDTO
+            return new UserResponseDTO
             {
                 Id = user.Id,
                 Name = user.Name,
@@ -24,14 +24,14 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static User ToUsuario(UsuarioRequestDTO usuarioRequest)
+        public static User ToUser(UserRequestDTO userRequest)
         {
             return new User 
             {
-                Name = usuarioRequest.Name,
-                LastName = usuarioRequest.LastName,
-                Email = usuarioRequest.Email,
-                Phone = usuarioRequest.Phone,
+                Name = userRequest.Name,
+                LastName = userRequest.LastName,
+                Email = userRequest.Email,
+                Phone = userRequest.Phone,
                 Status = UserStatus.Activo
                 // Faltaria agregar el rol
             };

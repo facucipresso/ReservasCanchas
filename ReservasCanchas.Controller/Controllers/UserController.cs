@@ -9,56 +9,63 @@ namespace ReservasCanchas.Controller.Controllers
     [Route("api/users")]
     public class UserController : ControllerBase
     {
-        private readonly UsuarioBusinessLogic _usuarioBusinessLogic;
+        private readonly UserBusinessLogic _usuarioBusinessLogic;
 
-        public UserController(UsuarioBusinessLogic usuarioBusinessLogic)
+        public UserController(UserBusinessLogic usuarioBusinessLogic)
         {
             _usuarioBusinessLogic = usuarioBusinessLogic;
         }
 
         [HttpGet]
-        public async Task<ActionResult<UsuarioResponseDTO>> GetAllUsers()
+        public async Task<ActionResult<UserResponseDTO>> GetAllUsers()
         {
-            var usersDtos = await _usuarioBusinessLogic.GetAll();
+            var users = await _usuarioBusinessLogic.GetAllUsersAsync();
 
-            return Ok(usersDtos);
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UsuarioResponseDTO>> GetUserById([FromRoute] int id)
+        public async Task<ActionResult<UserResponseDTO>> GetUserById([FromRoute] int id)
         {
-            var userDto = await _usuarioBusinessLogic.GetById(id);
-            return Ok(userDto);
+            var user = await _usuarioBusinessLogic.GetUserByIdAsync(id);
+            return Ok(user);
         }
 
         // En un futuro seria el registro de usuario
         [HttpPost]
-        public async Task<ActionResult<UsuarioResponseDTO>> CreateUser([FromBody] UsuarioRequestDTO userDto)
+        public async Task<ActionResult<UserResponseDTO>> CreateUser([FromBody] UserRequestDTO userDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var userCreated = await _usuarioBusinessLogic.Create(userDto);
+            var userCreated = await _usuarioBusinessLogic.CreateUserAsync(userDto);
             return CreatedAtAction(nameof(GetUserById), new { id = userCreated.Id }, userCreated);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<UsuarioRequestDTO>> UpdateUser([FromRoute] int id, [FromBody] UsuarioRequestDTO userDto)
+        public async Task<ActionResult<UserRequestDTO>> UpdateUser([FromRoute] int id, [FromBody] UserRequestDTO userDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var userUpdated = await _usuarioBusinessLogic.Update(id, userDto);
+            var userUpdated = await _usuarioBusinessLogic.UpdateUserAsync(id, userDto);
             return Ok(userUpdated);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPut("{id}/block")]
         public async Task<ActionResult> BlockUserById([FromRoute] int id)
         {
-            await _usuarioBusinessLogic.BlockUser(id);
+            await _usuarioBusinessLogic.BlockUserAsync(id);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser([FromRoute] int id)
+        {
+            await _usuarioBusinessLogic.DeleteUserAsync(id);
             return NoContent();
         }
     }

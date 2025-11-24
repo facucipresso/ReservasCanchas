@@ -33,7 +33,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         // SuperUser puede ver las reservas de cualquier complejo, o ComplexAdmin puede ver todas las reservas SOLO de sus complejos
-        [HttpGet("by-complex/{complexId}")]
+        [HttpGet("complex/{complexId}")]
         public async Task<ActionResult<List<ReservationForComplexResponseDTO>>> GetAllReservationsByComplexId([FromRoute] int complexId)
         {
             var result = await _reservationBusinessLogic.GetReservationsByComplexIdAsync(complexId);
@@ -41,7 +41,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         // SuperUser puede ver las reservas de una cancha en particular de un complejo 'X', o ComplexAdmin puede ver las reservas de una cancha de un complejo suyo
-        [HttpGet("by-field/{fieldId}")]
+        [HttpGet("field/{fieldId}")]
         public async Task<ActionResult<List<ReservationForFieldResponseDTO>>> GetAllReservationsByFieldId([FromRoute] int fieldId)
         {
             var result = await _reservationBusinessLogic.GetReservationsByFieldIdAsync(fieldId); 

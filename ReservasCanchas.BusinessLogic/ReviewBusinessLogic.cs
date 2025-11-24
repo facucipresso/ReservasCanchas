@@ -16,30 +16,67 @@ namespace ReservasCanchas.BusinessLogic
     public class ReviewBusinessLogic
     {
         private readonly ReviewRepository _reviewRepository;
-        private readonly UsuarioBusinessLogic _usurioBusinessLogic;
+        private readonly UserBusinessLogic _userBusinessLogic;
         private readonly ReservationBusinessLogic _reservationBusinessLogic;
-        public ReviewBusinessLogic(ReviewRepository reviewRepository, UsuarioBusinessLogic usuarioBusinessLogic, ReservationBusinessLogic reservationBusinessLogic)
+        private readonly ComplexBusinessLogic _complexBusinessLogic;
+        public ReviewBusinessLogic(ReviewRepository reviewRepository, UserBusinessLogic usuarioBusinessLogic,
+            ReservationBusinessLogic reservationBusinessLogic, ComplexBusinessLogic complexBusinessLogic)
         {
             _reviewRepository = reviewRepository;
-            _usurioBusinessLogic = usuarioBusinessLogic;
+            _userBusinessLogic = usuarioBusinessLogic;
             _reservationBusinessLogic = reservationBusinessLogic;
+            _complexBusinessLogic = complexBusinessLogic;
         }
 
         public async Task<ReviewResponseDTO> GetReviewByIdAsync(int id)
         {
-            Review review = await _reviewRepository.GetReviewByIdAsync(id);
+            var review = await _reviewRepository.GetReviewByIdAsync(id);
             if (review == null)
                 throw new NotFoundException($"Review con id {id} no encontrada");
 
-            return ReviewMapper.toReviewResponseDTO(review);
+            return ReviewMapper.ToReviewResponseDTO(review);
         }
-        public async Task<CreateReviewResponseDTO> CreateReviewAsync(CreateReviewRequestDTO createReviewDTO)
+
+        public async Task<ReviewResponseDTO> GetReviewByReservationIdAsync(int reservationId)
+        {
+            var reservation = await _reservationBusinessLogic.GetReservationWithRelationsOrThrow(reservationId);
+
+            var review = await _reviewRepository.GetReviewByReservationIdAsync(reservationId);
+
+            if (review == null)
+                throw new NotFoundException($"Review no encontrada para la reserva con id {reservationId}");
+
+            return ReviewMapper.ToReviewResponseDTO(review);
+        }
+
+        public async Task<List<ReviewResponseDTO>> GetReviewsByComplexIdAsync(int complexId)
+        {
+            await _complexBusinessLogic.GetComplexBasicOrThrow(complexId);
+
+            var reviews = await _reviewRepository.GetReviewsByComplexIdAsync(complexId);
+
+            return reviews.Select(ReviewMapper.ToReviewResponseDTO).ToList();
+        }
+
+        public async Task<List<ReviewResponseDTO>> GetReviewsByUserAsync()
+        {
+            var userId = 1; //_authService.GetUserIdFromToken();
+
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            _userBusinessLogic.ValidateUserState(user);
+
+            var reviews = await _reviewRepository.GetReviewsByUserIdAsync(userId);
+
+            return reviews.Select(ReviewMapper.ToReviewResponseDTO).ToList();
+        }
+
+        public async Task<ReviewResponseDTO> CreateReviewAsync(CreateReviewRequestDTO createReviewDTO)
         {
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
             var userId = 1; //_authService.GetUserIdFromToken();
 
-            // Esto me da un usuario Dto, que si no existe o si no esta habilitado me tira solo el error
-            var user = await _usurioBusinessLogic.GetUserOrThrow(userId);
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            _userBusinessLogic.ValidateUserState(user);
 
             // si no existe me patea
             var reservation = await _reservationBusinessLogic.GetReservationWithRelationsOrThrow(createReviewDTO.ReservationId);
@@ -58,8 +95,22 @@ namespace ReservasCanchas.BusinessLogic
 
             await _reviewRepository.CreateReviewAsync(review);
 
-            return ReviewMapper.ToCreateReviewResponseDTO(review);
+            return ReviewMapper.ToReviewResponseDTO(review);
+        }
 
+        public async Task DeleteReview(int id)
+        {
+            var userId = 1; //_authService.GetUserIdFromToken();
+
+            var review = await _reviewRepository.GetReviewByIdAsync(id);
+
+            if (review == null)
+                throw new NotFoundException($"Review con id {id} no encontrada");
+
+            if (userId != review.UserId)
+                throw new BadRequestException("La review solo puede ser eliminada por el usuario que la realizó");
+
+            await _reviewRepository.DeleteReviewAsync(review);
         }
     }
 }
