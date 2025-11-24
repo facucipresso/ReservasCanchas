@@ -42,31 +42,10 @@ namespace ReservasCanchas.DataAccess.Repositories
                 .ToListAsync();
         }
 
-        public Task<Field?> GetFieldByIdWithBlocksAsync(int id)
-        {
-            return _context.Field
-                .Include(f => f.RecurringCourtBlocks)
-                .FirstOrDefaultAsync(f => f.Id == id && f.Active);
-        }
-
-        public Task<Field?> GetFieldByIdWithTimeSlotsAsync(int id)
-        {
-            return _context.Field
-                .Include(f => f.TimeSlotsField)
-                .FirstOrDefaultAsync(f => f.Id == id && f.Active);
-        }
-
         public async Task<List<Field>> GetAllFieldsAsync()
         {
             return await _context.Field
                 .Where(f => f.Active)
-                .ToListAsync();
-        }
-
-        public async Task<List<Field>> GetFieldsByComplexIdAsync(int complexId)
-        {
-            return await _context.Field
-                .Where(f => f.ComplexId == complexId && f.Active)
                 .ToListAsync();
         }
 

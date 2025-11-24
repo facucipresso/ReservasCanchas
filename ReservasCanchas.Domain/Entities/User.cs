@@ -16,7 +16,6 @@ namespace ReservasCanchas.Domain.Entities
         public string Phone { get; set; } = string.Empty;
         public UserStatus Status { get; set; }
         public Rol Rol { get; set; }
-
         public bool Active { get; set; }
 
 
@@ -26,6 +25,8 @@ namespace ReservasCanchas.Domain.Entities
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
         // Relacion con reseñas
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        // Relación con notificaciones
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
     }
 }

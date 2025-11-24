@@ -22,6 +22,7 @@ namespace ReservasCanchas.DataAccess.Persistance
         public DbSet<Review> Review { get; set; }
         public DbSet<TimeSlotComplex> TimeSlotComplex { get; set; }
         public DbSet<TimeSlotField> TimeSlotField { get; set; }
+        public DbSet<Notification> Notification { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -95,6 +96,13 @@ namespace ReservasCanchas.DataAccess.Persistance
                 .HasMany(c => c.Reservations)
                 .WithOne(t => t.Field)
                 .HasForeignKey(f => f.FieldId);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }
