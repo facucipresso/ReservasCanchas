@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Review;
+using ReservasCanchas.Domain.Entities;
 
 namespace ReservasCanchas.Controller.Controllers
 {
@@ -14,11 +15,18 @@ namespace ReservasCanchas.Controller.Controllers
             _reviewBusinessLogic = reviewBusinessLogic;
         }
 
-        [HttpPost("reservations/{reservationId}")]
-        public async Task<ActionResult<CreateReviewResponseDTO>> CreateReview([FromRoute] int reservationId, [FromBody] CreateReviewRequestDTO comment)
+        [HttpGet("/{id}")]
+        public async Task<ActionResult<ReviewResponseDTO>> GetReviewById([FromRoute] int id)
         {
-            var reviewCreated = await _reviewBusinessLogic.CreateReviewAsync(reservationId, comment);
-            return reviewCreated;
+            ReviewResponseDTO review = await _reviewBusinessLogic.GetReviewByIdAsync(id);
+            return Ok(review);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<CreateReviewResponseDTO>> CreateReview([FromBody] CreateReviewRequestDTO createReviewDTO)
+        {
+            var reviewCreated = await _reviewBusinessLogic.CreateReviewAsync(createReviewDTO);
+            return CreatedAtAction(nameof(GetReviewById), new { reviewId = reviewCreated.ReviewId }, reviewCreated);
         }
     }
 }

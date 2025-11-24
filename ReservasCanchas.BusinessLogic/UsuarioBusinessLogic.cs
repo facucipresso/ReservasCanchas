@@ -130,9 +130,10 @@ namespace ReservasCanchas.BusinessLogic
         {
             var user = await _userRepo.GetUserByIdAsync(id);
             if (user == null)
-            {
-                throw new NotFoundException("Usuario con id " + id + " no encontrado");
-            }
+                throw new NotFoundException($"Usuario no encontrado con id {id}");
+
+            if (user.Status == UserStatus.Bloqueado)
+                throw new BadRequestException($"El usuario con id {id} esta bloqueado");
             return user;
         }
     }

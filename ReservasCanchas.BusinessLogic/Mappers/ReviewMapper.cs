@@ -17,9 +17,34 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             {
                 ReviewId = r.Id,
                 ReservationId = r.ReservationId,
-                UserId = r.IdUsuario,
+                UserId = r.UserId,
                 Comment = r.Comment,
-                CreatedAt = DateTime.UtcNow
+                CreationDate = r.CreationDate
+            };
+        }
+
+        public static Review ToReview(CreateReviewRequestDTO createReviewDTO, int userId)
+        {
+            return new Review
+            {
+                ReservationId = createReviewDTO.ReservationId,
+                UserId = userId,
+                Comment = createReviewDTO.Comment,
+                Score = createReviewDTO.Score
+
+            };
+        }
+
+        public static ReviewResponseDTO toReviewResponseDTO(Review r)
+        {
+            return new ReviewResponseDTO
+            {
+                Id = r.Id,
+                ReservationId = r.ReservationId,
+                UserId = r.UserId,
+                Comment = r.Comment,
+                Score = r.Score,
+                CreationDate = r.CreationDate
             };
         }
 

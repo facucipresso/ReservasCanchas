@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Review
 {
-    public class CreateReviewResponseDTO
+    public class ReviewResponseDTO
     {
-        public int ReviewId { get; set; }
-        public int ReservationId { get; set; }
+        public int Id { get; set; }
         public int UserId { get; set; }
-        public string Comment { get; set; } = string.Empty;
+        public int ReservationId { get; set; }
+        public string? Comment { get; set; }
+        public int Score { get; set; }
         public DateTime CreationDate { get; set; }
     }
 }

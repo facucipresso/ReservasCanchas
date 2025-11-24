@@ -1,4 +1,5 @@
-﻿using ReservasCanchas.DataAccess.Persistance;
+﻿using Microsoft.EntityFrameworkCore;
+using ReservasCanchas.DataAccess.Persistance;
 using ReservasCanchas.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,15 @@ namespace ReservasCanchas.DataAccess.Repositories
         public ReviewRepository(AppDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<Review?> GetReviewByIdAsync(int id)
+        {
+           return await _context.Review
+                .Where(r => r.Id == id)
+                .Include(r => r.User)
+                .Include(r => r.Reservation)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Review> CreateReviewAsync(Review review)
