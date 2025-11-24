@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic.Dtos.Reservation;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
@@ -63,7 +64,7 @@ namespace ReservasCanchas.BusinessLogic
             throw new BadRequestException($"No tiene permisos para ver la reserva con id {reservationId}");
         }
 
-        public async Task<List<ReservationForComplexResponseDTO>> GetReservationsByComplexIdAsync(int complexId)
+        public async Task<List<ReservationResponseDTO>> GetReservationsByComplexIdAsync(int complexId)
         {
             //user y rol desde el token
             var userId = 1; //_authService.GetUserIdFromToken();
@@ -77,13 +78,13 @@ namespace ReservasCanchas.BusinessLogic
                 _complexBusinessLogic.ValidateOwnerShip(complex, userId);
 
 
-            var reservationsDTO = reservations.Select(ReservationMapper.ToReservationForComplexResponseDTO).ToList();
+            var reservationsDTO = reservations.Select(ReservationMapper.ToReservationResponseDTO).ToList();
 
             return reservationsDTO;
 
         }
 
-        public async Task<List<ReservationForFieldResponseDTO>> GetReservationsByFieldIdAsync(int fieldId)
+        public async Task<List<ReservationResponseDTO>> GetReservationsByFieldIdAsync(int fieldId)
         {
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
             var userId = 1; //_authService.GetUserIdFromToken();
@@ -96,7 +97,7 @@ namespace ReservasCanchas.BusinessLogic
 
             var reservations = await _reservationRepository.GetReservationsByFieldId(fieldId);
 
-            return reservations.Select(ReservationMapper.ToReservationForFieldResponseDTO).ToList();
+            return reservations.Select(ReservationMapper.ToReservationResponseDTO).ToList();
         }
 
         public async Task<DailyReservationsForComplexResponseDTO> GetReservationsByDateForComplexAsync(int complexId, DateOnly date)
@@ -150,7 +151,7 @@ namespace ReservasCanchas.BusinessLogic
             return dailyReservationForComplexResponse;
         }
 
-        public async Task<CreateReservationResponseDTO> CreateReservationAsync(CreateReservationRequestDTO request)
+        public async Task<CreateReservationResponseDTO> CreateReservationAsync(CreateReservationRequestDTO request, string uploadPath)
         {
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
             var userId = 1; //_authService.GetUserIdFromToken();
@@ -165,14 +166,15 @@ namespace ReservasCanchas.BusinessLogic
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
             _complexBusinessLogic.ValidateAccessForBasicUser(complex);
 
+            bool isBlock = request.ReservationType == ReservationType.Bloqueo;
             // Si es un bloqueo → solo admin complejo o super
-            if (request.IsBlock)
+            if (isBlock)
             {
                 _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             }
 
             // que no sea una fecha pasada y q no sea una reserva para más de 7 días despues del actual
-            if (request.Date < DateOnly.FromDateTime(DateTime.Today) && request.Date < DateOnly.FromDateTime(DateTime.Today).AddDays(7))
+            if (request.Date < DateOnly.FromDateTime(DateTime.Today) || request.Date > DateOnly.FromDateTime(DateTime.Today).AddDays(7))
                 throw new BadRequestException("No se puede realizar una reserva para un dia anterior al actual o para más de 7 días posteriores al actual");
 
             var weekDay = _complexBusinessLogic.ConvertToWeekDay(request.Date);
@@ -207,16 +209,22 @@ namespace ReservasCanchas.BusinessLogic
                 Date = request.Date,
                 InitTime = request.InitTime,
                 CreationDate = DateTime.Now,
-                PayType = request.IsBlock ? null : request.PayType,
-                TotalPrice = request.IsBlock ? 0 : field.HourPrice,
-                PricePaid = request.IsBlock ? 0 : request.PricePaid,
-                BlockReason = request.IsBlock ? request.BlockReason : null,
-                ReservationType = request.IsBlock ? ReservationType.Bloqueo : ReservationType.Partido,
-                ReservationState = request.IsBlock ? ReservationState.Aprobada : ReservationState.Pendiente,
-                VoucherPath = "" // ver como manejamos esto
+                PayType = isBlock ? null : request.PayType,
+                TotalPrice = isBlock ? null : field.HourPrice,
+                PricePaid = isBlock ? null : request.PricePaid,
+                BlockReason = isBlock ? request.BlockReason : null,
+                ReservationType = isBlock ? ReservationType.Bloqueo : ReservationType.Partido,
+                ReservationState = isBlock ? ReservationState.Aprobada : ReservationState.Pendiente,
             };
 
             await _reservationRepository.CreateReservationAsync(reservation);
+
+            if (!isBlock)
+            {
+                var voucherPath = await ValidateAndSavePaymentVoucher(request.Image, uploadPath, reservation.Id);
+                reservation.VoucherPath = voucherPath;
+                await _reservationRepository.SaveAsync();
+            }
 
             return ReservationMapper.ToCreateReservationResponseDTO(reservation);
         }
@@ -286,6 +294,32 @@ namespace ReservasCanchas.BusinessLogic
             if (reservation == null)
                 throw new NotFoundException($"La reserva con id {reservationId} no fue encontrada");
             return reservation;
+        }
+
+        private async Task<string> ValidateAndSavePaymentVoucher(IFormFile image, string uploadPath, int reservationId)
+        {
+            if (image == null || image.Length == 0)
+                throw new BadRequestException("La imagen es obligatoria");
+
+            if (!Directory.Exists(uploadPath))
+                Directory.CreateDirectory(uploadPath);
+
+            var ext = Path.GetExtension(image.FileName).ToLower();
+            if (ext != ".jpg" && ext != ".jpeg" && ext != ".png")
+                throw new BadRequestException("Formato de imagen inválido");
+
+            const long maxBytes = 5 * 1024 * 1024; // 5MB
+            if (image.Length > maxBytes)
+                throw new BadRequestException("La imagen excede el tamaño máximo permitido (5MB).");
+
+            // Generar nombre único
+            var fileName = $"payment_voucher_{reservationId}{ext}";
+            var fullPath = Path.Combine(uploadPath, fileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+                await image.CopyToAsync(stream);
+
+            return $"uploads/reservations/{fileName}";
         }
     }
 }

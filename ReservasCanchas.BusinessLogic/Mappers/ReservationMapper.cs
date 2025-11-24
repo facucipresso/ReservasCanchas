@@ -12,24 +12,33 @@ namespace ReservasCanchas.BusinessLogic.Mappers
 {
     public class ReservationMapper
     {
-        public static ReservationForComplexResponseDTO ToReservationForComplexResponseDTO (Reservation r) 
+
+        public static ReservationResponseDTO ToReservationResponseDTO(Reservation r)
         {
-            return new ReservationForComplexResponseDTO
+            bool isBlock = r.ReservationType == ReservationType.Bloqueo;
+            return new ReservationResponseDTO
             {
                 ReservationId = r.Id,
+                CreationDate = r.CreationDate,
                 Date = r.Date,
                 InitTime = r.InitTime,
-                State = r.ReservationState,
+                ReservationState = r.ReservationState,
                 FieldId = r.FieldId,
                 FieldName = r.Field.Name,
                 UserId = r.UserId,
-                UserName = r.User.Name,
-                PayType = r.PayType,
-                TotalPrice = r.TotalPrice,
-                PricePaid = r.PricePaid
+                ReservationType = r.ReservationType,
+
+                UserName = isBlock ? null : r.User.Name,
+                UserLastName = isBlock ? null : r.User.LastName,
+                UserEmail = isBlock ? null : r.User.Email,
+                UserPhone = isBlock ? null : r.User.Phone,
+
+                PayType = isBlock ? null : r.PayType,
+                PricePaid = isBlock ? null : r.PricePaid,
+                TotalPrice = isBlock ? null : r.TotalPrice,
+                VoucherPath = isBlock ? null : r.VoucherPath,
             };
         }
-
         public static ReservationForUserResponseDTO ToReservationForUserDTO (Reservation r)
         {
             return new ReservationForUserResponseDTO
@@ -47,51 +56,13 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
                     
         }
-
-        public static ReservationForFieldResponseDTO ToReservationForFieldResponseDTO(Reservation r)
-        {
-            return new ReservationForFieldResponseDTO
-            {
-                ReservationId = r.Id,
-                Date = r.Date,
-                InitTime = r.InitTime,
-                State = r.ReservationState,
-
-                UserId = r.UserId,
-                UserName = r.User.Name,
-
-                PayType = r.PayType
-            };
-        }
-
-        /*public static DayReservationDTO ToDayReservationDTO(Reservation r)
-        {
-            return new DayReservationDTO
-            {
-                ReservationId = r.Id,
-                FieldId = r.FieldId,
-                InitTime = r.InitTime,
-                EndTime = r.InitTime.AddHours(1)
-            };
-        }
-
-        public static DayRecurringBlockDTO ToDayRecurringBlockDTO(RecurringFieldBlock b)
-        {
-            return new DayRecurringBlockDTO
-            {
-                RecurringBlockId = b.Id,
-                FieldId = b.FieldId,
-                InitTime = b.InitHour,
-                EndTime = b.EndHour
-            };
-        }*/
-
         public static CreateReservationResponseDTO ToCreateReservationResponseDTO(Reservation r)
         {
             return new CreateReservationResponseDTO
             {
                 ReservationId = r.Id,
                 FieldId = r.FieldId,
+                CreationDate = r.CreationDate,
                 Date = r.Date,
                 InitTime = r.InitTime,
                 EndTime = r.InitTime.AddHours(1),
@@ -99,20 +70,6 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 ReservationType = r.ReservationType,
                 TotalPrice = r.TotalPrice,
                 PricePaid = r.PricePaid,
-            };
-        }
-
-        public static ReservationBlockingResponseDTO ToCreateReservationBlockingResponseDTO(Reservation r)
-        {
-            return new ReservationBlockingResponseDTO
-            {
-                ReservationId = r.Id,
-                FieldId = r.FieldId,
-                Date = r.Date,
-                InitTime = r.InitTime,
-                EndTime = r.InitTime.AddHours(1),
-                ReservationType = r.ReservationType,
-                BlockReason = r.BlockReason
             };
         }
     }
