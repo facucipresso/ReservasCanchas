@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
+using ReservasCanchas.BusinessLogic.Dtos.Notification;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
@@ -8,6 +9,7 @@ using ReservasCanchas.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+//using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,12 +20,14 @@ namespace ReservasCanchas.BusinessLogic
         private readonly ComplexRepository _complexRepository;
         private readonly ServiceBusinessLogic _serviceBusinessLogic;
         private readonly UserBusinessLogic _userBusinessLogic;
+        private readonly NotificationBusinessLogic _notificationBusinessLogic;
 
-        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, UserBusinessLogic usuarioBusinessLogic)
+        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, UserBusinessLogic usuarioBusinessLogic, NotificationBusinessLogic notificationBusinessLogic)
         {
             _complexRepository = complexRepository;
             _serviceBusinessLogic = serviceBusinessLogic;
             _userBusinessLogic = usuarioBusinessLogic;
+            _notificationBusinessLogic = notificationBusinessLogic;
         }
 
         public async Task<List<ComplexCardResponseDTO>> GetComplexesForAdminComplexIdAsync()
@@ -100,6 +104,19 @@ namespace ReservasCanchas.BusinessLogic
             complex.Active = true;
             complex.State = ComplexState.Pendiente;
             await _complexRepository.CreateComplexAsync(complex);
+
+            //aca deberia crear la notificacion
+            //necesito el id del SuperUser
+            var superUserId = await _userBusinessLogic.GetUserIdByUserRolOrThrow(Rol.SuperAdmin);
+
+            var notification = new Notification
+            {
+                UserId = superUserId,
+                Title = "Nuevo complejo pendiente de aprobación",
+                Message = $"Administrador de complejo solicita habilitar el complejo '{createComplexDTO.Name}'.",
+                ComplexId = complex.Id,
+            };
+            await _notificationBusinessLogic.CreateNotificationAsync(notification);
 
             return ComplexMapper.toComplexDetailResponseDTO(complex);
         }
@@ -423,12 +440,79 @@ namespace ReservasCanchas.BusinessLogic
             return $"/uploads/complexes/{fileName}";
         }
 
-        public void ValidateFieldOperationsAllowed(Complex complex)
+        public void ValidateFieldOperationsAllowed(Domain.Entities.Complex complex)
         {
             if (complex.State == ComplexState.Pendiente || complex.State == ComplexState.Rechazado || complex.State == ComplexState.Bloqueado)
             {
                 throw new BadRequestException("No se pueden agregar canchas al complejo en el estado actual");
             }
+        }
+
+        public async Task ApproveComplexAsync(AproveComplexRequestDTO request)
+        {
+            var userId = 1; //_authService.getUserId();
+            var userRol = Rol.SuperAdmin; //_authService.getRol();
+
+            var complex = await _complexRepository.GetComplexByIdWithBasicInfoAsync(request.ComplexId);
+
+
+            // Validaciones
+            ValidateComplexApproval(complex, userRol);
+
+            complex.State = ComplexState.Habilitado;
+            await _complexRepository.SaveAsync();
+
+            // creo la notificacion 
+            var notification = new Notification
+            {
+                UserId = complex.UserId,
+                Title = "Tu complejo fue aprobado",
+                Message = $"Tu complejo '{complex.Name}' fue aprobado.",
+                ComplexId = complex.Id,
+            };
+
+            await _notificationBusinessLogic.CreateNotificationAsync(notification);
+        }
+
+        public async Task RejectComplexAsync(RejectComplexRequestDTO request)
+        {
+            var userId = 1; //_authService.getUserId();
+            var userRol = Rol.AdminComplejo; //_authService.getRol();
+
+            var complex = await _complexRepository.GetComplexByIdWithBasicInfoAsync(request.ComplexId);
+
+            ValidateComplexApproval(complex, userRol);
+
+            complex.State = ComplexState.Rechazado;
+            await _complexRepository.SaveAsync();
+
+            var notification = new Notification
+            {
+                UserId = complex.UserId,
+                Title = "Tu complejo fue rechazado",
+                Message = $"El complejo fue rechazado. Motivo: {request.Reason}.",
+                ComplexId = complex.Id,
+            };
+
+            await _notificationBusinessLogic.CreateNotificationAsync(notification);
+        }
+
+        private void ValidateComplexApproval(Complex complex, Rol userRol)
+        {
+            // debe existir
+            if (complex == null)
+                throw new BadRequestException("El complejo no existe");
+
+            // debe estar pendiente
+            if (complex.State != ComplexState.Pendiente)
+                throw new BadRequestException("Solo se pueden aprobar complejos pendientes");
+
+            // debe ser admin del complejo o superuser
+            if (userRol != Rol.SuperAdmin)
+            {
+                throw new BadRequestException("No tiene permisos para aprobar complejos");
+            }
+            
         }
     }
 }

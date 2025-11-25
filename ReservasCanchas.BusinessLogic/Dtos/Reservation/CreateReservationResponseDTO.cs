@@ -19,6 +19,5 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public ReservationType ReservationType { get; set; }
         public decimal? TotalPrice { get; set; }
         public decimal? PricePaid { get; set; }
-        public 
     }
 }

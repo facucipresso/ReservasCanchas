@@ -4,6 +4,7 @@ using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Middlewares;
 using ReservasCanchas.DataAccess.Persistance;
 using ReservasCanchas.DataAccess.Repositories;
+using ReservasCanchas.Domain.Entities;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,11 @@ builder.Services.AddScoped<ReservationRepository>();
 
 builder.Services.AddScoped<ReviewBusinessLogic>();
 builder.Services.AddScoped<ReviewRepository>();
+
+builder.Services.AddScoped<NotificationBusinessLogic>();
+builder.Services.AddScoped<NotificationRepository>();
+
+
 // Configurar respuestas de error de validación de modelo
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

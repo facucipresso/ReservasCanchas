@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
+using ReservasCanchas.BusinessLogic.Dtos.Notification;
 using ReservasCanchas.BusinessLogic.Dtos.Reservation;
 using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
@@ -72,5 +73,22 @@ namespace ReservasCanchas.Controller.Controllers
             await _reservationBusinessLogic.ChangeStateReservationAsync(reservationId, request); 
             return NoContent();
         }
+
+        //notifico la aprobacion de la reserva
+        [HttpPatch("/approve")]
+        public async Task<IActionResult> ApproveReservation([FromBody] ApproveReservationRequestDTO request)
+        {
+            await _reservationBusinessLogic.ApproveReservationAsync(request);
+            return NoContent();
+        }
+
+        //notifico el rechazo de la reserva
+        [HttpPatch("reject")]
+        public async Task<IActionResult> RejectReservation([FromBody] RejectReservationRequestDTO request)
+        {
+            await _reservationBusinessLogic.RejectReservationAsync(request);
+            return NoContent();
+        }
+
     }
 }

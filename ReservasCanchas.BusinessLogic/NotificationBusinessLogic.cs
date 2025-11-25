@@ -1,4 +1,5 @@
 ﻿using ReservasCanchas.BusinessLogic.Dtos.Notification;
+using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
 using System;
@@ -26,14 +27,23 @@ namespace ReservasCanchas.BusinessLogic
             await _userBusinessLogic.GetUserOrThrow(userId);
 
             var notifications = await _notificationRepository.GetNotificationsByUserIdAsync(userId);
-            return notifications.Select(n => new NotificacionResponseDTO
+
+            var ordered = notifications
+                .OrderBy(n => n.IsRead)                // primero las no leidas
+                .ThenByDescending(n => n.CreatedAt)    // dentro de cada grupo, fecha desc
+                .ToList();
+
+
+            return ordered.Select(n => new NotificacionResponseDTO
             {
                 Id = n.Id,
                 UserId = n.UserId,
                 CreatedAt = n.CreatedAt,
                 Title = n.Title,
                 Message = n.Message,
-                IsRead = n.IsRead
+                IsRead = n.IsRead,
+                ReservationId = n.ReservationId,
+                ComplexId = n.ComplexId
             }).ToList();
         }
 
@@ -53,5 +63,6 @@ namespace ReservasCanchas.BusinessLogic
             notification.IsRead = true;
             await _notificationRepository.SaveAsync();
         }
+
     }
 }

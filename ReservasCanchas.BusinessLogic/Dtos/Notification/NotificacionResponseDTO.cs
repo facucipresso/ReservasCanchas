@@ -14,5 +14,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Notification
         public string Message { get; set; }
         public DateTime CreatedAt { get; set; } 
         public bool IsRead { get; set; } 
+        public int ReservationId { get; set; }
+        public int ComplexId { get; set; }
     }
 }

@@ -9,11 +9,13 @@ namespace ReservasCanchas.Controller.Controllers
     [ApiController]
     public class NotificationController : ControllerBase
     {
-        private NotificationBusinessLogic _notificationBusinessLogic;
+        private readonly NotificationBusinessLogic _notificationBusinessLogic;
+        private readonly ReservationBusinessLogic _reservationBusinessLogic;
 
-        public NotificationController(NotificationBusinessLogic notificationBusinessLogic)
+        public NotificationController(NotificationBusinessLogic notificationBusinessLogic, ReservationBusinessLogic reservationBusinessLogic)
         {
             _notificationBusinessLogic = notificationBusinessLogic;
+            _reservationBusinessLogic = reservationBusinessLogic;
         }
 
         [HttpGet("my")]

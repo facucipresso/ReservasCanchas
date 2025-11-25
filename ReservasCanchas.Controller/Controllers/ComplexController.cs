@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
+using ReservasCanchas.BusinessLogic.Dtos.Notification;
 using ReservasCanchas.Domain.Enums;
 
 namespace ReservasCanchas.Controller.Controllers
@@ -87,6 +88,22 @@ namespace ReservasCanchas.Controller.Controllers
         public async Task<ActionResult> DeleteComplex([FromRoute] int id)
         {//Eliminacion de complejo (Solo Admin del complejo)
             await _complexBusinessLogic.DeleteComplexAsync(id);
+            return NoContent();
+        }
+
+        //notifico la aprobacion del complejo
+        [HttpPatch("/approve")]
+        public async Task<IActionResult> ApproveComplex([FromBody] AproveComplexRequestDTO request)
+        {
+            await _complexBusinessLogic.ApproveComplexAsync(request);
+            return NoContent();
+        }
+
+        //notifico el rechazo del complejo
+        [HttpPatch("reject")]
+        public async Task<IActionResult> RejectComplex([FromBody] RejectComplexRequestDTO request)
+        {
+            await _complexBusinessLogic.RejectComplexAsync(request); 
             return NoContent();
         }
 

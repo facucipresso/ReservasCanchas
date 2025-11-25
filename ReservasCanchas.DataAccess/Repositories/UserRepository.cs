@@ -25,6 +25,13 @@ namespace ReservasCanchas.DataAccess.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<User?> GetUserIdByRolAsync(Rol rol)
+        {
+            return await _context.User
+                .Where(u => u.Rol == rol)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _context.User

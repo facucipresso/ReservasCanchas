@@ -136,5 +136,14 @@ namespace ReservasCanchas.BusinessLogic
             if (user.Status == UserStatus.Bloqueado)
                 throw new BadRequestException($"El usuario con id {user.Id} esta bloqueado");
         }
+
+        public async Task<int> GetUserIdByUserRolOrThrow(Rol rol)
+        {
+            var user = await _userRepo.GetUserIdByRolAsync(rol);
+            if (user == null)
+                throw new NotFoundException($"Id de usuario no encontrado");
+
+            return user.Id;
+        }
     }
 }

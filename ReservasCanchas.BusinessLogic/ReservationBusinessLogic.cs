@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ReservasCanchas.BusinessLogic.Dtos.Notification;
 using ReservasCanchas.BusinessLogic.Dtos.Reservation;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
@@ -21,13 +22,15 @@ namespace ReservasCanchas.BusinessLogic
         private readonly UserBusinessLogic _userBusinessLogic;
         private readonly ComplexBusinessLogic _complexBusinessLogic;
         private readonly FieldBusinessLogic _fieldBusinessLogic;
+        private readonly NotificationBusinessLogic _notificationBusinessLogic;
 
-        public ReservationBusinessLogic(ReservationRepository reservationRepository, UserBusinessLogic usurioBusinessLogic, ComplexBusinessLogic complexBusinessLogic, FieldBusinessLogic fieldBusinessLogic)
+        public ReservationBusinessLogic(ReservationRepository reservationRepository, UserBusinessLogic usurioBusinessLogic, ComplexBusinessLogic complexBusinessLogic, FieldBusinessLogic fieldBusinessLogic, NotificationBusinessLogic notificationBusinessLogic)
         {
             _reservationRepository = reservationRepository;
             _userBusinessLogic = usurioBusinessLogic;
             _complexBusinessLogic = complexBusinessLogic;
             _fieldBusinessLogic = fieldBusinessLogic;
+            _notificationBusinessLogic = notificationBusinessLogic;
         }
 
         public async Task<List<ReservationForUserResponseDTO>> GetReservationsByUserIdAsync()
@@ -166,6 +169,9 @@ namespace ReservasCanchas.BusinessLogic
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
             _complexBusinessLogic.ValidateAccessForBasicUser(complex);
 
+            // obtengo del id del admin del complejo para la notificacion #######
+            var complexAdminId = complex.UserId;
+
             bool isBlock = request.ReservationType == ReservationType.Bloqueo;
             // Si es un bloqueo → solo admin complejo o super
             if (isBlock)
@@ -224,12 +230,21 @@ namespace ReservasCanchas.BusinessLogic
                 var voucherPath = await ValidateAndSavePaymentVoucher(request.Image, uploadPath, reservation.Id);
                 reservation.VoucherPath = voucherPath;
                 await _reservationRepository.SaveAsync();
+                // aca tendria que dispararse/generarse la notificacion ?? #######
+
+                var notification = new Notification 
+                {
+                    UserId = complexAdminId,
+                    Title = "Nueva reserva pendiente",
+                    Message = $"El usuario {user.Name} realizó una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}."
+                };
+                await _notificationBusinessLogic.CreateNotificationAsync(notification);
             }
 
             return ReservationMapper.ToCreateReservationResponseDTO(reservation);
         }
 
-        public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)
+        /*public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)
         {
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
             var userId = 1; //_authService.GetUserIdFromToken();
@@ -253,6 +268,7 @@ namespace ReservasCanchas.BusinessLogic
                 {
                     var reservationDateTime = reservation.Date.ToDateTime(reservation.InitTime);
                     var diff = reservationDateTime - DateTime.Now;
+
                     if (reservation.ReservationState == ReservationState.Aprobada && request.newState == ReservationState.CanceladoConDevolucion
                         && diff.TotalHours >= 4)
                     {
@@ -263,6 +279,20 @@ namespace ReservasCanchas.BusinessLogic
                     {
                         reservation.ReservationState = request.newState;
                         changed = true;
+                    }
+
+                    if (changed)
+                    {
+                        // si el estado cambio genero la notificacion
+                        var notification = new Notification
+                        {
+                            UserId = complex.UserId,
+                            Title = "Reserva cancelada",
+                            Message = $"La reserva con id {reservation.Id} fue cancelada por el usuario {user.Name} {user.LastName}.",
+                            ReservationId = reservation.Id,
+                        };
+
+                        await _notificationBusinessLogic.CreateNotificationAsync(notification);
                     }
                 }
             }
@@ -277,16 +307,128 @@ namespace ReservasCanchas.BusinessLogic
                 {
                     if (string.IsNullOrWhiteSpace(request.CancelationReason))
                         throw new BadRequestException($"Para cancelar una reserva aprobada debes incluir la razón de cancelación");
-
+                    
                     reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = request.CancelationReason;
                     changed = true;
                 }
+
+                if (changed)
+                {
+                    //aca creo que deberia generar la otra notificacion PERO ESTA VEZ DEL COMPLEXADMIN AL USUARIO
+                    var notification = new Notification
+                    {
+                        UserId = reservation.UserId,
+                        Title = "Reserva cancelada",
+                        Message = $"La reserva con id {reservation.Id} fue cancelada. Motivo: {reservation.CancellationReason}.",
+                        ReservationId = reservation.Id,
+                    };
+
+                    await _notificationBusinessLogic.CreateNotificationAsync(notification);
+                }
+
             }
 
             if (!changed)
                 throw new BadRequestException($"No puedes cambiar la reserva al estado {request.newState}");
             await _reservationRepository.SaveAsync();
+        }*/
+
+        public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)
+        {
+            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
+            var userId = 1; //_authService.GetUserIdFromToken();
+
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            _userBusinessLogic.ValidateUserState(user);
+
+            var reservation = await GetReservationWithRelationsOrThrow(reservationId);
+
+            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(reservation.FieldId);
+            _fieldBusinessLogic.ValidateStatusField(field);
+
+            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
+            _complexBusinessLogic.ValidateAccessForBasicUser(complex);
+
+            bool changed = false;
+
+            //  CANCELACIÓN REALIZADA POR EL USUARIO (o admin actuando como usuario)
+            if ((userRol == Rol.Usuario && userId == reservation.UserId) ||
+                (userRol == Rol.AdminComplejo && userId == reservation.UserId))
+            {
+                var reservationDateTime = reservation.Date.ToDateTime(reservation.InitTime);
+                var diff = reservationDateTime - DateTime.Now;
+
+                if (reservation.ReservationState == ReservationState.Aprobada &&
+                    request.newState == ReservationState.CanceladoConDevolucion &&
+                    diff.TotalHours >= 4)
+                {
+                    reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = null;
+                    changed = true;
+                }
+                else if (reservation.ReservationState == ReservationState.Aprobada &&
+                         request.newState == ReservationState.CanceladoSinDevolucion)
+                {
+                    reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = null;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    await _notificationBusinessLogic.CreateNotificationAsync(new Notification
+                    {
+                        UserId = complex.UserId,
+                        Title = "Reserva cancelada por usuario",
+                        Message = $"El usuario {user.Name} {user.LastName} canceló la reserva con id {reservation.Id}.",
+                        ReservationId = reservation.Id,
+                    });
+                }
+            }
+
+            // ACCIONES DEL ADMIN DEL COMPLEJO
+            if (userRol == Rol.AdminComplejo && complex.UserId == userId)
+            {
+                if (reservation.ReservationState == ReservationState.Pendiente &&
+                   (request.newState == ReservationState.Aprobada || request.newState == ReservationState.Rechazada))
+                {
+                    reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = null;
+                    changed = true;
+                }
+                else if (reservation.ReservationState == ReservationState.Aprobada &&
+                         request.newState == ReservationState.CanceladoPorAdmin)
+                {
+                    if (string.IsNullOrWhiteSpace(request.CancelationReason))
+                        throw new BadRequestException("Para cancelar una reserva aprobada debes incluir la razón de cancelación");
+
+                    reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = request.CancelationReason;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    await _notificationBusinessLogic.CreateNotificationAsync(new Notification
+                    {
+                        UserId = reservation.UserId,
+                        Title = "Tu reserva fue cancelada",
+                        Message = $"La reserva con id {reservation.Id} fue cancelada por el administrador. " +
+                                  (reservation.CancellationReason != null ?
+                                    $"Motivo: {reservation.CancellationReason}" :
+                                    ""),
+                        ReservationId = reservation.Id,
+                    });
+                }
+            }
+
+            if (!changed)
+                throw new BadRequestException($"No puedes cambiar la reserva al estado {request.newState}");
+
+            await _reservationRepository.SaveAsync();
         }
+
 
         public async Task<Reservation?> GetReservationWithRelationsOrThrow(int reservationId)
         {
@@ -321,5 +463,102 @@ namespace ReservasCanchas.BusinessLogic
 
             return $"uploads/reservations/{fileName}";
         }
+
+        public async Task ApproveReservationAsync(ApproveReservationRequestDTO request)
+        {
+            var userId = 1; //_authService.getUserId();
+            var userRol = Rol.AdminComplejo; // //_authService.getRol();
+
+            var reservation = await GetReservationWithRelationsOrThrow(request.ReservationId);
+
+            // Validaciones
+            ValidateReservationApproval(reservation, userId, userRol);
+
+            reservation.ReservationState = ReservationState.Aprobada;
+            await _reservationRepository.SaveAsync();
+
+            // creo la notificacion 
+            var notification = new Notification
+            {
+                UserId = reservation.UserId,
+                Title = "Tu reserva fue aprobada",
+                Message = $"Tu reserva en '{reservation.Field.Name}' para el {reservation.Date} a las {reservation.InitTime:HH\\:mm} fue aprobada.",
+                ReservationId = reservation.Id,
+                ComplexId = reservation.Field.ComplexId
+            };
+
+            await _notificationBusinessLogic.CreateNotificationAsync(notification);
+        }
+
+        public async Task RejectReservationAsync(RejectReservationRequestDTO request)
+        {
+            var userId = 1; //_authService.getUserId();
+            var userRol = Rol.AdminComplejo; //_authService.getRol();
+
+            var reservation = await GetReservationWithRelationsOrThrow(request.ReservationId);
+
+            ValidateReservationRejection(reservation, userId, userRol);
+
+            reservation.ReservationState = ReservationState.Rechazada;
+            await _reservationRepository.SaveAsync();
+
+            var notification = new Notification
+            {
+                UserId = reservation.UserId,
+                Title = "Tu reserva fue rechazada",
+                Message = $"La reserva fue rechazada. Motivo: {request.Reason}.",
+                ReservationId = reservation.Id,
+                ComplexId = reservation.Field.ComplexId
+            };
+
+            await _notificationBusinessLogic.CreateNotificationAsync(notification);
+        }
+
+        private void ValidateReservationApproval(Reservation reservation, int userId, Rol userRol)
+        {
+            // debe existir
+            if (reservation == null)
+                throw new BadRequestException("La reserva no existe");
+
+            // debe estar pendiente
+            if (reservation.ReservationState != ReservationState.Pendiente)
+                throw new BadRequestException("Solo se pueden aprobar reservas pendientes");
+
+            // debe ser admin del complejo o superuser
+            if (userRol == Rol.AdminComplejo)
+            {
+                if (reservation.Field.Complex.UserId != userId)
+                    throw new BadRequestException("No tiene permisos para aprobar reservas de este complejo");
+            }
+            else if (userRol != Rol.SuperAdmin)
+            {
+                throw new BadRequestException("No tiene permisos para aprobar reservas");
+            }
+        }
+
+        private void ValidateReservationRejection(Reservation reservation, int userId, Rol userRol)
+        {
+            // debe existir
+            if (reservation == null)
+                throw new BadRequestException("La reserva no existe");
+
+            // debe estar pendiente
+            if (reservation.ReservationState != ReservationState.Pendiente)
+                throw new BadRequestException("Solo se pueden aprobar reservas pendientes");
+
+            // debe ser admin del complejo o superuser
+            if (userRol == Rol.AdminComplejo)
+            {
+                if (reservation.Field.Complex.UserId != userId)
+                    throw new BadRequestException("No tiene permisos para aprobar reservas de este complejo");
+            }
+            else if (userRol != Rol.SuperAdmin)
+            {
+                throw new BadRequestException("No tiene permisos para aprobar reservas");
+            }
+        }
+
+
+
     }
 }
