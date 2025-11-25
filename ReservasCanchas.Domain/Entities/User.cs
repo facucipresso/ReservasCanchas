@@ -16,6 +16,7 @@ namespace ReservasCanchas.Domain.Entities
         public string Phone { get; set; } = string.Empty;
         public UserStatus Status { get; set; }
         public Rol Rol { get; set; }
+        //capaz esta prop la podriamos sacar
         public bool Active { get; set; }
 
 

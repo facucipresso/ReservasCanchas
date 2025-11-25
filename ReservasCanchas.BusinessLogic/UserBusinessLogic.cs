@@ -62,8 +62,8 @@ namespace ReservasCanchas.BusinessLogic
             
 
             var usuario = UserMapper.ToUser(usuarioRequest);
-            await _userRepo.CreateUserAsync(usuario);
-            return UserMapper.ToUsusarioResponseDTO(usuario);
+            var usuario2 = await _userRepo.CreateUserAsync(usuario);
+            return UserMapper.ToUsusarioResponseDTO(usuario2);
         }
 
         public async Task<UserResponseDTO> UpdateUserAsync(int id, UserRequestDTO userDTO)
@@ -73,19 +73,17 @@ namespace ReservasCanchas.BusinessLogic
             {
                 throw new NotFoundException("Usuario con id " + id + " no encontrado");
             }
-            if ((await _userRepo.ExistByPhoneAsync(userDTO.Phone) && await _userRepo.ExistByEmailAsync(userDTO.Email)))
+            // Validaciones excluyendo al usuario actual
+            if (await _userRepo.ExistByEmailExceptIdAsync(userDTO.Email, id))
             {
-                throw new BadRequestException("Ya existe un usuario con ese email y telefono ingresados: " + userDTO.Email + " , " + userDTO.Phone);
+                throw new BadRequestException($"Ya existe un usuario con el email {userDTO.Email}");
             }
-            if (await _userRepo.ExistByEmailAsync(userDTO.Email))
+
+            if (await _userRepo.ExistByPhoneExceptIdAsync(userDTO.Phone, id))
             {
-                throw new BadRequestException("Ya existe un usuario con ese email ingresados: " + userDTO.Email);
+                throw new BadRequestException($"Ya existe un usuario con el teléfono {userDTO.Phone}");
             }
-            if (await _userRepo.ExistByPhoneAsync(userDTO.Phone))
-            {
-                throw new BadRequestException("Ya existe un usuario con ese telefono ingresados: " + userDTO.Phone);
-            }
-            
+
 
             user.Name = userDTO.Name;
             user.LastName = userDTO.LastName;
@@ -94,6 +92,20 @@ namespace ReservasCanchas.BusinessLogic
 
             await _userRepo.SaveAsync();
             return UserMapper.ToUsusarioResponseDTO(user);
+        }
+
+        public async Task<User> UpdateUserRolAsync(int userId, Rol newRol)
+        {
+            var user = await _userRepo.GetUserByIdAsync(userId);
+
+            if (user == null)
+                throw new NotFoundException($"No se encontró el usuario con id {userId}");
+
+            user.Rol = newRol;
+
+            await _userRepo.SaveAsync();
+
+            return user;
         }
 
         public async Task BlockUserAsync(int id)
@@ -108,7 +120,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task DeleteUserAsync(int id)
         {
-            int userId = 1; // _authService.GetUserId();
+            int userId = 3; // _authService.GetUserId(); puse el 3 porque queria probar eliminar el user con id 3
 
             var user = await GetUserOrThrow(id);
 
@@ -123,7 +135,7 @@ namespace ReservasCanchas.BusinessLogic
             await _userRepo.SaveAsync();
         }
 
-        public async Task<User?> GetUserOrThrow(int id)
+        public async Task<User> GetUserOrThrow(int id)
         {
             var user = await _userRepo.GetUserByIdAsync(id);
             if (user == null)

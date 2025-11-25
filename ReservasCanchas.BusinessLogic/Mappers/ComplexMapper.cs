@@ -75,6 +75,13 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 StartIlumination = complexDTO.StartIlumination,
                 AditionalIlumination = complexDTO.AditionalIlumination,
                 TimeSlots = complexDTO.TimeSlots.Select(ToTimeSlotComplex).ToList()
+                /*TimeSlots = complexDTO.TimeSlotsList.Select(ts => new TimeSlotComplex
+                {
+                    WeekDay = ts.WeekDay,
+                    InitTime = ts.InitTime,
+                    EndTime = ts.EndTime
+                }).ToList()
+                */
             };
         }
 

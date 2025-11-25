@@ -12,7 +12,7 @@ namespace ReservasCanchas.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
-        //Implementado de manera parcial
+        //Implementado de manera parciallll
         public int UserId { get; set; }
         public int FieldId { get; set; }
         public DateOnly Date {  get; set; }

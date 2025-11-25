@@ -80,6 +80,9 @@ builder.Services.AddControllers()
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
 
+// HABILITAR WEBROOT
+builder.Environment.WebRootPath ??= Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -93,6 +96,9 @@ app.UseMiddleware<ExceptionMiddleware>();
 //app.UseHttpsRedirection();
 
 //app.UseAuthorization();
+
+// permito archivos estaticos
+app.UseStaticFiles();
 
 app.MapControllers();
 

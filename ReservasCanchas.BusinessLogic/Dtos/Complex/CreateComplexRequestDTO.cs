@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Complex
@@ -40,7 +41,22 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         public int AditionalIlumination { get; set; }
 
         public ICollection<int> ServicesIds { get; set; } = new List<int>();
+
+        
         [Length(7,7,ErrorMessage = "Se debe especificar una franja horaria por día")]
         public ICollection<TimeSlotComplexRequestDTO> TimeSlots { get; set; } = new List<TimeSlotComplexRequestDTO>();
+
+        /*
+        // En multipart/form-data Swagger NO PUEDE mapear listas de objetos complejos.
+        // Por eso las recibimos como string JSON.
+        [Required(ErrorMessage = "Las franjas horarias son obligatorias")]
+        public string TimeSlots { get; set; } = string.Empty;
+
+
+        // ESTE NUEVO CAMPO NO LLEGA DESDE EL CLIENTE.
+        // El backend lo utiliza una vez que deserializamos el JSON manualmente.
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+        public ICollection<TimeSlotComplexRequestDTO> TimeSlotsList { get; set; } = new List<TimeSlotComplexRequestDTO>();
+        */
     }
 }

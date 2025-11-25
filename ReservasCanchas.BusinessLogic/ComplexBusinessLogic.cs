@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
 using ReservasCanchas.BusinessLogic.Dtos.Notification;
 using ReservasCanchas.BusinessLogic.Exceptions;
@@ -64,19 +65,48 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<ComplexDetailResponseDTO> CreateComplexAsync(CreateComplexRequestDTO createComplexDTO, string uploadPath)
         {
-            var complex = ComplexMapper.toComplex(createComplexDTO);
 
+            // -----------------------------------------------------------
+            // 1. DESERIALIZAR LAS FRANJAS HORARIAS QUE VIENEN COMO STRING
+            // -----------------------------------------------------------
+            // El frontend envía TimeSlots como string JSON porque es multipart/form-data.
+            // Acá lo convertimos en una lista real de TimeSlotComplexRequestDTO.
+            /* esto es despues de los cambios
+            var timeSlots = JsonConvert.DeserializeObject<List<TimeSlotComplexRequestDTO>>(createComplexDTO.TimeSlots);
+
+            if (timeSlots == null || timeSlots.Count != 7)
+            {
+                throw new BadRequestException("Se debe especificar una franja horaria por cada día de la semana");
+            }
+
+            // Guardamos las franjas ya convertidas en el DTO para que el mapper pueda usarlas
+            createComplexDTO.TimeSlotsList = timeSlots;*/
+
+            //esto por ahora no lo llamo
+            //var complex = ComplexMapper.toComplex(createComplexDTO);
+
+            /* esto es despues de los cambios
+            var weekDays = timeSlots.Select(ts => ts.WeekDay);
+            if (weekDays.Distinct().Count() != 7)
+            {
+                throw new BadRequestException("No se pueden repetir días de la semana en los horarios del complejo");
+            }*/
+
+            /* LO AGREGUE MAS ABAJO antes de los cambios
             if (createComplexDTO.ServicesIds.Count() > 0)
             {
                 var services = await _serviceBusinessLogic.GetServicesByIdsAsync((List<int>)createComplexDTO.ServicesIds);
                 complex.Services = services;
             }
+            */
 
+            //esto es antes de los cambios
             var weekDays = createComplexDTO.TimeSlots.Select(ts => ts.WeekDay);
             if (weekDays.Distinct().Count() != 7)
             {
                 throw new BadRequestException("No se pueden repetir dias de la semana en los horarios del complejo");
             }
+            
 
             if (await _userBusinessLogic.GetUserByIdAsync(createComplexDTO.UserId) == null)
             {
@@ -98,12 +128,23 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException($"Ya existe un complejo con el teléfono {createComplexDTO.Phone}");
             }
 
+            var complex = ComplexMapper.toComplex(createComplexDTO);
+
+            if (createComplexDTO.ServicesIds.Count() > 0)
+            {
+                var services = await _serviceBusinessLogic.GetServicesByIdsAsync((List<int>)createComplexDTO.ServicesIds);
+                complex.Services = services;
+            }
+
             var imagePath = await ValidateAndSaveImage(createComplexDTO.Image, uploadPath);
 
             complex.ImagePath = imagePath;
             complex.Active = true;
             complex.State = ComplexState.Pendiente;
             await _complexRepository.CreateComplexAsync(complex);
+            
+            await _userBusinessLogic.UpdateUserRolAsync(complex.UserId, Rol.AdminComplejo);
+
 
             //aca deberia crear la notificacion
             //necesito el id del SuperUser

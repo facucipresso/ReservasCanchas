@@ -15,7 +15,7 @@ namespace ReservasCanchas.DataAccess.Persistance
 
         public DbSet<Domain.Entities.Complex> Complejo {  get; set; }
         public DbSet<Service> Service { get; set; }
-        public DbSet<User> User { get; set; }
+        public DbSet<User> Users { get; set; } 
         public DbSet<Field> Field { get; set; }
         public DbSet<RecurringFieldBlock> RecurringFieldBlock { get; set; }
         public DbSet<Reservation> Reservation { get; set; }
@@ -27,6 +27,9 @@ namespace ReservasCanchas.DataAccess.Persistance
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .ToTable("Users");
 
             //Modelo la relacion muchos a muchos, dejo que EF Core me cree la tabla intermedia 'ComplexService' automaticamente
             modelBuilder.Entity<Domain.Entities.Complex>()

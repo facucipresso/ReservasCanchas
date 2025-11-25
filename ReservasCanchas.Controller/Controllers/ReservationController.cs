@@ -75,7 +75,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         //notifico la aprobacion de la reserva
-        [HttpPatch("/approve")]
+        [HttpPatch("/approveReservation")]
         public async Task<IActionResult> ApproveReservation([FromBody] ApproveReservationRequestDTO request)
         {
             await _reservationBusinessLogic.ApproveReservationAsync(request);
@@ -83,7 +83,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         //notifico el rechazo de la reserva
-        [HttpPatch("reject")]
+        [HttpPatch("rejectReservation")]
         public async Task<IActionResult> RejectReservation([FromBody] RejectReservationRequestDTO request)
         {
             await _reservationBusinessLogic.RejectReservationAsync(request);
