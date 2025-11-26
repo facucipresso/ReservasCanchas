@@ -75,7 +75,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         //notifico la aprobacion de la reserva
-        [HttpPatch("/approveReservation")]
+        [HttpPatch("approveReservation")]
         public async Task<IActionResult> ApproveReservation([FromBody] ApproveReservationRequestDTO request)
         {
             await _reservationBusinessLogic.ApproveReservationAsync(request);

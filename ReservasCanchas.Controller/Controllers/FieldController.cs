@@ -34,7 +34,7 @@ namespace ReservasCanchas.Controller.Controllers
         public async Task<ActionResult<FieldDetailResponseDTO>> CreateField([FromBody] CreateFieldRequestDTO fieldDTO)
         {
             var createdFieldDTO = await _fieldBusinessLogic.CreateFieldAsync(fieldDTO);
-            return CreatedAtAction(nameof(GetFieldById), createdFieldDTO);
+            return CreatedAtAction(nameof(GetFieldById), new { fieldId = createdFieldDTO.Id }, createdFieldDTO);
         }
 
         [HttpPatch("{fieldId}")]

@@ -102,6 +102,43 @@ namespace ReservasCanchas.DataAccess.Repositories
             return await _context.Complejo.AnyAsync(c => c.Phone.ToLower() == phone.ToLower() && c.Active);
         }
 
+        public async Task<List<Complex>> GetComplexesWithFiltersAsync(string province,string locality, FieldType fieldType)
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var limit = today.AddDays(7);
+
+            // 1) Cargamos TODO sin filtros en el Include (EF Core seguro)
+            var complexes = await _context.Complejo
+                .Include(c => c.TimeSlots)
+                .Include(c => c.Fields)                      // ✔ sin Where
+                    .ThenInclude(f => f.Reservations
+                        .Where(r => r.Date >= today && r.Date <= limit))
+                .Include(c => c.Fields)                      // ✔ sin Where
+                    .ThenInclude(f => f.RecurringCourtBlocks)
+                .Where(c =>
+                    c.Locality == locality &&
+                    c.Province == province &&
+                    c.Active &&
+                    c.State == ComplexState.Habilitado
+                )
+                .ToListAsync();
+
+            // 2) Filtramos Fields manualmente (SIN EF)
+            foreach (var c in complexes)
+            {
+                c.Fields = c.Fields
+                    .Where(f =>
+                        f.Active &&
+                        f.FieldType == fieldType &&
+                        f.FieldState == FieldState.Habilitado)
+                    .ToList();
+            }
+
+            return complexes;
+        }
+
+
+        /*
         public async Task<List<Complex>> GetComplexesWithFiltersAsync(string province, string locality, FieldType fieldType)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
@@ -121,6 +158,7 @@ namespace ReservasCanchas.DataAccess.Repositories
                 )
                 .ToListAsync();
         }
+        */
 
         public async Task<bool> HasActiveReservationsInComplexAsync (int id)
         {

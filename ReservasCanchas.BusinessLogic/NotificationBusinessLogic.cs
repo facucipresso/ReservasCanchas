@@ -23,7 +23,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<List<NotificacionResponseDTO>> GetNotificacionsByUserIdAsync()
         {
-            var userId = 1;//_authService.getUserId();
+            var userId = 2;//_authService.getUserId();
             await _userBusinessLogic.GetUserOrThrow(userId);
 
             var notifications = await _notificationRepository.GetNotificationsByUserIdAsync(userId);
@@ -54,7 +54,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task MarkAsReadAsync(int id)
         {
-            var userId = 1; //_authService.getUserId();
+            var userId = 2; //_authService.getUserId();
             var notification = await _notificationRepository.GetNotificationByIdAsync(id);
 
             if (notification == null)

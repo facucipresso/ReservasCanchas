@@ -70,7 +70,7 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<List<ReservationResponseDTO>> GetReservationsByComplexIdAsync(int complexId)
         {
             //user y rol desde el token
-            var userId = 1; //_authService.GetUserIdFromToken();
+            var userId = 2; //_authService.GetUserIdFromToken();
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(complexId);
@@ -90,7 +90,7 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<List<ReservationResponseDTO>> GetReservationsByFieldIdAsync(int fieldId)
         {
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
-            var userId = 1; //_authService.GetUserIdFromToken();
+            var userId = 2; //_authService.GetUserIdFromToken();
 
             // resuelto
             var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(fieldId);
@@ -214,7 +214,7 @@ namespace ReservasCanchas.BusinessLogic
                 FieldId = field.Id,
                 Date = request.Date,
                 InitTime = request.InitTime,
-                CreationDate = DateTime.Now,
+                CreationDate = DateTime.UtcNow,
                 PayType = isBlock ? null : request.PayType,
                 TotalPrice = isBlock ? null : field.HourPrice,
                 PricePaid = isBlock ? null : request.PricePaid,
@@ -337,7 +337,7 @@ namespace ReservasCanchas.BusinessLogic
         public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)
         {
             var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
-            var userId = 1; //_authService.GetUserIdFromToken();
+            var userId = 2; //_authService.GetUserIdFromToken();
 
             var user = await _userBusinessLogic.GetUserOrThrow(userId);
             _userBusinessLogic.ValidateUserState(user);
@@ -466,7 +466,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task ApproveReservationAsync(ApproveReservationRequestDTO request)
         {
-            var userId = 1; //_authService.getUserId();
+            var userId = 2; //_authService.getUserId();
             var userRol = Rol.AdminComplejo; // //_authService.getRol();
 
             var reservation = await GetReservationWithRelationsOrThrow(request.ReservationId);

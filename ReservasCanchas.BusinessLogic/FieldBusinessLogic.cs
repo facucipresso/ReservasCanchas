@@ -63,15 +63,25 @@ namespace ReservasCanchas.BusinessLogic
         {
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(createFieldDTO.ComplexId);
             //var userId = _authService.GetUserIdFromToken();
-            int userId = 1;
+            int userId = 2;
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
             var slots = createFieldDTO.TimeSlotsField;
+            /*
             if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
             {
                 throw new BadRequestException($"No se pueden repetir dias de la semana en los horarios del complejo");
             }
+            */
+
+            if (slots.Count != 7)
+                throw new BadRequestException("Debes enviar exactamente 7 franjas horarias (una por día)");
+
+            if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
+                throw new BadRequestException("Los días de la semana no pueden repetirse");
+
+
             foreach (var slot in slots)
             {
                 if(slot.EndTime <= slot.InitTime)
@@ -84,6 +94,9 @@ namespace ReservasCanchas.BusinessLogic
             field.Active = true;
             field.FieldState = FieldState.Habilitado;
             await _fieldRepository.CreateFieldAsync(field);
+
+            field.RecurringCourtBlocks ??= new List<RecurringFieldBlock>();
+
             return FieldMapper.ToFieldDetailResponseDTO(field);
         }
 
@@ -93,7 +106,7 @@ namespace ReservasCanchas.BusinessLogic
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
             //var userId = _authService.GetUserIdFromToken();
-            int userId = 1;
+            int userId = 2;
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
@@ -119,7 +132,7 @@ namespace ReservasCanchas.BusinessLogic
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
             //var userId = _authService.GetUserIdFromToken();
-            int userId = 1;
+            int userId = 2;
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
@@ -173,7 +186,7 @@ namespace ReservasCanchas.BusinessLogic
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
             //var userId = _authService.GetUserIdFromToken();
-            int userId = 1;
+            int userId = 2;
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
@@ -202,7 +215,7 @@ namespace ReservasCanchas.BusinessLogic
             var field = await GetFieldWithRelationsOrThrow(fieldId);
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
             //var userId = _authService.GetUserIdFromToken();
-            int userId = 1;
+            int userId = 2;
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 

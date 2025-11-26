@@ -517,8 +517,8 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task RejectComplexAsync(RejectComplexRequestDTO request)
         {
-            var userId = 1; //_authService.getUserId();
-            var userRol = Rol.AdminComplejo; //_authService.getRol();
+            var userId = 4; //_authService.getUserId();
+            var userRol = Rol.SuperAdmin; //_authService.getRol();
 
             var complex = await _complexRepository.GetComplexByIdWithBasicInfoAsync(request.ComplexId);
 

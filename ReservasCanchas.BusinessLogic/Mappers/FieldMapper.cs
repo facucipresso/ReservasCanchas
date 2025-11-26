@@ -20,7 +20,8 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 HourPrice = fieldRequestDTO.HourPrice,
                 Ilumination = fieldRequestDTO.Ilumination,
                 Covered = fieldRequestDTO.Covered,
-                TimeSlotsField = fieldRequestDTO.TimeSlotsField.Select(ToTimeSlotField).ToList()
+                TimeSlotsField = fieldRequestDTO.TimeSlotsField.Select(ToTimeSlotField).ToList(),
+                RecurringCourtBlocks = new List<RecurringFieldBlock>()
             };
         }
 

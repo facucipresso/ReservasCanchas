@@ -92,7 +92,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         //notifico la aprobacion del complejo
-        [HttpPatch("/approveComplex")]
+        [HttpPatch("approveComplex")]
         public async Task<IActionResult> ApproveComplex([FromBody] AproveComplexRequestDTO request)
         {
             await _complexBusinessLogic.ApproveComplexAsync(request);
