@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.DataAccess.Persistance;
 using ReservasCanchas.Domain.Entities;
+using ReservasCanchas.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,5 +83,22 @@ namespace ReservasCanchas.DataAccess.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        // METODO AGREGADO PARA EL BACKGROUND
+        public async Task<List<Reservation>> GetReservationsToCompleteAsync(DateOnly today, DateTime now)
+        {
+            var timeNowOnly = TimeOnly.FromDateTime(now);
+
+            return await _context.Reservation
+                .Where(r =>
+                    r.ReservationState == ReservationState.Aprobada &&
+                    (
+                        r.Date < today ||
+                        (r.Date == today && r.InitTime.AddHours(1) <= timeNowOnly)
+                    )
+                )
+                .ToListAsync();
+        }
+
     }
 }

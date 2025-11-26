@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ReservasCanchas.BusinessLogic\ReservasCanchas.BusinessLogic.csproj" />
+    <ProjectReference Include="..\ReservasCanchas.DataAccess\ReservasCanchas.DataAccess.csproj" />
+    <ProjectReference Include="..\ReservasCanchas.Domain\ReservasCanchas.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

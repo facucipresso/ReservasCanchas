@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Middlewares;
+using ReservasCanchas.Controller.Background;
 using ReservasCanchas.DataAccess.Persistance;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
@@ -34,6 +35,9 @@ builder.Services.AddScoped<ReviewRepository>();
 
 builder.Services.AddScoped<NotificationBusinessLogic>();
 builder.Services.AddScoped<NotificationRepository>();
+
+// PARA EL TRABAJO EN BACKGROUND
+builder.Services.AddHostedService<ReservationCompletionService>();
 
 
 // Configurar respuestas de error de validación de modelo
