@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
 using ReservasCanchas.BusinessLogic.Dtos.Notification;
@@ -19,6 +20,8 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpGet("my")]
+        //PASO 17 USO DE JWT, pongo en endpoint en Authorize para que solo me permita acceso si mando un token
+        [Authorize]
         public async Task<ActionResult<List<ComplexCardResponseDTO>>> GetMyComplexes()
         {//Admin de Complejo obtiene sus complejos
 
@@ -52,7 +55,8 @@ namespace ReservasCanchas.Controller.Controllers
         {//Creacion de complejo
             var uploadPath = Path.Combine(_env.WebRootPath, "uploads", "complexes");
             var created = await _complexBusinessLogic.CreateComplexAsync(requestCreateDTO, uploadPath);
-            return CreatedAtAction(nameof(CreateComplex), new { id = created.Id }, created);
+            //return CreatedAtAction(nameof(CreateComplex), new { id = created.Id }, created);
+            return CreatedAtAction(nameof(GetComplexById), new { id = created.Id }, created);
         }
 
         [HttpPatch("{id}/basic-info")]

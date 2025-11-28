@@ -12,18 +12,20 @@ namespace ReservasCanchas.BusinessLogic
 {
     public class NotificationBusinessLogic
     {
-        private NotificationRepository _notificationRepository;
-        private UserBusinessLogic _userBusinessLogic;
+        private readonly NotificationRepository _notificationRepository;
+        private readonly UserBusinessLogic _userBusinessLogic;
+        private readonly AuthService _authService;
 
-        public NotificationBusinessLogic(NotificationRepository notificationRepository, UserBusinessLogic userBusinessLogic)
+        public NotificationBusinessLogic(NotificationRepository notificationRepository, UserBusinessLogic userBusinessLogic, AuthService authService)
         {
             _notificationRepository = notificationRepository;
             _userBusinessLogic = userBusinessLogic;
+            _authService = authService;
         }
 
         public async Task<List<NotificacionResponseDTO>> GetNotificacionsByUserIdAsync()
         {
-            var userId = 2;//_authService.getUserId();
+            var userId =_authService.GetUserId();
             await _userBusinessLogic.GetUserOrThrow(userId);
 
             var notifications = await _notificationRepository.GetNotificationsByUserIdAsync(userId);
@@ -54,7 +56,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task MarkAsReadAsync(int id)
         {
-            var userId = 2; //_authService.getUserId();
+            var userId = _authService.GetUserId();
             var notification = await _notificationRepository.GetNotificationByIdAsync(id);
 
             if (notification == null)

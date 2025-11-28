@@ -17,7 +17,7 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<UserResponseDTO>> GetAllUsers()
+        public async Task<ActionResult<IEnumerable<UserResponseDTO>>> GetAllUsers() //aca deberia devolver una list o ienumerable
         {
             var users = await _usuarioBusinessLogic.GetAllUsersAsync();
 
@@ -31,7 +31,8 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(user);
         }
 
-        // En un futuro seria el registro de usuario
+        // eliminado, ya no se pueden crear ususrios desde aca, se crean desde AccountController
+        /*
         [HttpPost]
         public async Task<ActionResult<UserResponseDTO>> CreateUser([FromBody] UserRequestDTO userDto)
         {
@@ -43,6 +44,7 @@ namespace ReservasCanchas.Controller.Controllers
             var userCreated = await _usuarioBusinessLogic.CreateUserAsync(userDto);
             return CreatedAtAction(nameof(GetUserById), new { id = userCreated.Id }, userCreated);
         }
+        */
 
         [HttpPut("{id}")]
         public async Task<ActionResult<UserRequestDTO>> UpdateUser([FromRoute] int id, [FromBody] UserRequestDTO userDto)

@@ -19,13 +19,15 @@ namespace ReservasCanchas.BusinessLogic
         private readonly UserBusinessLogic _userBusinessLogic;
         private readonly ReservationBusinessLogic _reservationBusinessLogic;
         private readonly ComplexBusinessLogic _complexBusinessLogic;
+        private readonly AuthService _authService;
         public ReviewBusinessLogic(ReviewRepository reviewRepository, UserBusinessLogic usuarioBusinessLogic,
-            ReservationBusinessLogic reservationBusinessLogic, ComplexBusinessLogic complexBusinessLogic)
+            ReservationBusinessLogic reservationBusinessLogic, ComplexBusinessLogic complexBusinessLogic, AuthService authService)
         {
             _reviewRepository = reviewRepository;
             _userBusinessLogic = usuarioBusinessLogic;
             _reservationBusinessLogic = reservationBusinessLogic;
             _complexBusinessLogic = complexBusinessLogic;
+            _authService = authService;
         }
 
         public async Task<ReviewResponseDTO> GetReviewByIdAsync(int id)
@@ -60,10 +62,10 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<List<ReviewResponseDTO>> GetReviewsByUserAsync()
         {
-            var userId = 1; //_authService.GetUserIdFromToken();
+            var userId =_authService.GetUserId();
 
             var user = await _userBusinessLogic.GetUserOrThrow(userId);
-            _userBusinessLogic.ValidateUserState(user);
+            await _userBusinessLogic.ValidateUserState(user);
 
             var reviews = await _reviewRepository.GetReviewsByUserIdAsync(userId);
 
@@ -72,11 +74,11 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<ReviewResponseDTO> CreateReviewAsync(CreateReviewRequestDTO createReviewDTO)
         {
-            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
-            var userId = 1; //_authService.GetUserIdFromToken();
+            var userRol = _authService.GetUserRole();
+            var userId = _authService.GetUserId();
 
             var user = await _userBusinessLogic.GetUserOrThrow(userId);
-            _userBusinessLogic.ValidateUserState(user);
+            await _userBusinessLogic.ValidateUserState(user);
 
             // si no existe me patea
             var reservation = await _reservationBusinessLogic.GetReservationWithRelationsOrThrow(createReviewDTO.ReservationId);
@@ -100,7 +102,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task DeleteReview(int id)
         {
-            var userId = 1; //_authService.GetUserIdFromToken();
+            var userId = _authService.GetUserId(); //_authService.GetUserIdFromToken();
 
             var review = await _reviewRepository.GetReviewByIdAsync(id);
 

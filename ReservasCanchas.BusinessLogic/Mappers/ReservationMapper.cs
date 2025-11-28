@@ -31,7 +31,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 UserName = isBlock ? null : r.User.Name,
                 UserLastName = isBlock ? null : r.User.LastName,
                 UserEmail = isBlock ? null : r.User.Email,
-                UserPhone = isBlock ? null : r.User.Phone,
+                UserPhone = isBlock ? null : r.User.PhoneNumber,
 
                 PayType = isBlock ? null : r.PayType,
                 PricePaid = isBlock ? null : r.PricePaid,

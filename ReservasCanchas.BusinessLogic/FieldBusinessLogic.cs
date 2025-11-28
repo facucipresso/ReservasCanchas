@@ -18,18 +18,19 @@ namespace ReservasCanchas.BusinessLogic
     {
         private readonly FieldRepository _fieldRepository;
         private readonly ComplexBusinessLogic _complexBusinessLogic;
-        public FieldBusinessLogic(FieldRepository fieldRepository, ComplexBusinessLogic complexBusinessLogic)
+        private readonly AuthService _authService;
+        public FieldBusinessLogic(FieldRepository fieldRepository, ComplexBusinessLogic complexBusinessLogic, AuthService authService)
         {
             _fieldRepository = fieldRepository;
             _complexBusinessLogic = complexBusinessLogic;
+            _authService = authService;
         }
         public async Task<FieldDetailResponseDTO> GetFieldByIdAsync(int fieldId)
         { //Este metodo es para cuando el admin del complejo quiere ver una cancha en particular.
             var field = await GetFieldWithRelationsOrThrow(fieldId);
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
 
-            //var userId = _authService.GetUserIdFromToken();
-            var userId = 1;
+            var userId = _authService.GetUserId();
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             return FieldMapper.ToFieldDetailResponseDTO(field);
         }
@@ -38,8 +39,7 @@ namespace ReservasCanchas.BusinessLogic
         {
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(complexId);
 
-            //var userId = _authService.GetUserIdFromToken();
-            int userId = 1;
+            var userId = _authService.GetUserId();
             var fields = await _fieldRepository.GetAllFieldsByComplexIdWithRelationsAsync(complexId);
             if (complex.UserId == userId) //si es admin devolvemos todas las canchas en todos los estados y sin importar el estado del complejo
             {
@@ -62,8 +62,7 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<FieldDetailResponseDTO> CreateFieldAsync(CreateFieldRequestDTO createFieldDTO)
         {
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(createFieldDTO.ComplexId);
-            //var userId = _authService.GetUserIdFromToken();
-            int userId = 2;
+            var userId = _authService.GetUserId();
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
@@ -105,8 +104,7 @@ namespace ReservasCanchas.BusinessLogic
             var field = await GetFieldWithRelationsOrThrow(fieldId);
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
-            //var userId = _authService.GetUserIdFromToken();
-            int userId = 2;
+            var userId = _authService.GetUserId();
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
@@ -131,8 +129,7 @@ namespace ReservasCanchas.BusinessLogic
             var field = await GetFieldWithRelationsOrThrow(fieldId);
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
-            //var userId = _authService.GetUserIdFromToken();
-            int userId = 2;
+            var userId = _authService.GetUserId();
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
@@ -166,8 +163,7 @@ namespace ReservasCanchas.BusinessLogic
             var field = await GetFieldWithRelationsOrThrow(fieldId);
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
-            //var userId = _authService.GetUserIdFromToken();
-            int userId = 1;
+            var userId = _authService.GetUserId();
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
@@ -185,8 +181,7 @@ namespace ReservasCanchas.BusinessLogic
             var field = await GetFieldWithRelationsOrThrow(fieldId);
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
-            //var userId = _authService.GetUserIdFromToken();
-            int userId = 2;
+            var userId = _authService.GetUserId();
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
@@ -214,8 +209,7 @@ namespace ReservasCanchas.BusinessLogic
         {
             var field = await GetFieldWithRelationsOrThrow(fieldId);
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
-            //var userId = _authService.GetUserIdFromToken();
-            int userId = 2;
+            var userId = _authService.GetUserId();
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 

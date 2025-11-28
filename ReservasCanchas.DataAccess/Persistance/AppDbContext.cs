@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -9,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.DataAccess.Persistance
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base (options) { }
 
         public DbSet<Domain.Entities.Complex> Complejo {  get; set; }
         public DbSet<Service> Service { get; set; }
-        public DbSet<User> Users { get; set; } 
+        //public DbSet<User> Users { get; set; }                 identity ya me maneja los usuarios
         public DbSet<Field> Field { get; set; }
         public DbSet<RecurringFieldBlock> RecurringFieldBlock { get; set; }
         public DbSet<Reservation> Reservation { get; set; }
@@ -105,6 +107,31 @@ namespace ReservasCanchas.DataAccess.Persistance
                 .WithMany(u => u.Notifications)
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // PASO 7 USO DE JWT (paso 8 vuelvo a account controller)
+            //agrego los roles que va a tener mi aplicacion
+            List<IdentityRole<int>> roles = new List<IdentityRole<int>>
+            {
+                new IdentityRole<int>
+                {
+                    Id = 1,
+                    Name = "Usuario",
+                    NormalizedName = "USUARIO"
+                },
+                new IdentityRole < int >
+                {
+                    Id = 2,
+                    Name = "AdminComplejo",
+                    NormalizedName = "ADMINCOMPLEJO"
+                },
+                new IdentityRole < int >
+                {
+                    Id = 3,
+                    Name = "SuperAdmin",
+                    NormalizedName = "SUPERADMIN"
+                },
+            };
+            modelBuilder.Entity<IdentityRole<int>>().HasData(roles);
 
         }
     }

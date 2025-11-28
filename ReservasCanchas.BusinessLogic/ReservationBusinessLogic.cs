@@ -23,21 +23,23 @@ namespace ReservasCanchas.BusinessLogic
         private readonly ComplexBusinessLogic _complexBusinessLogic;
         private readonly FieldBusinessLogic _fieldBusinessLogic;
         private readonly NotificationBusinessLogic _notificationBusinessLogic;
+        private readonly AuthService _authService;
 
-        public ReservationBusinessLogic(ReservationRepository reservationRepository, UserBusinessLogic usurioBusinessLogic, ComplexBusinessLogic complexBusinessLogic, FieldBusinessLogic fieldBusinessLogic, NotificationBusinessLogic notificationBusinessLogic)
+        public ReservationBusinessLogic(ReservationRepository reservationRepository, UserBusinessLogic usurioBusinessLogic, ComplexBusinessLogic complexBusinessLogic, FieldBusinessLogic fieldBusinessLogic, NotificationBusinessLogic notificationBusinessLogic, AuthService authService)
         {
             _reservationRepository = reservationRepository;
             _userBusinessLogic = usurioBusinessLogic;
             _complexBusinessLogic = complexBusinessLogic;
             _fieldBusinessLogic = fieldBusinessLogic;
             _notificationBusinessLogic = notificationBusinessLogic;
+            _authService = authService;
         }
 
         public async Task<List<ReservationForUserResponseDTO>> GetReservationsByUserIdAsync()
         {
             // el usuario tiene que existir
             // obtengo el id del usuario desde el token
-            var userId = 1; //_authService.GetUserIdFromToken();
+            var userId = _authService.GetUserId();
 
             var reservations = await _reservationRepository.GetReservationsByUserIdAsync(userId);
             return reservations.Select(ReservationMapper.ToReservationForUserDTO).ToList();
@@ -46,20 +48,20 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<ReservationForUserResponseDTO> GetReservationByIdAsync(int reservationId)
         {
             //obtenemos rol y id del usuario desde el token
-            var userRol = Rol.Usuario; // _authService.GetUserRolFromToken();
-            var userId = 1; //_authService.GetUserIdFromToken();
+            var userRol = _authService.GetUserRole();
+            var userId = _authService.GetUserId();
             var reservation = await GetReservationWithRelationsOrThrow(reservationId);
             //El admin puede ver cualquier reserva de canchas de su complejo o realizada por el, el usuario puede ver las reservas que realizo
-            if (userRol == Rol.AdminComplejo && userId == reservation.Field.Complex.UserId)
+            if (userRol == "AdminComplejo" && userId == reservation.Field.Complex.UserId)
             {
                 return ReservationMapper.ToReservationForUserDTO(reservation);
             }
-            if (userRol == Rol.AdminComplejo && userId == reservation.UserId)
+            if (userRol == "AdminComplejo" && userId == reservation.UserId)
             {
                 return ReservationMapper.ToReservationForUserDTO(reservation);
             }
 
-            if (userRol == Rol.Usuario && userId == reservation.UserId)
+            if (userRol == "Usuario" && userId == reservation.UserId)
             {
                 return ReservationMapper.ToReservationForUserDTO(reservation);
             }
@@ -70,14 +72,14 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<List<ReservationResponseDTO>> GetReservationsByComplexIdAsync(int complexId)
         {
             //user y rol desde el token
-            var userId = 2; //_authService.GetUserIdFromToken();
-            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(complexId);
 
             var reservations = await _reservationRepository.GetReservationsByComplexIdAsync(complexId);
 
-            if (userRol != Rol.SuperAdmin)
+            if (userRol != "SuperAdmin")
                 _complexBusinessLogic.ValidateOwnerShip(complex, userId);
 
 
@@ -89,13 +91,13 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<List<ReservationResponseDTO>> GetReservationsByFieldIdAsync(int fieldId)
         {
-            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
-            var userId = 2; //_authService.GetUserIdFromToken();
+            var userRol = _authService.GetUserRole();
+            var userId = _authService.GetUserId();
 
             // resuelto
             var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(fieldId);
 
-            if (userRol != Rol.SuperAdmin)
+            if (userRol != "SuperAdmin")
                 _complexBusinessLogic.ValidateOwnerShip(field.Complex, userId);
 
             var reservations = await _reservationRepository.GetReservationsByFieldId(fieldId);
@@ -156,11 +158,11 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<CreateReservationResponseDTO> CreateReservationAsync(CreateReservationRequestDTO request, string uploadPath)
         {
-            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
-            var userId = 1; //_authService.GetUserIdFromToken();
+            var userRol = _authService.GetUserRole();
+            var userId = _authService.GetUserId();
 
             var user = await _userBusinessLogic.GetUserOrThrow(userId);
-            _userBusinessLogic.ValidateUserState(user);
+            await _userBusinessLogic.ValidateUserState(user);
 
             var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(request.FieldId);
             _fieldBusinessLogic.ValidateStatusField(field);
@@ -173,7 +175,7 @@ namespace ReservasCanchas.BusinessLogic
             var complexAdminId = complex.UserId;
 
             bool isBlock = request.ReservationType == ReservationType.Bloqueo;
-            // Si es un bloqueo → solo admin complejo o super
+            // Si es un bloqueo, solo admin complejo o super
             if (isBlock)
             {
                 _complexBusinessLogic.ValidateOwnerShip(complex, userId);
@@ -336,11 +338,11 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)
         {
-            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
-            var userId = 2; //_authService.GetUserIdFromToken();
+            var userRol =_authService.GetUserRole();
+            var userId = _authService.GetUserId();
 
             var user = await _userBusinessLogic.GetUserOrThrow(userId);
-            _userBusinessLogic.ValidateUserState(user);
+            await _userBusinessLogic.ValidateUserState(user);
 
             var reservation = await GetReservationWithRelationsOrThrow(reservationId);
 
@@ -353,8 +355,8 @@ namespace ReservasCanchas.BusinessLogic
             bool changed = false;
 
             //  CANCELACIÓN REALIZADA POR EL USUARIO (o admin actuando como usuario)
-            if ((userRol == Rol.Usuario && userId == reservation.UserId) ||
-                (userRol == Rol.AdminComplejo && userId == reservation.UserId))
+            if ((userRol == "Usuario" && userId == reservation.UserId) ||
+                (userRol == "AdminComplejo" && userId == reservation.UserId))
             {
                 var reservationDateTime = reservation.Date.ToDateTime(reservation.InitTime);
                 var diff = reservationDateTime - DateTime.Now;
@@ -388,7 +390,7 @@ namespace ReservasCanchas.BusinessLogic
             }
 
             // ACCIONES DEL ADMIN DEL COMPLEJO
-            if (userRol == Rol.AdminComplejo && complex.UserId == userId)
+            if (userRol == "AdminComplejo" && complex.UserId == userId)
             {
                 if (reservation.ReservationState == ReservationState.Pendiente &&
                    (request.newState == ReservationState.Aprobada || request.newState == ReservationState.Rechazada))
@@ -466,8 +468,8 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task ApproveReservationAsync(ApproveReservationRequestDTO request)
         {
-            var userId = 2; //_authService.getUserId();
-            var userRol = Rol.AdminComplejo; // //_authService.getRol();
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
 
             var reservation = await GetReservationWithRelationsOrThrow(request.ReservationId);
 
@@ -492,8 +494,8 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task RejectReservationAsync(RejectReservationRequestDTO request)
         {
-            var userId = 1; //_authService.getUserId();
-            var userRol = Rol.AdminComplejo; //_authService.getRol();
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
 
             var reservation = await GetReservationWithRelationsOrThrow(request.ReservationId);
 
@@ -514,7 +516,7 @@ namespace ReservasCanchas.BusinessLogic
             await _notificationBusinessLogic.CreateNotificationAsync(notification);
         }
 
-        private void ValidateReservationApproval(Reservation reservation, int userId, Rol userRol)
+        private void ValidateReservationApproval(Reservation reservation, int userId, string userRol)
         {
             // debe existir
             if (reservation == null)
@@ -525,18 +527,18 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException("Solo se pueden aprobar reservas pendientes");
 
             // debe ser admin del complejo o superuser
-            if (userRol == Rol.AdminComplejo)
+            if (userRol == "AdminComplejo")
             {
                 if (reservation.Field.Complex.UserId != userId)
                     throw new BadRequestException("No tiene permisos para aprobar reservas de este complejo");
             }
-            else if (userRol != Rol.SuperAdmin)
+            else if (userRol != "SuperAdmin")
             {
                 throw new BadRequestException("No tiene permisos para aprobar reservas");
             }
         }
 
-        private void ValidateReservationRejection(Reservation reservation, int userId, Rol userRol)
+        private void ValidateReservationRejection(Reservation reservation, int userId, string userRol)
         {
             // debe existir
             if (reservation == null)
@@ -547,12 +549,12 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException("Solo se pueden aprobar reservas pendientes");
 
             // debe ser admin del complejo o superuser
-            if (userRol == Rol.AdminComplejo)
+            if (userRol == "AdminComplejo")
             {
                 if (reservation.Field.Complex.UserId != userId)
                     throw new BadRequestException("No tiene permisos para aprobar reservas de este complejo");
             }
-            else if (userRol != Rol.SuperAdmin)
+            else if (userRol != "SuperAdmin")
             {
                 throw new BadRequestException("No tiene permisos para aprobar reservas");
             }

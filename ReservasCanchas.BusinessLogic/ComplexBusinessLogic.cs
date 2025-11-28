@@ -22,19 +22,21 @@ namespace ReservasCanchas.BusinessLogic
         private readonly ServiceBusinessLogic _serviceBusinessLogic;
         private readonly UserBusinessLogic _userBusinessLogic;
         private readonly NotificationBusinessLogic _notificationBusinessLogic;
+        private readonly AuthService _authService;
 
-        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, UserBusinessLogic usuarioBusinessLogic, NotificationBusinessLogic notificationBusinessLogic)
+        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, UserBusinessLogic usuarioBusinessLogic, NotificationBusinessLogic notificationBusinessLogic, AuthService authService)
         {
             _complexRepository = complexRepository;
             _serviceBusinessLogic = serviceBusinessLogic;
             _userBusinessLogic = usuarioBusinessLogic;
             _notificationBusinessLogic = notificationBusinessLogic;
+            _authService = authService;
         }
 
         public async Task<List<ComplexCardResponseDTO>> GetComplexesForAdminComplexIdAsync()
         { //El admin del complejo puede ver todos sus complejos (Active = true), en cualquier estado.
-            //var userId = _authService.GetUserIdFromToken();
-            var userId = 1; //Valor para probar
+            var userId = _authService.GetUserId();
+            //var userId = 1; Valor para probar
             List<Complex> complexes = await _complexRepository.GetComplexesByUserIdAsync(userId);
             var complexesCardsDTO = complexes.Select(ComplexMapper.toComplexCardResponseDTO).ToList();
             return complexesCardsDTO;
@@ -43,16 +45,19 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<List<ComplexSuperAdminResponseDTO>> GetAllComplexesBySuperAdminAsync()
         { //El  SuperAdmin puede ver todos, existentes y en cualquier estado
             //chequear que tenga rol superadmin
-            //var userRol = _authService.GetUserRoleFromToken();
-            //if(userRol != Rol.SuperAdmin){Exception Unhautorized}
+            var userRol = _authService.GetUserRole();
+
+            if(userRol != "SuperAdmin")
+                throw new UnauthorizedAccessException("No tenés permisos para ver todos los complejos.");
+
             var complexes = await _complexRepository.GetAllComplexesAsync();
             return complexes.Select(ComplexMapper.toComplexSuperAdminResponseDTO).ToList();
         }
         public async Task<ComplexDetailResponseDTO> GetComplexByIdAsync(int complexId)
         { //El admin del complejo puede acceder a cualquier complejo que le pertenezca, en cualquier estado, el usuario solo a habilitados.
-            //var userId = _authService.GetUserIdFromToken();
-            //var userRol = _authService.GetUserRoleFromToken();
-            int userId = 1; //Valor para probar
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
+            
             var complex = await GetComplexBasicOrThrow(complexId);
 
 
@@ -66,41 +71,6 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<ComplexDetailResponseDTO> CreateComplexAsync(CreateComplexRequestDTO createComplexDTO, string uploadPath)
         {
 
-            // -----------------------------------------------------------
-            // 1. DESERIALIZAR LAS FRANJAS HORARIAS QUE VIENEN COMO STRING
-            // -----------------------------------------------------------
-            // El frontend envía TimeSlots como string JSON porque es multipart/form-data.
-            // Acá lo convertimos en una lista real de TimeSlotComplexRequestDTO.
-            /* esto es despues de los cambios
-            var timeSlots = JsonConvert.DeserializeObject<List<TimeSlotComplexRequestDTO>>(createComplexDTO.TimeSlots);
-
-            if (timeSlots == null || timeSlots.Count != 7)
-            {
-                throw new BadRequestException("Se debe especificar una franja horaria por cada día de la semana");
-            }
-
-            // Guardamos las franjas ya convertidas en el DTO para que el mapper pueda usarlas
-            createComplexDTO.TimeSlotsList = timeSlots;*/
-
-            //esto por ahora no lo llamo
-            //var complex = ComplexMapper.toComplex(createComplexDTO);
-
-            /* esto es despues de los cambios
-            var weekDays = timeSlots.Select(ts => ts.WeekDay);
-            if (weekDays.Distinct().Count() != 7)
-            {
-                throw new BadRequestException("No se pueden repetir días de la semana en los horarios del complejo");
-            }*/
-
-            /* LO AGREGUE MAS ABAJO antes de los cambios
-            if (createComplexDTO.ServicesIds.Count() > 0)
-            {
-                var services = await _serviceBusinessLogic.GetServicesByIdsAsync((List<int>)createComplexDTO.ServicesIds);
-                complex.Services = services;
-            }
-            */
-
-            //esto es antes de los cambios
             var weekDays = createComplexDTO.TimeSlots.Select(ts => ts.WeekDay);
             if (weekDays.Distinct().Count() != 7)
             {
@@ -143,12 +113,12 @@ namespace ReservasCanchas.BusinessLogic
             complex.State = ComplexState.Pendiente;
             await _complexRepository.CreateComplexAsync(complex);
             
-            await _userBusinessLogic.UpdateUserRolAsync(complex.UserId, Rol.AdminComplejo);
+            await _userBusinessLogic.UpdateUserRolAsync(complex.UserId, "AdminComplejo");
 
 
             //aca deberia crear la notificacion
             //necesito el id del SuperUser
-            var superUserId = await _userBusinessLogic.GetUserIdByUserRolOrThrow(Rol.SuperAdmin);
+            var superUserId = await _userBusinessLogic.GetUserIdByUserRolOrThrow("SuperAdmin");
 
             var notification = new Notification
             {
@@ -167,8 +137,8 @@ namespace ReservasCanchas.BusinessLogic
 
             var complex = await GetComplexBasicOrThrow(complexId);
             //Chequeamos owner
-            //var userId = _authService.GetUserIdFromToken();
-            var userId = 1;
+            var userId = _authService.GetUserId();
+            //var userId = 1;
             ValidateOwnerShip(complex, userId);
             ValidateEditable(complex);
             if (await _complexRepository.ExistsByNameAsync(updateComplexDTO.Name) && complex.Name != updateComplexDTO.Name)
@@ -204,8 +174,8 @@ namespace ReservasCanchas.BusinessLogic
 
             var complejo = await GetComplexBasicOrThrow(complexId);
             //Chequeamos owner
-            //var userId = _authService.GetUserIdFromToken();
-            var userId = 1;
+            var userId = _authService.GetUserId();
+            //var userId = 1;
             ValidateOwnerShip(complejo, userId);
             ValidateEditable(complejo);
 
@@ -239,8 +209,8 @@ namespace ReservasCanchas.BusinessLogic
         {
             var complex = await GetComplexBasicOrThrow(complexId);
             //Chequeamos owner
-            //var userId = _authService.GetUserIdFromToken();
-            var userId = 1;
+            var userId = _authService.GetUserId();
+            //var userId = 1;
             ValidateOwnerShip(complex, userId);
             ValidateEditable(complex);
             var services = await _serviceBusinessLogic.GetServicesByIdsAsync(servicesIds);
@@ -287,9 +257,9 @@ namespace ReservasCanchas.BusinessLogic
 
             // ***** TRANSICIONES SUPERADMIN ***** //
 
-            //var userRol = _authService.GetUserRoleFromToken();
-            var userRol = Rol.SuperAdmin;
-            if (userRol != Rol.SuperAdmin)
+            var userRol = _authService.GetUserRole();
+            //var userRol = Rol.SuperAdmin;
+            if (userRol != "SuperAdmin")
             {
                 throw new BadRequestException($"No tiene los permisos para hacer esta operacion");
             }
@@ -387,8 +357,8 @@ namespace ReservasCanchas.BusinessLogic
         {
             var complex = await GetComplexBasicOrThrow(complexId);
             //Chequeamos owner
-            //var userId = _authService.GetUserIdFromToken();
-            var userId = 1;
+            var userId = _authService.GetUserId();
+            //var userId = 1;
             ValidateOwnerShip(complex, userId);
             if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
             {
@@ -491,8 +461,8 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task ApproveComplexAsync(AproveComplexRequestDTO request)
         {
-            var userId = 1; //_authService.getUserId();
-            var userRol = Rol.SuperAdmin; //_authService.getRol();
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
 
             var complex = await _complexRepository.GetComplexByIdWithBasicInfoAsync(request.ComplexId);
 
@@ -517,8 +487,8 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task RejectComplexAsync(RejectComplexRequestDTO request)
         {
-            var userId = 4; //_authService.getUserId();
-            var userRol = Rol.SuperAdmin; //_authService.getRol();
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
 
             var complex = await _complexRepository.GetComplexByIdWithBasicInfoAsync(request.ComplexId);
 
@@ -538,7 +508,7 @@ namespace ReservasCanchas.BusinessLogic
             await _notificationBusinessLogic.CreateNotificationAsync(notification);
         }
 
-        private void ValidateComplexApproval(Complex complex, Rol userRol)
+        private void ValidateComplexApproval(Complex complex, string userRol)
         {
             // debe existir
             if (complex == null)
@@ -549,7 +519,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException("Solo se pueden aprobar complejos pendientes");
 
             // debe ser admin del complejo o superuser
-            if (userRol != Rol.SuperAdmin)
+            if (userRol != "SuperAdmin")
             {
                 throw new BadRequestException("No tiene permisos para aprobar complejos");
             }

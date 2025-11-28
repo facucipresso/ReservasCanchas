@@ -17,10 +17,9 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             return new UserResponseDTO
             {
                 Id = user.Id,
-                Name = user.Name,
-                LastName = user.LastName,
+                UserName = user.UserName,
                 Email = user.Email,
-                Phone = user.Phone
+                Phone = user.PhoneNumber
             };
         }
 
@@ -31,7 +30,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Name = userRequest.Name,
                 LastName = userRequest.LastName,
                 Email = userRequest.Email,
-                Phone = userRequest.Phone,
+                PhoneNumber = userRequest.Phone, 
                 Status = UserStatus.Activo
                 // Faltaria agregar el rol
             };

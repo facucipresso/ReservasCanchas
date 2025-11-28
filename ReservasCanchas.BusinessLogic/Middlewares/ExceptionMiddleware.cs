@@ -32,6 +32,7 @@ namespace ReservasCanchas.BusinessLogic.Middlewares
             }
         }
 
+        /*
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var problemDetails = new ProblemDetails
@@ -64,6 +65,35 @@ namespace ReservasCanchas.BusinessLogic.Middlewares
             var json = JsonSerializer.Serialize(problemDetails);
             return context.Response.WriteAsync(json);
 
+        }*/
+
+        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            // Si la respuesta ya comenzó, NO podemos escribir otro body
+            if (context.Response.HasStarted)
+            {
+                Console.WriteLine("No se puede escribir la respuesta de error porque ya se inició.");
+                return Task.CompletedTask;
+            }
+
+            var problemDetails = new ProblemDetails
+            {
+                Title = "Ha ocurrido un error al procesar la respuesta",
+                Detail = exception.Message,
+                Instance = context.Request.Path
+            };
+
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = exception switch
+            {
+                NotFoundException => StatusCodes.Status404NotFound,
+                BadRequestException => StatusCodes.Status400BadRequest,
+                _ => StatusCodes.Status500InternalServerError
+            };
+
+            var json = JsonSerializer.Serialize(problemDetails);
+            return context.Response.WriteAsync(json);
         }
+
     }
 }
