@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.BusinessLogic.Dtos.Account;
+using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.JWTService;
 using ReservasCanchas.Domain.Entities;
+using ReservasCanchas.Domain.Enums;
 
 namespace ReservasCanchas.Controller.Controllers
 {
@@ -53,9 +55,6 @@ namespace ReservasCanchas.Controller.Controllers
                     var roleResult = await _userManager.AddToRoleAsync(appUser, "SuperAdmin"); // le cambio momentaneamente a que lo cargue con rol SuperAdmin para poder trabajar, sino aca va Usuario 
                     if (roleResult.Succeeded)
                     {
-                        //esto era antes de crear el dto NewUserDto
-                        //return Ok("User Created");
-
                         //esto es con NewUserDto creado y teniendo TokenService
                         return Ok(new NewUserDto
                         {
@@ -66,18 +65,21 @@ namespace ReservasCanchas.Controller.Controllers
                     }
                     else
                     {
-                        return StatusCode(500, roleResult.Errors);
+                        throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}, fallo en la asignacion del rol: {roleResult.Errors}");
+                        //return StatusCode(500, roleResult.Errors);
                     }
                 }
                 else
                 {
-                    return StatusCode(500, createdUser.Errors);
+                    throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}: {createdUser.Errors}");
+                    //return StatusCode(500, createdUser.Errors);
                 }
 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex);
+                throw new BadRequestException($"Ocurrio un error en el proceso de registro del usuario: {ex}");
+                //return StatusCode(500, ex);
             }
 
         }
@@ -91,11 +93,11 @@ namespace ReservasCanchas.Controller.Controllers
             //busco el usuario en la base de datos con user manager que es el que me facilita el acceso y manejo de usuarios
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Username);
 
-            if (user == null) return Unauthorized("Invalid username");
+            if (user == null) return Unauthorized("Usuario Invalido");
 
             //checkea que la contraseña sea la correcta
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false); // ver bien el parametro 'false' de esta funcion
-            if (!result.Succeeded) return Unauthorized("Username not found or password incorrect");
+            if (!result.Succeeded) return Unauthorized("Username no encontrado o contaseña incorrecta");
 
             return Ok(new NewUserDto
             {

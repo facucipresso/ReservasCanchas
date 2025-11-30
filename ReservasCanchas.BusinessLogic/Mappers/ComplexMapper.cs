@@ -10,7 +10,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
 {
     public class ComplexMapper
     {
-        public static ComplexCardResponseDTO toComplexCardResponseDTO(Complex complex)
+        public static ComplexCardResponseDTO toComplexCardResponseDTO(Complex complex, decimal lowestPrice)
         {
             return new ComplexCardResponseDTO
             {
@@ -20,7 +20,8 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Locality = complex.Locality,
                 Street = complex.Street,
                 Number = complex.Number,
-                ImagePath = complex.ImagePath
+                ImagePath = complex.ImagePath,
+                LowestPricePerField = lowestPrice
             };
         }
 

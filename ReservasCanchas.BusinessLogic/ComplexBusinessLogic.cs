@@ -38,7 +38,15 @@ namespace ReservasCanchas.BusinessLogic
             var userId = _authService.GetUserId();
             //var userId = 1; Valor para probar
             List<Complex> complexes = await _complexRepository.GetComplexesByUserIdAsync(userId);
-            var complexesCardsDTO = complexes.Select(ComplexMapper.toComplexCardResponseDTO).ToList();
+            List<ComplexCardResponseDTO> complexesCardsDTO = new List<ComplexCardResponseDTO>(); //= complexes.Select(ComplexMapper.toComplexCardResponseDTO).ToList();
+
+            foreach (var complejo in complexes)
+            {
+                var lowestPricePerField = LowPriceForField(complejo);
+                ComplexCardResponseDTO card = ComplexMapper.toComplexCardResponseDTO(complejo, lowestPricePerField);
+                complexesCardsDTO.Add(card);
+            }
+
             return complexesCardsDTO;
         }
 
@@ -346,8 +354,9 @@ namespace ReservasCanchas.BusinessLogic
 
                 if (hasAvailableField)
                 {
+                    var lowestPrice = LowPriceForField(c);
                     // La agrego a la lista de complejos a devolver
-                    result.Add(ComplexMapper.toComplexCardResponseDTO(c));
+                    result.Add(ComplexMapper.toComplexCardResponseDTO(c, lowestPrice));
                 }
             }
             return result;
@@ -525,5 +534,11 @@ namespace ReservasCanchas.BusinessLogic
             }
             
         }
+
+        private decimal LowPriceForField(Complex complex)
+        {
+            return complex.Fields.Min(f => f.HourPrice);
+        }
+
     }
 }
