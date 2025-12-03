@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
 using ReservasCanchas.BusinessLogic.Dtos.Notification;
@@ -13,6 +14,7 @@ using System.Linq;
 //using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace ReservasCanchas.BusinessLogic
 {
@@ -80,11 +82,59 @@ namespace ReservasCanchas.BusinessLogic
         {
 
             var weekDays = createComplexDTO.TimeSlots.Select(ts => ts.WeekDay);
+            var slots = createComplexDTO.TimeSlots;
+
+            //checkear que el complejo pueda tener mismo horario de apertura y de cierre, eso singifica que ese dia esta cerrado
+
             if (weekDays.Distinct().Count() != 7)
             {
                 throw new BadRequestException("No se pueden repetir dias de la semana en los horarios del complejo");
             }
-            
+
+            var earliestOpen = new TimeSpan(8, 0, 0);
+            var latestClose = new TimeSpan(2, 0, 0);
+            var latestCloseAdjusted = latestClose.Add(TimeSpan.FromDays(1)); // esto lo voy a usar para sumarle un dia a los horarios de cierre de complejo postoriores a las 12 de la noche
+
+            foreach (var slot in slots)
+            {
+                var init = slot.InitTime.ToTimeSpan();
+                var end = slot.EndTime.ToTimeSpan();
+
+                // indentifico si cierra despues de medianoche
+                bool closesNextDay = end < init;
+
+                //aca corroboro si el horario de cierre es despues de medianoche, ajusto mi horario
+                var endAdjusted = closesNextDay ? end.Add(TimeSpan.FromDays(1)) : end;
+
+                if (init == end) continue; // ese dia esta cerrado
+
+
+                if(init < earliestOpen)
+                {
+                    throw new BadRequestException($"El horario de apertura no puede ser anterior a las 8 de la mañana");
+                }
+
+                // valido que el horario de cierre no sea posterior a las 2 de la mañana
+                if (endAdjusted > latestCloseAdjusted)
+                {
+                    throw new BadRequestException($"El horario de cierre no puede ser posterior a las 2 de la mañana");
+                }
+            }
+
+            /*
+            foreach (var slot in slots)
+            {
+                if (slot.EndTime < slot.InitTime)
+                {
+                    throw new BadRequestException($"El horario de fin debe ser mayor al horario de inicio para el día: {slot.WeekDay}");
+                }
+                if(slot.EndTime > // 2 de la mañana || slot.InitTme < 8 de la mañana)
+                {
+                    throw new BadRequestException($"El horario de apertura no debe ser anterior a las 8 de la mañana y el horario de cierre no debe ser posterior a las 2 de la mañana");
+                }
+            }
+            */
+
 
             if (await _userBusinessLogic.GetUserByIdAsync(createComplexDTO.UserId) == null)
             {

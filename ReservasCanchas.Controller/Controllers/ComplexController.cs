@@ -29,7 +29,7 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(complexes);
         }
 
-        [HttpGet("filters")]
+        [HttpGet("filters")] // este va sin autenticacion
         public async Task<ActionResult<List<ComplexCardResponseDTO>>> GetComplexesWithFilters([FromQuery] ComplexFiltersRequestDTO filters)
         {//Busqueda principal de complejos disponibles para usuarios comunes usando filtros
             var complexes = await _complexBusinessLogic.SearchAvailableComplexes(filters);
@@ -43,7 +43,7 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(complexes);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")] // esta va sin autenticacion
         public async Task<ActionResult<ComplexDetailResponseDTO>> GetComplexById([FromRoute] int id)
         {//Obtener detalle de complejo por id
             var complex = await _complexBusinessLogic.GetComplexByIdAsync(id);

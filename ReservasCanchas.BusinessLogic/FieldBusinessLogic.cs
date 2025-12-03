@@ -66,6 +66,8 @@ namespace ReservasCanchas.BusinessLogic
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
+            var slotsComplex = complex.TimeSlots;
+
             var slots = createFieldDTO.TimeSlotsField;
             /*
             if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
@@ -80,14 +82,47 @@ namespace ReservasCanchas.BusinessLogic
             if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
                 throw new BadRequestException("Los días de la semana no pueden repetirse");
 
-
-            foreach (var slot in slots)
+            //aca hay que cheachear que el time slot sea dentro del horario de apertura y cierre del complejo
+            foreach (var fieldSlot in slots)
             {
-                if(slot.EndTime <= slot.InitTime)
+
+                var day = fieldSlot.WeekDay;
+
+                //busco el slot del complejo del mismo dia
+                var complexSlot = complex.TimeSlots.FirstOrDefault(s => s.WeekDay == day);
+                if (complexSlot != null)
                 {
-                    throw new BadRequestException($"El horario de fin debe ser mayor al horario de inicio para el día {slot.WeekDay}");
+                    throw new BadRequestException($"El complejo no tiene un horario configurado para el día {day}");
                 }
+
+                //convierto a spam para poder manipular si el horario de fin es despuesd de media noche
+                var cInit = complexSlot.InitTime.ToTimeSpan();
+                var cEnd = complexSlot.EndTime.ToTimeSpan();
+                var fInit = fieldSlot.InitTime.ToTimeSpan();
+                var fEnd = fieldSlot.EndTime.ToTimeSpan();
+
+                bool fClosesNextDay = fEnd < fInit;
+                bool cClosesNextDay = cEnd < cInit;
+
+                var cEndAdj = cClosesNextDay ? cEnd.Add(TimeSpan.FromDays(1)) : cEnd;
+                var fEndAdj = fClosesNextDay ? fEnd.Add(TimeSpan.FromDays(1)) : fEnd;
+
+                //la cancha no esta habilitada ese dia
+                if(fInit == fEnd) continue;
+
+                if(cInit == cEnd)
+                {
+                    throw new BadRequestException($"La cancha para el día {day} no puede abrir antes que el complejo ({fieldSlot.InitTime} < {complexSlot.InitTime}).");
+                }
+
+                if(fEndAdj == cEndAdj)
+                {
+                    throw new BadRequestException($"La cancha para el día {day} no puede cerrar después que el complejo ({fieldSlot.EndTime} > {complexSlot.EndTime}).");
+
+                }
+
             }
+
             var field = FieldMapper.ToField(createFieldDTO);
             field.Name = $"Cancha {await _fieldRepository.CountFieldsByComplexAsync(complex.Id) + 1} {field.FieldType}";
             field.Active = true;

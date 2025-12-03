@@ -93,11 +93,11 @@ namespace ReservasCanchas.Controller.Controllers
             //busco el usuario en la base de datos con user manager que es el que me facilita el acceso y manejo de usuarios
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Username);
 
-            if (user == null) return Unauthorized("Usuario Invalido");
+            if (user == null) throw new BadRequestException($"Usuario no encontrado");
 
             //checkea que la contraseña sea la correcta
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false); // ver bien el parametro 'false' de esta funcion
-            if (!result.Succeeded) return Unauthorized("Username no encontrado o contaseña incorrecta");
+            if (!result.Succeeded) throw new BadRequestException($"Contraseña inconrrecta");
 
             return Ok(new NewUserDto
             {
