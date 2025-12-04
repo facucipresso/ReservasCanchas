@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Account;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.JWTService;
@@ -23,78 +25,40 @@ namespace ReservasCanchas.Controller.Controllers
         //checkeo contraseña
         private readonly SignInManager<User> _signInManager;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, TokenService tokenService)
+        private readonly AccountBusinessLogic _accountBusinessLogic;
+
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, TokenService tokenService, AccountBusinessLogic accountBusinessLogic)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _accountBusinessLogic = accountBusinessLogic;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {// PASO 8 USO DE JWT hago todas las validaciones (PASO 9 USO DE JWT, antes de probar el endpoint tengo que hacer la migracion a la bbdd y el update de la misma)
             //(paso 10 en ITokenService)
-                if (await _userManager.FindByNameAsync(registerDto.Username) != null)
-                    throw new BadRequestException("El nombre de usuario ya está en uso.");
-                if (await _userManager.FindByEmailAsync(registerDto.Email) != null)
-                    throw new BadRequestException("El email ya está registrado.");
-                //si esta bien ingresado el dto, creo un nuevo usuario
-                var appUser = new User
-                {
-                    UserName = registerDto.Username,
-                    Email = registerDto.Email,
-                    Name = registerDto.Name,
-                    LastName = registerDto.LastName,
-                    PhoneNumber = registerDto.PhoneNumber
-                };
-                //aca lo sigo creando, le agrego la contraseña que ingreso pero hasheada
-                var createdUser = await _userManager.CreateAsync(appUser, registerDto.Password);
-                if (createdUser.Succeeded)
-                {
-                    //si la contraseña fue bien, le asigno un rol
-                    var roleResult = await _userManager.AddToRoleAsync(appUser, "Usuario"); 
-                    if (roleResult.Succeeded)
-                    {
-                        //esto es con NewUserDto creado y teniendo TokenService
-                        return Ok(new NewUserDto
-                        {
-                            UserName = appUser.UserName,
-                            Email = appUser.Email,
-                            Token = await _tokenService.CreateToken(appUser)
-                        });
-                    }
-                    else
-                    {
-                        throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}, fallo en la asignacion del rol: {roleResult.Errors}");
-                    }
-                }
-                else
-                {
-                    throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}: {createdUser.Errors}");
-                }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userRegistered = await _accountBusinessLogic.RegisterAsync(registerDto);
+            return Ok(userRegistered);
+
         }
 
         //PASO 15 ESO DE JWT, hacer el login (paso 16 en el program.cs)
         [HttpPost("login")]
-        public async Task<IActionResult> login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            //busco el usuario en la base de datos con user manager que es el que me facilita el acceso y manejo de usuarios
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Username);
+            var userLoged = await _accountBusinessLogic.LoginAsync(loginDto);
+            return Ok(userLoged);
 
-            if (user == null) throw new BadRequestException($"Usuario no encontrado");
-
-            //checkea que la contraseña sea la correcta
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false); // ver bien el parametro 'false' de esta funcion
-            if (!result.Succeeded) throw new BadRequestException($"Contraseña inconrrecta");
-
-            return Ok(new NewUserDto
-            {
-                UserName = user.UserName,
-                Email = user.Email,
-                Token = await _tokenService.CreateToken(user)
-            });
         }
 
     }
