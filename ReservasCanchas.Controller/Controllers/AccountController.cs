@@ -34,10 +34,10 @@ namespace ReservasCanchas.Controller.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {// PASO 8 USO DE JWT hago todas las validaciones (PASO 9 USO DE JWT, antes de probar el endpoint tengo que hacer la migracion a la bbdd y el update de la misma)
             //(paso 10 en ITokenService)
-            try
-            {
-                if (!ModelState.IsValid) return BadRequest(ModelState);
-
+                if (await _userManager.FindByNameAsync(registerDto.Username) != null)
+                    throw new BadRequestException("El nombre de usuario ya está en uso.");
+                if (await _userManager.FindByEmailAsync(registerDto.Email) != null)
+                    throw new BadRequestException("El email ya está registrado.");
                 //si esta bien ingresado el dto, creo un nuevo usuario
                 var appUser = new User
                 {
@@ -52,7 +52,7 @@ namespace ReservasCanchas.Controller.Controllers
                 if (createdUser.Succeeded)
                 {
                     //si la contraseña fue bien, le asigno un rol
-                    var roleResult = await _userManager.AddToRoleAsync(appUser, "SuperAdmin"); // le cambio momentaneamente a que lo cargue con rol SuperAdmin para poder trabajar, sino aca va Usuario 
+                    var roleResult = await _userManager.AddToRoleAsync(appUser, "Usuario"); 
                     if (roleResult.Succeeded)
                     {
                         //esto es con NewUserDto creado y teniendo TokenService
@@ -66,22 +66,12 @@ namespace ReservasCanchas.Controller.Controllers
                     else
                     {
                         throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}, fallo en la asignacion del rol: {roleResult.Errors}");
-                        //return StatusCode(500, roleResult.Errors);
                     }
                 }
                 else
                 {
                     throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}: {createdUser.Errors}");
-                    //return StatusCode(500, createdUser.Errors);
                 }
-
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException($"Ocurrio un error en el proceso de registro del usuario: {ex}");
-                //return StatusCode(500, ex);
-            }
-
         }
 
         //PASO 15 ESO DE JWT, hacer el login (paso 16 en el program.cs)

@@ -1,0 +1,59 @@
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgb(250,250,250);
+  border-radius: 30px;
+}
+
+.form-grid > * {
+  flex: 0 0 180px;  
+  max-width: 180px;
+}
+
+.p-inputtext,
+.p-dropdown,
+.p-autocomplete,
+.p-datepicker,
+.p-button {
+  width: 100%;
+}
+
+.p-dropdown-label,
+.p-autocomplete-input,
+.p-inputtext {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* agrega ... si el texto no entra */
+}
+
+.form-grid.compact-form {
+  padding: 0.3rem 0.5rem;       /* menos padding */
+  border-radius: 20px;          /* más pequeño */
+}
+
+/* items más pequeños */
+.form-grid.compact-form > * {
+  flex: 0 0 140px;              /* antes 180px */
+  max-width: 140px;
+}
+
+/* inputs, selects, botones */
+.form-grid.compact-form .p-inputtext,
+.form-grid.compact-form .p-dropdown,
+.form-grid.compact-form .p-autocomplete,
+.form-grid.compact-form .p-datepicker,
+.form-grid.compact-form .p-button {
+  font-size: 0.75rem;           /* texto más chico */
+  padding: 0.35rem !important;   /* más delgado */
+}
+
+/* botón más compacto */
+.form-grid.compact-form .p-button {
+  padding: 10px 12px !important;
+  border-radius: 20px !important;
+}
+

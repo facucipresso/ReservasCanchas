@@ -1,0 +1,76 @@
+<div class="home-container">
+  <!-- ===================== -->
+  <!-- HERO SECTION          -->
+  <!-- ===================== -->
+  <section class="hero" [ngStyle]="{ 'background-image': currentImage }">
+    <div class="hero-content">
+      <h1>Reservá tu cancha al instante</h1>
+      <p>
+        La forma más rápida y cómoda para encontrar y reservar complejos
+        deportivos.
+      </p>
+      <app-form-search-complexes></app-form-search-complexes>
+    </div>
+  </section>
+
+  <section class="stats-section">
+    <div class="stats-container">
+      <div class="stat-card">
+        <h2>+1000</h2>
+        <p>Usuarios registrados</p>
+      </div>
+
+      <div class="stat-card">
+        <h2>+100</h2>
+        <p>Complejos activos</p>
+      </div>
+
+      <div class="stat-card">
+        <h2 >+500</h2>
+        <p>Reservas realizadas</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section">
+    <h2 class="info-title">
+      ¿Qué podés hacer en CanchaYa?
+    </h2>
+
+    <div class="role-title" >
+      Administradores de Complejos
+    </div>
+    <div class="cards-container">
+      <div class="info-card">
+        Crear y administrar múltiples complejos deportivos.
+      </div>
+      <div class="info-card">Gestionar canchas: futbol 5, 7, 11, etc.</div>
+      <div class="info-card">
+        Recibir reservas al instante con notificaciones.
+      </div>
+      <div class="info-card">Ver reservas por día y por cancha.</div>
+      <div class="info-card">
+        Configurar precios, horarios y bloqueos de disponibilidad.
+      </div>
+      <div class="info-card">
+        Ver estadísticas: ingresos, ocupación y rendimiento.
+      </div>
+    </div>
+
+    <div class="role-title" style="text-align: center; font-size: 2.2rem">
+      Usuarios
+    </div>
+    <div class="cards-container">
+      <div class="info-card">Reservar canchas de forma rápida y segura.</div>
+      <div class="info-card">
+        Ver historial de reservas y próximas reservas.
+      </div>
+      <div class="info-card">Calificar complejos y dejar reseñas.</div>
+      <div class="info-card">Guardar canchas como favoritas.</div>
+      <div class="info-card">
+        Filtrar por precio, ubicación, tipo y disponibilidad.
+      </div>
+      <div class="info-card">Recibir recordatorios y notificaciones.</div>
+    </div>
+  </section>
+</div>

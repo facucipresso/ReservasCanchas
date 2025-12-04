@@ -1,0 +1,88 @@
+<header class="app-header">
+  <!-- IZQUIERDA – LOGO -->
+  <div class="header-content">
+    <div class="header-left">
+      <img
+        src="/img/logov3.png"
+        alt="logo"
+        class="logo"
+        (click)="this.router.navigate(['/home'])"
+      />
+    </div>
+
+    <!-- DERECHA – LOGIN O AVATAR -->
+    <div class="header-right">
+      @if(!isLoggedIn){
+      <p-button label="Iniciar sesión" (click)="showDialog()" size="large" />
+      }@else{
+      <div class="avatar-container">
+        <p-avatar icon="pi pi-user" class="mr-2" size="large" />
+      </div>
+      }
+      <!-- MODAL INICIO DE SESIÓN -->
+      <p-dialog
+        header="Inicio de sesión"
+        [modal]="true"
+        [(visible)]="visible"
+        [style]="{ width: '80%', maxWidth: '23rem', color: 'black' , background: 'rgb(250,250,250)'}"
+        (onHide)="onDialogClose()"
+        [focusOnShow]="false"
+      >
+        <span class="dialog-description"
+          >Ingrese su nombre de usuario y contraseña.</span
+        >
+        <form [formGroup]="loginForm" style="padding-bottom: 1rem;" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <input
+              formControlName="username"
+              pInputText
+              placeholder="Nombre de usuario"
+              class="form-input"
+            />
+            @if(loginForm.get('username')?.touched && loginForm.get('username')?.invalid){
+              @if(loginForm.get('username')?.errors?.['required']){
+                <small style="color: red;">El nombre de usuario es obligatorio</small>
+              }
+              @if(loginForm.get('username')?.errors?.['minlength']){
+                <small style="color: red;">El nombre de usuario debe tener al menos 4 caracteres</small>
+              }
+            }
+          </div>
+
+          <div class="form-row">
+            <p-password
+              [feedback]="false"
+              autocomplete="off"
+              placeholder="Contraseña"
+              [toggleMask]="true"
+              formControlName="password"
+            />
+            @if(loginForm.get('password')?.touched && loginForm.get('password')?.invalid){
+              @if(loginForm.get('password')?.errors?.['required']){
+                <small style="color: red;">La contraseña es obligatoria</small>
+              }
+              @if(loginForm.get('password')?.errors?.['minlength']){
+                <small style="color: red;">La contraseña debe tener al menos 8 caracteres</small>
+              }
+            }
+          </div>
+
+          <div class="dialog-buttons">
+            <p-button label="Ingresar" (click)="visible = false" [disabled]="loginForm.invalid"></p-button>
+          </div>
+        </form>
+        <div style="text-align: center;">
+          <p style="color: #6b7280">
+            No tienes cuenta?
+            <span
+              style="color: black; text-decoration: underline; cursor: pointer"
+              (click)="goToRegistrationForm()"
+              >Regístrate</span
+            >
+          </p>
+        </div>
+      </p-dialog>
+    </div>
+  </div>
+</header>
+

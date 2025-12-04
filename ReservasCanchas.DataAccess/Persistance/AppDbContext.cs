@@ -15,7 +15,7 @@ namespace ReservasCanchas.DataAccess.Persistance
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base (options) { }
 
-        public DbSet<Domain.Entities.Complex> Complejo {  get; set; }
+        public DbSet<Domain.Entities.Complex> Complex {  get; set; }
         public DbSet<Service> Service { get; set; }
         //public DbSet<User> Users { get; set; }                 identity ya me maneja los usuarios
         public DbSet<Field> Field { get; set; }

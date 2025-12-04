@@ -75,7 +75,9 @@ namespace ReservasCanchas.BusinessLogic
                 return ComplexMapper.toComplexDetailResponseDTO(complex);
 
             ValidateAccessForBasicUser(complex);
-            return ComplexMapper.toComplexDetailResponseDTO(complex);
+            var complexDetailDTO =  ComplexMapper.toComplexDetailResponseDTO(complex);
+            complexDetailDTO.AverageRating = await _complexRepository.GetAverageRatingAsync(complexId);
+            return complexDetailDTO;
         }
 
         public async Task<ComplexDetailResponseDTO> CreateComplexAsync(CreateComplexRequestDTO createComplexDTO, string uploadPath)
@@ -222,6 +224,10 @@ namespace ReservasCanchas.BusinessLogic
             complex.Street = updateComplexDTO.Street;
             complex.Number = updateComplexDTO.Number;
             complex.Phone = updateComplexDTO.Phone;
+            complex.CBU = updateComplexDTO.CBU;
+            complex.PercentageSign =    updateComplexDTO.PercentageSign;
+            complex.AditionalIlumination = updateComplexDTO.AditionalIlumination;
+            complex.StartIlumination = updateComplexDTO.StartIlumination;
 
             await _complexRepository.SaveAsync();
             return ComplexMapper.toComplexDetailResponseDTO(complex);
@@ -290,9 +296,14 @@ namespace ReservasCanchas.BusinessLogic
             bool changed = false;
             // ***** TRANSICIONES ADMIN DEL COMPLEJO ***** //
 
-            //var userId = _authService.GetUserIdFromToken();
-            var userId = 1;
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
             ValidateOwnerShip(complex, userId);
+
+            if(userRol != "AdminComplejo" && userRol != "SuperAdmin")
+            {
+                throw new ForbiddenException($"No tiene los permisos para hacer esta operacion");
+            }
 
             if (complex.State == ComplexState.Habilitado && newState == ComplexState.Deshabilitado)
             {
@@ -315,11 +326,10 @@ namespace ReservasCanchas.BusinessLogic
 
             // ***** TRANSICIONES SUPERADMIN ***** //
 
-            var userRol = _authService.GetUserRole();
-            //var userRol = Rol.SuperAdmin;
+
             if (userRol != "SuperAdmin")
             {
-                throw new BadRequestException($"No tiene los permisos para hacer esta operacion");
+                throw new ForbiddenException($"No tiene los permisos para hacer esta operacion");
             }
 
             if (complex.State == ComplexState.Pendiente && (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado))

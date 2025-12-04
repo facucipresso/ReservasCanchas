@@ -40,6 +40,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 PercentageSign = complex.PercentageSign,
                 StartIlumination = complex.StartIlumination,
                 AditionalIlumination = complex.AditionalIlumination,
+                CBU = complex.CBU,
                 State = complex.State,
                 Services = complex.Services.Select(ServiceMapper.ToServiceResponseDTO).ToList(),
                 TimeSlots = complex.TimeSlots.Select(ToTimeSlotComplexResponseDTO).ToList()
@@ -75,6 +76,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 PercentageSign = complexDTO.PercentageSign,
                 StartIlumination = complexDTO.StartIlumination,
                 AditionalIlumination = complexDTO.AditionalIlumination,
+                CBU = complexDTO.CBU,
                 TimeSlots = complexDTO.TimeSlots.Select(ToTimeSlotComplex).ToList()
                 /*TimeSlots = complexDTO.TimeSlotsList.Select(ts => new TimeSlotComplex
                 {

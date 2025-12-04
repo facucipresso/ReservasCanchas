@@ -32,7 +32,7 @@ namespace ReservasCanchas.BusinessLogic.Middlewares
             }
         }
 
-        /*
+        
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var problemDetails = new ProblemDetails
@@ -53,6 +53,10 @@ namespace ReservasCanchas.BusinessLogic.Middlewares
                     problemDetails.Status = StatusCodes.Status400BadRequest;
                     problemDetails.Title = "Solicitud incorrecta";
                     break;
+                case ForbiddenException:
+                    problemDetails.Status = StatusCodes.Status403Forbidden;
+                    problemDetails.Title = "Acceso prohibido";
+                    break;
                 default:
                     problemDetails.Status = StatusCodes.Status500InternalServerError;
                     problemDetails.Title = "Error interno del servidor";
@@ -65,8 +69,8 @@ namespace ReservasCanchas.BusinessLogic.Middlewares
             var json = JsonSerializer.Serialize(problemDetails);
             return context.Response.WriteAsync(json);
 
-        }*/
-
+        }
+        /*
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             // Si la respuesta ya comenzó, NO podemos escribir otro body
@@ -94,6 +98,6 @@ namespace ReservasCanchas.BusinessLogic.Middlewares
             var json = JsonSerializer.Serialize(problemDetails);
             return context.Response.WriteAsync(json);
         }
-
+        */
     }
 }

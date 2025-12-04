@@ -1,0 +1,95 @@
+.registration-form-container{
+  min-height: 80vh;
+  max-width: 80%;
+  margin: 3rem auto; 
+  padding: 1rem 2rem;
+  background-color: rgb(250,250,250);
+  display: flex;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.container-image{
+  flex: 1;
+  min-height: 80vh; 
+  background-size: cover;
+  background-position: center;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  transition: background-image 2s ease-in-out;
+  position: relative; 
+  overflow: hidden;  
+}
+
+.container-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.container-form {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(250,250,250);
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.container-form h1 {
+  margin: 0;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  color: #333;
+  text-align: center;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   
+  gap: 2rem;                
+  width: 100%;
+}
+
+
+.fields-row {
+  display: flex;
+  flex-wrap: wrap;          
+  gap: 2rem 1.5rem;        
+  width: 100%;
+}
+
+
+.fields-row > div {
+  flex: 1 1 230px;          
+}
+
+/* INPUTS */
+.container-form input[pInputText],
+.container-form input,
+::ng-deep .p-inputtext,
+::ng-deep .p-password-input
+{
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 10px !important;
+  border: 1px solid #d1d5db !important;
+  background-color: white !important;
+  font-size: 1rem;
+}
+
+::ng-deep .p-button {
+  transition: background .2s ease;
+}
+
+::ng-deep .p-button:hover {
+  background: #272d35 !important;
+}

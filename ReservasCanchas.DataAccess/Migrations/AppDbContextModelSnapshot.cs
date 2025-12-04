@@ -203,6 +203,10 @@ namespace ReservasCanchas.DataAccess.Migrations
                     b.Property<int>("AditionalIlumination")
                         .HasColumnType("integer");
 
+                    b.Property<string>("CBU")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -251,7 +255,7 @@ namespace ReservasCanchas.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Complejo");
+                    b.ToTable("Complex");
                 });
 
             modelBuilder.Entity("ReservasCanchas.Domain.Entities.Field", b =>

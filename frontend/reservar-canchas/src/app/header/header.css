@@ -1,0 +1,120 @@
+.app-header {
+    height: 80px;
+    background: rgb(250,250,250);
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    border-bottom: 1px solid #e5e5e5;
+    padding: .5rem 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.header-content {
+    width: 100%;
+    max-height: 100%;
+    max-width: 1400px;      
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-left,
+.header-center,
+.header-right {
+    display: flex;
+    align-items: center;
+    max-height: 100%;
+}
+
+.header-center {
+    flex: 1;
+    justify-content: center;
+}
+
+/* LOGO */
+.logo {
+    height: 100%;
+    margin-top: 15px;
+    max-height: 175px;   
+    width: 190px;        
+    cursor: pointer;
+}
+
+
+/* BOTÓN LOGIN */
+::ng-deep .header-right .p-button {
+  transition: background .2s ease;
+}
+
+::ng-deep .header-right .p-button:hover {
+  background: #272d35 !important;
+}
+
+/* AVATAR */
+.avatar-container {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.dialog-description {
+    color: #6b7280; /* gris suave */
+    display: block;
+    margin-bottom: 1rem;
+}
+
+/* Fila del formulario (label + input) */
+.form-row {
+    width: 100%;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-row *{
+    width: 100%;
+}
+
+/* Input ajustable */
+.form-input {
+    flex: 1 1 auto;
+}
+
+::ng-deep .p-password-input{
+    width: 100%;
+}
+
+.dialog-header {
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+  color: black !important;
+}
+
+/* Contenedor de botones */
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+::ng-deep .p-dialog-title{
+    font-size: 1.7rem !important;
+}
+
+::ng-deep .p-dialog-header{
+    padding: 1rem;
+}
+
+small {
+  color: red;
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 0.25rem;
+}

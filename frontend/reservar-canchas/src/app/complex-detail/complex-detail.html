@@ -1,0 +1,113 @@
+<div class="complex-detail-container">
+  <div class="img-container">
+    <img [src]="complex.imagePath" alt="Imagen del complejo" />
+  </div>
+  <div class="info-complex-container">
+    <div class="name-rating-row">
+      <h1 class="complex-name">{{ complex.name }}</h1>
+
+      <div class="rating-stars">
+        @for (star of [1,2,3,4,5]; track star) {
+        <i
+          class="pi pi-star"
+          [ngClass]="star <= complex.averageRating ? 'active' : ''"
+        ></i>
+        }
+        <p>{{ complex.averageRating }}</p>
+      </div>
+    </div>
+    <p class="complex-description">{{ complex.description }}</p>
+    <p class="complex-location">
+      <i class="pi pi-map-marker"></i>
+      {{ complex.street }} {{ complex.number }} - {{ complex.locality }},
+      {{ complex.province }}
+    </p>
+    <div style="display: inline-flex">
+      <p-message severity="info" variant="outlined">
+        *Aclaración: Este complejo cobra un extra por iluminación a partir de
+        las {{ complex.startIlumination }}hs de un
+        {{ complex.aditionalIlumination }}% sobre el valor base de la cancha.
+      </p-message>
+    </div>
+  </div>
+
+  <div class="info-field-container">
+    <h3>Elegí la cancha, el horario y hace tu reserva.</h3>
+    <p-table
+      [value]="fields"
+      stripedRows
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template #header>
+        <tr>
+          <th>Nombre</th>
+          <th>Precio por hora</th>
+          <th>Iluminacion</th>
+          <th>Cubierta</th>
+          <th>Horario</th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-field>
+        <tr>
+          <td style="font-weight: bold">
+            {{ field.name }} <br /><small style="color: #555; font-weight: 400"
+              >{{ field.fieldType }} - {{ field.floorType }}
+            </small>
+          </td>
+          <td>$ {{ field.hourPrice }}</td>
+          <td>
+            <i
+              class="pi"
+              style="font-size: 1.7rem; font-weight: bold"
+              [ngClass]="field.ilumination ? 'pi-check' : 'pi-times'"
+            >
+            </i>
+          </td>
+          <td>
+            <i
+              class="pi"
+              style="font-size: 1.7rem; font-weight: bold"
+              [ngClass]="field.covered ? 'pi-check' : 'pi-times'"
+            >
+            </i>
+          </td>
+          <td>
+            <p-select
+              [options]="getSelectableHours(field.id, field.initTime, field.endTime)"
+              optionLabel="hour"
+              optionValue="hour"
+              placeholder="Elige un horario"
+              appendTo="body"
+            ></p-select>
+          </td>
+          <td>
+            <button pButton>
+              <i class="pi pi-check" pButtonIcon></i>
+              <span pButtonLabel>Reservar</span>
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="info-extra-container">
+    <p-panel header="Horarios del club" [toggleable]="true">
+      <div class="days-container">
+        @for(timeSlot of complex.timeSlots; track timeSlot.id){
+        <p>
+          {{ timeSlot.weekDay }}: {{ timeSlot.initTime }} a
+          {{ timeSlot.endTime }}
+        </p>
+        }
+      </div>
+    </p-panel>
+    <p-panel header="Servicios del club" [toggleable]="true">
+      <div class="services-container">
+        @for(service of complex.services; track service.id){
+        <p>{{ service.name }}</p>
+        }
+      </div>
+    </p-panel>
+  </div>
+</div>

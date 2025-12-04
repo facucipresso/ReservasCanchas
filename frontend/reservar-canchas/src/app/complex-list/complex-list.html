@@ -1,0 +1,10 @@
+<div class="complex-list-container">
+  <h1 style="margin-top: 1.5rem">Complejos que coinciden con la búsqueda</h1>
+  <section class="complex-card-container">
+    @for(complex of complexes; track complex.id){
+    <app-complex-card [complexCard]="complex"></app-complex-card>
+    }@empty{
+    <p>No hay elementos en la lista</p>
+    }
+  </section>
+</div>

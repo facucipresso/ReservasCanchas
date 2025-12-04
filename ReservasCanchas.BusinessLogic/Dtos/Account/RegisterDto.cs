@@ -12,10 +12,12 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Account
     public class RegisterDto
     {
         [Required] //que el usuario tiene que tener 4 o mas caracteres
+        [MinLength(4, ErrorMessage = "El nombre de usuario debe tener al menos 4 caracteres.")]
         public string? Username { get; set; }
         [Required]
         public string? Email { get; set; }
         [Required] // tiene que tener al menos 8 caract, ver caract especiales
+        [MinLength(8, ErrorMessage = "La contraseña debe tener al menos 8 caracteres.")]
         public string? Password { get; set; }
         [Required]
         public string Name { get; set; }

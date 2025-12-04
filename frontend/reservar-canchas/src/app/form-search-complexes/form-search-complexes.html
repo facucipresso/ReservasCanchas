@@ -1,0 +1,62 @@
+<form [formGroup]="form" class="form-grid" (ngSubmit)="onSubmit()">
+  <p-select
+    formControlName="province"
+    [options]="provinces"
+    placeholder="Provincia"
+    style="color: black"
+  >
+    <ng-template #dropdownicon>
+      <i class="pi pi-map" style="color: black"></i>
+    </ng-template>
+  </p-select>
+
+  <p-autocomplete
+    [inputStyle]="{ 'background-color': 'white' }"
+    formControlName="locality"
+    [suggestions]="filteredLocalities"
+    placeholder="Localidad"
+    (completeMethod)="search($event)"
+    fluid
+    (onBlur)="validateLocality()"
+    [style]="{'min-width':'200px'}"
+    emptyMessage="No se encontraron resultados"
+  >
+  </p-autocomplete>
+
+  <p-select
+    formControlName="fieldType"
+    [options]="fieldTypes"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Tipo de cancha"
+    style="color: black"
+  >
+    <ng-template #dropdownicon>
+      <i class="pi pi-circle-off" style="color: black"></i>
+    </ng-template>
+  </p-select>
+  <p-datepicker
+    formControlName="date"
+    dateFormat="dd.mm.yy"
+    showIcon
+    [minDate]="dateNow"
+    [maxDate]="maxDateValid"
+    [style]="{'max-width':'240px'}"
+  />
+  <p-select
+    formControlName="hour"
+    [options]="hours"
+    placeholder="Horario"
+    [style]="{'max-width':'120px'}"
+  >
+    <ng-template #dropdownicon>
+      <i class="pi pi-clock" style="color: black"></i>
+    </ng-template>
+  </p-select>
+  <p-button
+    label="Buscar canchas"
+    type="submit"
+    [style]="{ 'border-radius': '30px', 'margin-left':'10px' , 'padding':'15px'}"
+    [disabled]="form.invalid"
+  />
+</form>

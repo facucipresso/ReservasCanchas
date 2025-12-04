@@ -67,8 +67,8 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 12;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 8;
 })
 //le digo a identity donde guardar los usuarios y roles
 .AddEntityFrameworkStores<AppDbContext>();
@@ -198,6 +198,43 @@ builder.Services.AddControllers()
 builder.Environment.WebRootPath ??= Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var userManager = services.GetRequiredService<UserManager<User>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+
+    // Asegurar que los roles existen (sin recrearlos)
+    string superAdminRole = "SuperAdmin";
+
+    // Crear admin si no existe
+    var admin = await userManager.FindByNameAsync("admin");
+
+    if (admin == null)
+    {
+        var newAdmin = new User
+        {
+            UserName = "admin",
+            Email = "admin@example.com",
+        };
+
+        var result = await userManager.CreateAsync(newAdmin, "Admin1234");
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(newAdmin, superAdminRole);
+            Console.WriteLine("? Usuario SuperAdmin creado correctamente");
+        }
+        else
+        {
+            Console.WriteLine("? Error creando SuperAdmin:");
+            foreach (var e in result.Errors)
+                Console.WriteLine($" - {e.Description}");
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

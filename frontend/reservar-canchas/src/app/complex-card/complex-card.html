@@ -1,0 +1,27 @@
+<div class="complex-card">
+  <div class="card-header">
+    <img 
+      [src]="complexCard.imagePath" 
+      alt="Imagen del complejo"
+    />
+  </div>
+
+  <div class="card-body">
+    <h2 class="card-title">{{ complexCard.name }}</h2>
+
+    <p class="card-subtitle">
+      <i class="pi pi-map-marker"></i>
+      {{ complexCard.street }} {{ complexCard.number }} - {{ complexCard.locality }}, {{ complexCard.province }}
+    </p>
+
+    <p class="price-text">
+      Canchas desde 
+      <strong style="color: black;">${{ complexCard.minPriceHour }}</strong> 
+      por hora
+    </p>
+  </div>
+
+  <div class="card-footer">
+    <p-button label="Ver complejo" (onClick)="viewComplexDetail()"/>
+  </div>
+</div>

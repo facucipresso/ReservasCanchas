@@ -39,6 +39,9 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         [Required(ErrorMessage ="El porcentaje de aumento por iluminación es obligatorio")]
         [Range(0,100,ErrorMessage ="El porcentaje de aumento por iluminación debe estar entre 0 y 100")]
         public int AditionalIlumination { get; set; }
+        [Required(ErrorMessage ="El CBU es obligatorio")]
+        [Length(22,22,ErrorMessage ="El CBU debe tener 22 caracteres")]
+        public string CBU { get; set; }
 
         public ICollection<int> ServicesIds { get; set; } = new List<int>();
 

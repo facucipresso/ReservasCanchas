@@ -49,6 +49,8 @@ namespace ReservasCanchas.DataAccess.Repositories
                 .Include(r => r.Reservation)
                     .ThenInclude(res => res.Field)
                 .Where(r => r.Reservation.Field.ComplexId == complexId)
+                .OrderByDescending(r => r.CreationDate)
+                .Take(10)
                 .ToListAsync();
         }
 
