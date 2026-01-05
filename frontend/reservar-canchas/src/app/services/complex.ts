@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ComplexCardModel } from '../models/complexcard.model';
 import { ComplexModel } from '../models/complex.model';
+import { ComplexCreateModel } from '../models/createcomplex.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Complex {
 
-  private apiBaseUrl = 'https://localhost:4200/api/complexes'
+  private apiBaseUrl = 'https://localhost:7004/api/complexes'
   constructor(private http:HttpClient){}
 
   getComplexesWithFilters(filters:any):Observable<ComplexCardModel[]>{
@@ -18,5 +19,9 @@ export class Complex {
 
   getComplexById(id:number):Observable<ComplexModel>{
         return this.http.get<ComplexModel>(`${this.apiBaseUrl}/${id}`);
+  }
+
+  createComplex(complex:ComplexCreateModel):Observable<ComplexModel>{
+    return this.http.post<ComplexModel>(this.apiBaseUrl,complex);
   }
 }

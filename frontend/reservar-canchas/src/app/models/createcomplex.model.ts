@@ -1,9 +1,10 @@
 import { ComplexState } from "./complexstate.enum";
 import { ComplexServiceModel } from "./complexservice.model";
 import { TimeSlotComplexModel } from "./timeslotcomplex.model";
+import { TimeSlotCreateModel } from "./timeslotscreate.model";
 
-export interface ComplexModel{
-  id:number;
+export interface ComplexCreateModel{
+  userId:number;
   name:string;
   description:string;
   province:string;
@@ -11,12 +12,11 @@ export interface ComplexModel{
   street:string;
   number:string;
   phone:string;
-  imagePath:string;
+  image:string;
   percentageSign:number;
   startIlumination:string;
   aditionalIlumination:number;
-  state:ComplexState;
-  services: ComplexServiceModel[];
-  timeSlots: TimeSlotComplexModel[];
-  averageRating:number;
+  cbu:number;
+  servicesIds: number[];
+  timeSlots: TimeSlotCreateModel[];
 }

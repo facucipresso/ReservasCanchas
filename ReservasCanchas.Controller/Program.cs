@@ -64,9 +64,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
     //estan son las reglas con las que tiene que cumplir una contraseña
-    options.Password.RequireDigit = true;
+    options.Password.RequireDigit = false;
     options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
+    options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 8;
 })
@@ -137,6 +137,8 @@ builder.Services.AddScoped<ReviewRepository>();
 
 builder.Services.AddScoped<NotificationBusinessLogic>();
 builder.Services.AddScoped<NotificationRepository>();
+
+builder.Services.AddScoped<AccountBusinessLogic>();
 
 // PARA EL TRABAJO EN BACKGROUND
 builder.Services.AddHostedService<ReservationCompletionService>();

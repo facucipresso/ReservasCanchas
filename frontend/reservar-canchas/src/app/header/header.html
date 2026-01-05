@@ -1,3 +1,4 @@
+<p-toast position="top-center"></p-toast>
 <header class="app-header">
   <!-- IZQUIERDA – LOGO -->
   <div class="header-content">
@@ -12,11 +13,15 @@
 
     <!-- DERECHA – LOGIN O AVATAR -->
     <div class="header-right">
+      @if(!isAdmin && isLoggedIn){
+        <p-button label="Añade tu complejo y comienza a administrarlo" size="small" (click)="goToCreateComplex()"/>
+      }
       @if(!isLoggedIn){
       <p-button label="Iniciar sesión" (click)="showDialog()" size="large" />
       }@else{
       <div class="avatar-container">
-        <p-avatar icon="pi pi-user" class="mr-2" size="large" />
+        <p-menu #menu [model]="options" [popup]="true" />
+        <p-avatar icon="pi pi-user" class="mr-2" size="large" [style]="{'cursor':'pointer'}" (click)="menu.toggle($event)"/>
       </div>
       }
       <!-- MODAL INICIO DE SESIÓN -->
@@ -68,7 +73,7 @@
           </div>
 
           <div class="dialog-buttons">
-            <p-button label="Ingresar" (click)="visible = false" [disabled]="loginForm.invalid"></p-button>
+            <p-button type="submit" label="Ingresar" [disabled]="loginForm.invalid"></p-button>
           </div>
         </form>
         <div style="text-align: center;">

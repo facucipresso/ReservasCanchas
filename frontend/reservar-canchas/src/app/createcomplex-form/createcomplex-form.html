@@ -1,0 +1,132 @@
+<div class="complex-wrapper">
+  <div class="complex-card">
+    <h1>Formulario de registro de complejo</h1>
+    <form [formGroup]="createComplexForm" (ngSubmit)="onSubmit()">
+      <!-- INFORMACIÓN BÁSICA -->
+      <h2 class="section-title">Información básica</h2>
+      <div class="form-grid">
+        <input
+          pInputText
+          placeholder="Nombre del complejo"
+          formControlName="name"
+        />
+
+        <input pInputText placeholder="Teléfono" formControlName="phone" />
+
+        <textarea
+          pTextarea
+          rows="5"
+          placeholder="Descripción"
+          formControlName="description"
+        ></textarea>
+
+        <p-select
+          formControlName="province"
+          [options]="provinces"
+          placeholder="Provincia"
+        ></p-select>
+
+        <p-autocomplete
+          placeholder="Localidad"
+          formControlName="locality"
+          [suggestions]="filteredLocalities"
+          (completeMethod)="search($event)"
+          fluid
+          (onBlur)="validateLocality()"
+          emptyMessage="No se encontraron resultados"
+        ></p-autocomplete>
+
+        <input pInputText placeholder="Calle" formControlName="street" />
+
+        <input pInputText placeholder="Altura" formControlName="number" />
+
+        <p-inputNumber
+          formControlName="percentageSign"
+          [min]="0"
+          [max]="100"
+          suffix="%"
+          placeholder="Porcentaje de seña"
+        ></p-inputNumber>
+
+        <p-inputMask
+          mask="99:99"
+          placeholder="Inicio iluminación (HH:mm)"
+          formControlName="startIlumination"
+        ></p-inputMask>
+
+        <p-inputNumber
+          formControlName="aditionalIlumination"
+          [min]="0"
+          placeholder="Aumento por iluminación (%)"
+        ></p-inputNumber>
+
+        <input
+          pInputText
+          formControlName="cbu"
+          maxlength="22"
+          placeholder="CBU (22 dígitos)"
+        />
+      </div>
+        <hr>
+      <!-- IMAGEN -->
+      <h2 class="section-title">Imágen del complejo</h2>
+
+      <div class="file-field">
+        <p-fileupload #fu mode="basic" (onSelect)="onFileSelected($event)" (onClear)="onClear()" chooseLabel="Sube la imagen de tu complejo" chooseIcon="pi pi-upload" name="demo[]" mode="basic" showUploadButton="false" accept="image/*" maxFileSize="1000000" />
+      <div *ngIf="previewUrl" class="image-preview" >
+        <img [src]="previewUrl" alt="Preview" />
+      </div>
+      </div>
+        <hr>
+      <!-- SERVICIOS -->
+      <h2 class="section-title">Servicios del complejo</h2>
+
+      <div class="services-grid">
+        @for(service of services; track service.id){
+        <div>
+          <p-checkbox
+            [value]="service"
+            formControlName="services"
+            binary="false"
+          ></p-checkbox>
+          <span> {{ service.serviceDescription }}</span>
+        </div>
+        }
+      </div>
+      <hr>
+      <h2 class="section-title">Franjas horarias del complejo</h2>
+
+      <div class="day-slots">
+        @for (slot of timeSlotsArray.controls; let i = $index; track i) {
+        <div
+          class="day-row"
+          [formGroup]="slot"
+        >
+          <label class="day-label">{{ days[i] | titlecase }}</label>
+
+          <p-inputMask
+            mask="99:99"
+            placeholder="Inicio"
+            formControlName="initTime"
+          ></p-inputMask>
+
+          <p-inputMask
+            mask="99:99"
+            placeholder="Fin"
+            formControlName="endTime"
+          ></p-inputMask>
+        </div>
+        }
+      </div>
+<hr>
+      <!-- BOTÓN ENVIAR -->
+      <div class="submit-wrapper">
+        <p-button
+          label="Crear complejo"
+          type="submit"
+          class="submit-btn"
+        ></p-button>
+      </div>
+    </form>
+  </div>
+</div>
