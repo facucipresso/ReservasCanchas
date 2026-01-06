@@ -1,6 +1,3 @@
-import { ComplexState } from "./complexstate.enum";
-import { ComplexServiceModel } from "./complexservice.model";
-import { TimeSlotComplexModel } from "./timeslotcomplex.model";
 import { TimeSlotCreateModel } from "./timeslotscreate.model";
 
 export interface ComplexCreateModel{
@@ -12,7 +9,7 @@ export interface ComplexCreateModel{
   street:string;
   number:string;
   phone:string;
-  image:string;
+  image:File;
   percentageSign:number;
   startIlumination:string;
   aditionalIlumination:number;

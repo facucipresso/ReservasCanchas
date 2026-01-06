@@ -37,7 +37,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         [Required(ErrorMessage ="El horario de inicio de iluminación es obligatorio")]
         public TimeOnly StartIlumination { get; set; }
         [Required(ErrorMessage ="El porcentaje de aumento por iluminación es obligatorio")]
-        [Range(0,100,ErrorMessage ="El porcentaje de aumento por iluminación debe estar entre 0 y 100")]
+        //[Range(0,100,ErrorMessage ="El porcentaje de aumento por iluminación debe estar entre 0 y 100")]
         public int AditionalIlumination { get; set; }
         [Required(ErrorMessage ="El CBU es obligatorio")]
         [Length(22,22,ErrorMessage ="El CBU debe tener 22 caracteres")]
@@ -48,18 +48,5 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         
         [Length(7,7,ErrorMessage = "Se debe especificar una franja horaria por día")]
         public ICollection<TimeSlotComplexRequestDTO> TimeSlots { get; set; } = new List<TimeSlotComplexRequestDTO>();
-
-        /*
-        // En multipart/form-data Swagger NO PUEDE mapear listas de objetos complejos.
-        // Por eso las recibimos como string JSON.
-        [Required(ErrorMessage = "Las franjas horarias son obligatorias")]
-        public string TimeSlots { get; set; } = string.Empty;
-
-
-        // ESTE NUEVO CAMPO NO LLEGA DESDE EL CLIENTE.
-        // El backend lo utiliza una vez que deserializamos el JSON manualmente.
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public ICollection<TimeSlotComplexRequestDTO> TimeSlotsList { get; set; } = new List<TimeSlotComplexRequestDTO>();
-        */
     }
 }

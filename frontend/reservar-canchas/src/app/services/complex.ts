@@ -1,9 +1,8 @@
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpResponse} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable, throwError } from 'rxjs';
+import { Observable} from 'rxjs';
 import { ComplexCardModel } from '../models/complexcard.model';
 import { ComplexModel } from '../models/complex.model';
-import { ComplexCreateModel } from '../models/createcomplex.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +20,7 @@ export class Complex {
         return this.http.get<ComplexModel>(`${this.apiBaseUrl}/${id}`);
   }
 
-  createComplex(complex:ComplexCreateModel):Observable<ComplexModel>{
-    return this.http.post<ComplexModel>(this.apiBaseUrl,complex);
+  createComplex(formData:FormData):Observable<HttpResponse<ComplexModel>>{
+    return this.http.post<ComplexModel>(this.apiBaseUrl,formData,{observe: 'response'});
   }
 }

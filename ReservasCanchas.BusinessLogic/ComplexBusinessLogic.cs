@@ -298,11 +298,17 @@ namespace ReservasCanchas.BusinessLogic
 
             var userId = _authService.GetUserId();
             var userRol = _authService.GetUserRole();
-            ValidateOwnerShip(complex, userId);
+            Console.WriteLine("UserId: " + userId + ", Rol: " + userRol);
+
 
             if(userRol != "AdminComplejo" && userRol != "SuperAdmin")
             {
                 throw new ForbiddenException($"No tiene los permisos para hacer esta operacion");
+            }
+
+            if (userRol == "AdminComplejo")
+            {
+                ValidateOwnerShip(complex, userId);
             }
 
             if (complex.State == ComplexState.Habilitado && newState == ComplexState.Deshabilitado)

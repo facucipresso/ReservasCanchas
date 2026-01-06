@@ -48,6 +48,7 @@ export class Header implements OnInit {
   ngOnInit(): void {
     this.isLoggedIn = this.authService.getToken() ? true : false;
     this.isAdmin = this.authService.getUserRole() == 'AdminComplejo' ? true : false;
+    console.log("isAdmin: ", this.isAdmin);
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
@@ -109,6 +110,10 @@ export class Header implements OnInit {
           detail:'Has iniciado sesión correctamente',
           life: 1500
         })
+
+        if(this.router.url.startsWith('/register')){
+          this.router.navigate(['/'])
+        }
         this.isLoggedIn = true;
         this.isAdmin = this.authService.getUserRole() == 'AdminComplejo' ? true : false;
         this.visible = false; 

@@ -89,7 +89,7 @@ namespace ReservasCanchas.BusinessLogic
 
             //checkea que la contraseña sea la correcta
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false); // ver bien el parametro 'false' de esta funcion
-            if (!result.Succeeded) throw new BadRequestException($"Contraseña inconrrecta");
+            if (!result.Succeeded) throw new BadRequestException($"Contraseña incorrecta");
 
             return (new NewUserDto
             {

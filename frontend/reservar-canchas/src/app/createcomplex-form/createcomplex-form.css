@@ -29,7 +29,7 @@
   margin-bottom: 1.5rem;
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 hr{
@@ -38,9 +38,17 @@ hr{
   background-color: rgba(0,0,0,.2); /* Color deseado (ej. naranja) */
 }
 
-.form-grid textarea {
-  grid-column: span 2;
+::ng-deep .p-textarea  {
+  width: 100%;
   padding: 10px;
+}
+
+::ng-deep .p-inputnumber  {
+  width: 100%;
+}
+
+.form-grid .container-textarea{
+  grid-column: span 2;
 }
 
 .file-field {
@@ -125,4 +133,11 @@ textarea {
   border-radius: 12px;
   object-fit: cover;
   box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.time-error {
+  grid-column: 2 / 4; 
+  color: red;
+  font-size: 0.85rem;
+  margin-top: -5px;
 }

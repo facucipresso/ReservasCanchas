@@ -1,5 +1,5 @@
 export interface TimeSlotCreateModel{
-  weekDay:number;
+  weekDay:string;
   initTime:string;
   endTime:string;
 }
