@@ -31,6 +31,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             {
                 Id = complex.Id,
                 Name = complex.Name,
+                Description = complex.Description,
                 Province = complex.Province,
                 Locality = complex.Locality,
                 Street = complex.Street,
@@ -62,12 +63,13 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static Complex toComplex(CreateComplexRequestDTO complexDTO)
+        public static Complex toComplex(CreateComplexRequestDTO complexDTO, int userId)
         {
             return new Complex
             {
-                UserId = complexDTO.UserId,
+                UserId = userId,
                 Name = complexDTO.Name,
+                Description = complexDTO.Description,
                 Province = complexDTO.Province,
                 Locality = complexDTO.Locality,
                 Street = complexDTO.Street,

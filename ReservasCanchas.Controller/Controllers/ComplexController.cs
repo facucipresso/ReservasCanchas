@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
 using ReservasCanchas.BusinessLogic.Dtos.Notification;
+using ReservasCanchas.BusinessLogic.JWTService;
+using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
 
 namespace ReservasCanchas.Controller.Controllers
@@ -12,11 +15,18 @@ namespace ReservasCanchas.Controller.Controllers
     public class ComplexController : ControllerBase
     {
         private readonly ComplexBusinessLogic _complexBusinessLogic;
+        private readonly TokenService _tokenService;
+        private readonly AuthService _authService;
+        private readonly UserManager<User> _userManager;
         private readonly IWebHostEnvironment _env; // para WebRootPath
-        public ComplexController(ComplexBusinessLogic complexBusinessLogic, IWebHostEnvironment env)
+        public ComplexController(ComplexBusinessLogic complexBusinessLogic, IWebHostEnvironment env,
+            TokenService tokenService, UserManager<User> userManager, AuthService authService)
         {
             _complexBusinessLogic = complexBusinessLogic;
             _env = env;
+            _tokenService = tokenService;
+            _userManager = userManager;
+            _authService = authService;
         }
 
         [HttpGet("my")]
@@ -51,12 +61,16 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ComplexDetailResponseDTO>> CreateComplex([FromForm] CreateComplexRequestDTO requestCreateDTO)
+        public async Task<ActionResult> CreateComplex([FromForm] CreateComplexRequestDTO requestCreateDTO)
         {//Creacion de complejo
             var uploadPath = Path.Combine(_env.WebRootPath, "uploads", "complexes");
             var created = await _complexBusinessLogic.CreateComplexAsync(requestCreateDTO, uploadPath);
-            //return CreatedAtAction(nameof(CreateComplex), new { id = created.Id }, created);
-            return CreatedAtAction(nameof(GetComplexById), new { id = created.Id }, created);
+            
+            var userId = _authService.GetUserId();
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var newToken = await _tokenService.CreateToken(user);
+
+            return CreatedAtAction(nameof(GetComplexById), new { id = created.Id }, new{complex = created,token = newToken});      
         }
 
         [HttpPatch("{id}/basic-info")]

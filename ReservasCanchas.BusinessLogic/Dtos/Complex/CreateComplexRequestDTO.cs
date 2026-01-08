@@ -11,8 +11,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
 {
     public class CreateComplexRequestDTO
     {
-        [Required(ErrorMessage ="El id del usuario es obligatorio")]
-        public int UserId { get; set; }
 
         [Required(ErrorMessage = "El nombre del complejo es obligatorio")]
         public string Name { get; set; } = string.Empty;

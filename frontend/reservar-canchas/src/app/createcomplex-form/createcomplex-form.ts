@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component} from '@angular/core';
 import { FormArray, FormBuilder,FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { Button } from 'primeng/button';
@@ -51,9 +51,8 @@ export class CreatecomplexForm {
 
 
   constructor(private fb: FormBuilder, private locationService: Location,
-    private complexServices: Complexservices, private authService:Auth, 
-    private complexService:Complex, private messageService:MessageService,
-    private router:Router  ) {}
+    private complexServices: Complexservices, private complexService:Complex, 
+    private messageService:MessageService, private router:Router, private authService:Auth) {}
 
   ngOnInit(): void {
     this.createComplexForm = this.fb.group({
@@ -201,9 +200,6 @@ export class CreatecomplexForm {
     this.invalidSchedulesError = null;
     const value = this.createComplexForm.value;
 
-    const userId = this.authService.getUserId();
-    if(!userId) return;
-    formData.append('UserId', userId);
     formData.append('Name', value.name);
     formData.append('Description', value.description);
     formData.append('Province', value.province);
@@ -242,7 +238,7 @@ export class CreatecomplexForm {
 
     this.complexService.createComplex(formData).subscribe({
       next: (response) => {
-        console.log("COMPLEJO CREADO EXITOSAMENTE: ", response);
+        console.log("COMPLEJO CREADO EXITOSAMENTE: ", response.body);
         this.messageService.add({
           severity:'success',
           summary:'Complejo creado exitosamente.',
@@ -250,8 +246,9 @@ export class CreatecomplexForm {
           life: 2000
         })
         this.createComplexForm.reset();
+        this.authService.setToken(response.body.token);
         this.removeImage();
-        this.router.navigate(["complexes",response.body?.id])
+        this.router.navigate(["complexes",response.body.complex.id])
       },
       error: (err) => {
         console.log('ERROR DEL BACKEND:', err);

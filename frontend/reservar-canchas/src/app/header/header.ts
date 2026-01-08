@@ -46,44 +46,43 @@ export class Header implements OnInit {
   constructor(public router: Router, private fb: FormBuilder, public authService: Auth, private messageService:MessageService) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.getToken() ? true : false;
-    this.isAdmin = this.authService.getUserRole() == 'AdminComplejo' ? true : false;
-    console.log("isAdmin: ", this.isAdmin);
+    this.authService.isLoggedIn$.subscribe(isLogged => {
+      this.isLoggedIn = isLogged;
+    });
+
+    this.authService.role$.subscribe(role => {
+      this.isAdmin = role === 'AdminComplejo';
+      console.log("isAdmin: ", this.isAdmin);
+      this.initMenu();
+    });
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
     });
+    this.initMenu();
+  }
+
+  private initMenu() {
     this.options = [
-            {
-                label: 'Opciones',
-                items: [
-                    {
-                      label: 'Mis reservas',
-                      icon: 'pi pi-calendar'
-                    },
-                    ...(this.isAdmin ? [{
-                      label: 'Mis complejos',
-                      icon: 'pi pi-building'
-                    }] : []),
-                    {
-                      label: 'Mi buzón',
-                      icon: 'pi pi-envelope'
-                    },
-                    {
-                      label: 'Mi perfil',
-                      icon: 'pi pi-user'
-                    },
-                    {
-                      separator: true
-                    },
-                    {
-                      label: 'Cerrar sesión',
-                      icon: 'pi pi-sign-out',
-                      command: () => this.logout()
-                    }
-                ]
-            }
-        ];
+      {
+        label: 'Opciones',
+        items: [
+          { label: 'Mis reservas', icon: 'pi pi-calendar' },
+          ...(this.isAdmin ? [{
+            label: 'Mis complejos',
+            icon: 'pi pi-building'
+          }] : []),
+          { label: 'Mi buzón', icon: 'pi pi-envelope' },
+          { label: 'Mi perfil', icon: 'pi pi-user' },
+          { separator: true },
+          {
+            label: 'Cerrar sesión',
+            icon: 'pi pi-sign-out',
+            command: () => this.logout()
+          }
+        ]
+      }
+    ];
   }
 
   showDialog() {

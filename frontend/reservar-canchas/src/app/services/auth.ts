@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { UserInfoLogin } from '../models/userInfoLogin.model';
 import { UserRegistration } from '../models/userRegistration.model';
 
@@ -11,6 +11,12 @@ import { UserRegistration } from '../models/userRegistration.model';
 export class Auth {
   private apiBaseUrl = 'https://localhost:7004/api/account';
   private tokenKey = 'auth-token'
+
+  private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasValidToken());
+  isLoggedIn$ = this.isLoggedInSubject.asObservable();
+
+  private roleSubject = new BehaviorSubject<string | null>(this.getUserRole());
+  role$ = this.roleSubject.asObservable();
 
   constructor(private http:HttpClient, private route:Router){}
 
@@ -24,15 +30,24 @@ export class Auth {
 
   logout(){
     localStorage.removeItem(this.tokenKey);
+    this.isLoggedInSubject.next(false);
+    this.roleSubject.next(null);
     this.route.navigate(['/'])
   }
 
   setToken(token:string){
     localStorage.setItem(this.tokenKey,token);
+    this.isLoggedInSubject.next(true);
+    this.roleSubject.next(this.getUserRole());
   }
 
   getToken(): string | null{
     return localStorage.getItem(this.tokenKey);
+  }
+
+  private hasValidToken(): boolean {
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired();
   }
 
   isLoggedIn(): boolean{

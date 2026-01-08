@@ -1,20 +1,22 @@
 <div class="complex-detail-container">
   <div class="img-container">
-    <img [src]="complex.imagePath" alt="Imagen del complejo" />
+    <img [src]="backendUrl + complex.imagePath" alt="Imagen del complejo" />
   </div>
   <div class="info-complex-container">
     <div class="name-rating-row">
       <h1 class="complex-name">{{ complex.name }}</h1>
-
-      <div class="rating-stars">
-        @for (star of [1,2,3,4,5]; track star) {
-        <i
-          class="pi pi-star"
-          [ngClass]="star <= complex.averageRating ? 'active' : ''"
-        ></i>
+      @if(complex.averageRating){
+        <div class="rating-stars">
+          @for (star of [1,2,3,4,5]; track star) {
+          <i class="pi pi-star" [ngClass]="star <= complex.averageRating ? 'active' : ''"></i>
         }
         <p>{{ complex.averageRating }}</p>
       </div>
+      }
+      <button pButton (click)="showDialog()">
+        <i class="pi pi-pencil" pButtonIcon></i>
+        <span pButtonLabel>Editar complejo</span>
+      </button>
     </div>
     <p class="complex-description">{{ complex.description }}</p>
     <p class="complex-location">
@@ -25,7 +27,7 @@
     <div style="display: inline-flex">
       <p-message severity="info" variant="outlined">
         *Aclaración: Este complejo cobra un extra por iluminación a partir de
-        las {{ complex.startIlumination }}hs de un
+        las {{ complex.startIlumination.slice(0,5) }}hs de un
         {{ complex.aditionalIlumination }}% sobre el valor base de la cancha.
       </p-message>
     </div>
@@ -33,6 +35,10 @@
 
   <div class="info-field-container">
     <h3>Elegí la cancha, el horario y hace tu reserva.</h3>
+    <button pButton style="margin-bottom: 10px;">
+      <i class="pi pi-plus" pButtonIcon></i>
+      <span pButtonLabel>Añadir cancha</span>
+    </button>
     <p-table
       [value]="fields"
       stripedRows
@@ -95,9 +101,11 @@
     <p-panel header="Horarios del club" [toggleable]="true">
       <div class="days-container">
         @for(timeSlot of complex.timeSlots; track timeSlot.id){
+        <p style="font-weight: 600;">
+          {{ timeSlot.weekDay }}: 
+        </p>
         <p>
-          {{ timeSlot.weekDay }}: {{ timeSlot.initTime }} a
-          {{ timeSlot.endTime }}
+          {{ timeSlot.initTime === timeSlot.endTime ? 'Cerrado' : (timeSlot.initTime.slice(0,5) + ' a ' + timeSlot.endTime.slice(0,5))}}
         </p>
         }
       </div>
@@ -105,9 +113,274 @@
     <p-panel header="Servicios del club" [toggleable]="true">
       <div class="services-container">
         @for(service of complex.services; track service.id){
-        <p>{{ service.name }}</p>
+        <p>{{ service.serviceDescription }}</p>
         }
       </div>
     </p-panel>
   </div>
 </div>
+
+<!------------------- MODAL FORM EDICIÓN COMPLEJO ---------------------->
+<p-dialog 
+  header="Editar Complejo" 
+  [modal]="true" [(visible)]="visible" 
+  [style]="{ width: '25rem' }" 
+  (onHide)="onDialogClose()" 
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '60%', minHeight: '90%' , color:'#111'}"
+>
+<p-toast position="top-center"></p-toast>
+
+  <div class="section-tabs">
+  <button
+    type="button"
+    (click)="setSection('basic')"
+    [ngClass]="{ active: activeSection === 'basic' }"
+  >
+    Información básica
+  </button>
+
+  <button
+    type="button"
+    (click)="setSection('timeslots')"
+    [ngClass]="{ active: activeSection === 'timeslots' }"
+  >
+    Horarios
+  </button>
+
+  <button
+    type="button"
+    (click)="setSection('services')"
+    [ngClass]="{ active: activeSection === 'services' }"
+  >
+    Servicios
+  </button>
+</div>
+       @if(activeSection === 'basic'){
+    <form class="form-section" [formGroup]="editBasicInfoForm" (ngSubmit)="onSubmitBasicInfo()">
+      <div class="form-grid">
+        <div>
+          <p-floatlabel variant="on">
+          <input
+            pInputText
+            formControlName="name"
+          />
+          <label for="on_label">Nombre</label>
+          </p-floatlabel>
+          @if(editBasicInfoForm.get('name')?.touched &&
+          editBasicInfoForm.get('name')?.invalid){
+          @if(editBasicInfoForm.get('name')?.errors?.['required']){
+          <small style="color: red"
+            >El nombre del complejo es obligatorio</small
+          >
+          } }
+        </div>
+        <div>
+          <p-floatlabel variant="on">
+          <input
+            pInputText
+            formControlName="phone"
+            inputmode="numeric"
+          />
+          <label for="on_label">Telefono</label>
+          </p-floatlabel>
+          @if(editBasicInfoForm.get('phone')?.touched &&
+          editBasicInfoForm.get('phone')?.invalid){
+          @if(editBasicInfoForm.get('phone')?.errors?.['required']){
+          <small style="color: red"
+            >El teléfono del complejo es obligatorio</small
+          >
+          } @if(editBasicInfoForm.get('phone')?.errors?.['pattern']){
+          <small style="color: red"
+            >Solo puedes ingresar numeros para el teléfono</small
+          >
+          } }
+        </div>
+        <div class="container-textarea">
+          <p-floatlabel variant="on">
+          <textarea
+            pTextarea
+            rows="5"
+            formControlName="description"
+          ></textarea>
+          <label for="on_label">Descripción</label>
+          </p-floatlabel>
+          @if(editBasicInfoForm.get('description')?.touched &&
+          editBasicInfoForm.get('description')?.invalid){
+          @if(editBasicInfoForm.get('description')?.errors?.['required']){
+          <small style="color: red"
+            >La descripción del complejo es obligatorio</small
+          >
+          } }
+        </div>
+        <div>
+          <p-floatlabel variant="on">
+          <input pInputText formControlName="street" />
+          <label for="on_label">Calle</label>
+          </p-floatlabel>
+          @if(editBasicInfoForm.get('street')?.touched &&
+          editBasicInfoForm.get('street')?.invalid){
+          @if(editBasicInfoForm.get('street')?.errors?.['required']){
+          <small style="color: red">La calle es obligatoria</small>
+          } }
+        </div>
+
+        <div>
+          <p-floatlabel variant="on">
+          <input
+            pInputText
+            formControlName="number"
+            inputmode="numeric"
+          />
+          <label for="on_label">Altura</label>
+          </p-floatlabel>
+          @if(editBasicInfoForm.get('number')?.touched &&
+          editBasicInfoForm.get('number')?.invalid){
+          @if(editBasicInfoForm.get('number')?.errors?.['required']){
+          <small style="color: red">La altura es obligatoria</small>
+          } }
+        </div>
+        <div>
+          <p-floatlabel variant="on">
+          <p-inputNumber
+            formControlName="percentageSign"
+          ></p-inputNumber>
+          <label for="on_label">Porcentaje de seña</label>
+          </p-floatlabel>
+          @if(editBasicInfoForm.get('percentageSign')?.touched &&
+          editBasicInfoForm.get('percentageSign')?.invalid){
+          @if(editBasicInfoForm.get('percentageSign')?.errors?.['required']){
+          <small style="color: red; display: block"
+            >El porcentaje de seña es obligatorio</small
+          >
+          } @if(editBasicInfoForm.get('percentageSign')?.errors?.['min'] ||
+          editBasicInfoForm.get('percentageSign')?.errors?.['max']){
+          <small style="color: red; display: block">
+            El porcentaje de seña debe estar entre 0 y 100
+          </small>
+          } }
+        </div>
+        <div>
+          <p-floatlabel variant="on">
+          <p-select
+            formControlName="startIlumination"
+            [options]="availableHours"
+            style="width: 100%"
+          >
+          </p-select>
+          <label for="on_label">Horario inicio de iluminación</label>
+          </p-floatlabel>
+          @if(editBasicInfoForm.get('startIlumination')?.touched &&
+          editBasicInfoForm.get('startIlumination')?.invalid){
+          @if(editBasicInfoForm.get('startIlumination')?.errors?.['required']){
+          <small style="color: red; display: block"
+            >El horario de inicio de iluminación es obligatorio</small
+          >
+          } }
+        </div>
+        <div>
+          <p-floatlabel variant="on">
+          <p-inputNumber
+            formControlName="aditionalIlumination"
+
+          ></p-inputNumber>
+          <label for="on_label">Porcentaje extra por iluminación</label>
+          </p-floatlabel>
+          @if(editBasicInfoForm.get('aditionalIlumination')?.touched &&
+          editBasicInfoForm.get('aditionalIlumination')?.invalid){
+          @if(editBasicInfoForm.get('aditionalIlumination')?.errors?.['required']){
+          <small style="color: red; display: block"
+            >El porcentaje de aumento por iluminación es obligatorio</small
+          >
+          } }
+        </div>
+        <div>
+          <p-floatlabel variant="on">
+          <input
+            pInputText
+            formControlName="cbu"
+            maxlength="22"
+            inputmode="numeric"
+          />
+          <label for="on_label">CBU</label>
+          </p-floatlabel>
+          @if(editBasicInfoForm.get('cbu')?.touched &&
+          editBasicInfoForm.get('cbu')?.invalid){
+          @if(editBasicInfoForm.get('cbu')?.errors?.['required']){
+          <small style="color: red">El CBU es obligatorio</small>
+          } @if(editBasicInfoForm.get('cbu')?.errors?.['pattern']){
+          <small style="color: red"
+            >Solo puedes ingresar numeros para el CBU</small
+          >
+          } @if(editBasicInfoForm.get('cbu')?.errors?.['maxlength'] ||
+          editBasicInfoForm.get('cbu')?.errors?.['minlength']){
+          <small style="color: red"
+            >El CBU debe tener exactamente 22 dígitos</small
+          >
+          } }
+        </div>
+      </div>
+      <div style="display: flex; justify-content: end; margin-top:20px;">
+        <p-button label="Confirmar cambios" type="submit" [disabled]="editBasicInfoForm.invalid || this.editBasicInfoForm.pristine"/>
+      </div>
+  </form>
+  }
+  @if(activeSection === 'timeslots'){
+  <form class="form-section" [formGroup]="editTimeSlotsForm" (ngSubmit)="onSubmitTimeSlots()">
+    <div class="day-slots" formArrayName="timeSlots">
+        @for (slot of timeSlotsArray.controls; let i = $index; track i) {
+        <div class="day-row" [formGroupName]="i">
+          <label class="day-label">{{
+            slot.get("weekDay")?.value | titlecase
+          }}</label>
+
+          <p-select
+            formControlName="initTime"
+            [options]="availableHours"
+            placeholder="Apertura"
+          >
+          </p-select>
+          <p-select
+            formControlName="endTime"
+            [options]="availableHours"
+            placeholder="Cierre"
+          >
+          </p-select>
+          @if((slot.get('initTime')?.touched && slot.get('initTime')?.invalid)
+          || (slot.get('endTime')?.touched && slot.get('endTime')?.invalid) ){
+          <div class="time-error">El horario de apertura y cierre son requeridos</div>
+          } 
+        </div>
+        }
+      </div>
+      <div style="display: flex; justify-content: end; margin-top:20px;">
+        <p-button label="Confirmar cambios" type="submit" [disabled]="editTimeSlotsForm.invalid || this.editTimeSlotsForm.pristine"/>
+      </div>
+  </form>
+  }
+  @if(activeSection === 'services' && editServicesForm){
+    <form class="form-section" [formGroup]="editServicesForm" (ngSubmit)="onSubmitServices()">
+ <div class="services-grid" formArrayName="services">
+    @for (service of allServices; let i = $index; track service.id) {
+      <div class="service-item">
+        <p-checkbox
+          [binary]="true"
+          [formControlName]="i"
+        ></p-checkbox>
+
+        <span style="margin-left: 8px;">{{ service.serviceDescription }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="form-actions">
+    <p-button
+      label="Confirmar cambios"
+      type="submit"
+      [disabled]="editServicesForm.pristine"
+    />
+  </div>
+  </form>
+  }
+</p-dialog>

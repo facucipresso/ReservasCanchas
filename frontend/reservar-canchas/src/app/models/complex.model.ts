@@ -11,6 +11,7 @@ export interface ComplexModel{
   street:string;
   number:string;
   phone:string;
+  cbu:string;
   imagePath:string;
   percentageSign:number;
   startIlumination:string;

@@ -95,11 +95,11 @@ textarea {
 }
 
 /* O solo para los de PrimeNG en tu formulario */
-.p-inputtextarea {
+.p-textarea {
   resize: none;
 }
 
-::ng-deep.p-inputtext{
+::ng-deep.p-textarea{
   width: 100%;
 }
 

@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable} from 'rxjs';
 import { ComplexCardModel } from '../models/complexcard.model';
 import { ComplexModel } from '../models/complex.model';
+import { basic } from '@primeuix/themes/aura/fileupload';
+import { TimeSlotCreateModel } from '../models/timeslotscreate.model';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +22,15 @@ export class Complex {
         return this.http.get<ComplexModel>(`${this.apiBaseUrl}/${id}`);
   }
 
-  createComplex(formData:FormData):Observable<HttpResponse<ComplexModel>>{
-    return this.http.post<ComplexModel>(this.apiBaseUrl,formData,{observe: 'response'});
+  createComplex(formData:FormData):Observable<HttpResponse<any>>{
+    return this.http.post<any>(this.apiBaseUrl,formData,{observe: 'response'});
+  }
+
+  updateComplexBasicInfo(basicInfo:any, complexId:number):Observable<any>{
+    return this.http.patch<any>(`${this.apiBaseUrl}/${complexId}/basic-info`,basicInfo);
+  }
+
+  updateComplexTimeSlots(timeSlots:TimeSlotCreateModel[], complexId:number):Observable<any>{
+    return this.http.put<any>(`${this.apiBaseUrl}/${complexId}/time-slots`,timeSlots);
   }
 }

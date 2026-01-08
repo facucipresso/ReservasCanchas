@@ -85,6 +85,7 @@ namespace ReservasCanchas.BusinessLogic
 
             var weekDays = createComplexDTO.TimeSlots.Select(ts => ts.WeekDay);
             var slots = createComplexDTO.TimeSlots;
+            var userId = _authService.GetUserId();
 
             //checkear que el complejo pueda tener mismo horario de apertura y de cierre, eso singifica que ese dia esta cerrado
 
@@ -138,9 +139,9 @@ namespace ReservasCanchas.BusinessLogic
             */
 
 
-            if (await _userBusinessLogic.GetUserByIdAsync(createComplexDTO.UserId) == null)
+            if (await _userBusinessLogic.GetUserByIdAsync(userId) == null)
             {
-                throw new NotFoundException($"No se encontró el usuario con id {createComplexDTO.UserId} asociado al complejo");
+                throw new NotFoundException($"No se encontró el usuario con id {userId} asociado al complejo");
             }
 
             if (await _complexRepository.ExistsByNameAsync(createComplexDTO.Name))
@@ -158,7 +159,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException($"Ya existe un complejo con el teléfono {createComplexDTO.Phone}");
             }
 
-            var complex = ComplexMapper.toComplex(createComplexDTO);
+            var complex = ComplexMapper.toComplex(createComplexDTO,userId);
 
             if (createComplexDTO.ServicesIds.Count() > 0)
             {
@@ -255,7 +256,7 @@ namespace ReservasCanchas.BusinessLogic
             //Y si la modificacion los dejaria fuera del rango.
             foreach (var slot in slots)
             {
-                if (slot.EndTime <= slot.InitTime)
+                if (slot.EndTime < slot.InitTime)
                 {
                     throw new BadRequestException($"El horario de fin debe ser mayor al horario de inicio para el día {slot.WeekDay}");
                 }

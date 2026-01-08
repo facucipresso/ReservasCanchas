@@ -6,9 +6,10 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import MyPreset from './mypreset';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es'
+import { authInterceptor } from './interceptors/auth-interceptor';
 
 registerLocaleData(localeEs);
 export const appConfig: ApplicationConfig = {
@@ -27,6 +28,8 @@ export const appConfig: ApplicationConfig = {
       }
     }),
     {provide:LOCALE_ID, useValue:'es'},
-    provideHttpClient()
+    provideHttpClient(
+      withInterceptors([authInterceptor])
+    )
   ]
 };
