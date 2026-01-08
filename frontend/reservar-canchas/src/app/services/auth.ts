@@ -66,7 +66,7 @@ export class Auth {
     }
   }
 
-  getUserId(): string | null {
+  getUserId(): string {
     const payload = this.decodeTokenPayload();
     return payload?.nameid || payload?.sub || null;
   }

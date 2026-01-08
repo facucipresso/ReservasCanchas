@@ -17,13 +17,13 @@ import { Form, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validator
 import { InputNumber } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabel } from 'primeng/floatlabel';
-import { LocalizedString } from '@angular/compiler';
 import { WeekDay } from '../models/weekday.enum';
 import { Complexservices } from '../services/complexservices';
 import { ComplexServiceModel } from '../models/complexservice.model';
 import { Checkbox } from 'primeng/checkbox';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { Auth } from '../services/auth';
 
 type EditSection = 'basic' | 'timeslots' | 'services';
 
@@ -38,6 +38,8 @@ type EditSection = 'basic' | 'timeslots' | 'services';
 })
 export class ComplexDetail implements OnInit {
   complex!: ComplexModel;
+  userId!: number | null;
+  isAdminComplex = false;
   backendUrl = 'https://localhost:7004';
   allServices !: ComplexServiceModel[];
   fields!: any[];
@@ -53,12 +55,15 @@ export class ComplexDetail implements OnInit {
     '14:00','15:00','16:00','17:00','18:00','19:00',
     '20:00','21:00','22:00','23:00','00:00','01:00','02:00'
   ]
+  invalidSchedulesError: string | null = null;
 
   constructor(private route: ActivatedRoute, private complexService: Complex, private fb: FormBuilder,
-     private servicesComplex: Complexservices, private messageService: MessageService) {}
+     private servicesComplex: Complexservices, private messageService: MessageService, private authService: Auth) {}
 
 
   ngOnInit(): void {
+    this.userId = parseInt(this.authService.getUserId(), 10);
+    console.log('userId parseado:', this.userId);
     this.editBasicInfoForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
@@ -105,18 +110,24 @@ export class ComplexDetail implements OnInit {
     this.activeSection = section;
   }
 
-loadComplex() {
-  const complexId = 1
+  loadComplex() {
+    const complexId = 1
 
-  this.complexService.getComplexById(1).subscribe({
-    next: (complex) => {
-      this.complex = complex;
-      this.loadFormBasicInfo();
-      this.loadFormTimeSlots();
-      this.tryBuildServicesForm();
-    }
-  });
-}
+    this.complexService.getComplexById(1).subscribe({
+      next: (complex) => {
+        this.complex = complex;
+        if(this.userId && this.complex.userId === this.userId ){
+          this.isAdminComplex = true;
+        }else{
+          console.log(this.userId)
+          console.log(this.complex.userId)
+        }
+        this.loadFormBasicInfo();
+        this.loadFormTimeSlots();
+        this.tryBuildServicesForm();
+      }
+    });
+  }
 
   loadFormBasicInfo() {
     this.editBasicInfoForm.patchValue({
@@ -136,7 +147,7 @@ loadComplex() {
 
   loadFormTimeSlots() {
     const timeSlotsComplex = this.complex.timeSlots;
-
+    this.invalidSchedulesError = null;
     const timeSlotsForm = this.editTimeSlotsForm.get('timeSlots') as FormArray;
 
     timeSlotsForm.controls.forEach(control => {
@@ -152,6 +163,20 @@ loadComplex() {
     })
   }
 
+  validateSchedules(): void {
+    const timeSlots = this.editTimeSlotsForm.get('timeSlots')?.value;
+
+    if (!timeSlots) return;
+
+    const hasInvalidSchedule = timeSlots.some((slot: any) => {
+      const initIndex = this.availableHours.indexOf(slot.initTime);
+      const endIndex = this.availableHours.indexOf(slot.endTime);
+      return initIndex > endIndex && endIndex != -1;
+    });
+
+    this.invalidSchedulesError = hasInvalidSchedule? "El horario de apertura no puede ser mayor al de cierre" : null;
+  }
+
   buildServicesForm() {
     const complexServiceIds = this.complex.services.map(s => s.id);
     console.log(complexServiceIds);
@@ -163,6 +188,7 @@ loadComplex() {
       )
     });
   }
+
   tryBuildServicesForm() {
     if (!this.complex || !this.allServices) return;
     this.buildServicesForm();
@@ -240,7 +266,7 @@ loadComplex() {
           life: 2000
         })
         this.loadComplex();
-        this.editBasicInfoForm.reset();
+        this.editBasicInfoForm.markAsPristine();
         this.loadFormBasicInfo();
       },
       error: (err) => {
@@ -262,20 +288,23 @@ loadComplex() {
   onSubmitTimeSlots(){
     const timeSlots = this.editTimeSlotsForm.value;
     const complexId = this.complex.id;
+    this.invalidSchedulesError = null;
+    this.validateSchedules();
+
+    if (this.invalidSchedulesError) {
+      return;
+    }
 
     this.complexService.updateComplexTimeSlots(timeSlots,complexId).subscribe({
       next: response => {
-        console.log("INFORMACION BASICA DEL COMPLEJO ACTUALIZADA EXITOSAMENTE: ", response);
+        console.log("HORARIOS DEL COMPLEJO ACTUALIZADOS EXITOSAMENTE: ", response);
         this.messageService.add({
           severity:'success',
-          summary:'Complejo actualizado exitosamente.',
+          summary:'Horarios del complejo actualizado exitosamente.',
           life: 2000
         })
         this.loadComplex();
-        this.editTimeSlotsForm.reset();
-        this.timeSlotsArray.controls.forEach((control, index) => {
-          control.get('weekDay')?.setValue(this.weekDays[index]);
-        });
+        this.editTimeSlotsForm.markAsPristine();
         this.loadFormTimeSlots();
       },
       error: (err) => {
@@ -294,6 +323,41 @@ loadComplex() {
   }
 
   onSubmitServices(){
+    const values: boolean[] = this.editServicesForm.value.services;
 
+    const selectedServiceIds = values
+      .map((checked, i) => checked ? this.allServices[i].id : null)
+      .filter(id => id !== null);
+    const complexId = this.complex.id;
+
+    const body = {
+      servicesIds: selectedServiceIds
+    }
+    console.log(selectedServiceIds);
+
+    this.complexService.updateComplexServices(body,complexId).subscribe({
+      next: response => {
+        console.log("SERVICIOS DEL COMPLEJO ACTUALIZADOS EXITOSAMENTE: ", response);
+        this.messageService.add({
+          severity:'success',
+          summary:'Servicios del complejo actualizados exitosamente.',
+          life: 2000
+        })        
+        this.loadComplex();
+        this.editServicesForm.markAsPristine();  
+      },
+      error: err => {
+        console.log('ERROR DEL BACKEND:', err);
+        const backendError = err?.error;
+        const message = backendError?.detail || 'Error desconocido';
+
+        this.messageService.add({
+          severity:'error',
+          summary:backendError?.title || 'Error',
+          detail: message,
+          life: 2000
+        })        
+      } 
+    })
   }
 }

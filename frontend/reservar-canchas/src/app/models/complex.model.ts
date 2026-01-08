@@ -4,6 +4,7 @@ import { TimeSlotComplexModel } from "./timeslotcomplex.model";
 
 export interface ComplexModel{
   id:number;
+  userId:number;
   name:string;
   description:string;
   province:string;

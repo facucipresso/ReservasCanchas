@@ -13,16 +13,22 @@
         <p>{{ complex.averageRating }}</p>
       </div>
       }
+      @if(isAdminComplex){
       <button pButton (click)="showDialog()">
         <i class="pi pi-pencil" pButtonIcon></i>
         <span pButtonLabel>Editar complejo</span>
       </button>
+      }
     </div>
     <p class="complex-description">{{ complex.description }}</p>
     <p class="complex-location">
       <i class="pi pi-map-marker"></i>
       {{ complex.street }} {{ complex.number }} - {{ complex.locality }},
       {{ complex.province }}
+    </p>
+    <p class="complex-phone">
+      <i class="pi pi-phone"></i>
+      {{ complex.phone }}
     </p>
     <div style="display: inline-flex">
       <p-message severity="info" variant="outlined">
@@ -354,6 +360,11 @@
         </div>
         }
       </div>
+        @if(invalidSchedulesError){
+         <small style="color: red; display: block">
+          {{ invalidSchedulesError }}
+        </small>
+        }
       <div style="display: flex; justify-content: end; margin-top:20px;">
         <p-button label="Confirmar cambios" type="submit" [disabled]="editTimeSlotsForm.invalid || this.editTimeSlotsForm.pristine"/>
       </div>

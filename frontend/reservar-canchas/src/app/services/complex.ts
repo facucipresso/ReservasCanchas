@@ -33,4 +33,8 @@ export class Complex {
   updateComplexTimeSlots(timeSlots:TimeSlotCreateModel[], complexId:number):Observable<any>{
     return this.http.put<any>(`${this.apiBaseUrl}/${complexId}/time-slots`,timeSlots);
   }
+
+  updateComplexServices(body:{servicesIds:number[]}, complexId:number):Observable<any>{
+    return this.http.put<any>(`${this.apiBaseUrl}/${complexId}/services`,body);
+  }
 }

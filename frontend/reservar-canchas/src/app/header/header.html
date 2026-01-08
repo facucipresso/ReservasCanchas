@@ -18,10 +18,12 @@
       }
       @if(!isLoggedIn){
       <p-button label="Iniciar sesión" (click)="showDialog()" size="large" />
+
       }@else{
       <div class="avatar-container">
         <p-menu #menu [model]="options" [popup]="true" />
         <p-avatar icon="pi pi-user" class="mr-2" size="large" [style]="{'cursor':'pointer'}" (click)="menu.toggle($event)"/>
+        <p style="font-weight: 500; font-size: 1.2rem; margin-left: 10px;">{{username}}</p>
       </div>
       }
       <!-- MODAL INICIO DE SESIÓN -->

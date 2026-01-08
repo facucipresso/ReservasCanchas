@@ -57,7 +57,7 @@
   color: #555;
 }
 
-.complex-location {
+.complex-location, .complex-phone {
   display: flex;
   align-items: center;
   gap: .5rem;

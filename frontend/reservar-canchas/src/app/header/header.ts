@@ -41,6 +41,7 @@ export class Header implements OnInit {
   value!: string;
   loginForm!: FormGroup;
   options: MenuItem[] | undefined;
+  username!: string | null;
 
 
   constructor(public router: Router, private fb: FormBuilder, public authService: Auth, private messageService:MessageService) {}
@@ -48,7 +49,11 @@ export class Header implements OnInit {
   ngOnInit(): void {
     this.authService.isLoggedIn$.subscribe(isLogged => {
       this.isLoggedIn = isLogged;
+      this.username = this.authService.getUsername();
     });
+
+    this.username = this.authService.getUsername();
+    console.log(this.username);
 
     this.authService.role$.subscribe(role => {
       this.isAdmin = role === 'AdminComplejo';
