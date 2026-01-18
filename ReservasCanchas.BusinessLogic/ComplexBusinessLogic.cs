@@ -44,6 +44,7 @@ namespace ReservasCanchas.BusinessLogic
 
             foreach (var complejo in complexes)
             {
+
                 var lowestPricePerField = LowPriceForField(complejo);
                 ComplexCardResponseDTO card = ComplexMapper.toComplexCardResponseDTO(complejo, lowestPricePerField);
                 complexesCardsDTO.Add(card);
@@ -69,14 +70,14 @@ namespace ReservasCanchas.BusinessLogic
             var userRol = _authService.GetUserRole();
             
             var complex = await GetComplexBasicOrThrow(complexId);
-
-
+            var complexDetailDTO = ComplexMapper.toComplexDetailResponseDTO(complex);
+            complexDetailDTO.UserId = complex.UserId;
             if (complex.UserId == userId) // || rol == Rol.SuperAdmin
-                return ComplexMapper.toComplexDetailResponseDTO(complex);
+                return complexDetailDTO;
 
             ValidateAccessForBasicUser(complex);
-            var complexDetailDTO =  ComplexMapper.toComplexDetailResponseDTO(complex);
             complexDetailDTO.AverageRating = await _complexRepository.GetAverageRatingAsync(complexId);
+            complexDetailDTO.UserId = complex.UserId;
             return complexDetailDTO;
         }
 
@@ -310,59 +311,42 @@ namespace ReservasCanchas.BusinessLogic
             if (userRol == "AdminComplejo")
             {
                 ValidateOwnerShip(complex, userId);
-            }
-
-            if (complex.State == ComplexState.Habilitado && newState == ComplexState.Deshabilitado)
-            {
-                complex.State = newState;
-                changed = true;
-            }
-
-
-            if (complex.State == ComplexState.Deshabilitado && newState == ComplexState.Habilitado)
-            {
-                complex.State = newState;
-                changed = true;
-            }
-
-            if (complex.State == ComplexState.Rechazado && newState == ComplexState.Pendiente)
-            {
-                complex.State = newState;
-                changed = true;
-            }
-
-            // ***** TRANSICIONES SUPERADMIN ***** //
-
-
-            if (userRol != "SuperAdmin")
-            {
-                throw new ForbiddenException($"No tiene los permisos para hacer esta operacion");
-            }
-
-            if (complex.State == ComplexState.Pendiente && (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado))
-            {
-                complex.State = newState;
-                changed = true;
-            }
-
-            if ((complex.State == ComplexState.Habilitado || complex.State == ComplexState.Deshabilitado) && newState == ComplexState.Bloqueado)
-            {
-                if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
+                if(complex.State == ComplexState.Habilitado && newState == ComplexState.Deshabilitado ||
+                   complex.State == ComplexState.Deshabilitado && newState == ComplexState.Habilitado ||
+                   complex.State == ComplexState.Rechazado && newState == ComplexState.Pendiente)
                 {
-                    throw new BadRequestException("No se puede bloquear el complejo porque tiene reservas activas en sus canchas");
+                    complex.State = newState;
+                    changed = true;
                 }
-                complex.State = newState;
-                changed = true;
             }
-
-            if (complex.State == ComplexState.Bloqueado && newState == ComplexState.Habilitado)
+            else if(userRol == "SuperAdmin")
             {
-                complex.State = newState;
-                changed = true;
+                if(complex.State == ComplexState.Pendiente && (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado))
+                {
+                    complex.State = newState;
+                    changed = true;
+                }
+                else if ((complex.State == ComplexState.Habilitado || complex.State == ComplexState.Deshabilitado) && newState == ComplexState.Bloqueado)
+                {
+                    if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
+                    {
+                        throw new BadRequestException("No se puede bloquear el complejo porque tiene reservas activas en sus canchas");
+                    }
+                    complex.State = newState;
+                    changed = true;
+                }else if (complex.State == ComplexState.Bloqueado && newState == ComplexState.Habilitado)
+                {
+                    complex.State = newState;
+                    changed = true;
+                }
+            }
+            else
+            {
+                throw new ForbiddenException("No tiene los permisos para hacer esta operación");
             }
 
             if (!changed)
-                throw new BadRequestException($"No se puede cambiar el estado de {complex.State} a {newState}");
+                throw new BadRequestException($"Transición no permitida: no se puede cambiar de {complex.State} a {newState} con su rol actual");
 
             await _complexRepository.SaveAsync();
             return ComplexMapper.toComplexDetailResponseDTO(complex);
@@ -481,7 +465,7 @@ namespace ReservasCanchas.BusinessLogic
         {
             if (complex.State == ComplexState.Bloqueado || complex.State == ComplexState.Pendiente)
             {
-                throw new BadRequestException("El complejo no se encuentra habilitado para edición");
+                throw new BadRequestException("El complejo no puede ser editado mientras está en estado pendiente o bloqueado");
             }
         }
 
@@ -531,7 +515,7 @@ namespace ReservasCanchas.BusinessLogic
         {
             if (complex.State == ComplexState.Pendiente || complex.State == ComplexState.Rechazado || complex.State == ComplexState.Bloqueado)
             {
-                throw new BadRequestException("No se pueden agregar canchas al complejo en el estado actual");
+                throw new BadRequestException("No se pueden manipular las canchas del complejo en el estado actual");
             }
         }
 
@@ -604,6 +588,10 @@ namespace ReservasCanchas.BusinessLogic
 
         private decimal LowPriceForField(Complex complex)
         {
+            if (complex.Fields == null || !complex.Fields.Any())
+            {
+                return 0;
+            }
             return complex.Fields.Min(f => f.HourPrice);
         }
 

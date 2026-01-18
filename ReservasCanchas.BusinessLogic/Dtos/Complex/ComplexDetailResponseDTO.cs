@@ -13,6 +13,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
     public class ComplexDetailResponseDTO
     {
         public int Id { get; set; }
+        public int UserId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Province { get; set; } = string.Empty;

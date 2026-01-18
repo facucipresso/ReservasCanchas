@@ -8,8 +8,8 @@ namespace ReservasCanchas.Domain.Enums
 {
     public enum FieldType
     {
-        Cancha5 = 0,
-        Cancha7 = 1,
-        Cancha11 = 2
+        Futbol5 = 0,
+        Futbol7 = 1,
+        Futbol11 = 2
     }
 }

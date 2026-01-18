@@ -13,6 +13,8 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Field
     {
         [Required(ErrorMessage = "El Id del complejo es obligatorio")]
         public int ComplexId { get; set; }
+        [Required(ErrorMessage = "El nombre de la cancha es obligatorio")]
+        public string Name { get; set; }
         [Required(ErrorMessage = "El tipo de cancha es obligatorio")]
         public FieldType FieldType { get; set; }
         [Required(ErrorMessage = "El tipo de piso es obligatorio")]

@@ -15,11 +15,13 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             return new ComplexCardResponseDTO
             {
                 Id = complex.Id,
+                UserId = complex.UserId,
                 Name = complex.Name,
                 Province = complex.Province,
                 Locality = complex.Locality,
                 Street = complex.Street,
                 Number = complex.Number,
+                State = complex.State,
                 ImagePath = complex.ImagePath,
                 LowestPricePerField = lowestPrice
             };

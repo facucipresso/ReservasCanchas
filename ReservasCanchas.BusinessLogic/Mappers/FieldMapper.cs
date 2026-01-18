@@ -15,6 +15,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             return new Field
             {
                 ComplexId = fieldRequestDTO.ComplexId,
+                Name = fieldRequestDTO.Name,
                 FieldType = fieldRequestDTO.FieldType,
                 FloorType = fieldRequestDTO.FloorType,
                 HourPrice = fieldRequestDTO.HourPrice,

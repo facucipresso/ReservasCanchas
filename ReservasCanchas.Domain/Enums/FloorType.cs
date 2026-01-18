@@ -9,6 +9,8 @@ namespace ReservasCanchas.Domain.Enums
     public enum FloorType
     {
         CespedNatural = 0,
-        CespedSintetico = 1
+        CespedSintetico = 1,
+        Parquet = 2,
+        Cemento = 3
     }
 }

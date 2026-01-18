@@ -67,6 +67,7 @@ namespace ReservasCanchas.DataAccess.Repositories
         public async Task<List<Complex>> GetComplexesByUserIdAsync(int userId)
         {
             return await _context.Complex
+                         .Include(c => c.Fields)
                          .Where(c => c.UserId == userId && c.Active)
                          .ToListAsync();
         }
@@ -130,7 +131,7 @@ namespace ReservasCanchas.DataAccess.Repositories
                     .Where(f =>
                         f.Active &&
                         f.FieldType == fieldType &&
-                        f.FieldState == FieldState.Habilitado)
+                        f.FieldState == FieldState.Habilitada)
                     .ToList();
             }
 
