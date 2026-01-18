@@ -24,6 +24,7 @@ import { Checkbox } from 'primeng/checkbox';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Auth } from '../services/auth';
+import { Field } from '../services/field';
 
 type EditSection = 'basic' | 'timeslots' | 'services';
 
@@ -42,9 +43,10 @@ export class ComplexDetail implements OnInit {
   isAdminComplex = false;
   backendUrl = 'https://localhost:7004';
   allServices !: ComplexServiceModel[];
-  fields!: any[];
+  fields!: FieldModel[];
   reservations!:any;
   visible: boolean = false;
+  visibleFieldModal:boolean = false;
   editBasicInfoForm!:FormGroup;
   editTimeSlotsForm!:FormGroup;
   editServicesForm!:FormGroup;
@@ -57,8 +59,22 @@ export class ComplexDetail implements OnInit {
   ]
   invalidSchedulesError: string | null = null;
 
+  fieldForm!: FormGroup;
+  fieldTypes = [
+    { label: 'Fútbol 5', value: FieldType.Futbol5 },
+    { label: 'Fútbol 7', value: FieldType.Futbol7 },
+    { label: 'Fútbol 11', value: FieldType.Futbol11 }
+  ]
+  floorTypes = [
+    {label:'Cesped Natural', value: FloorType.CespedNatural},
+    {label:'Cesped Sintético', value: FloorType.CespedSintetico},
+    {label:'Parquet', value:FloorType.Parquet},
+    {label:'Cemento', value:FloorType.Cemento}
+  ]
+
   constructor(private route: ActivatedRoute, private complexService: Complex, private fb: FormBuilder,
-     private servicesComplex: Complexservices, private messageService: MessageService, private authService: Auth) {}
+     private servicesComplex: Complexservices, private messageService: MessageService, private authService: Auth,
+     private fieldService: Field) {}
 
 
   ngOnInit(): void {
@@ -95,7 +111,23 @@ export class ComplexDetail implements OnInit {
       )
     })
     const complexId = this.route.snapshot.paramMap.get('id');
-    console.log(`Id del complejo ${complexId}`);
+    this.fieldForm = this.fb.group({
+      complexId:['', Validators.required],
+      fieldType:['',Validators.required],
+      floorType:['',Validators.required],
+      hourPrice:[null,Validators.required],
+      ilumination:[false],
+      covered:[false],
+      timeSlotsField: this.fb.array(
+        this.weekDays.map((day) =>
+          this.fb.group({
+            weekDay: [day],
+            initTime: ['',Validators.required],   
+            endTime: ['',Validators.required],
+          })
+        ) 
+      )
+    })
     this.loadComplex();
 
     this.servicesComplex.getAllServices().subscribe({
@@ -104,6 +136,11 @@ export class ComplexDetail implements OnInit {
         this.tryBuildServicesForm();
         console.log(services);
     }});
+
+    this.fieldForm.get('timeSlots')?.valueChanges.subscribe(() => {
+      this.validateSchedules();
+      }
+    );
   }
 
   setSection(section:EditSection){
@@ -116,6 +153,7 @@ export class ComplexDetail implements OnInit {
     this.complexService.getComplexById(1).subscribe({
       next: (complex) => {
         this.complex = complex;
+        this.loadFields();
         if(this.userId && this.complex.userId === this.userId ){
           this.isAdminComplex = true;
         }else{
@@ -127,6 +165,14 @@ export class ComplexDetail implements OnInit {
         this.tryBuildServicesForm();
       }
     });
+  }
+
+  loadFields(){
+    this.fieldService.getFieldsByComplexId(this.complex.id).subscribe({
+      next: fields => {
+        this.fields = fields;
+      }
+    })
   }
 
   loadFormBasicInfo() {
@@ -164,7 +210,12 @@ export class ComplexDetail implements OnInit {
   }
 
   validateSchedules(): void {
-    const timeSlots = this.editTimeSlotsForm.get('timeSlots')?.value;
+    let timeSlots;
+    if(this.visible){
+       timeSlots = this.editTimeSlotsForm.get('timeSlots')?.value;
+    }else{
+       timeSlots = this.fieldForm.get('timeSlots')?.value;
+    }
 
     if (!timeSlots) return;
 
@@ -202,16 +253,44 @@ export class ComplexDetail implements OnInit {
     return this.editServicesForm.get('services') as FormArray;
   }
 
-  showDialog() {
+  showDialogComplex() {
     this.activeSection = 'basic';
     this.visible = true;
   }
 
-  onDialogClose() {
+  onDialogComplexClose() {
     this.loadFormBasicInfo();
     this.loadFormTimeSlots();
     this.buildServicesForm()
   }
+
+  showDialogField(){
+    this.visibleFieldModal = true;
+    this.fieldForm.patchValue({
+      complexId: this.complex.id
+    });
+  }
+
+  onDialogFieldClose(){
+    this.fieldForm.reset(); 
+    this.fieldForm.setControl(
+      'timeSlotsField',
+      this.fb.array(
+        this.weekDays.map(day =>
+          this.fb.group({
+            weekDay: [day],
+            initTime: ['',Validators.required],
+            endTime: ['',Validators.required],
+          })
+        )
+      )
+    )
+  }
+
+  get timeSlotsFieldArray(): FormArray<FormGroup> {
+    return this.fieldForm.get('timeSlotsField') as FormArray<FormGroup>;
+  }
+
 
   getSelectableHours(fieldId: number, init: string, end: string) {
     const hours = this.generateHourRange(init, end);
@@ -359,5 +438,42 @@ export class ComplexDetail implements OnInit {
         })        
       } 
     })
+  }
+
+  onSubmitCreateField(){
+    this.invalidSchedulesError = null;
+    this.validateSchedules();
+    if (this.invalidSchedulesError) {
+      return;
+    }
+    const field = this.fieldForm.value;
+    this.fieldService.createField(field).subscribe({
+      next: (response) => {
+        console.log("COMPLEJO CREADO EXITOSAMENTE: ", response);
+        this.messageService.add({
+          severity:'success',
+          summary:'Cancha creada exitosamente.',
+          life: 2000
+        })
+        this.fieldForm.markAsPristine();
+        this.loadComplex();
+      },
+      error: (err) => {
+        console.log('ERROR DEL BACKEND:', err);
+        const backendError = err?.error;
+        const message = backendError?.detail || 'Error desconocido';
+
+        this.messageService.add({
+          severity:'error',
+          summary:backendError?.title || 'Error',
+          detail: message,
+          life: 2000
+        })
+      }
+    })
+  }
+
+  onSubmitUpdateBasicInfoField(){
+    
   }
 }

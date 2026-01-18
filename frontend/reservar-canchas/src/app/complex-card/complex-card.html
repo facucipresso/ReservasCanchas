@@ -1,7 +1,7 @@
 <div class="complex-card">
   <div class="card-header">
     <img 
-      [src]="complexCard.imagePath" 
+      [src]= "backendUrl + complexCard.imagePath" 
       alt="Imagen del complejo"
     />
   </div>
@@ -13,12 +13,23 @@
       <i class="pi pi-map-marker"></i>
       {{ complexCard.street }} {{ complexCard.number }} - {{ complexCard.locality }}, {{ complexCard.province }}
     </p>
-
-    <p class="price-text">
+    @if(isOwnerComplex){
+      <p class="status-text">
+        Estado: {{ complexCard.state }}
+      </p>
+    }
+    @if(isAdmin && complexCard.lowestPricePerField === 0){
+      <p class="price-text">
+      <i class="pi pi-exclamation-triangle" style="font-size: 1.3rem; color: #E3D668;"></i> 
+      Aún no añadiste canchas al complejo.
+    </p>
+    }@else{
+      <p class="price-text">
       Canchas desde 
-      <strong style="color: black;">${{ complexCard.minPriceHour }}</strong> 
+      <strong style="color: black;">${{ complexCard.lowestPricePerField }}</strong> 
       por hora
     </p>
+    }
   </div>
 
   <div class="card-footer">

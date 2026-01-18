@@ -1,20 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {FormBuilder,FormGroup,ReactiveFormsModule,Validators,} from '@angular/forms';
 import { Location } from '../services/location';
 import { Select } from 'primeng/select';
-import {
-  AutoCompleteCompleteEvent,
-  AutoCompleteModule,
-} from 'primeng/autocomplete';
+import {AutoCompleteCompleteEvent,AutoCompleteModule,} from 'primeng/autocomplete';
 import { FieldType } from '../models/fieldtype.enum';
-import { DatePicker, DatePickerModule } from 'primeng/datepicker';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
-import { ActivatedRoute, Router } from '@angular/router';
+import {  Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -37,10 +29,11 @@ export class FormSearchComplexes implements OnInit {
   dateNow = new Date();
   maxDateValid = new Date();
   form!: FormGroup;
-  fieldTypes = Object.entries(FieldType).map(([key, value]) => ({
-    label: value, 
-    value: key, 
-  }));
+  fieldTypes = [
+    { label: 'Fútbol 5', value: FieldType.Futbol5 },
+    { label: 'Fútbol 7', value: FieldType.Futbol7 },
+    { label: 'Fútbol 11', value: FieldType.Futbol11 }
+  ]
   hours = [
     '08:00',
     '09:00',
@@ -70,6 +63,7 @@ export class FormSearchComplexes implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.fieldTypes)
     this.maxDateValid.setDate(this.maxDateValid.getDate() + 7);
     this.form = this.fb.group({
       province: ['', Validators.required],
@@ -117,7 +111,7 @@ export class FormSearchComplexes implements OnInit {
 
   validateLocality() {
     const value = this.form.get('locality')?.value;
-
+    
     // Si no coincide exactamente con ninguna localidad -> borrar
     if (
       !this.localities
@@ -132,9 +126,9 @@ export class FormSearchComplexes implements OnInit {
     if (this.form.invalid) return;
 
     const { province, locality, fieldType, date, hour } = this.form.value;
-
+    console.log(this.form.value);
     const dateOnly = date.toISOString().substring(0, 10);
-
+    console.log(dateOnly);
     const queryParams = {
       province,
       locality,
@@ -145,6 +139,6 @@ export class FormSearchComplexes implements OnInit {
 
     console.log(queryParams);
 
-    this.router.navigate(['/complexes'], { queryParams });
+    this.router.navigate(['search/complexes'], { queryParams });
   }
 }

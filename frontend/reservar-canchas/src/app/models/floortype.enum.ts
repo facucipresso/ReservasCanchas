@@ -1,6 +1,6 @@
 export enum FloorType{
-  CespedNatural = "Cesped natural",
-  CespedSintético = "Cesped sintético",
-  Parquet = "Parquet",
-  Cemento = "Cemento"
+  CespedNatural = 0,
+  CespedSintetico = 1,
+  Parquet = 2,
+  Cemento = 3
 }

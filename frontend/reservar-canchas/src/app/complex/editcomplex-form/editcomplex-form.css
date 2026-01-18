@@ -1,0 +1,178 @@
+.section-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.section-tabs button {
+  background: none;
+  border: none;
+  padding: 12px 0;
+  font-size: 22px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  color: #777;
+  transition: color 0.25s ease;
+}
+
+/* Línea animada */
+.section-tabs button::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 3px;
+  background-color: #111;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+/* ACTIVO */
+.section-tabs button.active {
+  color: #111;
+}
+
+.section-tabs button.active::after {
+  width: 60%;
+}
+
+.form-section {
+  padding: 0.5rem 0;
+}
+
+/* ===== GRID ===== */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.5rem 1rem;
+  margin-top: 20px;
+}
+
+/* Inputs ocupan toda la celda */
+.form-grid > div {
+  width: 100%;
+}
+
+/* ===== TEXTAREA ===== */
+
+.container-textarea {
+  grid-column: span 2; /* ocupa ambas columnas */
+}
+
+
+
+/* ===== PRIME INPUTS ===== */
+
+.p-inputtext,
+.p-inputnumber,
+.p-dropdown,
+.p-select {
+  width: 100%;
+}
+
+/* Altura consistente */
+.p-inputtext,
+::ng-deep.p-inputnumber-input,
+.p-select,
+.p-dropdown {
+  min-height: 42px;
+}
+
+/* Textarea */
+textarea[pTextarea] {
+  width: 100%;
+  min-height: 120px;
+  resize:none;
+}
+
+/* ===== FLOAT LABEL ===== */
+
+p-floatlabel {
+  width: 100%;
+}
+
+/* ===== ERRORES ===== */
+
+small {
+  margin-top: 4px;
+  display: block;
+  font-size: 0.85rem;
+  color: red;
+}
+
+/* ===== BOTÓN ===== */
+
+.form-section p-button {
+  margin-top: 1rem;
+}
+
+/* ===== RESPONSIVE ===== */
+
+.day-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.day-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+}
+
+.day-label {
+  font-weight: 600;
+  font-size: 1.5rem;
+  text-transform: capitalize;
+}
+
+.time-error {
+  grid-column: span 3;
+  color: var(--red-500);
+  font-size: 12px;
+}
+
+.p-inputtextarea {
+  resize: none;
+}
+
+::ng-deep.p-inputtext{
+  width: 100%;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.service-item, .field-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  cursor: pointer;
+}
+
+.service-item:hover, .field-item:hover {
+  background: #eef2f5;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}

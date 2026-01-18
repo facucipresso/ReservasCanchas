@@ -47,6 +47,10 @@ hr{
   width: 100%;
 }
 
+.p-inputtext{
+  width: 100%;
+}
+
 .form-grid .container-textarea{
   grid-column: span 2;
 }
@@ -140,4 +144,8 @@ textarea {
   color: red;
   font-size: 0.85rem;
   margin-top: -5px;
+}
+
+small {
+  display: block;
 }

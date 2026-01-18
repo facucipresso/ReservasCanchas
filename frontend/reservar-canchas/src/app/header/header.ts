@@ -70,12 +70,13 @@ export class Header implements OnInit {
   private initMenu() {
     this.options = [
       {
-        label: 'Opciones',
+        label: 'Menú',
         items: [
           { label: 'Mis reservas', icon: 'pi pi-calendar' },
           ...(this.isAdmin ? [{
             label: 'Mis complejos',
-            icon: 'pi pi-building'
+            icon: 'pi pi-building',
+            command: () => this.goToMyComplexes()
           }] : []),
           { label: 'Mi buzón', icon: 'pi pi-envelope' },
           { label: 'Mi perfil', icon: 'pi pi-user' },
@@ -145,6 +146,10 @@ export class Header implements OnInit {
   goToCreateComplex(){
     this.router.navigate(['/register-complex']);
     this.visible = false;
+  }
+
+  goToMyComplexes(){
+    this.router.navigate(['/admin/complexes'])
   }
 
   logout(){

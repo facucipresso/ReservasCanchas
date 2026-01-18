@@ -10,10 +10,12 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es'
 import { authInterceptor } from './interceptors/auth-interceptor';
+import { MessageService } from 'primeng/api';
 
 registerLocaleData(localeEs);
 export const appConfig: ApplicationConfig = {
   providers: [
+    MessageService,
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),

@@ -15,7 +15,7 @@
           @if(createComplexForm.get('name')?.touched &&
           createComplexForm.get('name')?.invalid){
           @if(createComplexForm.get('name')?.errors?.['required']){
-          <small style="color: red"
+          <small style="color: red; display: block;"
             >El nombre del complejo es obligatorio</small
           >
           } }
@@ -30,7 +30,7 @@
           @if(createComplexForm.get('phone')?.touched &&
           createComplexForm.get('phone')?.invalid){
           @if(createComplexForm.get('phone')?.errors?.['required']){
-          <small style="color: red"
+          <small style="color: red;"
             >El teléfono del complejo es obligatorio</small
           >
           } @if(createComplexForm.get('phone')?.errors?.['pattern']){

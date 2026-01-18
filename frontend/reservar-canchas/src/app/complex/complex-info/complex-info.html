@@ -1,0 +1,83 @@
+<div class="complex-info-container">
+  <div class="img-container">
+    <img [src]="backendUrl + complex.imagePath" alt="Imagen del complejo" />
+  </div>
+  <div class="basicinfo-complex-container">
+    <div class="name-rating-row">
+      <h1 class="complex-name">{{ complex.name }}</h1>
+      @if(complex.averageRating){
+      <div class="rating-stars">
+        @for (star of [1,2,3,4,5]; track star) {
+        <i
+          class="pi pi-star"
+          [ngClass]="star <= complex.averageRating ? 'active' : ''"
+        ></i>
+        }
+        <p>{{ complex.averageRating }}</p>
+      </div>
+      } 
+      <ng-content select="[edit-complex-button]"></ng-content>
+      <ng-content select="[delete-complex-button]"></ng-content>
+      <ng-content select="[changestate-complex-button]"></ng-content>
+    </div>
+    <p class="complex-description">{{ complex.description }}</p>
+    <p class="complex-location">
+      <i class="pi pi-map-marker"></i>
+      {{ complex.street }} {{ complex.number }} - {{ complex.locality }},
+      {{ complex.province }}
+    </p>
+    <p class="complex-phone">
+      <i class="pi pi-phone"></i>
+      {{ complex.phone }}
+    </p>
+    <div style="display: inline-flex">
+      <p-message severity="info" variant="outlined">
+        *Aclaración: Este complejo cobra un extra por iluminación a partir de
+        las {{ complex.startIlumination.slice(0, 5) }}hs de un
+        {{ complex.aditionalIlumination }}% sobre el valor base de la cancha.
+      </p-message>
+    </div>
+  </div>
+  <div style="padding:1rem;">
+    <h3 style="font-size: 25px; margin-bottom: 1rem;">Elegí la fecha</h3>
+    <ng-content select="[calendar]"></ng-content>
+  </div>
+  <div style="display: flex; gap: 15px; padding: 1rem; align-items: center;">
+    <h3 style="font-size:25px">Elegí la cancha, el horario y hace tu reserva.</h3>
+    <ng-content select="[add-field-button]"></ng-content>
+  </div>
+    <app-field-table
+    [fields]="fields"
+    [isAdmin]="isAdmin"
+    [selectedDate]="selectedDate"
+    (editField)="onEditField($event)"
+    (deleteField)="onDeleteField($event)"
+    >
+  </app-field-table>
+
+  <div class="info-extra-container">
+    <p-panel header="Horarios del club" [toggleable]="true">
+      <div class="days-container">
+        @for(timeSlot of complex.timeSlots; track timeSlot.id){
+        <p style="font-weight: 600">{{ timeSlot.weekDay }}:</p>
+        <p>
+          {{
+            timeSlot.initTime === timeSlot.endTime
+              ? "Cerrado"
+              : timeSlot.initTime.slice(0, 5) +
+                " a " +
+                timeSlot.endTime.slice(0, 5)
+          }}
+        </p>
+        }
+      </div>
+    </p-panel>
+    <p-panel header="Servicios del club" [toggleable]="true">
+      <div class="services-container">
+        @for(service of complex.services; track service.id){
+        <p>{{ service.serviceDescription }}</p>
+        }
+      </div>
+    </p-panel>
+  </div>
+</div>

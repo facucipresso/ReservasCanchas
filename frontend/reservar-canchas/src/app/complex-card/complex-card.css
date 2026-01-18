@@ -36,8 +36,14 @@
   font-size: 1rem;
   color: #555;
   display: flex;
-  align-items: center;
+  
   margin-bottom: 1rem;
+}
+
+.status-text {
+  font-size: 1rem;
+  color: #222;
+  margin-bottom: 0.5rem;
 }
 
 .card-subtitle i {
@@ -47,7 +53,7 @@
 
 /* Precio */
 .price-text {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #333;
   margin-bottom: 0.5rem;
 }

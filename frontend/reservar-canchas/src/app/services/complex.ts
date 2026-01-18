@@ -22,6 +22,10 @@ export class Complex {
         return this.http.get<ComplexModel>(`${this.apiBaseUrl}/${id}`);
   }
 
+  getMyComplexes():Observable<ComplexCardModel[]>{
+    return this.http.get<ComplexCardModel[]>(`${this.apiBaseUrl}/my`)
+  }
+
   createComplex(formData:FormData):Observable<HttpResponse<any>>{
     return this.http.post<any>(this.apiBaseUrl,formData,{observe: 'response'});
   }
@@ -36,5 +40,13 @@ export class Complex {
 
   updateComplexServices(body:{servicesIds:number[]}, complexId:number):Observable<any>{
     return this.http.put<any>(`${this.apiBaseUrl}/${complexId}/services`,body);
+  }
+
+  updateComplexState(newStateObject:{state:string}, complexId:number):Observable<any>{
+    return this.http.patch<any>(`${this.apiBaseUrl}/${complexId}/state`,newStateObject);
+  }
+
+  deleteComplex(complexId:number):Observable<any>{
+    return this.http.delete<any>(`${this.apiBaseUrl}/${complexId}`);
   }
 }

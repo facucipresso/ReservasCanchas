@@ -1,4 +1,3 @@
-/* ========== CONTENEDOR GENERAL ========== */
 .complex-detail-container {
   max-width: 1600px;
   margin: 0 auto;
@@ -136,6 +135,10 @@ p-table ::ng-deep button:hover {
 
 p-table ::ng-deep button .pi {
   color: white !important;
+}
+
+h3{
+  font-size: 25px;
 }
 
 /* ========== PANEL EXTRA (HORARIOS + SERVICIOS) ========== */
@@ -351,7 +354,7 @@ small {
   margin-top: 16px;
 }
 
-.service-item {
+.service-item, .field-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -361,7 +364,7 @@ small {
   cursor: pointer;
 }
 
-.service-item:hover {
+.service-item:hover, .field-item:hover {
   background: #eef2f5;
 }
 
