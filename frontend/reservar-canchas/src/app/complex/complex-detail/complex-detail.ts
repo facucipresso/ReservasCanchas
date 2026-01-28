@@ -6,7 +6,7 @@ import { Toast, ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Auth } from '../../services/auth';
 import { ComplexInfo } from '../complex-info/complex-info';
-import { ProgressSpinner } from 'primeng/progressspinner';
+import { ProgressSpinner, ProgressSpinnerModule } from 'primeng/progressspinner';
 import { FieldModel } from '../../models/field.model';
 import { Field } from '../../services/field';
 import { FieldTable } from '../field-table/field-table';
@@ -19,10 +19,12 @@ import { Dialog } from 'primeng/dialog';
 import { EditcomplexForm } from '../editcomplex-form/editcomplex-form';
 import { Fieldform } from '../fieldform/fieldform';
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { Reservation } from '../../services/reservation';
+import { ReservationProcessRequest } from '../../models/reservation/reservationprocessrequest.model';
 type Mode = 'create' | 'edit';
 @Component({
   selector: 'app-complex-detail',
-  imports: [ToastModule,ComplexInfo,ProgressSpinner,DatePickerModule,FormsModule,
+  imports: [ToastModule,ComplexInfo,ProgressSpinnerModule,DatePickerModule,FormsModule,
      CommonModule, Dialog, EditcomplexForm, Fieldform, ConfirmDialog],
   templateUrl: './complex-detail.html',
   styleUrl: './complex-detail.css',
@@ -33,12 +35,12 @@ export class ComplexDetail implements OnInit{
   complex!: ComplexModel;
   isAdmin!: boolean;
   complexId!: number;
-  errorComplex =  false;
   selectedDate!: Date;
   dateNow = new Date();
   maxDateValid = new Date();
   fields!: FieldModel[];
   allServices !:ComplexServiceModel[];
+  isLoading: boolean = false;
 
   visibleEditComplexModal = false;
   visibleFieldFormModal = false;
@@ -47,10 +49,11 @@ export class ComplexDetail implements OnInit{
   selectedField?: FieldModel;
   constructor(private complexService:Complex, private route:ActivatedRoute, private messageService:MessageService,
      private authService: Auth, private router:Router, private fieldService:Field, 
-     private servicesComplex:Complexservices, private confirmationService: ConfirmationService){}
+     private servicesComplex:Complexservices, private confirmationService: ConfirmationService,
+     private reservationService:Reservation){}
 
   ngOnInit(){
-
+    this.isLoading = true;
     this.complexId=Number(this.route.snapshot.paramMap.get('id'));
     this.maxDateValid.setDate(this.maxDateValid.getDate() + 7);
     this.dateNow.setHours(0, 0, 0, 0);
@@ -79,11 +82,13 @@ export class ComplexDetail implements OnInit{
         this.isAdmin = this.complex.userId === parseInt(this.authService.getUserId());
         this.loadFields(this.complexId);
         this.loadServices();
+        this.isLoading = false;
       },
       error: (err) => {
         console.log('ERROR DEL BACKEND:', err);
         const backendError = err?.error;
         const message = backendError?.detail || 'Error desconocido';
+        this.isLoading = false;
 
         this.messageService.add({
           severity:'error',
@@ -91,8 +96,7 @@ export class ComplexDetail implements OnInit{
           detail: message,
           life: 2000
         })
-        this.errorComplex = true;
-        setTimeout(()=> this.router.navigate(['/']),1500);
+        this.router.navigate(['/']);
       }
     })
   }
@@ -468,5 +472,58 @@ export class ComplexDetail implements OnInit{
         })
       }
     })
+  }
+
+  onReserveField(event:{field:FieldModel, hour:string}){
+    console.log('Reserva solicitada: ', event);
+    console.log(this.selectedDate.toISOString().substring(0,10));
+    if(!this.authService.isLoggedIn()){
+      this.messageService.add({
+        severity:'warn',
+        summary:'Debes iniciar sesión para reservar una cancha.',
+        life: 2000
+      })
+    }
+
+    const reservationData:ReservationProcessRequest = {
+      complexId: this.complex.id,
+      fieldId: event.field.id,
+      date: this.selectedDate.toISOString().substring(0,10),
+      startTime: event.hour
+    }
+
+    console.log('Datos para el proceso de reserva: ', reservationData);
+
+    this.reservationService.createProcessReservation(reservationData).subscribe({
+      next: (response) => {
+        console.log(response);
+        if(response.existReservationProcessForUser){
+          this.confirmationService.confirm({
+            message: 'Ya tienes una reserva en proceso. Debes completarla o cancelarla antes de realizar otra.',
+            header: 'Reserva en curso',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Ir al Checkout',
+            rejectLabel: 'Cerrar',
+            accept: () => {
+              this.router.navigate(['reservation/checkout', response.reservationProcessId]);
+            },
+        });
+        }else{
+          this.router.navigate(['reservation/checkout', response.reservationProcessId]);
+        }
+      },
+      error: (err) => {
+        console.log('ERROR DEL BACKEND:', err);
+        const backendError = err?.error;
+        const message = backendError?.detail || 'Error desconocido'; 
+
+        this.messageService.add({
+          severity:'error',
+          summary:backendError?.title || 'Error',
+          detail: message,
+          life: 2000
+        })
+      }
+    });
   }
 }

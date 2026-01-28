@@ -1,0 +1,292 @@
+<div class="container-main">
+  @if (isLoading) {
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 5rem;
+      "
+    >
+      <p-progressSpinner
+        styleClass="width: 4rem; height: 4rem;  "
+        strokeWidth="4"
+        animationDuration=".5s"
+      >
+      </p-progressSpinner>
+    </div>
+  } @else {
+    <div class="checkout-wrapper">
+      <div class="checkout-header">
+        <div class="header-text">
+          <h1>¡Ya casi terminamos!</h1>
+          <p>
+            Revisa los detalles de tu reserva en
+            <strong>{{ complex.name }}</strong> y confirma.
+          </p>
+          <p>Tienes 15 minutos para completar la reserva.</p>
+        </div>
+
+        <div
+          class="timer-badge"
+          [class.urgent]="remainingTimeDisplay < '05:00'"
+        >
+          <i class="pi pi-stopwatch"></i>
+          <span>Tiempo restante: {{ remainingTimeDisplay }}</span>
+        </div>
+      </div>
+
+      <div class="checkout-grid">
+        <div class="col-left">
+          <div class="card checkout-card">
+            <div class="card-header">
+              <i class="pi pi-receipt"></i>
+              <h2>Detalles de la Reserva</h2>
+            </div>
+
+            <div class="card-body">
+              <div class="info-group">
+                <h3>Complejo</h3>
+                <p class="highlight-text">{{ complex.name }}</p>
+                <div class="icon-row">
+                  <i class="pi pi-map-marker"></i>
+                  <span
+                    >{{ complex.street }} {{ complex.number }},
+                    {{ complex.locality }}</span
+                  >
+                </div>
+                <div class="icon-row">
+                  <i class="pi pi-phone"></i>
+                  <span>{{ complex.phone }}</span>
+                </div>
+              </div>
+
+              <hr class="divider" />
+
+              <div class="info-group">
+                <h3>Horario</h3>
+                <div class="date-time-box">
+                  <div class="dt-item">
+                    <i class="pi pi-calendar"></i>
+                    <div>
+                      <span class="label">Fecha</span>
+                      <span class="value">{{ checkoutInfo.date }}</span>
+                    </div>
+                  </div>
+                  <div class="dt-item">
+                    <i class="pi pi-clock"></i>
+                    <div>
+                      <span class="label">Hora</span>
+                      <span class="value">{{ checkoutInfo.initTime }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="divider" />
+
+              <div class="info-group">
+                <h3>Cancha</h3>
+
+                <div class="field-highlight">
+                  <div class="field-name-large">{{ field.name }}</div>
+
+                  <div class="field-meta-row">
+                    <span class="meta-item">
+                      <i class="pi pi-th-large"></i> {{ field.fieldType }}
+                    </span>
+                    <span class="meta-divider">•</span>
+                    <span class="meta-item">
+                      <i class="pi pi-align-justify"></i> {{ field.floorType }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="price-breakdown-container">
+                <div class="breakdown-list">
+                  <div class="breakdown-row">
+                    <span>Alquiler Cancha</span>
+                    <span>{{
+                      basePrice | currency: "ARS" : "symbol-narrow"
+                    }}</span>
+                  </div>
+
+                  <div class="breakdown-row" *ngIf="illuminationCost > 0">
+                    <span>
+                      <i
+                        class="pi pi-bolt"
+                        style="color: #eab308; font-size: 0.9rem"
+                      ></i>
+                      Iluminación (+20%)
+                    </span>
+                    <span>{{
+                      illuminationCost | currency: "ARS" : "symbol-narrow"
+                    }}</span>
+                  </div>
+
+                  <div class="breakdown-divider"></div>
+
+                  <div
+                    class="breakdown-row total-row"
+                    *ngIf="illuminationCost > 0"
+                  >
+                    <span>Subtotal</span>
+                    <span>{{
+                      totalAmount | currency: "ARS" : "symbol-narrow"
+                    }}</span>
+                  </div>
+                </div>
+
+                <div class="payment-selection">
+                  <p class="selection-title">Selecciona modalidad de pago:</p>
+
+                  <div
+                    class="radio-option"
+                    [class.selected]="paymentOption === 'partial'"
+                  >
+                    <p-radioButton
+                      name="paymentGroup"
+                      value="partial"
+                      [(ngModel)]="paymentOption"
+                      inputId="optPartial"
+                    >
+                    </p-radioButton>
+                    <label for="optPartial" class="radio-label">
+                      <span class="radio-title"
+                        >Pagar Seña ({{ complex.percentageSign }}%)</span
+                      >
+                      <span class="radio-price">{{
+                        partialAmount | currency: "ARS" : "symbol-narrow"
+                      }}</span>
+                    </label>
+                  </div>
+
+                  <div
+                    class="radio-option"
+                    [class.selected]="paymentOption === 'total'"
+                  >
+                    <p-radioButton
+                      name="paymentGroup"
+                      value="total"
+                      [(ngModel)]="paymentOption"
+                      inputId="optTotal"
+                    >
+                    </p-radioButton>
+                    <label for="optTotal" class="radio-label">
+                      <span class="radio-title">Pagar Total</span>
+                      <span class="radio-price">{{
+                        totalAmount | currency: "ARS" : "symbol-narrow"
+                      }}</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="final-total-box">
+                  <span class="label">Total a transferir:</span>
+                  <span class="amount">{{
+                    finalPriceToPay | currency: "ARS" : "symbol-narrow"
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-right">
+          <div class="card checkout-card infouser-card">
+            <div class="card-header">
+              <i class="pi pi-user"></i>
+              <h2>Tus Datos</h2>
+            </div>
+            <div class="card-body personal-info-grid">
+              <div class="info-item">
+                <span class="label">Nombre</span>
+                <span class="value">{{ user.userName }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Email</span>
+                <span class="value">{{ user.email }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Teléfono</span>
+                <span class="value">{{ user.phone }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card checkout-card payment-card">
+            <div class="card-header">
+              <i class="pi pi-wallet"></i>
+              <h2>Pago y Comprobante</h2>
+            </div>
+            <div class="card-body">
+              <div class="cbu-box">
+                <p class="cbu-label">Transferir al CBU:</p>
+                <p class="cbu-number">{{ complex.cbu }}</p>
+              </div>
+
+              <div class="upload-section">
+                <label>Subir comprobante de transferencia:</label>
+                <div class="custom-fileupload">
+                  <p-fileupload
+                    #fu
+                    mode="basic"
+                    chooseLabel="Seleccionar Comprobante"
+                    chooseIcon="pi pi-upload"
+                    name="voucher"
+                    accept="image/*"
+                    maxFileSize="5000000"
+                    [auto]="true"
+                    customUpload="true"
+                    (uploadHandler)="onFileSelect($event)"
+                    styleClass="p-button-outlined w-full"
+                  ></p-fileupload>
+                </div>
+              @if(selectedImage) {
+                <div class="file-selected-info" style="margin-top: 10px;">
+                  <i class="pi pi-image" style="margin-right: 5px;"></i>
+                  <span style="font-weight: bold;">{{ selectedImage!.name }}</span>
+                  <i
+                    class="pi pi-times text-red-500"
+                    style="margin-left: 10px; cursor: pointer; color: red;"
+                    (click)="clearFile()"
+                    pTooltip="Quitar archivo"
+                  ></i>
+                </div>
+              }
+              </div>
+
+              <div class="disclaimer-box">
+                <i class="pi pi-info-circle"></i>
+                <p>
+                  Tu reserva quedará pendiente de aprobación.
+                  <strong>Cancelaciones:</strong> Reembolso total con +4hs de
+                  anticipación.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="checkout-actions">
+            <button
+              pButton
+              type="button"
+              label="Cancelar"
+              class="p-button-text p-button-danger button-cancel"
+              (click)="onCancel()"
+            ></button>
+            <button
+              pButton
+              type="button"
+              label="Confirmar Reserva"
+              class="p-button-success button-confirm"
+              icon="pi pi-check"
+              (click)="onConfirm()"
+              [disabled]="!selectedImage"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

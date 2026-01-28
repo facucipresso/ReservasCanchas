@@ -26,12 +26,11 @@ namespace ReservasCanchas.BusinessLogic
             _authService = authService;
         }
         public async Task<FieldDetailResponseDTO> GetFieldByIdAsync(int fieldId)
-        { //Este metodo es para cuando el admin del complejo quiere ver una cancha en particular.
+        {
+            var userId = _authService.GetUserId();
             var field = await GetFieldWithRelationsOrThrow(fieldId);
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
 
-            var userId = _authService.GetUserId();
-            _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             return FieldMapper.ToFieldDetailResponseDTO(field);
         }
 
@@ -39,7 +38,7 @@ namespace ReservasCanchas.BusinessLogic
         {
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(complexId);
 
-            var userId = _authService.GetUserId();
+            var userId = _authService.GetUserIdOrNull();
             var fields = await _fieldRepository.GetAllFieldsByComplexIdWithRelationsAsync(complexId);
             if (complex.UserId == userId) //si es admin devolvemos todas las canchas en todos los estados y sin importar el estado del complejo
             {

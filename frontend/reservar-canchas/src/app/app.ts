@@ -8,7 +8,7 @@ import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ButtonModule, Header, Footer],
+  imports: [RouterOutlet, ButtonModule, Header, Footer, Toast],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

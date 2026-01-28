@@ -47,15 +47,36 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpGet("field/{fieldId}")]
         public async Task<ActionResult<List<ReservationResponseDTO>>> GetAllReservationsByFieldId([FromRoute] int fieldId)
         {
-            var result = await _reservationBusinessLogic.GetReservationsByFieldIdAsync(fieldId); 
+            var result = await _reservationBusinessLogic.GetReservationsByFieldIdAsync(fieldId);
             return Ok(result);
         }
 
         [HttpGet("complex/{complexId}/by-date")]
-        public async Task<ActionResult<DailyReservationsForComplexResponseDTO>> GetReservationsByDateForComplex ([FromRoute] int complexId, [FromQuery] DateOnly date)
+        public async Task<ActionResult<DailyReservationsForComplexResponseDTO>> GetReservationsByDateForComplex([FromRoute] int complexId, [FromQuery] DateOnly date)
         {
             var reservationsAndRecurringBLocks = await _reservationBusinessLogic.GetReservationsByDateForComplexAsync(complexId, date);
             return Ok(reservationsAndRecurringBLocks);
+        }
+
+        [HttpGet("process/{processId}")]
+        public async Task<ActionResult<CheckoutInfoDTO>> GetCheckoutInfoByProcessId([FromRoute] string processId)
+        {
+            var checkoutInfo = await _reservationBusinessLogic.GetCheckoutInfoAsync(processId);
+            return Ok(checkoutInfo);
+        }
+
+        [HttpPost("process")]
+        public async Task<ActionResult<string>> CreateProcessReservation([FromBody] ReservationProcessRequestDTO request)
+        {
+            var reservationProcessId = await _reservationBusinessLogic.CreateReservationProcessAsync(request);
+            return Ok(reservationProcessId);
+        }
+
+        [HttpDelete("process/{processId}")]
+        public async Task<ActionResult> DeleteProcessReservation([FromRoute] string processId)
+        {
+            await _reservationBusinessLogic.DeleteReservationProcessAsync(processId);
+            return NoContent();
         }
 
 

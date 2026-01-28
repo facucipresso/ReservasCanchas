@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic
@@ -19,15 +21,19 @@ namespace ReservasCanchas.BusinessLogic
     public class ReservationBusinessLogic
     {
         private readonly ReservationRepository _reservationRepository;
+        private readonly RedisRepository _redisRepository;
         private readonly UserBusinessLogic _userBusinessLogic;
         private readonly ComplexBusinessLogic _complexBusinessLogic;
         private readonly FieldBusinessLogic _fieldBusinessLogic;
         private readonly NotificationBusinessLogic _notificationBusinessLogic;
         private readonly AuthService _authService;
 
-        public ReservationBusinessLogic(ReservationRepository reservationRepository, UserBusinessLogic usurioBusinessLogic, ComplexBusinessLogic complexBusinessLogic, FieldBusinessLogic fieldBusinessLogic, NotificationBusinessLogic notificationBusinessLogic, AuthService authService)
+        public ReservationBusinessLogic(ReservationRepository reservationRepository, RedisRepository redisRepository, 
+            UserBusinessLogic usurioBusinessLogic, ComplexBusinessLogic complexBusinessLogic, 
+            FieldBusinessLogic fieldBusinessLogic, NotificationBusinessLogic notificationBusinessLogic, AuthService authService)
         {
             _reservationRepository = reservationRepository;
+            _redisRepository = redisRepository;
             _userBusinessLogic = usurioBusinessLogic;
             _complexBusinessLogic = complexBusinessLogic;
             _fieldBusinessLogic = fieldBusinessLogic;
@@ -152,8 +158,161 @@ namespace ReservasCanchas.BusinessLogic
                 reservationsForFieldDTO.ReservedHours = reservationsForFieldDTO.ReservedHours.OrderBy(h => h).ToList();
                 dailyReservationForComplexResponse.FieldsWithReservedHours.Add(reservationsForFieldDTO);
             }
-
             return dailyReservationForComplexResponse;
+        }
+
+        public async Task<CheckoutInfoDTO> GetCheckoutInfoAsync(string reservationProcessId)
+        {
+            var userId = _authService.GetUserIdOrNull();
+
+            string checkoutKey = $"checkout:{reservationProcessId}";
+            string checkoutInfo = await _redisRepository.GetValueAsync(checkoutKey);
+            if (checkoutInfo == null)
+            {
+                throw new NotFoundException("No se encontró información de checkout para el proceso de reserva proporcionado.");
+            }
+
+            var checkoutInfoDTO = System.Text.Json.JsonSerializer.Deserialize<CheckoutInfoDTO>(checkoutInfo);
+
+            if(checkoutInfoDTO.UserId != userId)
+            {
+                throw new ForbiddenException("No tienes permiso para visualizar este proceso de reserva");
+            }
+            return checkoutInfoDTO;
+        }
+
+        public async Task<ReservationProcessResponseDTO> CreateReservationProcessAsync(ReservationProcessRequestDTO request)
+        {
+            var userId = _authService.GetUserId();
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            await _userBusinessLogic.ValidateUserState(user);
+
+            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(request.FieldId);
+            _fieldBusinessLogic.ValidateStatusField(field);
+
+            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(request.ComplexId);
+            _complexBusinessLogic.ValidateAccessForBasicUser(complex);
+
+            // que no sea una fecha pasada y q no sea una reserva para más de 7 días despues del actual
+            if (request.Date < DateOnly.FromDateTime(DateTime.Today) || request.Date > DateOnly.FromDateTime(DateTime.Today).AddDays(7))
+                throw new BadRequestException("No se puede realizar una reserva para un dia anterior al actual o para más de 7 días posteriores al actual");
+
+            var weekDay = _complexBusinessLogic.ConvertToWeekDay(request.Date);
+
+            var timeSlot = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
+            Console.WriteLine($"Dia: {timeSlot.WeekDay}, Horarios: {timeSlot.InitTime} y {timeSlot.EndTime}");
+            if (timeSlot.InitTime == timeSlot.EndTime)
+                throw new BadRequestException($"El complejo está cerrado los días {weekDay}.");
+
+            bool crossesMidnight = timeSlot.EndTime < timeSlot.InitTime;
+
+            if (crossesMidnight)
+            {
+                if (request.StartTime >= timeSlot.EndTime && request.StartTime < timeSlot.InitTime)
+                {
+                    throw new BadRequestException("El horario está fuera del horario de atención del complejo .");
+                }
+            }
+            else
+            {
+                if (request.StartTime < timeSlot.InitTime || request.StartTime >= timeSlot.EndTime)
+                {
+                    throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
+                }
+            }
+
+
+            string userKey = $"user:{userId}";
+
+            string? reservationProcessForUser = await _redisRepository.GetValueAsync(userKey);
+
+            if (!string.IsNullOrEmpty(reservationProcessForUser))
+            {
+                return new ReservationProcessResponseDTO
+                {
+                    ExistReservationProcessForUser = true,
+                    ReservationProcessId = reservationProcessForUser
+                };
+            }
+
+            string processGuid = Guid.NewGuid().ToString();
+            string lockKey = $"lock:cancha:{request.FieldId}:{request.Date:yyyyMMdd}:{request.StartTime:HHmm}";
+            string checkoutKey = $"checkout:{processGuid}";
+            var expiry = TimeSpan.FromMinutes(15);
+
+            bool lockAcquired = await _redisRepository.LockSlotIfNotExistAsync(lockKey, processGuid, expiry);
+            bool reservationExists = await _reservationRepository.ExistsApprovedReservationAsync(request.FieldId, request.Date, request.StartTime);
+            if (!lockAcquired) {
+                throw new ConflictException("El horario seleccionado ya está siendo reservado por otro usuario. Por favor, intenta más tarde o selecciona otro horario.");
+            }
+            if (reservationExists)
+            {
+                throw new ConflictException("El horario seleccionado ya se encuentra reservado.");
+            }
+
+            DateTime expirationTime = DateTime.UtcNow.Add(expiry);
+
+            TimeOnly globalDayStart = new TimeOnly(8, 0);
+
+            bool ilumination = false;
+
+            if (field.Ilumination)
+            {
+                bool isNightTime = request.StartTime >= complex.StartIlumination;
+                bool isEarlyMorningTime = request.StartTime < globalDayStart;
+                if(isNightTime || isEarlyMorningTime)
+                {
+                    ilumination = true;
+                }
+            }
+
+
+            CheckoutInfoDTO checkoutInfo = new CheckoutInfoDTO
+            {
+                UserId = userId,
+                ComplexId = request.ComplexId,
+                FieldId = request.FieldId,
+                ExpirationTime = expirationTime,
+                Date = request.Date,
+                InitTime = request.StartTime,
+                Ilumination = ilumination
+            };
+
+            await _redisRepository.SetCheckoutContextAsync(checkoutKey, checkoutInfo, expiry);
+            await _redisRepository.SetUserIdAsync(userKey, processGuid, expiry);
+            return new ReservationProcessResponseDTO
+            {
+                ExistReservationProcessForUser = false,
+                ReservationProcessId = processGuid
+            };
+        }
+
+        public async Task DeleteReservationProcessAsync(string reservationProcessId)
+        {
+            var userId = _authService.GetUserId();
+            var userKey = $"user:{userId}";
+            string? currentProcessId = await _redisRepository.GetValueAsync(userKey);
+            if (string.IsNullOrEmpty(currentProcessId))
+            {
+                return;
+            }
+
+            if (currentProcessId != reservationProcessId)
+            {
+                throw new ForbiddenException("No tienes permiso para eliminar este proceso de reserva.");
+            }
+
+            string checkoutKey = $"checkout:{reservationProcessId}";
+
+            string checkoutInfo = await _redisRepository.GetValueAsync(checkoutKey);
+
+            CheckoutInfoDTO checkoutInfoJson = JsonSerializer.Deserialize<CheckoutInfoDTO>(checkoutInfo);
+
+            string lockKey = $"lock:cancha:{checkoutInfoJson.FieldId}:{checkoutInfoJson.Date:yyyyMMdd}:{checkoutInfoJson.InitTime:HHmm}";
+
+            await _redisRepository.DeleteKeyAsync(lockKey);
+            await _redisRepository.DeleteKeyAsync(checkoutKey);
+            await _redisRepository.DeleteKeyAsync(userKey);
         }
 
         public async Task<CreateReservationResponseDTO> CreateReservationAsync(CreateReservationRequestDTO request, string uploadPath)
@@ -175,7 +334,7 @@ namespace ReservasCanchas.BusinessLogic
             var complexAdminId = complex.UserId;
 
             bool isBlock = request.ReservationType == ReservationType.Bloqueo;
-            // Si es un bloqueo, solo admin complejo o super
+            // Si es un bloqueo, solo admin complejo
             if (isBlock)
             {
                 _complexBusinessLogic.ValidateOwnerShip(complex, userId);
@@ -191,15 +350,26 @@ namespace ReservasCanchas.BusinessLogic
             var timeSlot = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
 
             // lo valido
-            if (timeSlot == null)
-                throw new BadRequestException("El complejo no tiene horarios configurados para este día.");
+            if (timeSlot.InitTime == timeSlot.EndTime)
+                throw new BadRequestException($"El complejo está cerrado los días {weekDay}.");
 
-            //seria la hora de finalizacion de la reserva
-            var endTime = request.InitTime.AddHours(1);
+            bool crossesMidnight = timeSlot.EndTime < timeSlot.InitTime;
 
-            // la reserva tiene que estar dentro del horario del timeslot de ese dia
-            if (request.InitTime < timeSlot.InitTime || endTime > timeSlot.EndTime)
-                throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
+            if (crossesMidnight)
+            {
+
+                if (request.InitTime >= timeSlot.EndTime && request.InitTime < timeSlot.InitTime)
+                {
+                    throw new BadRequestException("El horario está fuera del horario de atención del complejo .");
+                }
+            }
+            else
+            {
+                if (request.InitTime < timeSlot.InitTime || request.InitTime >= timeSlot.EndTime)
+                {
+                    throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
+                }
+            }
 
             var existingReservations = await GetReservationsByDateForComplexAsync(complex.Id, request.Date);
 
@@ -210,6 +380,44 @@ namespace ReservasCanchas.BusinessLogic
             if (existingOverlapping)
                 throw new BadRequestException($"La cancha con id ${field.Id} ya esta reservada en ese horario");
 
+            TimeOnly openningTime = timeSlot.InitTime;
+
+            decimal finalTotalPrice = field.HourPrice;
+
+            if (field.Ilumination)
+            {
+                TimeOnly globalDayStart = new TimeOnly(8, 0);
+                bool isNightTime = request.InitTime >= complex.StartIlumination;
+                bool isEarlyMorningTime = request.InitTime < globalDayStart;
+
+                if(isNightTime || isEarlyMorningTime)
+                {
+                    decimal surcharge = (field.HourPrice * complex.AditionalIlumination) / 100;
+                    finalTotalPrice += surcharge;
+                }
+            }
+
+            decimal expectedPrice = finalTotalPrice;
+
+            if(request.PayType == PayType.PagoParcial)
+            {
+                expectedPrice = (finalTotalPrice * complex.PercentageSign) / 100;
+            }
+
+            if (!isBlock)
+            {
+                
+                decimal backendPrice = Math.Round(expectedPrice, 2);
+                decimal frontendPrice = Math.Round(request.PricePaid, 2);
+
+                if (backendPrice != frontendPrice)
+                {
+                    throw new BadRequestException($"Error de validación: El monto enviado (${frontendPrice}) no coincide con el calculado por el servidor (${backendPrice}).");
+                }
+            }
+
+
+
             var reservation = new Reservation
             {
                 UserId = userId,
@@ -218,8 +426,8 @@ namespace ReservasCanchas.BusinessLogic
                 InitTime = request.InitTime,
                 CreationDate = DateTime.UtcNow,
                 PayType = isBlock ? null : request.PayType,
-                TotalPrice = isBlock ? null : field.HourPrice,
-                PricePaid = isBlock ? null : request.PricePaid,
+                TotalPrice = finalTotalPrice,
+                PricePaid = isBlock ? 0 : expectedPrice,
                 BlockReason = isBlock ? request.BlockReason : null,
                 ReservationType = isBlock ? ReservationType.Bloqueo : ReservationType.Partido,
                 ReservationState = isBlock ? ReservationState.Aprobada : ReservationState.Pendiente,
@@ -232,18 +440,47 @@ namespace ReservasCanchas.BusinessLogic
                 var voucherPath = await ValidateAndSavePaymentVoucher(request.Image, uploadPath, reservation.Id);
                 reservation.VoucherPath = voucherPath;
                 await _reservationRepository.SaveAsync();
-                // aca tendria que dispararse/generarse la notificacion ?? #######
 
-                var notification = new Notification 
+                var notificationForAdmin = new Notification 
                 {
                     UserId = complexAdminId,
                     Title = "Nueva reserva pendiente",
                     Message = $"El usuario {user.Name} realizó una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}."
                 };
-                await _notificationBusinessLogic.CreateNotificationAsync(notification);
+                var notificationForUser = new Notification
+                {
+                    UserId = userId,
+                    Title = "Reserva creada con éxito",
+                    Message = $"Has creado una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}. " +
+                              $"Tu reserva está pendiente de aprobación por el administrador del complejo."
+                };
+                await _notificationBusinessLogic.CreateNotificationAsync(notificationForUser);
+                await _notificationBusinessLogic.CreateNotificationAsync(notificationForAdmin);
+            }
+            else
+            {
+                // notificacion de bloqueo realizado
+                var notificationForAdmin = new Notification
+                {
+                    UserId = userId,
+                    Title = "Bloqueo de cancha realizado",
+                    Message = $"Has bloqueado la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}." +
+                              $"Motivo del bloqueo: {request.BlockReason}"
+                };
+                await _notificationBusinessLogic.CreateNotificationAsync(notificationForAdmin);
             }
 
-            return ReservationMapper.ToCreateReservationResponseDTO(reservation);
+            if (!string.IsNullOrEmpty(request.ProcessId))
+            {
+                string lockKey = $"lock:cancha:{request.FieldId}:{request.Date:yyyyMMdd}:{request.InitTime:HHmm}";
+                string checkoutKey = $"checkout:{request.ProcessId}";
+                string userKey = $"user:{userId}";
+                await _redisRepository.DeleteKeyAsync(lockKey);
+                await _redisRepository.DeleteKeyAsync(checkoutKey);
+                await _redisRepository.DeleteKeyAsync(userKey);
+            }
+
+                return ReservationMapper.ToCreateReservationResponseDTO(reservation);
         }
 
         /*public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)

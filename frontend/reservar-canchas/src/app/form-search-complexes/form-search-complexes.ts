@@ -34,7 +34,8 @@ export class FormSearchComplexes implements OnInit {
     { label: 'Fútbol 7', value: FieldType.Futbol7 },
     { label: 'Fútbol 11', value: FieldType.Futbol11 }
   ]
-  hours = [
+  
+  allHours = [
     '08:00',
     '09:00',
     '10:00',
@@ -53,8 +54,9 @@ export class FormSearchComplexes implements OnInit {
     '23:00',
     '00:00',
     '01:00',
-    '02:00',
   ];
+
+  hours: { label: string; value: string; disabled: boolean }[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -63,7 +65,6 @@ export class FormSearchComplexes implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.fieldTypes)
     this.maxDateValid.setDate(this.maxDateValid.getDate() + 7);
     this.form = this.fb.group({
       province: ['', Validators.required],
@@ -71,6 +72,22 @@ export class FormSearchComplexes implements OnInit {
       fieldType: ['', Validators.required],
       date: [this.dateNow, Validators.required],
       hour: ['', Validators.required],
+    });
+
+    // Inicializar horas con la fecha actual
+    this.updateSelectableHours(this.dateNow);
+
+    // Subscribirse a cambios en la fecha
+    this.form.get('date')?.valueChanges.subscribe((selectedDate) => {
+      this.updateSelectableHours(selectedDate);
+      // Resetear hora si no es válida
+      const currentHour = this.form.get('hour')?.value;
+      if (currentHour) {
+        const isDisabled = this.hours.find(h => h.value === currentHour)?.disabled;
+        if (isDisabled) {
+          this.form.get('hour')?.reset('');
+        }
+      }
     });
 
     this.locationService.getProvinces().subscribe((provinces) => {
@@ -98,6 +115,24 @@ export class FormSearchComplexes implements OnInit {
             this.filteredLocalities = localities;
           });
       }
+    });
+  }
+
+  private updateSelectableHours(selectedDate: Date): void {
+    const now = new Date();
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    const currentHour = now.getHours();
+
+    this.hours = this.allHours.map(timeStr => {
+      const slotHour = parseInt(timeStr.split(':')[0], 10);
+      // Deshabilitar si es hoy y la hora ya pasó (excepto medianoche y 1am)
+      const isPastHour = isToday && slotHour <= currentHour && (slotHour != 0 && slotHour != 1);
+      
+      return {
+        label: timeStr,
+        value: timeStr,
+        disabled: isPastHour
+      };
     });
   }
 
@@ -137,7 +172,7 @@ export class FormSearchComplexes implements OnInit {
       hour,
     };
 
-    console.log(queryParams);
+    console.log('QUERYPARAMS',queryParams);
 
     this.router.navigate(['search/complexes'], { queryParams });
   }

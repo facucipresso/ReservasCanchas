@@ -20,6 +20,7 @@ export class ComplexInfo {
 
   @Output() editField = new EventEmitter<FieldModel>();
   @Output() deleteField = new EventEmitter<number>();
+  @Output() reserveField = new EventEmitter<{field:FieldModel, hour:string}>();
 
   backendUrl = 'https://localhost:7004';
   
@@ -31,4 +32,7 @@ export class ComplexInfo {
     this.deleteField.emit(fieldId);
   }
 
+  onReserveField( event:{field:FieldModel, hour:string}){
+    this.reserveField.emit(event);
+  }
 }

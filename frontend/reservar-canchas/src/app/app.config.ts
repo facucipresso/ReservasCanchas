@@ -12,7 +12,7 @@ import localeEs from '@angular/common/locales/es'
 import { authInterceptor } from './interceptors/auth-interceptor';
 import { MessageService } from 'primeng/api';
 
-registerLocaleData(localeEs);
+registerLocaleData(localeEs, 'es-AR');
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
@@ -29,7 +29,7 @@ export const appConfig: ApplicationConfig = {
         }
       }
     }),
-    {provide:LOCALE_ID, useValue:'es'},
+    {provide:LOCALE_ID, useValue:'es-AR'},
     provideHttpClient(
       withInterceptors([authInterceptor])
     )

@@ -1,23 +1,36 @@
 <p-toast position="top-center"></p-toast>
 <div class="complex-list-container">
   <h1 style="margin-top: 1.5rem">{{title}}</h1>
-  <section class="complex-card-container">
-    @for(complex of complexes; track complex.id){
-    <app-complex-card 
-    [complexCard]="complex" 
-    [selectedDate]="route.snapshot.queryParamMap.get('date')"
-    >
-  </app-complex-card>
-    }@empty{
-    <p>{{empty}}</p>
-    }
-  @if(isAdmin){
-    <div class="complex-card add-complex-card">
-      <div class="add-content" (click)="onAddComplex()">
-        <i class="pi pi-plus"></i>
-        <span>Añadir nuevo complejo</span>
-      </div>
+@if(isLoading) {
+    <div style="display:flex; justify-content:center; align-items:center; margin-top: 5rem;">
+      <p-progressSpinner 
+        styleClass="width: 4rem; height: 4rem;  " 
+        strokeWidth="4"  
+        animationDuration=".5s">
+      </p-progressSpinner>
     </div>
+  } 
+  @else {
+    <section class="complex-card-container">
+      
+      @for(complex of complexes; track complex.id){
+        <app-complex-card 
+          [complexCard]="complex" 
+          [selectedDate]="route.snapshot.queryParamMap.get('date')">
+        </app-complex-card>
+      } 
+      @empty {
+        <p class="text-center w-full">{{empty}}</p>
+      }
+
+      @if(isAdmin){
+        <div class="complex-card add-complex-card">
+          <div class="add-content" (click)="onAddComplex()">
+            <i class="pi pi-plus"></i>
+            <span>Añadir nuevo complejo</span>
+          </div>
+        </div>
+      }
+    </section>
   }
-  </section>
 </div>

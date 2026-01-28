@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 {
-    public class DailyReservationsForComplexResponseDTO
+    public class CheckoutInfoDTO
     {
+        public int UserId { get; set; }
         public int ComplexId { get; set; }
+        public int FieldId { get; set; }
+        public DateTime ExpirationTime { get; set; }
         public DateOnly Date { get; set; }
-
-        public List<ReservationsForFieldDTO> FieldsWithReservedHours { get; set; } = new (); // ese dto tiene el fieldId y la lista de horas reservadas para esa cancha ese dia
+        public TimeOnly InitTime { get; set; }
+        public bool Ilumination { get; set; }
     }
 }

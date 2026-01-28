@@ -4,6 +4,7 @@ import { ComplexList } from './complex-list/complex-list';
 import { ComplexDetail } from './complex/complex-detail/complex-detail';
 import { RegistrationForm } from './registration-form/registration-form';
 import { CreatecomplexForm } from './createcomplex-form/createcomplex-form';
+import { ReservationCheckout } from './reservation/reservation-checkout/reservation-checkout';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,10 @@ export const routes: Routes = [
   {
     path: 'register-complex',
     component:CreatecomplexForm
+  },
+  {
+    path: 'reservation/checkout/:id',
+    component: ReservationCheckout
   },
   {
     path: '**',

@@ -14,6 +14,10 @@ export class Field {
     return this.http.get<FieldModel[]>(`${this.apiBaseUrl}/by-complex/${complexId}`);
   }
 
+  getFieldById(fieldId:number):Observable<FieldModel>{
+    return this.http.get<FieldModel>(`${this.apiBaseUrl}/${fieldId}`);
+  }
+
   createField(field:any):Observable<FieldModel>{
     return this.http.post<FieldModel>(this.apiBaseUrl,field);
   }

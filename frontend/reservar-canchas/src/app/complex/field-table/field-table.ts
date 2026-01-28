@@ -1,32 +1,48 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FieldModel } from '../../models/field.model';
 import { CommonModule } from '@angular/common';
-import { ReservationsForField } from '../../models/reservationsforfield.model';
+import { ReservationsForField } from '../../models/reservation/reservationsforfield.model';
 import { TableModule } from 'primeng/table';
-import { Select } from 'primeng/select';
+import { Select, SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { FieldType } from '../../models/fieldtype.enum';
 import { FloorType } from '../../models/floortype.enum';
+import { FormsModule } from '@angular/forms';
+import { Reservation } from '../../services/reservation';
+import { ComplexModel } from '../../models/complex.model';
 
 
 @Component({
   selector: 'app-field-table',
-  imports: [CommonModule,TableModule,Select, ButtonModule],
+  imports: [CommonModule,TableModule,SelectModule,Select, ButtonModule, FormsModule],
   templateUrl: './field-table.html',
   styleUrl: './field-table.css',
 })
 export class FieldTable implements OnInit{
+  @Input() complex!: ComplexModel;
   @Input() fields!: FieldModel[];
   @Input() isAdmin !: boolean;
   @Input() selectedDate !: Date;
   @Output() editField = new EventEmitter<FieldModel>();
   @Output() deleteField = new EventEmitter<number>();
+  @Output() reserveField = new EventEmitter<{field:FieldModel, hour:string}>();
   dayIndex!: number;
-  reservationsForField: ReservationsForField[] = [{fieldId:6,reservedHours:['12:00','13:00']}];
+  reservationsForField: ReservationsForField[] = [];
+  selectedHours: {[fieldId:number]:any} = {};
 
+  constructor(private reservationService: Reservation) {}
 
   ngOnInit(){
     this.dayIndex = this.getWeekDayIdx(this.selectedDate);
+    this.reservationService.getReservationsByDateForComplex(this.complex.id, this.selectedDate.toISOString().split('T')[0])
+      .subscribe({
+        next: (data)=>{
+          this.reservationsForField = data.fieldsWithReservedHours;
+        },
+        error: (err)=>{
+          console.error('Error al cargar las reservas para las canchas:', err);
+        }
+      }); 
   }  
 
   getSelectableHours(fieldId: number, init: string, end: string) {
@@ -35,12 +51,21 @@ export class FieldTable implements OnInit{
     const fieldReservation = this.reservationsForField
       .find((r:any) => r.fieldId === fieldId);
 
-    const reserved = fieldReservation?.reservedHours ?? [];
+    const rawReserved = fieldReservation?.reservedHours ?? [];
 
-    return hours.map(h => ({
-      hour: h,
-      disabled: reserved.includes(h)
-    }));
+    const reserved = rawReserved.map((h: string) => h.substring(0, 5));
+
+    const now = new Date();
+    const isToday = this.selectedDate.toDateString() === now.toDateString();
+    const currentHour = now.getHours();
+    return hours.map(h => {
+      const slotHour = parseInt(h.split(':')[0], 10);
+      const isPastHour = isToday && slotHour <= currentHour && (slotHour != 0 && slotHour != 1);
+      return {
+        hour: h,
+        disabled: reserved.includes(h) || isPastHour
+      };
+    });
   }
 
   private generateHourRange(start: string, end: string): string[] {
@@ -96,5 +121,9 @@ export class FieldTable implements OnInit{
 
   onDelete(fieldId:number){
     this.deleteField.emit(fieldId);
+  }
+
+  onReserve(field:FieldModel, hour:string){
+    this.reserveField.emit({field, hour});
   }
 }

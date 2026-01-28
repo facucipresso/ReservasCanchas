@@ -49,9 +49,11 @@
     <app-field-table
     [fields]="fields"
     [isAdmin]="isAdmin"
+    [complex]="complex"
     [selectedDate]="selectedDate"
     (editField)="onEditField($event)"
     (deleteField)="onDeleteField($event)"
+    (reserveField)="onReserveField($event)"
     >
   </app-field-table>
 

@@ -1,7 +1,12 @@
 <p-toast position="top-center"></p-toast>
+
+
+@if(isLoading){
+    <div class="loading-container">
+      <p-progress-spinner></p-progress-spinner>
+    </div>
+}@else{
 <div class="complex-detail-container" [class.disabled]="complex.state === 'Deshabilitado'">
-@if (!errorComplex) {
-  @defer (when complex) {
     <app-complex-info 
     [complex]="complex" 
     [isAdmin]="isAdmin" 
@@ -9,6 +14,7 @@
     [fields]="fields"
     (editField)="onEditField($event)" 
     (deleteField)="confirmDeleteField($event)"
+    (reserveField)="onReserveField($event)"
     >
         @if(isAdmin){
           <button pButton (click)="showDialogComplex()" edit-complex-button>
@@ -44,26 +50,8 @@
           </button>
         }
     </app-complex-info>
-  }
-  @placeholder {
-    <div class="loading-container">
-      <p-progress-spinner></p-progress-spinner>
-    </div>
-  }
-
-} @else {
-  <div class="not-found-container">
-    <div class="not-found-card">
-      <i class="pi pi-exclamation-triangle not-found-icon"></i>
-      <h2>Complejo no encontrado</h2>
-      <p>
-        El complejo con id <strong>{{ complexId }}</strong> no existe.
-      </p>
-    </div>
-  </div>
-}
 </div>
-
+}
 
 <p-dialog
   header="Editar Complejo"

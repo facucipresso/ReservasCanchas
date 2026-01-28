@@ -26,6 +26,19 @@ public class AuthService
         return int.Parse(idClaim.Value);
     }
 
+    public int? GetUserIdOrNull()
+    {
+        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+                      ?? User.FindFirst(JwtRegisteredClaimNames.Sub);
+        if (idClaim == null)
+            return null;
+
+        if (int.TryParse(idClaim.Value, out int userId))
+            return userId;
+
+        return null;
+    }
+
     public string GetUserRole()
     {
         var roleClaim = User.FindFirst(ClaimTypes.Role);

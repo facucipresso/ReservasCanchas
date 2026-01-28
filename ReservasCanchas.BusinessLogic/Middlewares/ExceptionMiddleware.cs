@@ -57,6 +57,10 @@ namespace ReservasCanchas.BusinessLogic.Middlewares
                     problemDetails.Status = StatusCodes.Status403Forbidden;
                     problemDetails.Title = "Acceso prohibido";
                     break;
+                case ConflictException:
+                    problemDetails.Status = StatusCodes.Status409Conflict;
+                    problemDetails.Title = "Conflicto en la solicitud";
+                    break;
                 default:
                     problemDetails.Status = StatusCodes.Status500InternalServerError;
                     problemDetails.Title = "Error interno del servidor";

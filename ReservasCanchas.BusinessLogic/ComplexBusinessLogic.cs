@@ -66,18 +66,20 @@ namespace ReservasCanchas.BusinessLogic
         }
         public async Task<ComplexDetailResponseDTO> GetComplexByIdAsync(int complexId)
         { //El admin del complejo puede acceder a cualquier complejo que le pertenezca, en cualquier estado, el usuario solo a habilitados.
-            var userId = _authService.GetUserId();
-            var userRol = _authService.GetUserRole();
+            var userId = _authService.GetUserIdOrNull();
+
+            var userRol = userId.HasValue ?  _authService.GetUserRole() : null;
             
             var complex = await GetComplexBasicOrThrow(complexId);
             var complexDetailDTO = ComplexMapper.toComplexDetailResponseDTO(complex);
+            complexDetailDTO.AverageRating = await _complexRepository.GetAverageRatingAsync(complexId);
             complexDetailDTO.UserId = complex.UserId;
-            if (complex.UserId == userId) // || rol == Rol.SuperAdmin
+            bool isOwner = userId.HasValue && complex.UserId == userId.Value;
+            bool isSuperAdmin = userRol == "SuperAdmin";
+            if (isOwner || isSuperAdmin)
                 return complexDetailDTO;
 
             ValidateAccessForBasicUser(complex);
-            complexDetailDTO.AverageRating = await _complexRepository.GetAverageRatingAsync(complexId);
-            complexDetailDTO.UserId = complex.UserId;
             return complexDetailDTO;
         }
 
@@ -245,25 +247,44 @@ namespace ReservasCanchas.BusinessLogic
             ValidateOwnerShip(complejo, userId);
             ValidateEditable(complejo);
 
-            var slots = updateTimeSlotsDTO.TimeSlots;
+            var slotsDTO = updateTimeSlotsDTO.TimeSlots;
 
-            if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
+            if (slotsDTO.Select(s => s.WeekDay).Distinct().Count() != 7)
             {
                 throw new BadRequestException($"No se pueden repetir dias de la semana en los horarios del complejo");
             }
 
-            //Falta chequear si los time slots no tienen reservas asociadas antes de permitir la actualizacion
-            //Tenemos q traer las reservas aprobadas pero no completadas y ver si tienen alguna en los dias y horarios que se quieren modificar
-            //Y si la modificacion los dejaria fuera del rango.
-            foreach (var slot in slots)
+            var earliestOpen = new TimeSpan(8, 0, 0);
+            var latestClose = new TimeSpan(2, 0, 0);
+            var latestCloseAdjusted = latestClose.Add(TimeSpan.FromDays(1));
+
+            foreach (var slot in slotsDTO)
             {
-                if (slot.EndTime < slot.InitTime)
+                var init = slot.InitTime.ToTimeSpan();
+                var end = slot.EndTime.ToTimeSpan();
+
+                bool closesNextDay = end < init;
+
+                var endAdjusted = closesNextDay ? end.Add(TimeSpan.FromDays(1)) : end;
+
+                if (init == end) continue;
+
+
+                if (init < earliestOpen)
                 {
-                    throw new BadRequestException($"El horario de fin debe ser mayor al horario de inicio para el día {slot.WeekDay}");
+                    throw new BadRequestException($"El horario de apertura no puede ser anterior a las 8 de la mañana");
                 }
-                var existing = complejo.TimeSlots.First(ts => ts.WeekDay == slot.WeekDay);
-                existing.InitTime = slot.InitTime;
-                existing.EndTime = slot.EndTime;
+
+                if (endAdjusted > latestCloseAdjusted)
+                {
+                    throw new BadRequestException($"El horario de cierre no puede ser posterior a las 2 de la mañana");
+                }
+
+                var existingSlot = complejo.TimeSlots
+                    .FirstOrDefault(s => s.WeekDay == slot.WeekDay);
+
+                existingSlot.InitTime = slot.InitTime;
+                existingSlot.EndTime = slot.EndTime;
             }
 
             await _complexRepository.SaveAsync();
@@ -368,10 +389,18 @@ namespace ReservasCanchas.BusinessLogic
             {
                 // Valido que el complejo esté abierto ese día/hora
                 bool complexOpen = c.TimeSlots.Any(ts =>
-                    ts.WeekDay == weekDay &&
-                    ts.InitTime <= complexFiltersDTO.Hour &&
-                    ts.EndTime > complexFiltersDTO.Hour
-                );
+                {
+                    if (ts.WeekDay != weekDay) return false;
+
+                    if (ts.EndTime > ts.InitTime)
+                    {
+                        return complexFiltersDTO.Hour >= ts.InitTime && complexFiltersDTO.Hour < ts.EndTime;
+                    }
+                    else
+                    {
+                        return complexFiltersDTO.Hour >= ts.InitTime || complexFiltersDTO.Hour < ts.EndTime;
+                    }
+                });
 
                 if (!complexOpen)
                     continue;
@@ -379,11 +408,13 @@ namespace ReservasCanchas.BusinessLogic
                 // Veo si hay canchas disponibles
                 bool hasAvailableField = c.Fields.Any(field =>
                 {
+                    if (field.FieldType != complexFiltersDTO.FieldType)
+                        return false;
                     // Checkeo que no tenga reservas
                     bool hasReservation = field.Reservations.Any(r =>
                         r.Date == complexFiltersDTO.Date &&
                         r.InitTime == complexFiltersDTO.Hour &&
-                        r.ReservationState == ReservationState.Aprobada
+                        (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Pendiente)
                     );
 
                     if (hasReservation)

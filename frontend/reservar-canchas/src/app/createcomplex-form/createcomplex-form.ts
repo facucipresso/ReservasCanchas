@@ -131,7 +131,7 @@ export class CreatecomplexForm {
 
     console.log(this.selectedImage);
 
-    const validTypes = ['image/jpeg', 'image/jpeg', 'image/png'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
     if (!validTypes.includes(file.type)) {
       this.imageError = 'Formato de imagen inválido (solo JPG o PNG)';
       return;
