@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,21 +18,21 @@ namespace ReservasCanchas.Controller.Controllers
     {
         // PASO 5 USO DE JWT HACER EL CONTROLADOR Y EN PRIMER ENDPOINT ES EL DE REGISTRO pero todavia no hago el metodo (paso 6 en RegisterDto)
         //busco el usuario, me permite hacer operaciones con los usuarios
-        private readonly UserManager<User> _userManager;
+        //private readonly UserManager<User> _userManager;   SACARLO YA ESTA EN EL ACCOUNTBUSINESSLOGIC
 
         //PASO 14 USO DE JWT, agrego itokenservice para poder crear token y mandarlo en la respuesta (paso 15 aca hacer el login)
-        private readonly TokenService _tokenService;
+        //private readonly TokenService _tokenService;SACARLO YA ESTA EN EL ACCOUNTBUSINESSLOGIC
 
         //checkeo contraseña
-        private readonly SignInManager<User> _signInManager;
+        //private readonly SignInManager<User> _signInManager;   SACARLO YA ESTA EN EL ACCOUNTBUSINESSLOGIC
 
         private readonly AccountBusinessLogic _accountBusinessLogic;
 
         public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, TokenService tokenService, AccountBusinessLogic accountBusinessLogic)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _tokenService = tokenService;
+            //_userManager = userManager;
+            //_signInManager = signInManager;
+            //_tokenService = tokenService;
             _accountBusinessLogic = accountBusinessLogic;
         }
 
@@ -50,6 +51,7 @@ namespace ReservasCanchas.Controller.Controllers
 
         }
 
+        //DEVOLVER ACTION RESULT SOLO, NO LA INTERFAZ
         //PASO 15 ESO DE JWT, hacer el login (paso 16 en el program.cs)
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
@@ -60,6 +62,7 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(userLoged);
 
         }
+
 
     }
 }

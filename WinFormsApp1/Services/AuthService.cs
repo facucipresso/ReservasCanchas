@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http.Json;
+using System.Text;
+using System.Threading.Tasks;
+using WinFormsApp1.Infrastructure;
+using WinFormsApp1.Models;
+using WinFormsApp1.Models.Auth;
+using WinFormsApp1.Security;
+
+namespace WinFormsApp1.Services
+{
+    public class AuthService
+    {
+        private readonly HttpClient _http;
+
+        public AuthService()
+        {
+            _http = ApiClient.Http;
+        }
+
+        public async Task<LoginResponse?> LoginAsync(string username, string password)
+        {
+            var request = new LoginRequest
+            {
+                UserName = username,
+                Password = password
+            };
+
+            try
+            {
+                // Poner ruta correcta
+                var response = await _http.PostAsJsonAsync("api/account/login", request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    throw new InvalidOperationException($"Error en login: {response.StatusCode} - {error}");
+                }
+
+                // si tengo respuesta la deserealizo
+                var loginResponse = await response.Content.ReadFromJsonAsync<RespGeneric<LoginResponse>>();
+
+                if (loginResponse?.Value == null)
+                    throw new InvalidOperationException("La API no devolvió un token válido.");
+
+                var loginData = loginResponse.Value;
+
+                Session.SetSession(new LoginResponse
+                {
+                    UserName = loginData.UserName,
+                    Email = loginData.Email,
+                    Token = loginData.Token
+                });
+                return loginData;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new InvalidOperationException("No se pudo conectar con la API.", ex);
+            }
+        }
+
+        public void Logout()
+        {
+            Session.Clear();
+        }
+    }
+}

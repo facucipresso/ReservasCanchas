@@ -37,11 +37,12 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<List<FieldDetailResponseDTO>> GetAllFieldsByComplexIdAsync(int complexId)
         {
+            var userRol = _authService.GetUserRole();
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(complexId);
 
             var userId = _authService.GetUserId();
             var fields = await _fieldRepository.GetAllFieldsByComplexIdWithRelationsAsync(complexId);
-            if (complex.UserId == userId) //si es admin devolvemos todas las canchas en todos los estados y sin importar el estado del complejo
+            if (complex.UserId == userId || userRol == Rol.SuperAdmin.ToString()) //si es admin devolvemos todas las canchas en todos los estados y sin importar el estado del complejo
             {
                 var fieldsResponse = fields
                     .Select(FieldMapper.ToFieldDetailResponseDTO)
@@ -90,7 +91,7 @@ namespace ReservasCanchas.BusinessLogic
 
                 //busco el slot del complejo del mismo dia
                 var complexSlot = complex.TimeSlots.FirstOrDefault(s => s.WeekDay == day);
-                if (complexSlot != null)
+                if (complexSlot == null) //esto estaba asi antes complexSlot != null
                 {
                     throw new BadRequestException($"El complejo no tiene un horario configurado para el día {day}");
                 }

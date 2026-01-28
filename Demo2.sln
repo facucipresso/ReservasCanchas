@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36429.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReservasCanchas.WinFormsAppDeEscritorio", "ReservasCanchas.WinFormsAppDeEscritorio", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservasCanchas.Domain", "ReservasCanchas.Domain\ReservasCanchas.Domain.csproj", "{9A85EF60-2F4D-4712-AEA6-956B93B28A26}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservasCanchas.BusinessLogic", "ReservasCanchas.BusinessLogic\ReservasCanchas.BusinessLogic.csproj", "{6D0CBD71-9554-4E10-B586-62B71D230A19}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservasCanchas.Controller", "ReservasCanchas.Controller\ReservasCanchas.Controller.csproj", "{0B6258EA-735B-41F4-92F3-DF8D5E69DEE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp1", "WinFormsApp1\WinFormsApp1.csproj", "{1EFB13A5-F62C-4BA2-8D14-914B54254E97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,9 +37,16 @@ Global
 		{0B6258EA-735B-41F4-92F3-DF8D5E69DEE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B6258EA-735B-41F4-92F3-DF8D5E69DEE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B6258EA-735B-41F4-92F3-DF8D5E69DEE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EFB13A5-F62C-4BA2-8D14-914B54254E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EFB13A5-F62C-4BA2-8D14-914B54254E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EFB13A5-F62C-4BA2-8D14-914B54254E97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EFB13A5-F62C-4BA2-8D14-914B54254E97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1EFB13A5-F62C-4BA2-8D14-914B54254E97} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {14ECAFBC-9671-4390-972F-977DBEADBE9E}

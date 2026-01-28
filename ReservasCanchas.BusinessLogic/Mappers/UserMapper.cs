@@ -1,4 +1,6 @@
-﻿using ReservasCanchas.BusinessLogic.Dtos;
+﻿using Microsoft.AspNetCore.Identity;
+using ReservasCanchas.BusinessLogic.Dtos;
+using ReservasCanchas.BusinessLogic.Dtos.User;
 using ReservasCanchas.BusinessLogic.Dtos.Usuario;
 using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
@@ -19,7 +21,22 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
-                Phone = user.PhoneNumber
+                Phone = user.PhoneNumber,
+                Status = user.Status
+              
+            };
+        }
+
+        public static UserResponseWithRoleDTO ToUsusarioWithRoleResponseDTO(User user, string role)
+        {
+            return new UserResponseWithRoleDTO
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                Phone = user.PhoneNumber,
+                Status = user.Status,
+                Role = role
             };
         }
 

@@ -72,7 +72,11 @@ namespace ReservasCanchas.BusinessLogic
             }
             else
             {
-                throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}: {createdUser.Errors}");
+                //throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}: {createdUser.Errors}");
+                var errors = string.Join(" | ", createdUser.Errors.Select(e => e.Description));
+                throw new BadRequestException(
+                    $"Error en el registro del usuario {appUser.UserName}: {errors}"
+                );
             }
         }
 

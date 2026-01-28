@@ -83,7 +83,8 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpPatch("{id}/state")]
         public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexState([FromRoute] int id, [FromBody] UpdateComplexStateDTO requestUpdateDTO)
         {//Cambio de estado del complejo (Super Admin o Admin del complejo, dependiendo de la transición)
-            var updated = await _complexBusinessLogic.ChangeStateComplexAsync(id, requestUpdateDTO.State);
+            //var updated = await _complexBusinessLogic.ChangeStateComplexAsync(id, requestUpdateDTO.State); reemplazo pero no elimine metodo
+            var updated = await _complexBusinessLogic.ChangeStateCompIexAsync(id, requestUpdateDTO.State);
 
             return Ok(updated);
         }
@@ -109,6 +110,13 @@ namespace ReservasCanchas.Controller.Controllers
         {
             await _complexBusinessLogic.RejectComplexAsync(request); 
             return NoContent();
+        }
+
+        [HttpGet("getComplexOwner/{idComplex}")]
+        public async Task<ActionResult<ComplexOwnerDTO>> GetComplexOwner(int idComplex)
+        {
+            var datos = await _complexBusinessLogic.GetComplexOwnerAsync(idComplex);
+            return Ok(datos);
         }
 
     }

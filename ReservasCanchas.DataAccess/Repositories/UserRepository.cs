@@ -21,12 +21,22 @@ namespace ReservasCanchas.DataAccess.Repositories
             _context = context;
             _userManager = userManager;
         }
+
+        //no trackeado, mas perfo si no voy a modificar la entidad, solo mapearla o leer los datos
         public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _context.Users
                 //.Where(u => u.Id == id && u.Active)
-                .Where (u => u.Id == id && u.Status == UserStatus.Activo)
-                .FirstOrDefaultAsync();
+                //.Where (u => u.Id == id && u.Status == UserStatus.Activo) me da error cuando el admin lo busca
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        //a las entidades que las voy a modificar, user manager las necesita trackeadas
+        public async Task<User?> GetUserByIdTrackedAsync(int id)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         // Ya no existe User.Rol, identity maneja los roles aparte
@@ -42,8 +52,7 @@ namespace ReservasCanchas.DataAccess.Repositories
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _context.Users
-                //.Where(u => u.Active)
-                .Where (u => u.Status == UserStatus.Activo)
+                //.Where (u => u.Status == UserStatus.Activo) comento esta linea porque el admin tiene que ver todos los usuarios
                 .ToListAsync();
         }
 

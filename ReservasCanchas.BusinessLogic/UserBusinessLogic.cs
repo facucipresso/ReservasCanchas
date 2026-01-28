@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ReservasCanchas.BusinessLogic.Dtos;
+using ReservasCanchas.BusinessLogic.Dtos.Complex;
+using ReservasCanchas.BusinessLogic.Dtos.User;
 using ReservasCanchas.BusinessLogic.Dtos.Usuario;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
@@ -21,12 +23,16 @@ namespace ReservasCanchas.BusinessLogic
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly AuthService _authService;
-        public UserBusinessLogic(UserRepository userRepo, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, AuthService authService)
+        //private readonly ComplexBusinessLogic _complexBusinessLogic;
+        private readonly ComplexRepository _complexRepo;
+        public UserBusinessLogic(UserRepository userRepo, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, AuthService authService, /*ComplexBusinessLogic complexBusinessLogic,*/ ComplexRepository complexRepository)
         {
             _userRepo = userRepo;
             _userManager = userManager;
             _roleManager = roleManager;
             _authService = authService;
+            //_complexBusinessLogic = complexBusinessLogic;
+            _complexRepo = complexRepository;
         }
 
         public async Task<UserResponseDTO?> GetUserByIdAsync(int id)
@@ -51,6 +57,21 @@ namespace ReservasCanchas.BusinessLogic
                 .ToList();
 
             return usersDto;
+        }
+
+        public async Task<List<UserResponseWithRoleDTO>> GetAllUsersWithRoleAsync()
+        {
+            var users = await _userRepo.GetAllUsersAsync();
+            var response = new List<UserResponseWithRoleDTO>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault() ?? "Sin rol";
+                response.Add(UserMapper.ToUsusarioWithRoleResponseDTO(user, role));
+            }
+
+            return response;
         }
 
         // Esto lo voy a sacar porque no quiero que se cree un usuario por otro lado que no sea el account controller
@@ -128,12 +149,57 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task BlockUserAsync(int id)
         {
-            var user = await _userRepo.GetUserByIdAsync(id);
+            var user = await _userRepo.GetUserByIdTrackedAsync(id);
             if (user == null)
                 throw new NotFoundException("Usuario con id " + id + " no encontrado");
 
+            //aca me traigo sus complejos, si es que tiene, y los deshabilito tambien
+            var userComplex = await _complexRepo.GetComplexesByUserIdAsync(id);// await _complexBusinessLogic.GetComplexesByOwnerIdAsync(id);
+            if (userComplex != null)
+            {
+                foreach(var item in userComplex)
+                {
+                    item.State = ComplexState.Deshabilitado;
+                }
+                await _complexRepo.SaveAsync();
+            }
+
             user.Status = UserStatus.Bloqueado;
-            await _userRepo.SaveAsync();
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new Exception("No se pudo actualizar el estado del usuario");
+            }
+            //await _userRepo.SaveAsync();
+        }
+
+        public async Task UnBlockUserAsync(int id)
+        {
+            var user = await _userRepo.GetUserByIdTrackedAsync(id);
+            if (user == null)
+                throw new NotFoundException("Usuario con id " + id + " no encontrado");
+
+            //aca me traigo sus complejos, si es que tiene, y los pongo en pendiente
+            var userComplex = await _complexRepo.GetComplexesByUserIdAsync(id);// await _complexBusinessLogic.GetComplexesByOwnerIdAsync(id);
+            if (userComplex != null)
+            {
+                foreach (var item in userComplex)
+                {
+                    item.State = ComplexState.Pendiente;
+                }
+                await _complexRepo.SaveAsync();
+            }
+
+            user.Status = UserStatus.Activo;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new Exception("No se pudo actualizar el estado del usuario");
+            }
+
+            //await _userRepo.SaveAsync();
         }
 
         public async Task DeleteUserAsync(int id)
@@ -175,7 +241,10 @@ namespace ReservasCanchas.BusinessLogic
                 throw new NotFoundException($"No existe ningún usuario con el rol {rol}");
 
             // si solo existe un SuperAdmin (como va a pasar) → devolvemos ese
+            //PERO SI TENGO MAS, HAGO CAGADA (QUE ES LO QUE ME PASO)
             return usersInRole.First().Id;
         }
+
+
     }
 }

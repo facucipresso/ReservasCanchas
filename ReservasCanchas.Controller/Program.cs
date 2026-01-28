@@ -138,6 +138,8 @@ builder.Services.AddScoped<ReviewRepository>();
 builder.Services.AddScoped<NotificationBusinessLogic>();
 builder.Services.AddScoped<NotificationRepository>();
 
+builder.Services.AddScoped<AccountBusinessLogic>();
+
 // PARA EL TRABAJO EN BACKGROUND
 builder.Services.AddHostedService<ReservationCompletionService>();
 

@@ -23,14 +23,16 @@ namespace ReservasCanchas.BusinessLogic
         private readonly ComplexRepository _complexRepository;
         private readonly ServiceBusinessLogic _serviceBusinessLogic;
         private readonly UserBusinessLogic _userBusinessLogic;
+        private readonly UserRepository _userRepository;
         private readonly NotificationBusinessLogic _notificationBusinessLogic;
         private readonly AuthService _authService;
 
-        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, UserBusinessLogic usuarioBusinessLogic, NotificationBusinessLogic notificationBusinessLogic, AuthService authService)
+        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, UserBusinessLogic usuarioBusinessLogic, UserRepository userRepository,NotificationBusinessLogic notificationBusinessLogic, AuthService authService)
         {
             _complexRepository = complexRepository;
             _serviceBusinessLogic = serviceBusinessLogic;
             _userBusinessLogic = usuarioBusinessLogic;
+            _userRepository = userRepository;
             _notificationBusinessLogic = notificationBusinessLogic;
             _authService = authService;
         }
@@ -61,17 +63,33 @@ namespace ReservasCanchas.BusinessLogic
                 throw new UnauthorizedAccessException("No tenés permisos para ver todos los complejos.");
 
             var complexes = await _complexRepository.GetAllComplexesAsync();
-            return complexes.Select(ComplexMapper.toComplexSuperAdminResponseDTO).ToList();
+            var complexesDTO = new List<ComplexSuperAdminResponseDTO>();
+            foreach (var complex in complexes)
+            {
+                var userOwner = await _userRepository.GetUserByIdAsync(complex.UserId);
+                complexesDTO.Add(ComplexMapper.toComplexSuperAdminResponseDTO(complex, userOwner.Name, userOwner.LastName));
+            }
+            return complexesDTO;
         }
         public async Task<ComplexDetailResponseDTO> GetComplexByIdAsync(int complexId)
         { //El admin del complejo puede acceder a cualquier complejo que le pertenezca, en cualquier estado, el usuario solo a habilitados.
+
+            //var userId = 7;
             var userId = _authService.GetUserId();
             var userRol = _authService.GetUserRole();
-            
+
+
+            //throw new Exception($"ROL = '{userRol}' | USER = {userId}");
+
             var complex = await GetComplexBasicOrThrow(complexId);
 
 
-            if (complex.UserId == userId) // || rol == Rol.SuperAdmin
+            if (complex.UserId == userId) // || rol == Rol.SuperAdmin, agrego esto || userId == 7 hardcodeado
+                return ComplexMapper.toComplexDetailResponseDTO(complex);
+
+
+            //esto lo estoy probando el 9/1/26
+            if (userRol.Equals(Rol.SuperAdmin.ToString())) // si la peticion la hace el super admin, fiummmmmmmba
                 return ComplexMapper.toComplexDetailResponseDTO(complex);
 
             ValidateAccessForBasicUser(complex);
@@ -178,7 +196,11 @@ namespace ReservasCanchas.BusinessLogic
 
             //aca deberia crear la notificacion
             //necesito el id del SuperUser
-            var superUserId = await _userBusinessLogic.GetUserIdByUserRolOrThrow("SuperAdmin");
+            // SACO ESTO PARA PRUEBA
+            //var superUserId = await _userBusinessLogic.GetUserIdByUserRolOrThrow("SuperAdmin");
+
+            // PONGO ESTO PARA PROBAR QUE LES LLEGUEN LAS NOTIFICACIONES
+            var superUserId = 7;
 
             var notification = new Notification
             {
@@ -298,12 +320,14 @@ namespace ReservasCanchas.BusinessLogic
 
             var userId = _authService.GetUserId();
             var userRol = _authService.GetUserRole();
+            // bug silencioso, el admin tiene que ser el dueño del complejo
             ValidateOwnerShip(complex, userId);
 
             if(userRol != "AdminComplejo" && userRol != "SuperAdmin")
             {
                 throw new ForbiddenException($"No tiene los permisos para hacer esta operacion");
             }
+
 
             if (complex.State == ComplexState.Habilitado && newState == ComplexState.Deshabilitado)
             {
@@ -326,7 +350,7 @@ namespace ReservasCanchas.BusinessLogic
 
             // ***** TRANSICIONES SUPERADMIN ***** //
 
-
+            // otro bug silencioso, ningun adminComplex puede cambiar estados aunque este permitido arriba
             if (userRol != "SuperAdmin")
             {
                 throw new ForbiddenException($"No tiene los permisos para hacer esta operacion");
@@ -360,6 +384,80 @@ namespace ReservasCanchas.BusinessLogic
             await _complexRepository.SaveAsync();
             return ComplexMapper.toComplexDetailResponseDTO(complex);
         }
+
+        // metodo que hace lo mismo que el de arriba pero refactorizado sin bugs
+        public async Task<ComplexDetailResponseDTO> ChangeStateCompIexAsync(int complexId, ComplexState newState) 
+        {
+            var complex = await GetComplexBasicOrThrow(complexId);
+
+            if (complex.State == newState)
+                throw new BadRequestException("El complejo ya se encuentra en este estado");
+
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
+
+            // 🔐 Validación de permisos base
+            if (userRol == "AdminComplejo")
+            {
+                ValidateOwnerShip(complex, userId);
+            }
+            else if (userRol != "SuperAdmin")
+            {
+                throw new ForbiddenException("No tiene los permisos para hacer esta operación");
+            }
+
+            bool changed = false;
+
+            // TRANSICIONES ADMIN COMPLEJO
+            if (userRol == "AdminComplejo")
+            {
+                if (complex.State == ComplexState.Habilitado && newState == ComplexState.Deshabilitado ||
+                    complex.State == ComplexState.Deshabilitado && newState == ComplexState.Habilitado ||
+                    complex.State == ComplexState.Rechazado && newState == ComplexState.Pendiente)
+                {
+                    complex.State = newState;
+                    changed = true;
+                }
+            }
+
+            // TRANSICIONES SUPERADMIN
+            if (userRol == "SuperAdmin")
+            {
+                if (complex.State == ComplexState.Pendiente &&
+                    (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado))
+                {
+                    complex.State = newState;
+                    changed = true;
+                }
+
+                if ((complex.State == ComplexState.Habilitado || complex.State == ComplexState.Deshabilitado)
+                    && newState == ComplexState.Bloqueado)
+                {
+                    if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
+                    {
+                        throw new BadRequestException(
+                            "No se puede bloquear el complejo porque tiene reservas activas");
+                    }
+
+                    complex.State = newState;
+                    changed = true;
+                }
+
+                if (complex.State == ComplexState.Bloqueado && newState == ComplexState.Habilitado)
+                {
+                    complex.State = newState;
+                    changed = true;
+                }
+            }
+
+            if (!changed)
+                throw new BadRequestException(
+                    $"No se puede cambiar el estado de {complex.State} a {newState}");
+
+            await _complexRepository.SaveAsync();
+            return ComplexMapper.toComplexDetailResponseDTO(complex);
+        }
+
 
         public async Task<List<ComplexCardResponseDTO>> SearchAvailableComplexes(ComplexFiltersRequestDTO complexFiltersDTO)
         {
@@ -598,6 +696,33 @@ namespace ReservasCanchas.BusinessLogic
         private decimal LowPriceForField(Complex complex)
         {
             return complex.Fields.Min(f => f.HourPrice);
+        }
+
+        public async Task<ComplexOwnerDTO> GetComplexOwnerAsync(int idComplex)
+        {
+            var complex = await GetComplexBasicOrThrow(idComplex);
+            if (complex == null)
+            {
+                throw new NotFoundException($"No existe ningún complejo con id: {idComplex}");
+            }
+
+            var owner = await _userRepository.GetUserByIdAsync(complex.UserId);
+            if (owner == null)
+            {
+                throw new NotFoundException($"No existe ningún administrador de complejo con id: {complex.UserId}");
+            }
+            return (new ComplexOwnerDTO
+            {
+                Name = owner.Name,
+                LastName = owner.LastName,
+            });
+        }
+
+        public async Task<List<Complex>>? GetComplexesByOwnerIdAsync(int idUser)
+        {
+            var complexes = await _complexRepository.GetComplexesByUserIdAsync(idUser);
+           
+            return complexes;
         }
 
     }

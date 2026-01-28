@@ -31,6 +31,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             {
                 Id = complex.Id,
                 Name = complex.Name,
+                Description = complex.Description,
                 Province = complex.Province,
                 Locality = complex.Locality,
                 Street = complex.Street,
@@ -46,12 +47,14 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 TimeSlots = complex.TimeSlots.Select(ToTimeSlotComplexResponseDTO).ToList()
             };
         }
-        public static ComplexSuperAdminResponseDTO toComplexSuperAdminResponseDTO(Complex complex)
+        public static ComplexSuperAdminResponseDTO toComplexSuperAdminResponseDTO(Complex complex, string name, string lastname)
         {
             return new ComplexSuperAdminResponseDTO
             {
                 Id = complex.Id,
                 UserId = complex.UserId,
+                NameUser = name,
+                LastNameUser = lastname,
                 Name = complex.Name,
                 Province = complex.Province,
                 Locality = complex.Locality,
@@ -68,6 +71,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             {
                 UserId = complexDTO.UserId,
                 Name = complexDTO.Name,
+                Description = complexDTO.Description,
                 Province = complexDTO.Province,
                 Locality = complexDTO.Locality,
                 Street = complexDTO.Street,

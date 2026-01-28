@@ -12,6 +12,8 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public string NameUser { get; set; } = string.Empty;
+        public string LastNameUser { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Province { get; set; } = string.Empty;
         public string Locality { get; set; } = string.Empty;
