@@ -122,6 +122,8 @@ namespace ReservasCanchas.BusinessLogic
 
             WeekDay requestWeekDay = _complexBusinessLogic.ConvertToWeekDay(date);
 
+            DateOnly nextDate = date.AddDays(1);
+
             var fields = complex.Fields;
 
             var dailyReservationForComplexResponse = new DailyReservationsForComplexResponseDTO
@@ -135,7 +137,7 @@ namespace ReservasCanchas.BusinessLogic
                 var reservationsForField = await _reservationRepository.GetReservationsByFieldId(field.Id);
                 var recurringBlocksForField = field.RecurringCourtBlocks.Where(b => b.WeekDay == requestWeekDay).ToList();
                 var reservationsForFieldFiltered = reservationsForField.Where
-                    (r => r.Date == date && (r.ReservationState == ReservationState.Pendiente || r.ReservationState == ReservationState.Aprobada)).ToList();
+                    (r => (r.Date == date || (r.Date == nextDate && r.InitTime.Hour < 2)) && (r.ReservationState == ReservationState.Pendiente || r.ReservationState == ReservationState.Aprobada)).ToList();
 
                 var reservationsForFieldDTO = new ReservationsForFieldDTO
                 {
@@ -235,6 +237,12 @@ namespace ReservasCanchas.BusinessLogic
                 };
             }
 
+            DateOnly finalDate = request.Date;
+            if(crossesMidnight && (request.StartTime.Hour == 0 || request.StartTime.Hour == 1))
+            {
+                finalDate = request.Date.AddDays(1);
+            }
+
             string processGuid = Guid.NewGuid().ToString();
             string lockKey = $"lock:cancha:{request.FieldId}:{request.Date:yyyyMMdd}:{request.StartTime:HHmm}";
             string checkoutKey = $"checkout:{processGuid}";
@@ -273,7 +281,7 @@ namespace ReservasCanchas.BusinessLogic
                 ComplexId = request.ComplexId,
                 FieldId = request.FieldId,
                 ExpirationTime = expirationTime,
-                Date = request.Date,
+                Date = finalDate,
                 InitTime = request.StartTime,
                 Ilumination = ilumination
             };
@@ -341,34 +349,50 @@ namespace ReservasCanchas.BusinessLogic
             }
 
             // que no sea una fecha pasada y q no sea una reserva para más de 7 días despues del actual
-            if (request.Date < DateOnly.FromDateTime(DateTime.Today) || request.Date > DateOnly.FromDateTime(DateTime.Today).AddDays(7))
+
+            DateOnly operationalDate = request.Date;
+            if (request.InitTime.Hour < 2)
+            {
+                operationalDate = request.Date.AddDays(-1);
+            }
+
+            if (operationalDate < DateOnly.FromDateTime(DateTime.Today) || operationalDate > DateOnly.FromDateTime(DateTime.Today).AddDays(7))
                 throw new BadRequestException("No se puede realizar una reserva para un dia anterior al actual o para más de 7 días posteriores al actual");
 
-            var weekDay = _complexBusinessLogic.ConvertToWeekDay(request.Date);
+            var weekDay = _complexBusinessLogic.ConvertToWeekDay(operationalDate);
 
-            // me traigo el timeSlto de ese dia
             var timeSlot = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
 
-            // lo valido
-            if (timeSlot.InitTime == timeSlot.EndTime)
-                throw new BadRequestException($"El complejo está cerrado los días {weekDay}.");
+            if (timeSlot == null || timeSlot.InitTime == timeSlot.EndTime)
+                throw new BadRequestException($"El complejo está cerrado el día operativo {weekDay}.");
 
-            bool crossesMidnight = timeSlot.EndTime < timeSlot.InitTime;
+            bool isValidTime = false;
+            bool crossesMidnight = timeSlot.EndTime < timeSlot.InitTime; 
 
             if (crossesMidnight)
             {
-
-                if (request.InitTime >= timeSlot.EndTime && request.InitTime < timeSlot.InitTime)
+                // CASO A: Madrugada (00, 01)
+                if (request.InitTime.Hour < 2)
                 {
-                    throw new BadRequestException("El horario está fuera del horario de atención del complejo .");
+                    // Debe ser menor al cierre (ej: 01:00 < 02:00)
+                    if (request.InitTime < timeSlot.EndTime) isValidTime = true;
+                }
+                // CASO B: Noche normal (20:00, 21:00)
+                else
+                {
+                    // Debe ser mayor al inicio (ej: 20:00 >= 18:00)
+                    if (request.InitTime >= timeSlot.InitTime) isValidTime = true;
                 }
             }
-            else
+            else // Horario normal (ej: 09:00 a 23:00)
             {
-                if (request.InitTime < timeSlot.InitTime || request.InitTime >= timeSlot.EndTime)
-                {
-                    throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
-                }
+                if (request.InitTime >= timeSlot.InitTime && request.InitTime < timeSlot.EndTime)
+                    isValidTime = true;
+            }
+
+            if (!isValidTime)
+            {
+                throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
             }
 
             var existingReservations = await GetReservationsByDateForComplexAsync(complex.Id, request.Date);

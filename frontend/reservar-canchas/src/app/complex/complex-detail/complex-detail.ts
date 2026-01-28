@@ -483,6 +483,8 @@ export class ComplexDetail implements OnInit{
         summary:'Debes iniciar sesión para reservar una cancha.',
         life: 2000
       })
+
+      return;
     }
 
     const reservationData:ReservationProcessRequest = {

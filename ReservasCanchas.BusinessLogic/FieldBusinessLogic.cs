@@ -36,27 +36,24 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<List<FieldDetailResponseDTO>> GetAllFieldsByComplexIdAsync(int complexId)
         {
-            var userRol = _authService.GetUserRole();
+            
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(complexId);
 
             var userId = _authService.GetUserIdOrNull();
             var fields = await _fieldRepository.GetAllFieldsByComplexIdWithRelationsAsync(complexId);
-            if (complex.UserId == userId || userRol == Rol.SuperAdmin.ToString()) //si es admin devolvemos todas las canchas en todos los estados y sin importar el estado del complejo
+            if (userId == null || complex.UserId != userId)
             {
-                var fieldsResponse = fields
+                return fields
+                     .Where(f => f.FieldState == FieldState.Habilitada)
+                     .Select(FieldMapper.ToFieldDetailResponseDTO)
+                     .ToList();
+            }
+            var userRol = _authService.GetUserRole();
+            
+            var fieldsResponse = fields
                     .Select(FieldMapper.ToFieldDetailResponseDTO)
                     .ToList();
                 return fieldsResponse;
-            }
-            else
-            { //si no es admin devolvemos solo las canchas habilitadas y si el complejo esta habilitado
-                _complexBusinessLogic.ValidateAccessForBasicUser(complex);
-                var fieldsResponse = fields
-                    .Where(f => f.FieldState == FieldState.Habilitada)
-                    .Select(FieldMapper.ToFieldDetailResponseDTO)
-                    .ToList();
-                return fieldsResponse;
-            }
         }
 
         public async Task<FieldDetailResponseDTO> CreateFieldAsync(CreateFieldRequestDTO createFieldDTO)
