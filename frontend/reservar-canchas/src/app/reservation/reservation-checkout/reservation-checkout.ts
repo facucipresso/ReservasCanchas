@@ -216,7 +216,7 @@ export class ReservationCheckout implements OnInit, OnDestroy {
     }
     const formData = new FormData();
     formData.append('processId', this.checkoutId!);
-    formData.append('fieldId', this.field.id.toString());
+    formData.append('fieldId', this.checkoutInfo.fieldId.toString());
     formData.append('date', this.checkoutInfo.date);
     formData.append('initTime', this.checkoutInfo.initTime);
     formData.append('pricePaid', this.finalPriceToPay.toString());

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { FieldModel } from '../../models/field.model';
 import { CommonModule } from '@angular/common';
 import { ReservationsForField } from '../../models/reservation/reservationsforfield.model';
@@ -18,7 +18,7 @@ import { ComplexModel } from '../../models/complex.model';
   templateUrl: './field-table.html',
   styleUrl: './field-table.css',
 })
-export class FieldTable implements OnInit{
+export class FieldTable implements OnInit, OnChanges{
   @Input() complex!: ComplexModel;
   @Input() fields!: FieldModel[];
   @Input() isAdmin !: boolean;
@@ -34,16 +34,30 @@ export class FieldTable implements OnInit{
 
   ngOnInit(){
     this.dayIndex = this.getWeekDayIdx(this.selectedDate);
-    this.reservationService.getReservationsByDateForComplex(this.complex.id, this.selectedDate.toISOString().split('T')[0])
+    this.loadReservations(this.selectedDate);
+  }  
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['selectedDate'] && !changes['selectedDate'].firstChange) {
+      this.dayIndex = this.getWeekDayIdx(this.selectedDate);
+      this.loadReservations(this.selectedDate);
+    }
+  }
+
+  private loadReservations(date?: Date) {
+    if (!this.complex || !this.complex.id || !date) return;
+    const dateStr = date.toISOString().split('T')[0];
+    this.reservationService.getReservationsByDateForComplex(this.complex.id, dateStr)
       .subscribe({
         next: (data)=>{
           this.reservationsForField = data.fieldsWithReservedHours;
+          console.log('Reservas para las canchas: ', this.reservationsForField);
         },
         error: (err)=>{
           console.error('Error al cargar las reservas para las canchas:', err);
         }
-      }); 
-  }  
+      });
+  }
 
   getSelectableHours(fieldId: number, init: string, end: string) {
     const hours = this.generateHourRange(init, end);

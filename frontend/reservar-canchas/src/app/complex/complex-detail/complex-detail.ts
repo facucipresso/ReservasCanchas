@@ -493,7 +493,6 @@ export class ComplexDetail implements OnInit{
     }
 
     console.log('Datos para el proceso de reserva: ', reservationData);
-
     this.reservationService.createProcessReservation(reservationData).subscribe({
       next: (response) => {
         console.log(response);
