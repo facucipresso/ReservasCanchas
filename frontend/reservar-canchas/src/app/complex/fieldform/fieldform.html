@@ -1,0 +1,166 @@
+  <form
+    class="form-section"
+    [formGroup]="fieldForm"
+  >
+  @if(formMode === 'edit'){
+    <h3 style="margin-bottom: 10px;">Estado de la cancha</h3>
+    <p>Al seleccionar 'Deshabilitada' la cancha seguira existiendo pero no será visible para los usuarios.</p>
+    <div class="form-grid" formGroupName="fieldState" style="margin-bottom: 20px;">
+      <div style="display: flex; gap: 30px;">
+        <div style="display: flex; align-items: center;">
+          <p-radiobutton 
+            name="state" 
+            [value]="'Habilitada'" 
+            formControlName="state" 
+            inputId="active" />
+          <label for="active" style="margin-left: 5px;">Habilitada</label>
+        </div>
+      <div style="display: flex; align-items: center;">
+        <p-radiobutton 
+          name="state" 
+          [value]="'Deshabilitada'" 
+          formControlName="state" 
+          inputId="inactive" />
+        <label for="inactive" style="margin-left: 5px;">Deshabilitada</label>
+      </div>
+    </div>
+  </div>
+    <div class="form-actions">
+      <p-button
+        label="Confirmar cambios"
+        type="submit"
+        (click)="onSubmitStateEdit()"
+        [disabled]="fieldForm.get('fieldState')?.invalid || fieldForm.get('fieldState')?.pristine"
+      />
+    </div>
+  }
+    <h3>Información básica</h3>
+    <div class="form-grid" style="margin-bottom: 20px" formGroupName="basic">
+      <div>
+        <input pInputText formControlName="name" placeholder="Nombre"/>
+        @if(fieldForm.get('name')?.touched &&
+        fieldForm.get('name')?.invalid){
+        @if(fieldForm.get('name')?.errors?.['required']){
+        <small style="color: red">El nombre de la cancha es obligatorio</small>    
+        } }    
+      </div>
+      <div>
+        <p-select
+          formControlName="fieldType"
+          [options]="fieldTypes"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Tipo de cancha"
+          style="color: black"
+        ></p-select>
+        @if(fieldForm.get('fieldType')?.touched &&
+        fieldForm.get('fieldType')?.invalid){
+        @if(fieldForm.get('fieldType')?.errors?.['required']){
+        <small style="color: red">El tipo de cancha es obligatorio</small>
+        } }
+      </div>
+      <div>
+        <p-select
+          formControlName="floorType"
+          [options]="floorTypes"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Tipo de suelo"
+          style="color: black"
+        ></p-select>
+        @if(fieldForm.get('floorType')?.touched &&
+        fieldForm.get('floorType')?.invalid){
+        @if(fieldForm.get('floorType')?.errors?.['required']){
+        <small style="color: red">El tipo de suelo es obligatorio</small>
+        } }
+      </div>
+      <div>
+        <p-inputNumber
+          formControlName="hourPrice"
+          placeholder="Precio por hora"
+          prefix="$"
+        ></p-inputNumber>
+        @if(fieldForm.get('hourPrice')?.touched &&
+        fieldForm.get('hourPrice')?.invalid){
+        @if(fieldForm.get('hourPrice')?.errors?.['required']){
+        <small style="color: red">El precio por hora es obligatorio</small>
+        } }
+      </div>
+      <div class="field-item" style="height: 40px">
+        <p-checkbox [binary]="true" formControlName="ilumination"></p-checkbox>
+        <span style="margin-left: 8px"> Iluminación nocturna </span>
+      </div>
+      <div class="field-item">
+        <p-checkbox [binary]="true" formControlName="covered"></p-checkbox>
+        <span style="margin-left: 8px"> Techada </span>
+      </div>
+    </div>
+    @if(formMode === 'edit'){
+    <div class="form-actions">
+      <p-button
+        label="Confirmar cambios"
+        type="submit"
+        (click)="onSubmitBasicInfoEdit()"
+        [disabled]="basicForm.invalid || basicForm.pristine"
+      />
+    </div>
+    }
+    <h3>Horarios</h3>
+    <p style="margin-block: 10px">
+      *Coloca el mismo horario de apertura y cierre para indicar que la cancha
+      esta cerrada ese día.
+    </p>
+    <p-button label="Copiar horarios del complejo" (click)="copyComplexTimeSlots()"></p-button>
+    <div class="day-slots">
+      @for (slot of timeSlotsFieldArray.controls; track slot) {
+      <div class="day-row" [formGroup]="slot">
+        <label class="day-label">{{
+          slot.get("weekDay")?.value | titlecase
+        }}</label>
+
+        <p-select
+          formControlName="initTime"
+          [options]="availableHours"
+          placeholder="Apertura"
+        >
+        </p-select>
+        <p-select
+          formControlName="endTime"
+          [options]="availableHours"
+          placeholder="Cierre"
+        >
+        </p-select>
+        @if((slot.get('initTime')?.touched && slot.get('initTime')?.invalid) ||
+        (slot.get('endTime')?.touched && slot.get('endTime')?.invalid) ){
+        <div class="time-error">
+          <small style="color: red;">El horario de apertura y cierre son requeridos</small>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    @if(invalidSchedulesError){
+    <small style="color: red; display: block">
+      {{ invalidSchedulesError }}
+    </small>
+    }
+    @if(formMode === 'create'){
+    <div class="form-actions">
+      <p-button
+        label="Crear cancha"
+        type="submit"
+        (click)="onSubmitCreateField()"
+        [disabled]="fieldForm.invalid || fieldForm.pristine"
+      />
+    </div>
+    }@else{
+    <div class="form-actions">
+      <p-button
+        label="Confirmar cambios"
+        type="submit"
+        (click)="onSubmitTimeSlotsEdit()"
+        [disabled]="timeSlotsFieldArray.invalid || timeSlotsFieldArray.pristine"
+      />
+    </div>
+    }
+  </form>

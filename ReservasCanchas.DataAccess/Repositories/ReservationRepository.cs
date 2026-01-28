@@ -79,6 +79,17 @@ namespace ReservasCanchas.DataAccess.Repositories
             return reservation;
         }
 
+        public async Task<bool> ExistsApprovedReservationAsync(int fieldId, DateOnly date, TimeOnly initTime)
+        {
+            return await _context.Reservation
+                .AnyAsync(r =>
+                    r.FieldId == fieldId &&
+                    r.Date == date &&
+                    r.InitTime == initTime &&
+                    (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Pendiente)
+                );
+        }
+
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();

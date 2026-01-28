@@ -1,3 +1,4 @@
+<p-toast position="top-center"></p-toast>
 <div class="registration-form-container">
   <div
     class="container-image"
@@ -5,7 +6,7 @@
   ></div>
   <div class="container-form">
     <h1>Formulario de registro</h1>
-    <form class="register-form" [formGroup]="registrationForm">
+    <form class="register-form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
       <div class="fields-row">
         <div>
           <input
@@ -103,7 +104,7 @@
             }
         </div>
       </div>
-      <p-button label="Registrarse" [disabled]="registrationForm.invalid"/>
+      <p-button type="submit" label="Registrarse" [disabled]="registrationForm.invalid"/>
     </form>
   </div>
 </div>

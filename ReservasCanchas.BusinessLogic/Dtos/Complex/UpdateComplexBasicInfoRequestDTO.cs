@@ -33,7 +33,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         [Required(ErrorMessage = "El horario de inicio de iluminación es obligatorio")]
         public TimeOnly StartIlumination { get; set; }
         [Required(ErrorMessage = "El porcentaje de aumento por iluminación es obligatorio")]
-        [Range(0, 100, ErrorMessage = "El porcentaje de aumento por iluminación debe estar entre 0 y 100")]
         public int AditionalIlumination { get; set; }
 
     }

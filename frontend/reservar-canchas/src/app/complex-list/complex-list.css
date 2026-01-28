@@ -29,6 +29,56 @@
   min-height: 200px;       
 }
 
+.complex-card {
+  width: 320px;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.complex-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.5);
+}
+
+/* Reutilizamos las sombras y bordes de .complex-card */
+.add-complex-card {
+  cursor: pointer;
+  border: 2px dashed #ccc; /* Efecto "vacío" */
+  background: #f9f9f9;
+  justify-content: center; /* Centra verticalmente */
+  align-items: center;     /* Centra horizontalmente */
+  min-height: 380px;      /* Altura similar a la card con imagen */
+  color: #666;
+}
+
+.add-complex-card:hover {
+  border-color: #272d35;
+  color: #272d35;
+  background: #fff;
+}
+
+.add-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.add-content i {
+  font-size: 3rem; /* Tamaño del icono + */
+}
+
+.add-content span {
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }

@@ -46,6 +46,7 @@ namespace ReservasCanchas.BusinessLogic
 
             foreach (var complejo in complexes)
             {
+
                 var lowestPricePerField = LowPriceForField(complejo);
                 ComplexCardResponseDTO card = ComplexMapper.toComplexCardResponseDTO(complejo, lowestPricePerField);
                 complexesCardsDTO.Add(card);
@@ -74,27 +75,21 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<ComplexDetailResponseDTO> GetComplexByIdAsync(int complexId)
         { //El admin del complejo puede acceder a cualquier complejo que le pertenezca, en cualquier estado, el usuario solo a habilitados.
 
-            //var userId = 7;
-            var userId = _authService.GetUserId();
-            var userRol = _authService.GetUserRole();
+            var userId = _authService.GetUserIdOrNull();
 
-
-            //throw new Exception($"ROL = '{userRol}' | USER = {userId}");
-
+            var userRol = userId.HasValue ?  _authService.GetUserRole() : null;
+            
             var complex = await GetComplexBasicOrThrow(complexId);
+            var complexDetailDTO = ComplexMapper.toComplexDetailResponseDTO(complex);
+            complexDetailDTO.AverageRating = await _complexRepository.GetAverageRatingAsync(complexId);
+            complexDetailDTO.UserId = complex.UserId;
+            bool isOwner = userId.HasValue && complex.UserId == userId.Value;
+            bool isSuperAdmin = userRol == "SuperAdmin";
+            if (isOwner || isSuperAdmin)
+                return complexDetailDTO;
 
-
-            if (complex.UserId == userId) // || rol == Rol.SuperAdmin, agrego esto || userId == 7 hardcodeado
-                return ComplexMapper.toComplexDetailResponseDTO(complex);
-
-
-            //esto lo estoy probando el 9/1/26
-            if (userRol.Equals(Rol.SuperAdmin.ToString())) // si la peticion la hace el super admin, fiummmmmmmba
-                return ComplexMapper.toComplexDetailResponseDTO(complex);
 
             ValidateAccessForBasicUser(complex);
-            var complexDetailDTO =  ComplexMapper.toComplexDetailResponseDTO(complex);
-            complexDetailDTO.AverageRating = await _complexRepository.GetAverageRatingAsync(complexId);
             return complexDetailDTO;
         }
 
@@ -103,6 +98,7 @@ namespace ReservasCanchas.BusinessLogic
 
             var weekDays = createComplexDTO.TimeSlots.Select(ts => ts.WeekDay);
             var slots = createComplexDTO.TimeSlots;
+            var userId = _authService.GetUserId();
 
             //checkear que el complejo pueda tener mismo horario de apertura y de cierre, eso singifica que ese dia esta cerrado
 
@@ -156,9 +152,9 @@ namespace ReservasCanchas.BusinessLogic
             */
 
 
-            if (await _userBusinessLogic.GetUserByIdAsync(createComplexDTO.UserId) == null)
+            if (await _userBusinessLogic.GetUserByIdAsync(userId) == null)
             {
-                throw new NotFoundException($"No se encontró el usuario con id {createComplexDTO.UserId} asociado al complejo");
+                throw new NotFoundException($"No se encontró el usuario con id {userId} asociado al complejo");
             }
 
             if (await _complexRepository.ExistsByNameAsync(createComplexDTO.Name))
@@ -176,7 +172,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException($"Ya existe un complejo con el teléfono {createComplexDTO.Phone}");
             }
 
-            var complex = ComplexMapper.toComplex(createComplexDTO);
+            var complex = ComplexMapper.toComplex(createComplexDTO,userId);
 
             if (createComplexDTO.ServicesIds.Count() > 0)
             {
@@ -265,25 +261,44 @@ namespace ReservasCanchas.BusinessLogic
             ValidateOwnerShip(complejo, userId);
             ValidateEditable(complejo);
 
-            var slots = updateTimeSlotsDTO.TimeSlots;
+            var slotsDTO = updateTimeSlotsDTO.TimeSlots;
 
-            if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
+            if (slotsDTO.Select(s => s.WeekDay).Distinct().Count() != 7)
             {
                 throw new BadRequestException($"No se pueden repetir dias de la semana en los horarios del complejo");
             }
 
-            //Falta chequear si los time slots no tienen reservas asociadas antes de permitir la actualizacion
-            //Tenemos q traer las reservas aprobadas pero no completadas y ver si tienen alguna en los dias y horarios que se quieren modificar
-            //Y si la modificacion los dejaria fuera del rango.
-            foreach (var slot in slots)
+            var earliestOpen = new TimeSpan(8, 0, 0);
+            var latestClose = new TimeSpan(2, 0, 0);
+            var latestCloseAdjusted = latestClose.Add(TimeSpan.FromDays(1));
+
+            foreach (var slot in slotsDTO)
             {
-                if (slot.EndTime <= slot.InitTime)
+                var init = slot.InitTime.ToTimeSpan();
+                var end = slot.EndTime.ToTimeSpan();
+
+                bool closesNextDay = end < init;
+
+                var endAdjusted = closesNextDay ? end.Add(TimeSpan.FromDays(1)) : end;
+
+                if (init == end) continue;
+
+
+                if (init < earliestOpen)
                 {
-                    throw new BadRequestException($"El horario de fin debe ser mayor al horario de inicio para el día {slot.WeekDay}");
+                    throw new BadRequestException($"El horario de apertura no puede ser anterior a las 8 de la mañana");
                 }
-                var existing = complejo.TimeSlots.First(ts => ts.WeekDay == slot.WeekDay);
-                existing.InitTime = slot.InitTime;
-                existing.EndTime = slot.EndTime;
+
+                if (endAdjusted > latestCloseAdjusted)
+                {
+                    throw new BadRequestException($"El horario de cierre no puede ser posterior a las 2 de la mañana");
+                }
+
+                var existingSlot = complejo.TimeSlots
+                    .FirstOrDefault(s => s.WeekDay == slot.WeekDay);
+
+                existingSlot.InitTime = slot.InitTime;
+                existingSlot.EndTime = slot.EndTime;
             }
 
             await _complexRepository.SaveAsync();
@@ -320,66 +335,60 @@ namespace ReservasCanchas.BusinessLogic
 
             var userId = _authService.GetUserId();
             var userRol = _authService.GetUserRole();
+
+
+
+
             // bug silencioso, el admin tiene que ser el dueño del complejo
-            ValidateOwnerShip(complex, userId);
+            //ValidateOwnerShip(complex, userId);
 
-            if(userRol != "AdminComplejo" && userRol != "SuperAdmin")
+            Console.WriteLine("UserId: " + userId + ", Rol: " + userRol);
+
+            if (userRol != "AdminComplejo" && userRol != "SuperAdmin")
             {
                 throw new ForbiddenException($"No tiene los permisos para hacer esta operacion");
             }
 
 
-            if (complex.State == ComplexState.Habilitado && newState == ComplexState.Deshabilitado)
+            if (userRol == "AdminComplejo")
             {
-                complex.State = newState;
-                changed = true;
-            }
-
-
-            if (complex.State == ComplexState.Deshabilitado && newState == ComplexState.Habilitado)
-            {
-                complex.State = newState;
-                changed = true;
-            }
-
-            if (complex.State == ComplexState.Rechazado && newState == ComplexState.Pendiente)
-            {
-                complex.State = newState;
-                changed = true;
-            }
-
-            // ***** TRANSICIONES SUPERADMIN ***** //
-
-            // otro bug silencioso, ningun adminComplex puede cambiar estados aunque este permitido arriba
-            if (userRol != "SuperAdmin")
-            {
-                throw new ForbiddenException($"No tiene los permisos para hacer esta operacion");
-            }
-
-            if (complex.State == ComplexState.Pendiente && (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado))
-            {
-                complex.State = newState;
-                changed = true;
-            }
-
-            if ((complex.State == ComplexState.Habilitado || complex.State == ComplexState.Deshabilitado) && newState == ComplexState.Bloqueado)
-            {
-                if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
+                ValidateOwnerShip(complex, userId);
+                if(complex.State == ComplexState.Habilitado && newState == ComplexState.Deshabilitado ||
+                   complex.State == ComplexState.Deshabilitado && newState == ComplexState.Habilitado ||
+                   complex.State == ComplexState.Rechazado && newState == ComplexState.Pendiente)
                 {
-                    throw new BadRequestException("No se puede bloquear el complejo porque tiene reservas activas en sus canchas");
+                    complex.State = newState;
+                    changed = true;
                 }
-                complex.State = newState;
-                changed = true;
             }
-
-            if (complex.State == ComplexState.Bloqueado && newState == ComplexState.Habilitado)
+            else if(userRol == "SuperAdmin")
             {
-                complex.State = newState;
-                changed = true;
+                if(complex.State == ComplexState.Pendiente && (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado))
+                {
+                    complex.State = newState;
+                    changed = true;
+                }
+                else if ((complex.State == ComplexState.Habilitado || complex.State == ComplexState.Deshabilitado) && newState == ComplexState.Bloqueado)
+                {
+                    if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
+                    {
+                        throw new BadRequestException("No se puede bloquear el complejo porque tiene reservas activas en sus canchas");
+                    }
+                    complex.State = newState;
+                    changed = true;
+                }else if (complex.State == ComplexState.Bloqueado && newState == ComplexState.Habilitado)
+                {
+                    complex.State = newState;
+                    changed = true;
+                }
+            }
+            else
+            {
+                throw new ForbiddenException("No tiene los permisos para hacer esta operación");
             }
 
             if (!changed)
-                throw new BadRequestException($"No se puede cambiar el estado de {complex.State} a {newState}");
+                throw new BadRequestException($"Transición no permitida: no se puede cambiar de {complex.State} a {newState} con su rol actual");
 
             await _complexRepository.SaveAsync();
             return ComplexMapper.toComplexDetailResponseDTO(complex);
@@ -475,10 +484,18 @@ namespace ReservasCanchas.BusinessLogic
             {
                 // Valido que el complejo esté abierto ese día/hora
                 bool complexOpen = c.TimeSlots.Any(ts =>
-                    ts.WeekDay == weekDay &&
-                    ts.InitTime <= complexFiltersDTO.Hour &&
-                    ts.EndTime > complexFiltersDTO.Hour
-                );
+                {
+                    if (ts.WeekDay != weekDay) return false;
+
+                    if (ts.EndTime > ts.InitTime)
+                    {
+                        return complexFiltersDTO.Hour >= ts.InitTime && complexFiltersDTO.Hour < ts.EndTime;
+                    }
+                    else
+                    {
+                        return complexFiltersDTO.Hour >= ts.InitTime || complexFiltersDTO.Hour < ts.EndTime;
+                    }
+                });
 
                 if (!complexOpen)
                     continue;
@@ -486,11 +503,13 @@ namespace ReservasCanchas.BusinessLogic
                 // Veo si hay canchas disponibles
                 bool hasAvailableField = c.Fields.Any(field =>
                 {
+                    if (field.FieldType != complexFiltersDTO.FieldType)
+                        return false;
                     // Checkeo que no tenga reservas
                     bool hasReservation = field.Reservations.Any(r =>
                         r.Date == complexFiltersDTO.Date &&
                         r.InitTime == complexFiltersDTO.Hour &&
-                        r.ReservationState == ReservationState.Aprobada
+                        (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Pendiente)
                     );
 
                     if (hasReservation)
@@ -572,7 +591,7 @@ namespace ReservasCanchas.BusinessLogic
         {
             if (complex.State == ComplexState.Bloqueado || complex.State == ComplexState.Pendiente)
             {
-                throw new BadRequestException("El complejo no se encuentra habilitado para edición");
+                throw new BadRequestException("El complejo no puede ser editado mientras está en estado pendiente o bloqueado");
             }
         }
 
@@ -622,7 +641,7 @@ namespace ReservasCanchas.BusinessLogic
         {
             if (complex.State == ComplexState.Pendiente || complex.State == ComplexState.Rechazado || complex.State == ComplexState.Bloqueado)
             {
-                throw new BadRequestException("No se pueden agregar canchas al complejo en el estado actual");
+                throw new BadRequestException("No se pueden manipular las canchas del complejo en el estado actual");
             }
         }
 
@@ -695,6 +714,10 @@ namespace ReservasCanchas.BusinessLogic
 
         private decimal LowPriceForField(Complex complex)
         {
+            if (complex.Fields == null || !complex.Fields.Any())
+            {
+                return 0;
+            }
             return complex.Fields.Min(f => f.HourPrice);
         }
 

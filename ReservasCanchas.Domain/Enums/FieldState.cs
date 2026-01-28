@@ -8,7 +8,7 @@ namespace ReservasCanchas.Domain.Enums
 {
     public enum FieldState
     {
-        Habilitado = 0,
-        Deshabilitado = 1
+        Habilitada = 0,
+        Deshabilitada = 1
     }
 }

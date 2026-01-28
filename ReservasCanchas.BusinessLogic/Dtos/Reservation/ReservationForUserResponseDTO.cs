@@ -19,7 +19,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public string FieldName { get; set; } = string.Empty;
 
         public decimal? TotalPrice { get; set; }
-        public int? PricePaid { get; set; }
+        public decimal? PricePaid { get; set; }
 
         public bool CanReview { get; set; }
     }

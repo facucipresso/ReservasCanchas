@@ -30,13 +30,15 @@ namespace ReservasCanchas.BusinessLogic
             _userRepository = userRepository;
         }
 
-        public async Task<ActionResult<NewUserDto>> RegisterAsync(RegisterDto registerDto)
+        public async Task<NewUserDto> RegisterAsync(RegisterDto registerDto)
         {
+            var normalizedEmail = _userManager.NormalizeEmail(registerDto.Email);
+            var existingEmail = await _userManager.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail);
             if (await _userManager.FindByNameAsync(registerDto.Username) != null)
                 throw new BadRequestException("El nombre de usuario ya está en uso.");
-            if (await _userManager.FindByEmailAsync(registerDto.Email) != null)
+            if (existingEmail != null)
                 throw new BadRequestException("El email ya está registrado.");
-            if (await _userRepository.ExistByPhoneAsync(registerDto.PhoneNumber) == true)
+            if (await _userRepository.ExistByPhoneAsync(registerDto.PhoneNumber))
                 throw new BadRequestException("El numero de telefono ya está registrado.");
             
             //si esta bien ingresado el dto, creo un nuevo usuario
@@ -72,15 +74,15 @@ namespace ReservasCanchas.BusinessLogic
             }
             else
             {
-                //throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}: {createdUser.Errors}");
-                var errors = string.Join(" | ", createdUser.Errors.Select(e => e.Description));
-                throw new BadRequestException(
-                    $"Error en el registro del usuario {appUser.UserName}: {errors}"
-                );
+
+                var identityErrors = string.Join(" | ", createdUser.Errors.Select(e => $"{e.Code}: {e.Description}"));
+                Console.WriteLine(identityErrors);
+                throw new BadRequestException($"Error en el registro del usuario {appUser.UserName}: {identityErrors}");
+
             }
         }
 
-        public async Task<ActionResult<NewUserDto>> LoginAsync(LoginDto loginDto)
+        public async Task<NewUserDto> LoginAsync(LoginDto loginDto)
         {
             //busco el usuario en la base de datos con user manager que es el que me facilita el acceso y manejo de usuarios
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Username);
@@ -89,7 +91,7 @@ namespace ReservasCanchas.BusinessLogic
 
             //checkea que la contraseña sea la correcta
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false); // ver bien el parametro 'false' de esta funcion
-            if (!result.Succeeded) throw new BadRequestException($"Contraseña inconrrecta");
+            if (!result.Succeeded) throw new BadRequestException($"Contraseña incorrecta");
 
             return (new NewUserDto
             {

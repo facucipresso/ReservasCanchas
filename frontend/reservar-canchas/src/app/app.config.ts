@@ -6,13 +6,16 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import MyPreset from './mypreset';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es'
+import { authInterceptor } from './interceptors/auth-interceptor';
+import { MessageService } from 'primeng/api';
 
-registerLocaleData(localeEs);
+registerLocaleData(localeEs, 'es-AR');
 export const appConfig: ApplicationConfig = {
   providers: [
+    MessageService,
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
@@ -26,7 +29,9 @@ export const appConfig: ApplicationConfig = {
         }
       }
     }),
-    {provide:LOCALE_ID, useValue:'es'},
-    provideHttpClient()
+    {provide:LOCALE_ID, useValue:'es-AR'},
+    provideHttpClient(
+      withInterceptors([authInterceptor])
+    )
   ]
 };

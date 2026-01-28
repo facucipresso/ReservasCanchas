@@ -12,6 +12,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
+import { Menu } from 'primeng/menu';
+import { MenuItem, MessageService } from 'primeng/api';
+import { Auth } from '../services/auth';
+import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-header',
@@ -23,23 +27,68 @@ import { PasswordModule } from 'primeng/password';
     InputTextModule,
     PasswordModule,
     ReactiveFormsModule,
+    Menu,
+    Toast
   ],
   templateUrl: './header.html',
   styleUrl: './header.css',
+  providers: [MessageService]
 })
 export class Header implements OnInit {
-  isLoggedIn = false; // reemplazar con tu auth real
+  isLoggedIn!:boolean;
+  isAdmin!:boolean;
   visible: boolean = false;
   value!: string;
   loginForm!: FormGroup;
+  options: MenuItem[] | undefined;
+  username!: string | null;
 
-  constructor(public router: Router, private fb: FormBuilder) {}
+
+  constructor(public router: Router, private fb: FormBuilder, public authService: Auth, private messageService:MessageService) {}
 
   ngOnInit(): void {
+    this.authService.isLoggedIn$.subscribe(isLogged => {
+      this.isLoggedIn = isLogged;
+      this.username = this.authService.getUsername();
+    });
+
+    this.username = this.authService.getUsername();
+    console.log(this.username);
+
+    this.authService.role$.subscribe(role => {
+      this.isAdmin = role === 'AdminComplejo';
+      console.log("isAdmin: ", this.isAdmin);
+      this.initMenu();
+    });
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
     });
+    this.initMenu();
+  }
+
+  private initMenu() {
+    this.options = [
+      {
+        label: 'Menú',
+        items: [
+          { label: 'Mis reservas', icon: 'pi pi-calendar' },
+          ...(this.isAdmin ? [{
+            label: 'Mis complejos',
+            icon: 'pi pi-building',
+            command: () => this.goToMyComplexes()
+          }] : []),
+          { label: 'Mi buzón', icon: 'pi pi-envelope' },
+          { label: 'Mi perfil', icon: 'pi pi-user' },
+          { separator: true },
+          {
+            label: 'Cerrar sesión',
+            icon: 'pi pi-sign-out',
+            command: () => this.logout()
+          }
+        ]
+      }
+    ];
   }
 
   showDialog() {
@@ -50,10 +99,69 @@ export class Header implements OnInit {
     this.loginForm.reset();
   }
 
-  onSubmit() {}
+  onSubmit() {
+    if (this.loginForm.invalid) return;
+
+    const formLoginInfo = this.loginForm.value;
+
+    this.authService.login(formLoginInfo).subscribe({
+      next: (response) => {
+        this.authService.setToken(response.token);
+        console.log("LOGEO EXITOSO", response);
+        console.log(this.authService.getUserRole());
+        this.messageService.add({
+          severity:'success',
+          summary:'Inicio de sesión exitoso',
+          detail:'Has iniciado sesión correctamente',
+          life: 1500
+        })
+
+        if(this.router.url.startsWith('/register')){
+          this.router.navigate(['/'])
+        }
+        this.isLoggedIn = true;
+        this.isAdmin = this.authService.getUserRole() == 'AdminComplejo' ? true : false;
+        this.visible = false; 
+        this.loginForm.reset();
+      },
+      error: (err) => {
+        console.log('ERROR DEL BACKEND:', err);
+        const backendError = err?.error;
+        const message = backendError?.detail || 'Error desconocido';
+        this.messageService.add({
+          severity:'error',
+          summary:backendError?.title || 'Error',
+          detail: message,
+          life: 1500
+        })
+      }
+    })
+  }
 
   goToRegistrationForm() {
     this.router.navigate(['/register']);
     this.visible = false;
+  }
+
+  goToCreateComplex(){
+    this.router.navigate(['/register-complex']);
+    this.visible = false;
+  }
+
+  goToMyComplexes(){
+    this.router.navigate(['/admin/complexes'])
+  }
+
+  logout(){
+    this.authService.logout();
+    this.messageService.add({
+      severity:'success',
+      summary:'Cierre de sesión exitoso',
+      detail:'Has cerrado la sesión correctamente',
+      life: 1500
+    })
+    this.router.navigate(['/']);
+    this.isLoggedIn = false;
+    this.isAdmin = false;
   }
 }

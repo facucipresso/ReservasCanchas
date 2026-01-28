@@ -1,20 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {FormBuilder,FormGroup,ReactiveFormsModule,Validators,} from '@angular/forms';
 import { Location } from '../services/location';
 import { Select } from 'primeng/select';
-import {
-  AutoCompleteCompleteEvent,
-  AutoCompleteModule,
-} from 'primeng/autocomplete';
+import {AutoCompleteCompleteEvent,AutoCompleteModule,} from 'primeng/autocomplete';
 import { FieldType } from '../models/fieldtype.enum';
-import { DatePicker, DatePickerModule } from 'primeng/datepicker';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
-import { ActivatedRoute, Router } from '@angular/router';
+import {  Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -37,11 +29,13 @@ export class FormSearchComplexes implements OnInit {
   dateNow = new Date();
   maxDateValid = new Date();
   form!: FormGroup;
-  fieldTypes = Object.entries(FieldType).map(([key, value]) => ({
-    label: value, 
-    value: key, 
-  }));
-  hours = [
+  fieldTypes = [
+    { label: 'Fútbol 5', value: FieldType.Futbol5 },
+    { label: 'Fútbol 7', value: FieldType.Futbol7 },
+    { label: 'Fútbol 11', value: FieldType.Futbol11 }
+  ]
+  
+  allHours = [
     '08:00',
     '09:00',
     '10:00',
@@ -60,8 +54,9 @@ export class FormSearchComplexes implements OnInit {
     '23:00',
     '00:00',
     '01:00',
-    '02:00',
   ];
+
+  hours: { label: string; value: string; disabled: boolean }[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -77,6 +72,22 @@ export class FormSearchComplexes implements OnInit {
       fieldType: ['', Validators.required],
       date: [this.dateNow, Validators.required],
       hour: ['', Validators.required],
+    });
+
+    // Inicializar horas con la fecha actual
+    this.updateSelectableHours(this.dateNow);
+
+    // Subscribirse a cambios en la fecha
+    this.form.get('date')?.valueChanges.subscribe((selectedDate) => {
+      this.updateSelectableHours(selectedDate);
+      // Resetear hora si no es válida
+      const currentHour = this.form.get('hour')?.value;
+      if (currentHour) {
+        const isDisabled = this.hours.find(h => h.value === currentHour)?.disabled;
+        if (isDisabled) {
+          this.form.get('hour')?.reset('');
+        }
+      }
     });
 
     this.locationService.getProvinces().subscribe((provinces) => {
@@ -107,6 +118,24 @@ export class FormSearchComplexes implements OnInit {
     });
   }
 
+  private updateSelectableHours(selectedDate: Date): void {
+    const now = new Date();
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    const currentHour = now.getHours();
+
+    this.hours = this.allHours.map(timeStr => {
+      const slotHour = parseInt(timeStr.split(':')[0], 10);
+      // Deshabilitar si es hoy y la hora ya pasó (excepto medianoche y 1am)
+      const isPastHour = isToday && slotHour <= currentHour && (slotHour != 0 && slotHour != 1);
+      
+      return {
+        label: timeStr,
+        value: timeStr,
+        disabled: isPastHour
+      };
+    });
+  }
+
   search(event: AutoCompleteCompleteEvent) {
     const query = event.query.toLowerCase();
 
@@ -117,7 +146,7 @@ export class FormSearchComplexes implements OnInit {
 
   validateLocality() {
     const value = this.form.get('locality')?.value;
-
+    
     // Si no coincide exactamente con ninguna localidad -> borrar
     if (
       !this.localities
@@ -132,9 +161,9 @@ export class FormSearchComplexes implements OnInit {
     if (this.form.invalid) return;
 
     const { province, locality, fieldType, date, hour } = this.form.value;
-
+    console.log(this.form.value);
     const dateOnly = date.toISOString().substring(0, 10);
-
+    console.log(dateOnly);
     const queryParams = {
       province,
       locality,
@@ -143,8 +172,8 @@ export class FormSearchComplexes implements OnInit {
       hour,
     };
 
-    console.log(queryParams);
+    console.log('QUERYPARAMS',queryParams);
 
-    this.router.navigate(['/complexes'], { queryParams });
+    this.router.navigate(['search/complexes'], { queryParams });
   }
 }

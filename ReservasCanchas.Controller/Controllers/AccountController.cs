@@ -37,14 +37,9 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        public async Task<ActionResult<NewUserDto>> Register([FromBody] RegisterDto registerDto)
         {// PASO 8 USO DE JWT hago todas las validaciones (PASO 9 USO DE JWT, antes de probar el endpoint tengo que hacer la migracion a la bbdd y el update de la misma)
             //(paso 10 en ITokenService)
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
             var userRegistered = await _accountBusinessLogic.RegisterAsync(registerDto);
             return Ok(userRegistered);
@@ -54,13 +49,10 @@ namespace ReservasCanchas.Controller.Controllers
         //DEVOLVER ACTION RESULT SOLO, NO LA INTERFAZ
         //PASO 15 ESO DE JWT, hacer el login (paso 16 en el program.cs)
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        public async Task<ActionResult<NewUserDto>> Login([FromBody] LoginDto loginDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var userLoged = await _accountBusinessLogic.LoginAsync(loginDto);
             return Ok(userLoged);
-
         }
 
 

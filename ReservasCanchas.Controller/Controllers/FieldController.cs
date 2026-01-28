@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
+using ReservasCanchas.BusinessLogic.Dtos.Complex;
 using ReservasCanchas.BusinessLogic.Dtos.Field;
 using ReservasCanchas.Domain.Entities;
 
@@ -49,6 +50,14 @@ namespace ReservasCanchas.Controller.Controllers
         {
             var updatedFieldDTO = await _fieldBusinessLogic.UpdateTimeSlotsFieldAsync(fieldId, timeSlotUpdateDTO);
             return Ok(updatedFieldDTO);
+        }
+
+        [HttpPatch("{fieldId}/state")]
+        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateFieldState([FromRoute] int fieldId, [FromBody] UpdateFieldStateRequestDTO stateUpdateDTO)
+        {//Cambio de estado del complejo (Super Admin o Admin del complejo, dependiendo de la transición)
+            var updated = await _fieldBusinessLogic.UpdateFieldStateAsync(fieldId, stateUpdateDTO);
+
+            return Ok(updated);
         }
 
         [HttpDelete("{fieldId}")]

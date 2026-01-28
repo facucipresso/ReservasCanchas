@@ -1,0 +1,96 @@
+<p-toast position="top-center"></p-toast>
+
+
+@if(isLoading){
+    <div class="loading-container">
+      <p-progress-spinner></p-progress-spinner>
+    </div>
+}@else{
+<div class="complex-detail-container" [class.disabled]="complex.state === 'Deshabilitado'">
+    <app-complex-info 
+    [complex]="complex" 
+    [isAdmin]="isAdmin" 
+    [selectedDate]="selectedDate" 
+    [fields]="fields"
+    (editField)="onEditField($event)" 
+    (deleteField)="confirmDeleteField($event)"
+    (reserveField)="onReserveField($event)"
+    >
+        @if(isAdmin){
+          <button pButton (click)="showDialogComplex()" edit-complex-button>
+            <i class="pi pi-pencil" pButtonIcon></i>
+            <span pButtonLabel style="font-weight: 600;">Editar complejo</span>
+          </button>
+        }
+        @if(isAdmin){  
+          <button pButton (click)="confirmDeleteComplex()" class="danger" delete-complex-button>
+            <i class="pi pi-trash" pButtonIcon></i>
+            <span pButtonLabel style="font-weight: 600;">Eliminar complejo</span>
+          </button>
+        }
+        @if(isAdmin){  
+         <button pButton (click)="changeComplexState()" changestate-complex-button>
+            <span pButtonLabel style="font-weight: 600;">{{complex.state === 'Habilitado' ? 'Deshabilitar' : 'Habilitar'}}</span>
+          </button>
+        }
+        <p-datepicker
+          dateFormat="dd.mm.yy"
+          [(ngModel)]="selectedDate"
+          (onSelect)="onDateChange($event)"
+          showIcon
+          [minDate]="dateNow"
+          [maxDate]="maxDateValid"
+          [style]="{'max-width':'240px'}"
+          calendar
+        />
+        @if(isAdmin){
+          <button pButton (click)="onAddField()" add-field-button>
+            <i class="pi pi-plus" pButtonIcon></i>
+            <span pButtonLabel style="font-weight: 600;">Añadir cancha</span>
+          </button>
+        }
+    </app-complex-info>
+</div>
+}
+
+<p-dialog
+  header="Editar Complejo"
+  [modal]="true"
+  [(visible)]="visibleEditComplexModal"
+  [style]="{ width: '25rem' }"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '60%', minHeight: '90%', color: '#111' }"
+>
+  <app-editcomplex-form
+  *ngIf="visibleEditComplexModal" 
+  [complex]="complex" 
+  [allServices]="allServices"
+  (saveBasic)="updateBasicInfo($event)"
+  (saveTimeSlots)="updateTimeSlots($event)"
+  (saveServices)="updateServices($event)"
+  ></app-editcomplex-form>
+</p-dialog>
+
+<p-dialog
+  header="{{ fieldFormMode === 'create' ? 'Añadir cancha' : 'Editar cancha' }}"
+  [modal]="true"
+  [(visible)]="visibleFieldFormModal"
+  [style]="{ width: '60%', minHeight: '90%', color: '#111' }"
+  [draggable]="false"
+  [resizable]="false"
+  [focusOnShow]="false"
+>
+<app-fieldform 
+  *ngIf="visibleFieldFormModal" 
+  [complex]="complex" 
+  [field]="selectedField" 
+  [formMode]="fieldFormMode" 
+  (create)="createField($event)"
+  (updateBasic)="updateBasicInfoField($event)"
+  (updateTimeSlots)="updateTimeSlotsField($event)"
+  (updateState)="updateStateField($event)"
+></app-fieldform>
+</p-dialog>
+
+<p-confirmdialog />

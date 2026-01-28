@@ -1,0 +1,521 @@
+:host {
+  /* Variables de Color */
+  --primary-color: #22c55e; /* Verde Cancha */
+  --primary-dark: #15803d;
+  --text-dark: #1f2937;
+  --text-gray: #6b7280;
+  --bg-light: #f3f4f6;
+  --white: #ffffff;
+  --danger: #ef4444;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --border-radius: 12px;
+}
+
+.checkout-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text-dark);
+}
+
+/* --- HEADER & TIMER --- */
+.checkout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.checkout-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: var(--text-dark);
+  font-weight: 800;
+}
+
+.checkout-header p {
+  color: var(--text-gray);
+  margin-top: 0.5rem;
+}
+
+.timer-badge {
+  background-color: var(--text-dark);
+  color: var(--primary-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+.timer-badge.urgent {
+  background-color: #fef2f2;
+  color: var(--danger);
+  border: 2px solid var(--danger);
+}
+
+/* --- GRID LAYOUT (2 COLUMNAS) --- */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 50% - 50% */
+  gap: 2rem;
+  margin-bottom: 2rem;
+  align-items: start;
+}
+
+/* --- CARDS GENERAL STYLES --- */
+.card {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  height: auto;
+}
+
+.checkout-card {
+  border: 1px solid #e5e7eb;
+}
+
+.card-header {
+  background-color: #f9fafb;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.infouser-card{
+  margin-bottom: 10px;
+}
+
+.card-header i {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dark);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* --- IZQUIERDA: DETALLES --- */
+.info-group {
+  margin-bottom: 1.5rem;
+}
+
+.info-group h3 {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.highlight-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin: 0 0 0.5rem 0;
+}
+
+.icon-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+
+.icon-row i {
+  color: var(--text-gray);
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: #e5e7eb;
+  margin: 1.5rem 0;
+}
+
+/* Caja de Fecha y Hora */
+.date-time-box {
+  display: flex;
+  gap: 1rem;
+  background-color: #f0fdf4; /* Verde muy claro */
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #dcfce7;
+}
+
+.dt-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dt-item i {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.dt-item div {
+  display: flex;
+  flex-direction: column;
+}
+
+.dt-item .label {
+  font-size: 0.8rem;
+  color: var(--text-gray);
+}
+
+.dt-item .value {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.field-details p {
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+.field-highlight {
+  background-color: #f8fafc; /* Fondo gris muy suave */
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center; /* Centrado para mayor impacto */
+  margin-bottom: 1rem;
+}
+
+.field-name-large {
+  font-size: 1.5rem; /* Letra grande */
+  font-weight: 800;  /* Muy negrita */
+  color: var(--primary-dark); /* Usamos el verde oscuro o el color principal */
+  line-height: 1.2;
+  margin-bottom: 0.5rem; /* Espacio antes de los detalles */
+  text-transform: uppercase; /* Opcional: Nombre en mayúsculas */
+}
+
+.field-meta-row {
+  display: flex;
+  justify-content: center; /* Centramos los ítems en la fila */
+  align-items: center;
+  gap: 10px; /* Espacio entre elementos */
+  color: var(--text-gray);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-item i {
+  color: var(--primary-color); /* Iconos en verde */
+  font-size: 0.9rem;
+}
+
+.meta-divider {
+  color: #cbd5e1; /* Color suave para el punto separador */
+  font-weight: bold;
+}
+
+.total-price {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--text-dark);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.price-value {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+/* --- DERECHA: PAGO Y DATOS --- */
+
+/* Datos personales grid */
+.personal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  border-bottom: none;
+  padding-bottom: 0;
+  gap: 4px;
+}
+
+.info-item .label {
+  font-size: 0.8rem;
+  color: var(--text-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.info-item .value {
+  font-weight: 700;
+  color: var(--text-dark);
+  font-size: 1rem;
+  /* Para que si el email es muy largo no rompa el diseño */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; 
+}
+
+
+/* Caja CBU */
+.cbu-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.cbu-label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-gray);
+}
+
+.cbu-number {
+  font-family: monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  color: var(--text-dark);
+  letter-spacing: 1px;
+}
+
+.cbu-alias {
+  display: block;
+  font-size: 0.9rem;
+  background: #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+/* Upload */
+.upload-section {
+  margin-bottom: 1.5rem;
+}
+
+.upload-section label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.custom-fileupload {
+  width: 100%;
+}
+
+/* Para que el botón de PrimeNG ocupe todo el ancho */
+::ng-deep .custom-fileupload .p-fileupload-basic, 
+::ng-deep .custom-fileupload .p-button {
+  width: 100% !important;
+  justify-content: center;
+}
+
+.disclaimer-box {
+  font-size: 0.85rem;
+  color: #6b7280;
+  background-color: #fffbeb; /* Amarillo muy suave */
+  padding: 1rem;
+  border-radius: 8px;
+  line-height: 1.5;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.disclaimer-box i {
+  color: #d97706;
+  margin-top: 3px;
+}
+
+.disclaimer-box p {
+  margin: 0;
+}
+
+.price-breakdown-container {
+  margin-top: 1.5rem;
+  border-top: 2px dashed #e5e7eb; /* Línea punteada tipo ticket */
+  padding-top: 1.5rem;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+}
+
+.breakdown-row.total-row {
+  font-weight: 700;
+  color: var(--text-dark);
+  font-size: 1rem;
+}
+
+.breakdown-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 0.5rem 0 1rem 0;
+}
+
+/* --- SELECCIÓN DE PAGO --- */
+
+.payment-selection {
+  margin: 1.5rem 0;
+}
+
+.selection-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: var(--text-gray);
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.8rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+/* Efecto al seleccionar */
+.radio-option.selected {
+  border-color: var(--primary-color);
+  background-color: #f0fdf4; /* Verde muy muy suave */
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.radio-label {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+  align-items: center;
+}
+
+.radio-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.radio-price {
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+/* Ajuste fino para el componente de PrimeNG */
+::ng-deep .p-radiobutton .p-radiobutton-box.p-highlight {
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+}
+
+/* --- CAJA TOTAL FINAL --- */
+
+.final-total-box {
+  background-color: var(--text-dark);
+  color: white;
+  padding: 1.2rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.final-total-box .amount {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary-color); /* El precio resalta en verde sobre fondo oscuro */
+}
+
+/* --- FOOTER BUTTONS --- */
+.checkout-actions {
+  display: flex;
+  justify-content: flex-end; /* Botones a la derecha */
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.button-confirm {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.button-cancel {
+  padding: 1rem 1.5rem;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .checkout-grid {
+    grid-template-columns: 1fr; /* 1 Columna en móviles */
+    gap: 1.5rem;
+  }
+  
+  .checkout-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .timer-badge {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .checkout-actions {
+    flex-direction: column-reverse; /* Confirmar arriba en móvil */
+  }
+  
+  .checkout-actions button {
+    width: 100%;
+  }
+}

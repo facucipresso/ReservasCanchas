@@ -15,11 +15,13 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             return new ComplexCardResponseDTO
             {
                 Id = complex.Id,
+                UserId = complex.UserId,
                 Name = complex.Name,
                 Province = complex.Province,
                 Locality = complex.Locality,
                 Street = complex.Street,
                 Number = complex.Number,
+                State = complex.State,
                 ImagePath = complex.ImagePath,
                 LowestPricePerField = lowestPrice
             };
@@ -65,11 +67,11 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             };
         }
 
-        public static Complex toComplex(CreateComplexRequestDTO complexDTO)
+        public static Complex toComplex(CreateComplexRequestDTO complexDTO, int userId)
         {
             return new Complex
             {
-                UserId = complexDTO.UserId,
+                UserId = userId,
                 Name = complexDTO.Name,
                 Description = complexDTO.Description,
                 Province = complexDTO.Province,

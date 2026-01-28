@@ -20,7 +20,7 @@ namespace ReservasCanchas.Domain.Entities
         public DateTime CreationDate { get; set; }
         public PayType? PayType { get; set; }
         public decimal? TotalPrice { get; set; }
-        public int? PricePaid { get; set; }
+        public decimal? PricePaid { get; set; }
         public ReservationType ReservationType { get; set; }
         public string? BlockReason { get; set; } = string.Empty;
         public ReservationState ReservationState { get; set; }

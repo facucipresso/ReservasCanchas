@@ -26,6 +26,10 @@
     max-height: 100%;
 }
 
+.header-right{
+    gap: 30px;
+}
+
 .header-center {
     flex: 1;
     justify-content: center;
@@ -64,13 +68,21 @@
     cursor: pointer;
 }
 
+::ng-deep .avatar-container .p-avatar {
+  transition: border 0.5s ease;
+}
+
+::ng-deep .avatar-container .p-avatar:hover {
+  border: 1px solid black;
+}
+
 .dialog-description {
-    color: #6b7280; /* gris suave */
+    color: #6b7280; 
     display: block;
     margin-bottom: 1rem;
 }
 
-/* Fila del formulario (label + input) */
+
 .form-row {
     width: 100%;
     gap: 1rem;

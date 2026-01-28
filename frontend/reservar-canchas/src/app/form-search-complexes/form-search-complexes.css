@@ -1,7 +1,7 @@
 .form-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0;
+  gap: 5px;
   align-items: center;
   justify-content: center;
   padding: 1rem;
@@ -27,17 +27,17 @@
 .p-inputtext {
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* agrega ... si el texto no entra */
+  text-overflow: ellipsis;
 }
 
 .form-grid.compact-form {
-  padding: 0.3rem 0.5rem;       /* menos padding */
-  border-radius: 20px;          /* más pequeño */
+  padding: 0.3rem 0.5rem;       
+  border-radius: 20px;          
 }
 
 /* items más pequeños */
 .form-grid.compact-form > * {
-  flex: 0 0 140px;              /* antes 180px */
+  flex: 0 0 140px;              
   max-width: 140px;
 }
 

@@ -11,6 +11,7 @@ using ReservasCanchas.Controller.Background;
 using ReservasCanchas.DataAccess.Persistance;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
+using StackExchange.Redis;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,7 @@ builder.Services.AddCors(options =>
     {
         policy.AllowAnyOrigin()
               .AllowAnyHeader()
+              .WithExposedHeaders("Location")
               .AllowAnyMethod();
     });
 });
@@ -55,18 +57,21 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-// registro DbContext con Postgre
+// Defino la conexión a la base de datos PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSql")));
+// Defino la conexión a la base de datos Redis
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
 
 // PASO 1 USO DE JWT
 //addidentity es el sist de autenticacion y manejo de usuarios que me da .net , appUser es mi usuario personalizado y identityroles representa los roles
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
     //estan son las reglas con las que tiene que cumplir una contraseña
-    options.Password.RequireDigit = true;
+    options.Password.RequireDigit = false;
     options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
+    options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 8;
 })
@@ -139,6 +144,9 @@ builder.Services.AddScoped<NotificationBusinessLogic>();
 builder.Services.AddScoped<NotificationRepository>();
 
 builder.Services.AddScoped<AccountBusinessLogic>();
+
+builder.Services.AddScoped<RedisRepository>();
+
 
 // PARA EL TRABAJO EN BACKGROUND
 builder.Services.AddHostedService<ReservationCompletionService>();

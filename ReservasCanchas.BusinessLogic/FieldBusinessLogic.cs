@@ -26,12 +26,11 @@ namespace ReservasCanchas.BusinessLogic
             _authService = authService;
         }
         public async Task<FieldDetailResponseDTO> GetFieldByIdAsync(int fieldId)
-        { //Este metodo es para cuando el admin del complejo quiere ver una cancha en particular.
+        {
+            var userId = _authService.GetUserId();
             var field = await GetFieldWithRelationsOrThrow(fieldId);
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
 
-            var userId = _authService.GetUserId();
-            _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             return FieldMapper.ToFieldDetailResponseDTO(field);
         }
 
@@ -40,7 +39,7 @@ namespace ReservasCanchas.BusinessLogic
             var userRol = _authService.GetUserRole();
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(complexId);
 
-            var userId = _authService.GetUserId();
+            var userId = _authService.GetUserIdOrNull();
             var fields = await _fieldRepository.GetAllFieldsByComplexIdWithRelationsAsync(complexId);
             if (complex.UserId == userId || userRol == Rol.SuperAdmin.ToString()) //si es admin devolvemos todas las canchas en todos los estados y sin importar el estado del complejo
             {
@@ -53,7 +52,7 @@ namespace ReservasCanchas.BusinessLogic
             { //si no es admin devolvemos solo las canchas habilitadas y si el complejo esta habilitado
                 _complexBusinessLogic.ValidateAccessForBasicUser(complex);
                 var fieldsResponse = fields
-                    .Where(f => f.FieldState == FieldState.Habilitado)
+                    .Where(f => f.FieldState == FieldState.Habilitada)
                     .Select(FieldMapper.ToFieldDetailResponseDTO)
                     .ToList();
                 return fieldsResponse;
@@ -89,45 +88,69 @@ namespace ReservasCanchas.BusinessLogic
 
                 var day = fieldSlot.WeekDay;
 
-                //busco el slot del complejo del mismo dia
                 var complexSlot = complex.TimeSlots.FirstOrDefault(s => s.WeekDay == day);
-                if (complexSlot == null) //esto estaba asi antes complexSlot != null
+
+
+                if (complexSlot == null)
+
                 {
-                    throw new BadRequestException($"El complejo no tiene un horario configurado para el día {day}");
+                    throw new BadRequestException(
+                        $"El complejo no tiene horario configurado para el día {day}"
+                    );
                 }
 
-                //convierto a spam para poder manipular si el horario de fin es despuesd de media noche
                 var cInit = complexSlot.InitTime.ToTimeSpan();
                 var cEnd = complexSlot.EndTime.ToTimeSpan();
                 var fInit = fieldSlot.InitTime.ToTimeSpan();
                 var fEnd = fieldSlot.EndTime.ToTimeSpan();
 
-                bool fClosesNextDay = fEnd < fInit;
-                bool cClosesNextDay = cEnd < cInit;
+                // cerrado = init == end
+                bool complexClosed = cInit == cEnd;
+                bool fieldClosed = fInit == fEnd;
 
-                var cEndAdj = cClosesNextDay ? cEnd.Add(TimeSpan.FromDays(1)) : cEnd;
-                var fEndAdj = fClosesNextDay ? fEnd.Add(TimeSpan.FromDays(1)) : fEnd;
-
-                //la cancha no esta habilitada ese dia
-                if(fInit == fEnd) continue;
-
-                if(cInit == cEnd)
+                // si el complejo está cerrado, la cancha también debe estarlo
+                if (complexClosed)
                 {
-                    throw new BadRequestException($"La cancha para el día {day} no puede abrir antes que el complejo ({fieldSlot.InitTime} < {complexSlot.InitTime}).");
+                    if (!fieldClosed)
+                    {
+                        throw new BadRequestException(
+                            $"La cancha debe estar cerrada el día {day} porque el complejo está cerrado"
+                        );
+                    }
+                    continue;
                 }
 
-                if(fEndAdj == cEndAdj)
-                {
-                    throw new BadRequestException($"La cancha para el día {day} no puede cerrar después que el complejo ({fieldSlot.EndTime} > {complexSlot.EndTime}).");
+                // si la cancha está cerrada y el complejo abierto → OK
+                if (fieldClosed)
+                    continue;
 
+                // normalización de cierre post medianoche
+                if (cEnd <= cInit)
+                    cEnd = cEnd.Add(TimeSpan.FromDays(1));
+
+                if (fEnd <= fInit)
+                    fEnd = fEnd.Add(TimeSpan.FromDays(1));
+
+                // validaciones de rango
+                if (fInit < cInit)
+                {
+                    throw new BadRequestException(
+                        $"La cancha el día {day} no puede abrir antes que el complejo ({fieldSlot.InitTime} < {complexSlot.InitTime})"
+                    );
+                }
+
+                if (fEnd > cEnd)
+                {
+                    throw new BadRequestException(
+                        $"La cancha el día {day} no puede cerrar después que el complejo ({fieldSlot.EndTime} > {complexSlot.EndTime})"
+                    );
                 }
 
             }
 
             var field = FieldMapper.ToField(createFieldDTO);
-            field.Name = $"Cancha {await _fieldRepository.CountFieldsByComplexAsync(complex.Id) + 1} {field.FieldType}";
             field.Active = true;
-            field.FieldState = FieldState.Habilitado;
+            field.FieldState = FieldState.Habilitada;
             await _fieldRepository.CreateFieldAsync(field);
 
             field.RecurringCourtBlocks ??= new List<RecurringFieldBlock>();
@@ -144,18 +167,12 @@ namespace ReservasCanchas.BusinessLogic
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
-            if (fieldUpdateDTO.HourPrice.HasValue)
-            {
-                field.HourPrice = fieldUpdateDTO.HourPrice.Value;
-            }
-            if (fieldUpdateDTO.Ilumination.HasValue)
-            {
-                field.Ilumination = fieldUpdateDTO.Ilumination.Value;
-            }
-            if(fieldUpdateDTO.Covered.HasValue)
-            {
-                field.Covered = fieldUpdateDTO.Covered.Value;
-            }
+            field.Name = fieldUpdateDTO.Name;
+            field.FieldType = fieldUpdateDTO.FieldType;
+            field.FloorType = fieldUpdateDTO.FloorType;
+            field.HourPrice = fieldUpdateDTO.HourPrice;
+            field.Ilumination = fieldUpdateDTO.Ilumination;
+            field.Covered = fieldUpdateDTO.Covered;
             await _fieldRepository.SaveAsync();
             return FieldMapper.ToFieldDetailResponseDTO(field);
         }
@@ -169,29 +186,108 @@ namespace ReservasCanchas.BusinessLogic
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
+            var slotsComplex = complex.TimeSlots;
+
             var slots = updateTimeSlotFieldRequestDTO.TimeSlotsField;
+            /*
             if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
             {
                 throw new BadRequestException($"No se pueden repetir dias de la semana en los horarios del complejo");
             }
+            */
 
-            //Falta chequear si los time slots no tienen reservas asociadas antes de permitir la actualizacion
-            //Tenemos q traer las reservas aprobadas pero no completadas y ver si tienen alguna en los dias y horarios que se quieren modificar
-            //Y si la modificacion los dejaria fuera del rango.
-            foreach (var slot in slots)
+            if (slots.Count != 7)
+                throw new BadRequestException("Debes enviar exactamente 7 franjas horarias (una por día)");
+
+            if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
+                throw new BadRequestException("Los días de la semana no pueden repetirse");
+
+            //aca hay que cheachear que el time slot sea dentro del horario de apertura y cierre del complejo
+            foreach (var fieldSlot in slots)
             {
-                if (slot.EndTime <= slot.InitTime)
-                {
-                    throw new BadRequestException($"El horario de fin debe ser mayor al horario de inicio para el día {slot.WeekDay}");
-                }
-                var existing = field.TimeSlotsField.First(ts => ts.WeekDay == slot.WeekDay);
-                existing.InitTime = slot.InitTime;
-                existing.EndTime = slot.EndTime;
-            }
 
+                var day = fieldSlot.WeekDay;
+
+                var complexSlot = complex.TimeSlots.FirstOrDefault(s => s.WeekDay == day);
+                if (complexSlot == null)
+                {
+                    throw new BadRequestException(
+                        $"El complejo no tiene horario configurado para el día {day}"
+                    );
+                }
+
+                var cInit = complexSlot.InitTime.ToTimeSpan();
+                var cEnd = complexSlot.EndTime.ToTimeSpan();
+                var fInit = fieldSlot.InitTime.ToTimeSpan();
+                var fEnd = fieldSlot.EndTime.ToTimeSpan();
+
+                // cerrado = init == end
+                bool complexClosed = cInit == cEnd;
+                bool fieldClosed = fInit == fEnd;
+
+                // si el complejo está cerrado, la cancha también debe estarlo
+                if (complexClosed)
+                {
+                    if (!fieldClosed)
+                    {
+                        throw new BadRequestException(
+                            $"La cancha debe estar cerrada el día {day} porque el complejo está cerrado"
+                        );
+                    }
+                    continue;
+                }
+
+                // si la cancha está cerrada y el complejo abierto → OK
+                if (fieldClosed)
+                    continue;
+
+                // normalización de cierre post medianoche
+                if (cEnd <= cInit)
+                    cEnd = cEnd.Add(TimeSpan.FromDays(1));
+
+                if (fEnd <= fInit)
+                    fEnd = fEnd.Add(TimeSpan.FromDays(1));
+
+                // validaciones de rango
+                if (fInit < cInit)
+                {
+                    throw new BadRequestException(
+                        $"La cancha el día {day} no puede abrir antes que el complejo ({fieldSlot.InitTime} < {complexSlot.InitTime})"
+                    );
+                }
+
+                if (fEnd > cEnd)
+                {
+                    throw new BadRequestException(
+                        $"La cancha el día {day} no puede cerrar después que el complejo ({fieldSlot.EndTime} > {complexSlot.EndTime})"
+                    );
+                }
+
+            }
+            foreach (var slotDto in slots)
+            {
+                var existing = field.TimeSlotsField.First(ts => ts.WeekDay == slotDto.WeekDay);
+                existing.InitTime = slotDto.InitTime;
+                existing.EndTime = slotDto.EndTime;
+            }
             await _fieldRepository.SaveAsync();
             return FieldMapper.ToFieldDetailResponseDTO(field);
+        }
 
+        public async Task<FieldDetailResponseDTO> UpdateFieldStateAsync(int fieldId, UpdateFieldStateRequestDTO updateFieldStatusRequestDTO)
+        {
+            var field = await GetFieldWithRelationsOrThrow(fieldId);
+            if(field.FieldState == updateFieldStatusRequestDTO.FieldState)
+            {
+                throw new BadRequestException("El estado de la cancha es el mismo que se quiere actualizar");
+            }
+            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
+            var userId = _authService.GetUserId();
+            _complexBusinessLogic.ValidateOwnerShip(complex, userId);
+            _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
+            field.FieldState = updateFieldStatusRequestDTO.FieldState;
+            await _fieldRepository.SaveAsync();
+            return FieldMapper.ToFieldDetailResponseDTO(field);
         }
 
         public async Task DeleteFieldAsync(int fieldId)
@@ -286,7 +382,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public void ValidateStatusField(Field field)
         {
-            if (field.FieldState == FieldState.Deshabilitado)
+            if (field.FieldState == FieldState.Deshabilitada)
                 throw new BadRequestException($"La cancha con id {field.Id} esta inhabilitada");
         }
     }

@@ -22,7 +22,6 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpGet]
-        [Authorize]// (Roles = "Usuario")
         public async Task<ActionResult<List<ServiceResponseDTO>>> GetAllServices()
         {
             var servicesDtos = await _serviceBusinessLogic.GetAllServicesAsync();
@@ -31,7 +30,6 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Usuario")]
         public async Task<ActionResult<ServiceResponseDTO>> GetServiceById([FromRoute] int id)
         {
             var serviceDto = await _serviceBusinessLogic.GetServiceByIdAsync(id);

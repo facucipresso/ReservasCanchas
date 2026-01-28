@@ -1,0 +1,290 @@
+<p-toast position="top-center"></p-toast>
+<div class="complex-wrapper">
+  <div class="complex-card">
+    <h1>Formulario de registro de complejo</h1>
+    <form [formGroup]="createComplexForm" (ngSubmit)="onSubmit()">
+      <!-- INFORMACIÓN BÁSICA -->
+      <h2 class="section-title">Información básica</h2>
+      <div class="form-grid">
+        <div>
+          <input
+            pInputText
+            placeholder="Nombre del complejo"
+            formControlName="name"
+          />
+          @if(createComplexForm.get('name')?.touched &&
+          createComplexForm.get('name')?.invalid){
+          @if(createComplexForm.get('name')?.errors?.['required']){
+          <small style="color: red; display: block;"
+            >El nombre del complejo es obligatorio</small
+          >
+          } }
+        </div>
+        <div>
+          <input
+            pInputText
+            placeholder="Teléfono"
+            formControlName="phone"
+            inputmode="numeric"
+          />
+          @if(createComplexForm.get('phone')?.touched &&
+          createComplexForm.get('phone')?.invalid){
+          @if(createComplexForm.get('phone')?.errors?.['required']){
+          <small style="color: red;"
+            >El teléfono del complejo es obligatorio</small
+          >
+          } @if(createComplexForm.get('phone')?.errors?.['pattern']){
+          <small style="color: red"
+            >Solo puedes ingresar numeros para el teléfono</small
+          >
+          } }
+        </div>
+        <div class="container-textarea">
+          <textarea
+            pTextarea
+            rows="5"
+            placeholder="Descripción"
+            formControlName="description"
+          ></textarea>
+          @if(createComplexForm.get('description')?.touched &&
+          createComplexForm.get('description')?.invalid){
+          @if(createComplexForm.get('description')?.errors?.['required']){
+          <small style="color: red"
+            >La descripción del complejo es obligatorio</small
+          >
+          } }
+        </div>
+
+        <div>
+          <p-select
+            formControlName="province"
+            [options]="provinces"
+            placeholder="Provincia"
+            style="width: 100%"
+          ></p-select>
+          @if(createComplexForm.get('province')?.touched &&
+          createComplexForm.get('province')?.invalid){
+          @if(createComplexForm.get('province')?.errors?.['required']){
+          <small style="color: red; display: block"
+            >La provincia es obligatoria</small
+          >
+          } }
+        </div>
+        <div>
+          <p-autocomplete
+            placeholder="Localidad"
+            formControlName="locality"
+            [suggestions]="filteredLocalities"
+            (completeMethod)="search($event)"
+            fluid
+            (onBlur)="validateLocality()"
+            (onBlur)="createComplexForm.get('locality')?.markAsTouched()"
+            emptyMessage="No se encontraron resultados"
+          >
+          </p-autocomplete>
+          @if(createComplexForm.get('locality')?.touched &&
+          createComplexForm.get('locality')?.invalid){
+          @if(createComplexForm.get('locality')?.errors?.['required']){
+          <small style="color: red; display: block"
+            >La localidad es obligatoria</small
+          >
+          } }
+        </div>
+        <div>
+          <input pInputText placeholder="Calle" formControlName="street" />
+          @if(createComplexForm.get('street')?.touched &&
+          createComplexForm.get('street')?.invalid){
+          @if(createComplexForm.get('street')?.errors?.['required']){
+          <small style="color: red">La calle es obligatoria</small>
+          } }
+        </div>
+
+        <div>
+          <input
+            pInputText
+            placeholder="Altura"
+            formControlName="number"
+            inputmode="numeric"
+          />
+          @if(createComplexForm.get('number')?.touched &&
+          createComplexForm.get('number')?.invalid){
+          @if(createComplexForm.get('number')?.errors?.['required']){
+          <small style="color: red">La altura es obligatoria</small>
+          } }
+        </div>
+        <div>
+          <p-inputNumber
+            formControlName="percentageSign"
+            placeholder="Seña requerida (%)"
+          ></p-inputNumber>
+          @if(createComplexForm.get('percentageSign')?.touched &&
+          createComplexForm.get('percentageSign')?.invalid){
+          @if(createComplexForm.get('percentageSign')?.errors?.['required']){
+          <small style="color: red; display: block"
+            >El porcentaje de seña es obligatorio</small
+          >
+          } @if(createComplexForm.get('percentageSign')?.errors?.['min'] ||
+          createComplexForm.get('percentageSign')?.errors?.['max']){
+          <small style="color: red; display: block">
+            El porcentaje de seña debe estar entre 0 y 100
+          </small>
+          } }
+        </div>
+        <div>
+          <p-select
+            formControlName="startIlumination"
+            [options]="availableHours"
+            placeholder="Horario inicio de iluminación"
+            style="width: 100%"
+          >
+          </p-select>
+          @if(createComplexForm.get('startIlumination')?.touched &&
+          createComplexForm.get('startIlumination')?.invalid){
+          @if(createComplexForm.get('startIlumination')?.errors?.['required']){
+          <small style="color: red; display: block"
+            >El horario de inicio de iluminación es obligatorio</small
+          >
+          } }
+        </div>
+        <div>
+          <p-inputNumber
+            formControlName="aditionalIlumination"
+            placeholder="Aumento por iluminación (%)"
+          ></p-inputNumber>
+          @if(createComplexForm.get('aditionalIlumination')?.touched &&
+          createComplexForm.get('aditionalIlumination')?.invalid){
+          @if(createComplexForm.get('aditionalIlumination')?.errors?.['required']){
+          <small style="color: red; display: block"
+            >El porcentaje de aumento por iluminación es obligatorio</small
+          >
+          } }
+        </div>
+        <div>
+          <input
+            pInputText
+            formControlName="cbu"
+            maxlength="22"
+            placeholder="CBU (22 dígitos)"
+            inputmode="numeric"
+          />
+          @if(createComplexForm.get('cbu')?.touched &&
+          createComplexForm.get('cbu')?.invalid){
+          @if(createComplexForm.get('cbu')?.errors?.['required']){
+          <small style="color: red">El CBU es obligatorio</small>
+          } @if(createComplexForm.get('cbu')?.errors?.['pattern']){
+          <small style="color: red"
+            >Solo puedes ingresar numeros para el CBU</small
+          >
+          } @if(createComplexForm.get('cbu')?.errors?.['maxlength'] ||
+          createComplexForm.get('cbu')?.errors?.['minlength']){
+          <small style="color: red"
+            >El CBU debe tener exactamente 22 dígitos</small
+          >
+          } }
+        </div>
+      </div>
+      <hr />
+      <!-- IMAGEN -->
+      <h2 class="section-title">Imágen del complejo</h2>
+
+      <div class="file-field">
+        <div style="display: flex; gap: 10px">
+          <input
+            type="file"
+            #fu
+            accept="image/png,image/jpeg,image/jpg"
+            hidden
+            (change)="onFileSelected($event)"
+          />
+
+          <p-button
+            icon="pi pi-upload"
+            label="Subir imagen del complejo"
+            (click)="fu.click()"
+          ></p-button>
+          @if (previewUrl) {
+          <p-button
+            icon="pi pi-times"
+            severity="danger"
+            (click)="removeImage()"
+            label="Eliminar imagen"
+          ></p-button>
+          }
+        </div>
+        @if(previewUrl){
+        <div class="image-preview">
+          <img [src]="previewUrl" alt="Preview" />
+        </div>
+        } @if (imageError) {
+        <small style="color: red; display: block">
+          {{ imageError }}
+        </small>
+        }
+      </div>
+      <hr />
+      <!-- SERVICIOS -->
+      <h2 class="section-title">Servicios del complejo</h2>
+
+      <div class="services-grid">
+        @for(service of services; track service.id){
+        <div>
+          <p-checkbox
+            [value]="service"
+            formControlName="services"
+            binary="false"
+          ></p-checkbox>
+          <span> {{ service.serviceDescription }}</span>
+        </div>
+        }
+      </div>
+      <hr />
+      <!-- FRANJAS HORARIAS -->
+      <h2 class="section-title">Franjas horarias del complejo</h2>
+      <p style="margin-bottom: 5px">
+        *Coloca el mismo horario de apertura y cierre para indicar que el
+        complejo esta cerrado ese día.
+      </p>
+      <div class="day-slots">
+        @for (slot of timeSlotsArray.controls; track slot) {
+        <div class="day-row" [formGroup]="slot">
+          <label class="day-label">{{
+            slot.get("weekDay")?.value | titlecase
+          }}</label>
+
+          <p-select
+            formControlName="initTime"
+            [options]="availableHours"
+            placeholder="Apertura"
+          >
+          </p-select>
+          <p-select
+            formControlName="endTime"
+            [options]="availableHours"
+            placeholder="Cierre"
+          >
+          </p-select>
+          @if((slot.get('initTime')?.touched && slot.get('initTime')?.invalid)
+          || (slot.get('endTime')?.touched && slot.get('endTime')?.invalid) ){
+          <div class="time-error">El horario de apertura y cierre son requeridos</div>
+          } 
+        </div>
+        }
+        @if(invalidSchedulesError){
+         <small style="color: red; display: block">
+          {{ invalidSchedulesError }}
+        </small>
+        }
+      </div>
+      <hr />
+      <!-- BOTÓN ENVIAR -->
+      <div class="submit-wrapper">
+        <p-button
+          label="Crear complejo"
+          type="submit"
+          class="submit-btn"
+          [disabled]="createComplexForm.invalid"
+        ></p-button>
+      </div>
+    </form>
+  </div>
+</div>
