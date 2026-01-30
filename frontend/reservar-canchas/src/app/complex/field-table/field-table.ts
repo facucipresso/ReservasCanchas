@@ -26,6 +26,7 @@ export class FieldTable implements OnInit, OnChanges{
   @Output() editField = new EventEmitter<FieldModel>();
   @Output() deleteField = new EventEmitter<number>();
   @Output() reserveField = new EventEmitter<{field:FieldModel, hour:string}>();
+  @Output() recurringBlockField = new EventEmitter<FieldModel>();
   dayIndex!: number;
   reservationsForField: ReservationsForField[] = [];
   selectedHours: {[fieldId:number]:any} = {};
@@ -57,6 +58,10 @@ export class FieldTable implements OnInit, OnChanges{
           console.error('Error al cargar las reservas para las canchas:', err);
         }
       });
+  }
+
+  public refreshReservations() {
+    this.loadReservations(this.selectedDate);
   }
 
   getSelectableHours(fieldId: number, init: string, end: string) {
@@ -139,5 +144,10 @@ export class FieldTable implements OnInit, OnChanges{
 
   onReserve(field:FieldModel, hour:string){
     this.reserveField.emit({field, hour});
+  }
+
+  onRecurringBlock(field: FieldModel) {
+    console.log('Bloqueo recurrente para la cancha con ID:', field);
+    this.recurringBlockField.emit(field);
   }
 }

@@ -1,0 +1,67 @@
+/* Contenedor principal del formulario */
+.recblock-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Espacio vertical entre la fila de inputs, el textarea y los botones */
+  padding-top: 0.5rem;
+}
+
+/* Fila superior: Día, Hora Inicio, Hora Fin */
+.recblock-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas de igual tamaño */
+  gap: 1rem; /* Espacio horizontal entre los campos */
+  align-items: start;
+}
+
+/* Contenedor individual de cada campo (Label + Input) */
+.recblock-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Espacio entre el label y el p-select */
+}
+
+/* Estilo para los Labels */
+.label {
+  font-weight: 600;
+  color: #374151; /* Gris oscuro profesional */
+  font-size: 0.875rem;
+}
+
+/* Ajustes para el Textarea */
+.textarea {
+  width: 100%;
+  resize: none; /* Evita que el usuario rompa el diseño redimensionando */
+  min-height: 100px;
+}
+
+/* Contenedor de los botones */
+.recblock-actions {
+  display: flex;
+  justify-content: flex-end; /* Alinea los botones a la derecha */
+  gap: 0.75rem; /* Espacio entre cancelar y guardar */
+  margin-top: 0.5rem;
+}
+
+/* --- AJUSTES ESPECÍFICOS PARA PRIMENG --- */
+
+/* Es necesario forzar el ancho del componente p-select de PrimeNG 
+   para que ocupe todo el espacio de su columna.
+   Nota: Dependiendo de tu configuración de ViewEncapsulation, 
+   quizás necesites usar ::ng-deep 
+*/
+::ng-deep .full-width {
+  width: 100%;
+}
+
+::ng-deep .full-width .p-select {
+  width: 100%;
+}
+
+/* --- RESPONSIVE (Opcional) --- */
+/* Si la pantalla es muy chica, ponemos los campos uno debajo del otro */
+@media (max-width: 600px) {
+  .recblock-row {
+    grid-template-columns: 1fr; /* 1 sola columna */
+  }
+}

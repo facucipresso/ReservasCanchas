@@ -2,6 +2,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FieldModel } from '../models/field.model';
+import { RecBlockRequestModel } from '../models/reqblockrequest.model';
 
 @Injectable({
   providedIn: 'root',
@@ -36,5 +37,13 @@ export class Field {
 
   deleteField(fieldId:number):Observable<void>{
     return this.http.delete<void>(`${this.apiBaseUrl}/${fieldId}`);
+  }
+
+  addRecurringBlock(fieldId:number, block:RecBlockRequestModel):Observable<FieldModel>{
+    return this.http.post<FieldModel>(`${this.apiBaseUrl}/${fieldId}/recurring-block`, block);
+  }
+
+  deleteRecurringBlock(fieldId:number, blockId:number):Observable<FieldModel>{
+    return this.http.delete<FieldModel>(`${this.apiBaseUrl}/${fieldId}/recurring-block/${blockId}`);
   }
 }

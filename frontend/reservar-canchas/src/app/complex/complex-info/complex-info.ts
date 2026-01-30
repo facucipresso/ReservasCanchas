@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ComplexModel } from '../../models/complex.model';
 import { CommonModule } from '@angular/common';
 import { Message } from 'primeng/message';
@@ -21,7 +21,9 @@ export class ComplexInfo {
   @Output() editField = new EventEmitter<FieldModel>();
   @Output() deleteField = new EventEmitter<number>();
   @Output() reserveField = new EventEmitter<{field:FieldModel, hour:string}>();
+  @Output() recurringBlockField = new EventEmitter<FieldModel>();
 
+  @ViewChild(FieldTable) fieldTableComponent!: FieldTable;
   backendUrl = 'https://localhost:7004';
   
   onEditField(field: FieldModel) {
@@ -34,5 +36,13 @@ export class ComplexInfo {
 
   onReserveField( event:{field:FieldModel, hour:string}){
     this.reserveField.emit(event);
+  }
+
+  onRecurringBlockField(field: FieldModel){
+    this.recurringBlockField.emit(field);
+  }
+
+  public refreshFieldReservations() {
+    this.fieldTableComponent.refreshReservations();
   }
 }

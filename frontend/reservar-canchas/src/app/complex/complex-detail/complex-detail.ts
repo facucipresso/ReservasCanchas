@@ -21,11 +21,12 @@ import { Fieldform } from '../fieldform/fieldform';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Reservation } from '../../services/reservation';
 import { ReservationProcessRequest } from '../../models/reservation/reservationprocessrequest.model';
+import { Recblock } from '../../recblock/recblock';
 type Mode = 'create' | 'edit';
 @Component({
   selector: 'app-complex-detail',
   imports: [ToastModule,ComplexInfo,ProgressSpinnerModule,DatePickerModule,FormsModule,
-     CommonModule, Dialog, EditcomplexForm, Fieldform, ConfirmDialog],
+     CommonModule, Dialog, EditcomplexForm, Fieldform, ConfirmDialog, Recblock],
   templateUrl: './complex-detail.html',
   styleUrl: './complex-detail.css',
   providers:[ConfirmationService]
@@ -44,9 +45,10 @@ export class ComplexDetail implements OnInit{
 
   visibleEditComplexModal = false;
   visibleFieldFormModal = false;
+  visibleRecBlockModal = false;
 
   fieldFormMode:Mode = 'create';
-  selectedField?: FieldModel;
+  selectedField!: FieldModel;
   constructor(private complexService:Complex, private route:ActivatedRoute, private messageService:MessageService,
      private authService: Auth, private router:Router, private fieldService:Field, 
      private servicesComplex:Complexservices, private confirmationService: ConfirmationService,
@@ -152,7 +154,7 @@ export class ComplexDetail implements OnInit{
 
   onAddField() {
     this.fieldFormMode = 'create';
-    this.selectedField = undefined;
+    this.selectedField = undefined!;
     this.visibleFieldFormModal = true;
   }
 
@@ -526,5 +528,11 @@ export class ComplexDetail implements OnInit{
         })
       }
     });
+  }
+
+  onRecurringBlockField(field: FieldModel){
+    this.selectedField = field;
+    this.visibleRecBlockModal = true;
+    console.log('Solicitud de bloqueo recurrente para la cancha: ', field);
   }
 }

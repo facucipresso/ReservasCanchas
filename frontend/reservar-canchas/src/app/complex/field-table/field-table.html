@@ -66,9 +66,13 @@
                 <i class="pi pi-pencil" pButtonIcon></i>
                 <span pButtonLabel style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500;" >Editar</span>
               </button>
-               <button pButton (click)="onDelete(field.id)">
+               <button pButton (click)="onDelete(field.id)" style="margin-right: 15px;">
                 <i class="pi pi-trash" pButtonIcon></i>
                 <span pButtonLabel style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500;" >Eliminar</span>
+              </button>
+              <button pButton (click)="onRecurringBlock(field)">
+                <i class="pi pi-ban" pButtonIcon></i>
+                <span pButtonLabel style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500;" >Bloqueo</span>
               </button>
             }
           </td>

@@ -8,6 +8,7 @@
 }@else{
 <div class="complex-detail-container" [class.disabled]="complex.state === 'Deshabilitado'">
     <app-complex-info 
+    #infoComponent
     [complex]="complex" 
     [isAdmin]="isAdmin" 
     [selectedDate]="selectedDate" 
@@ -15,6 +16,7 @@
     (editField)="onEditField($event)" 
     (deleteField)="confirmDeleteField($event)"
     (reserveField)="onReserveField($event)"
+    (recurringBlockField)="onRecurringBlockField($event)"
     >
         @if(isAdmin){
           <button pButton (click)="showDialogComplex()" edit-complex-button>
@@ -51,6 +53,21 @@
         }
     </app-complex-info>
 </div>
+<p-dialog
+  header="Bloqueos recurrentes"
+  [modal]="true"
+  [(visible)]="visibleRecBlockModal"
+  [style]="{ width: '60%', minHeight: '90%', color: '#111' }"
+  [draggable]="false"
+  [resizable]="false"
+  [focusOnShow]="false">
+
+  <app-recblock 
+    *ngIf="visibleRecBlockModal"
+    [field]="selectedField"
+    (blocksUpdated)="infoComponent.refreshFieldReservations()"
+  ></app-recblock>
+</p-dialog>
 }
 
 <p-dialog
@@ -92,5 +109,6 @@
   (updateState)="updateStateField($event)"
 ></app-fieldform>
 </p-dialog>
+
 
 <p-confirmdialog />
