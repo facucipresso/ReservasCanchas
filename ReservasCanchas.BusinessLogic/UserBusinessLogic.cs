@@ -74,6 +74,27 @@ namespace ReservasCanchas.BusinessLogic
             return response;
         }
 
+        public async Task<List<UserResponseWithRoleDTO>> GetLastSixUsersWithRoleAsync()
+        {
+            var users = await _userRepo.GetLastSixUsersAsync(); 
+            var response = new List<UserResponseWithRoleDTO>(); 
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault() ?? "Sin rol";
+                response.Add(UserMapper.ToUsusarioWithRoleResponseDTO(user, role));
+            }
+
+            return response;
+        }
+
+        public async Task<int> GetTotalUsersAsync()
+        {
+            return await _userRepo.GetTotalUsersAsync();
+        }
+
+
         // Esto lo voy a sacar porque no quiero que se cree un usuario por otro lado que no sea el account controller
         /*
         public async Task<UserResponseDTO> CreateUserAsync(UserRequestDTO usuarioRequest)
@@ -98,6 +119,7 @@ namespace ReservasCanchas.BusinessLogic
         }
         */
 
+        /* cambio esto por el metodo de abajo
         public async Task<UserResponseDTO> UpdateUserAsync(int id, UserRequestDTO userDTO)
         {
             var user = await _userRepo.GetUserByIdAsync(id);
@@ -114,21 +136,64 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException($"Ya existe un usuario con el teléfono {userDTO.Phone}");
 
 
+
             user.Name = userDTO.Name;
             user.LastName = userDTO.LastName;
-            user.Email = userDTO.Email;
             user.PhoneNumber = userDTO.Phone;
 
-            // Update con Identity
+             Email → SIEMPRE con UserManager
+            var emailResult = await _userManager.SetEmailAsync(user, userDTO.Email);
+            if (!emailResult.Succeeded)
+            {
+                var errors = string.Join(" | ", emailResult.Errors.Select(e => e.Description));
+                throw new BadRequestException(errors);
+            }
+
+             Update con Identity
             var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
+            if (!result.Succeeded) 
+            {
                 throw new BadRequestException($"No se pudo actualizar correctamente el usuario {user.UserName}");
 
+                agrego estas lineas para debug
+                var errors = string.Join(" | ", result.Errors.Select(e => e.Description));
+                
+                throw new BadRequestException(errors);                
+            }
 
             //await _userRepo.SaveAsync();
             return UserMapper.ToUsusarioResponseDTO(user);
         }
+        */
 
+        public async Task<UserResponseDTO> UpdateUserAsync(int id, UserRequestDTO userDTO)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                throw new NotFoundException($"Usuario con id {id} no encontrado");
+
+            var userEmailOwner = await _userManager.FindByEmailAsync(userDTO.Email);
+            if (userEmailOwner != null && userEmailOwner.Id != id)
+                throw new BadRequestException($"Ya existe un usuario con el email {userDTO.Email}");
+
+            if (await _userRepo.ExistByPhoneExceptIdAsync(userDTO.Phone, id))
+                throw new BadRequestException($"Ya existe un usuario con el teléfono {userDTO.Phone}");
+
+            user.Name = userDTO.Name;
+            user.LastName = userDTO.LastName;
+            user.PhoneNumber = userDTO.Phone;
+
+            var emailResult = await _userManager.SetEmailAsync(user, userDTO.Email);
+            if (!emailResult.Succeeded)
+                throw new BadRequestException(string.Join(" | ", emailResult.Errors.Select(e => e.Description)));
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                throw new BadRequestException(string.Join(" | ", result.Errors.Select(e => e.Description)));
+
+            return UserMapper.ToUsusarioResponseDTO(user);
+        }
+        /*
         public async Task<User> UpdateUserRolAsync(int userId, string newRol)
         {
             var user = await _userRepo.GetUserByIdAsync(userId);
@@ -146,6 +211,27 @@ namespace ReservasCanchas.BusinessLogic
 
             return user;
         }
+        */
+
+        public async Task<User> UpdateUserRolAsync(int userId, string newRol)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null)
+                throw new NotFoundException($"No se encontró el usuario con id {userId}");
+
+            if (!await _roleManager.RoleExistsAsync(newRol))
+                throw new BadRequestException($"El rol {newRol} no existe");
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Any())
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+            await _userManager.AddToRoleAsync(user, newRol);
+
+            return user;
+        }
+
 
         public async Task BlockUserAsync(int id)
         {

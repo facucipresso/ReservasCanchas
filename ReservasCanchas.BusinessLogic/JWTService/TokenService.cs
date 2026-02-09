@@ -85,5 +85,15 @@ namespace ReservasCanchas.BusinessLogic.JWTService
             //aca lo devuelvo en formato string
             return tokenHandler.WriteToken(token);
         }
+
+        public async Task<string> CreateTokenByUserId(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null)
+                throw new Exception($"Usuario con id {userId} no encontrado");
+
+            return await CreateToken(user);
+        }
     }
 }

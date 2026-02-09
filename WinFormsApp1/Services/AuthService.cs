@@ -24,7 +24,7 @@ namespace WinFormsApp1.Services
         {
             var request = new LoginRequest
             {
-                UserName = username,
+                Username = username,
                 Password = password
             };
 
@@ -40,12 +40,20 @@ namespace WinFormsApp1.Services
                 }
 
                 // si tengo respuesta la deserealizo
+                /*
                 var loginResponse = await response.Content.ReadFromJsonAsync<RespGeneric<LoginResponse>>();
 
                 if (loginResponse?.Value == null)
                     throw new InvalidOperationException("La API no devolvió un token válido.");
 
                 var loginData = loginResponse.Value;
+                */
+                var loginData = await response.Content
+                   .ReadFromJsonAsync<LoginResponse>();
+
+                if (loginData == null || string.IsNullOrEmpty(loginData.Token))
+                    throw new InvalidOperationException("La API no devolvió un token válido.");
+
 
                 Session.SetSession(new LoginResponse
                 {

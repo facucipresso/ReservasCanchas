@@ -42,13 +42,17 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserRequestDTO>> UpdateUser([FromRoute] int id, [FromBody] UserRequestDTO userDto)
+        public async Task<ActionResult<UserResponseDTO>> UpdateUser([FromRoute] int id, [FromBody] UserRequestDTO userDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             var userUpdated = await _usuarioBusinessLogic.UpdateUserAsync(id, userDto);
+            if(userUpdated == null)
+            {
+                return BadRequest("Error al actualizar el usuario (Identity)");
+            }
             return Ok(userUpdated);
         }
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Account;
+using ReservasCanchas.BusinessLogic.Dtos.Dashboard;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.JWTService;
 using ReservasCanchas.Domain.Entities;
@@ -54,6 +55,9 @@ namespace ReservasCanchas.Controller.Controllers
             var userLoged = await _accountBusinessLogic.LoginAsync(loginDto);
             return Ok(userLoged);
         }
+
+
+
 
 
     }

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserInfoModel } from '../models/user/userinfo.model';
+import { userRequestModel } from '../models/user/userRequest.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,19 @@ export class User {
 
   constructor(private http:HttpClient){}
 
-  getUserInfoById(userId:string):Observable<UserInfoModel>{
+  /*
+    getUserInfoById(userId:string):Observable<UserInfoModel>{
     return this.http.get<UserInfoModel>(`${this.apiBaseUrl}/${userId}`);
+  }
+  */
+
+  //le saco el tipado
+  getUserInfoById(userId:string){
+    return this.http.get<any>(`${this.apiBaseUrl}/${userId}`);
+  }
+
+  // servicio agregado por facu
+  updateUserInfoById(userId: string, userUpdated : userRequestModel) : Observable<UserInfoModel>{
+    return this.http.put<UserInfoModel>(`${this.apiBaseUrl}/${userId}`, userUpdated);
   }
 }

@@ -67,8 +67,9 @@ namespace ReservasCanchas.Controller.Controllers
             var created = await _complexBusinessLogic.CreateComplexAsync(requestCreateDTO, uploadPath);
             
             var userId = _authService.GetUserId();
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            var newToken = await _tokenService.CreateToken(user);
+            //var user = await _userManager.FindByIdAsync(userId.ToString());
+            //var newToken = await _tokenService.CreateToken(user);
+            var newToken = await _tokenService.CreateTokenByUserId(userId);
 
             return CreatedAtAction(nameof(GetComplexById), new { id = created.Id }, new{complex = created,token = newToken});      
         }
@@ -110,21 +111,23 @@ namespace ReservasCanchas.Controller.Controllers
             return NoContent();
         }
 
-        //notifico la aprobacion del complejo
+        /*notifico la aprobacion del complejo
         [HttpPatch("approveComplex")]
         public async Task<IActionResult> ApproveComplex([FromBody] AproveComplexRequestDTO request)
         {
             await _complexBusinessLogic.ApproveComplexAsync(request);
             return NoContent();
         }
+        */
 
-        //notifico el rechazo del complejo
+        /*notifico el rechazo del complejo
         [HttpPatch("rejectComplex")]
         public async Task<IActionResult> RejectComplex([FromBody] RejectComplexRequestDTO request)
         {
             await _complexBusinessLogic.RejectComplexAsync(request); 
             return NoContent();
         }
+        */
 
         [HttpGet("getComplexOwner/{idComplex}")]
         public async Task<ActionResult<ComplexOwnerDTO>> GetComplexOwner(int idComplex)

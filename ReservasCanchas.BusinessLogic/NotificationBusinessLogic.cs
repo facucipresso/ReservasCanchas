@@ -65,6 +65,12 @@ namespace ReservasCanchas.BusinessLogic
             notification.IsRead = true;
             await _notificationRepository.SaveAsync();
         }
+        public async Task<int> GetNumberOfNotificationsNoReaded()
+        {
+            return await _notificationRepository.GetNumberOfNotificationsNoReaded();
+
+        }
+
 
     }
 }

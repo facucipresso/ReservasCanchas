@@ -69,5 +69,21 @@ namespace ReservasCanchas.DataAccess.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<int> GetNumberOfReviews()
+        {
+            var numberOfReviews = await _context.Review.CountAsync();
+            return numberOfReviews;
+        }
+
+        public async Task<List<Review>> GetLastFourReviewAsync()
+        {
+            var lastFourReviews = _context.Review
+                .OrderByDescending(e => e.CreationDate)
+                .Take(4)
+                .ToList();
+
+            return lastFourReviews;
+        }
+
     }
 }

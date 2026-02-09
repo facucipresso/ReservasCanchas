@@ -20,6 +20,8 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             {
                 Id = user.Id,
                 UserName = user.UserName,
+                Name = user.Name,
+                LastName = user.LastName,
                 Email = user.Email,
                 Phone = user.PhoneNumber,
                 Status = user.Status

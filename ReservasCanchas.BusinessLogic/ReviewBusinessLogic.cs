@@ -72,6 +72,23 @@ namespace ReservasCanchas.BusinessLogic
             return reviews.Select(ReviewMapper.ToReviewResponseDTO).ToList();
         }
 
+        public async Task<List<ReviewResponseDTO>> GetLastFourReviewsAsync()
+        {
+            var userRol = _authService.GetUserRole();
+
+            if (userRol != "SuperAdmin")
+                throw new UnauthorizedAccessException("No tenés permisos para ver todos los complejos.");
+
+            var reviews = await _reviewRepository.GetLastFourReviewAsync();
+
+            return reviews.Select(ReviewMapper.ToReviewResponseDTO).ToList();
+        }
+
+        public async Task<int> GetNumberOfReviews()
+        {
+            return await _reviewRepository.GetNumberOfReviews();
+        }
+
         public async Task<ReviewResponseDTO> CreateReviewAsync(CreateReviewRequestDTO createReviewDTO)
         {
             var userRol = _authService.GetUserRole();

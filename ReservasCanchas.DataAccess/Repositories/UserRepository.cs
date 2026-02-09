@@ -107,5 +107,24 @@ namespace ReservasCanchas.DataAccess.Repositories
             return await _userManager.Users.AnyAsync(u => u.PhoneNumber == phone && u.Id != id);
         }
 
+        public async Task<int> GetTotalUsersAsync()
+        {
+            var totalUsers = await _context.Users
+                .Where(u => u.Active ==  true)
+                .CountAsync();
+
+            return totalUsers;
+        }
+
+        public async Task<List<User>> GetLastSixUsersAsync()
+        {
+            var totalUsers = _context.Users
+                .Where(u => u.Active == true)
+                .OrderByDescending(e => e.Id)
+                .Take(6)
+                .ToList();
+
+            return totalUsers;
+        }
     }
 }

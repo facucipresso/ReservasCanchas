@@ -1,0 +1,76 @@
+<!-- <p>buzon works!</p> -->
+<!-- <h2>"Mis notificaciones"</h2> -->
+
+<div
+  style="
+    padding-top: 32px;
+  "
+>
+
+  <!-- CARDS DE ESTADÍSTICAS -->
+  <div
+    style="
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    "
+  >
+    <app-stadistic-card
+      title="Notificaciones totales"
+      [value]="totalNotifications"
+      icon="pi pi-inbox"
+    ></app-stadistic-card>
+
+    <app-stadistic-card
+      title="Sin leer"
+      [value]="unreadNotifications"
+      icon="pi pi-bell"
+    ></app-stadistic-card>
+
+    <app-stadistic-card
+      title="Esta semana"
+      [value]="thisWeekNotifications"
+      icon="pi pi-calendar"
+    ></app-stadistic-card>
+
+    <app-stadistic-card
+      title="Requieren accion"
+      [value]="actionRequiredNotifications"
+      icon="pi pi-exclamation-circle"
+    ></app-stadistic-card>
+
+    <app-stadistic-card
+      title="Ultimas 24hs"
+      [value]="todayNotifications"
+      icon="pi pi-history"
+    ></app-stadistic-card>
+  </div>
+
+    <!-- LISTADO DE NOTIFICACIONES -->
+  <div
+    style="
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 1200px;
+      margin: 0 auto;
+    "
+  >
+    <app-notification-panel
+      *ngFor="let notification of notifications"
+      [notification]="notification"
+    ></app-notification-panel>
+  </div>
+
+</div>
+
+<!-- <div style="display: flex; flex-direction: column; gap: 12px;">
+  <app-notification-panel
+    *ngFor="let notification of notifications"
+    [notification]="notification"
+  >
+  </app-notification-panel>
+</div> -->

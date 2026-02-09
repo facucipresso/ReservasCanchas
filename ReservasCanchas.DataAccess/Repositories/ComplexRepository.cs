@@ -158,5 +158,25 @@ namespace ReservasCanchas.DataAccess.Repositories
                                     .Any(r => r.ReservationState == ReservationState.Aprobada)));
         }
 
+        public async Task<int> GetNumberOfComplexEnabled()
+        {
+            var numberOfComplexEnabled = await _context.Complex
+                .Where(c => c.State == ComplexState.Habilitado)
+                .CountAsync();
+
+            return numberOfComplexEnabled;
+        }
+
+        public async Task<List<Complex>> GetLastFiveComplexAsync()
+        {
+            var lastFourComplexes = _context.Complex
+                .Where(c => c.State == ComplexState.Habilitado)
+                .OrderByDescending(e => e.Id)
+                .Take(5)
+                .ToList();
+
+            return lastFourComplexes; 
+        }
+
     }
 }

@@ -78,8 +78,17 @@ export class Header implements OnInit {
             icon: 'pi pi-building',
             command: () => this.goToMyComplexes()
           }] : []),
-          { label: 'Mi buzón', icon: 'pi pi-envelope' },
-          { label: 'Mi perfil', icon: 'pi pi-user' },
+          { label: 'Mi buzón', 
+            icon: 'pi pi-envelope',
+            //agregado por facu para darle funcionalidad a 'buzon'
+            command: () => this.goToBuzon() 
+          },
+          { 
+            label: 'Mi perfil', 
+            icon: 'pi pi-user',
+            //agregado por facu para darle funcionalidad a 'mi perfil'
+            command: () => this.goToProfile()
+          },
           { separator: true },
           {
             label: 'Cerrar sesión',
@@ -151,6 +160,16 @@ export class Header implements OnInit {
   goToMyComplexes(){
     this.router.navigate(['/admin/complexes'])
   }
+
+  //agregado por facu
+  goToProfile() {
+    this.router.navigate(['/profile']);
+  }
+
+    //agregado por facu
+    goToBuzon() {
+      this.router.navigate(['/buzon']);
+    }
 
   logout(){
     this.authService.logout();

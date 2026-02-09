@@ -1,0 +1,63 @@
+   <div class="profile-container">
+
+    <!-- CARD SOLO CON EL FORMULARIO -->
+    <p-card header="Mi perfil">
+      <form [formGroup]="profileForm" class="profile-form">
+  
+        <input
+          pInputText
+          formControlName="username"
+          placeholder="Usuario"
+          class="readonly"
+        />
+  
+        <input
+          pInputText
+          formControlName="email"
+          placeholder="Email"
+        />
+  
+        <input
+          pInputText
+          formControlName="name"
+          placeholder="Nombre"
+        />
+  
+        <input
+          pInputText
+          formControlName="lastName"
+          placeholder="Apellido"
+        />
+  
+        <input
+          pInputText
+          formControlName="phone"
+          placeholder="Teléfono"
+        />
+  
+      </form>
+    </p-card>
+  
+    <!-- BOTONES COMPLETAMENTE FUERA DE LA CARD -->
+    <div class="profile-actions">
+      <button
+        pButton
+        label="Guardar cambios"
+        icon="pi pi-save"
+        class="primary-btn"
+        [disabled]="!canSave"
+        (click)="onSave()"
+      ></button>
+  
+      <button
+        pButton
+        label="Cancelar"
+        class="secondary-btn"
+        outlined="true"
+        (click)="onCancel()"
+      ></button>
+    </div>
+  
+  </div>
+  
+  

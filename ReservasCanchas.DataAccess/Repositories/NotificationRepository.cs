@@ -42,5 +42,14 @@ namespace ReservasCanchas.DataAccess.Repositories
                 .ToListAsync();
             return notifications;
         }
+
+        public async Task<int> GetNumberOfNotificationsNoReaded()
+        {
+            var number = await _context.Notification
+                .Where(n => n.IsRead == false)
+                .CountAsync();
+
+            return number;
+        }
     }
 }
