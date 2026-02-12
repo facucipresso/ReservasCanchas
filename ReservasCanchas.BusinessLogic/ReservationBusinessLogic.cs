@@ -469,14 +469,16 @@ namespace ReservasCanchas.BusinessLogic
                 {
                     UserId = complexAdminId,
                     Title = "Nueva reserva pendiente",
-                    Message = $"El usuario {user.UserName} realizó una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}."
+                    Message = $"El usuario {user.UserName} realizó una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}.",
+                    ReservationId = reservation.Id,
                 };
                 var notificationForUser = new Notification
                 {
                     UserId = userId,
                     Title = "Reserva creada con éxito",
                     Message = $"Has creado una reserva en el complejo {complex.Name}, cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}. " +
-                              $"Tu reserva está pendiente de aprobación por el administrador del complejo."
+                              $"Tu reserva está pendiente de aprobación por el administrador del complejo.",
+                    ReservationId = reservation.Id,
                 };
                 await _notificationBusinessLogic.CreateNotificationAsync(notificationForUser);
                 await _notificationBusinessLogic.CreateNotificationAsync(notificationForAdmin);
@@ -644,7 +646,7 @@ namespace ReservasCanchas.BusinessLogic
                     {
                         UserId = complex.UserId,
                         Title = "Reserva cancelada por usuario",
-                        Message = $"El usuario {user.Name} {user.LastName} canceló la reserva con id {reservation.Id}.",
+                        Message = $"El usuario {user.Name} {user.LastName} canceló la reserva del dia {reservation.Date}, horario {reservation.InitTime} con id {reservation.Id}.",
                         ReservationId = reservation.Id,
                     });
                 }
@@ -822,6 +824,238 @@ namespace ReservasCanchas.BusinessLogic
         }
 
 
+
+
+
+        public async Task ChangeStateReservationAsyncccc(int reservationId, ChangeStateReservationRequestDTO request)
+        {
+            var userRol = _authService.GetUserRole(); 
+            var userId = _authService.GetUserId();
+
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            await _userBusinessLogic.ValidateUserState(user);
+
+            var reservation = await GetReservationWithRelationsOrThrow(reservationId);
+
+            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(reservation.FieldId);
+            _fieldBusinessLogic.ValidateStatusField(field);
+
+            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
+            _complexBusinessLogic.ValidateAccessForBasicUser(complex);
+
+            bool changed = false;
+
+            //  CANCELACIÓN REALIZADA POR EL USUARIO (o admin actuando como usuario)
+            if ((userRol == "Usuario" && userId == reservation.UserId) ||
+                (userRol == "AdminComplejo" && userId == reservation.UserId))
+            {
+                var reservationDateTime = reservation.Date.ToDateTime(reservation.InitTime);
+                var diff = reservationDateTime - DateTime.Now;
+
+                if (reservation.ReservationState == ReservationState.Aprobada &&
+                    request.newState == ReservationState.CanceladoConDevolucion &&
+                    diff.TotalHours >= 4)
+                {
+                    reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = null;
+                    changed = true;
+                }
+                else if (reservation.ReservationState == ReservationState.Aprobada &&
+                         request.newState == ReservationState.CanceladoSinDevolucion)
+                {
+                    reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = null;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    await _notificationBusinessLogic.CreateNotificationAsync(new Notification
+                    {
+                        UserId = complex.UserId,
+                        Title = "Reserva cancelada por usuario",
+                        Message = $"El usuario {user.Name} {user.LastName} canceló la reserva del dia {reservation.Date}, horario {reservation.InitTime} con id {reservation.Id}.",
+                        ReservationId = reservation.Id,
+                    });
+                }
+            }
+
+            // ACCIONES DEL ADMIN DEL COMPLEJO
+            if (userRol == "AdminComplejo" && complex.UserId == userId)
+            {
+                if (reservation.ReservationState == ReservationState.Pendiente &&
+                   request.newState == ReservationState.Aprobada)
+                {
+                    reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = null;
+                    changed = true;
+                } else if(reservation.ReservationState == ReservationState.Pendiente && request.newState == ReservationState.Rechazada)
+                {
+                    if (string.IsNullOrWhiteSpace(request.CancelationReason))
+                        throw new BadRequestException("Para rechazar una reserva debes incluir la razón de rechazo");
+
+                    reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = request.CancelationReason;
+                    changed = true;
+                }
+                else if (reservation.ReservationState == ReservationState.Aprobada &&
+                         request.newState == ReservationState.CanceladoPorAdmin)
+                {
+                    if (string.IsNullOrWhiteSpace(request.CancelationReason))
+                        throw new BadRequestException("Para cancelar una reserva aprobada debes incluir la razón de cancelación");
+
+                    reservation.ReservationState = request.newState;
+                    reservation.CancellationReason = request.CancelationReason;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    if(reservation.ReservationState == ReservationState.Rechazada)
+                    {
+                        await _notificationBusinessLogic.CreateNotificationAsync(new Notification
+                        {
+                            UserId = reservation.UserId,
+                            Title = "Tu reserva fue rechazada",
+                            Message = $"La reserva con id {reservation.Id} fue rechazada por el administrador. " +
+                                      (reservation.CancellationReason != null ?
+                                        $"Motivo: {reservation.CancellationReason}" :
+                                        ""),
+                            ReservationId = reservation.Id,
+                        });
+                    }
+                    else if(reservation.ReservationState == ReservationState.CanceladoPorAdmin)
+                    {
+                        await _notificationBusinessLogic.CreateNotificationAsync(new Notification
+                        {
+                            UserId = reservation.UserId,
+                            Title = "Tu reserva fue cancelada",
+                            Message = $"La reserva con id {reservation.Id} fue cancelada por el administrador. " +
+                                      (reservation.CancellationReason != null ?
+                                        $"Motivo: {reservation.CancellationReason}" :
+                                        ""),
+                            ReservationId = reservation.Id,
+                        });
+                    }
+                    else
+                    {
+                        await _notificationBusinessLogic.CreateNotificationAsync(new Notification
+                        {
+                            UserId = reservation.UserId,
+                            Title = "Tu reserva fue aprobada",
+                            Message = $"La reserva con id {reservation.Id} fue aprobada por el administrador. " +
+                                      (reservation.CancellationReason != null ?
+                                        $"Motivo: {reservation.CancellationReason}" :
+                                        ""),
+                            ReservationId = reservation.Id,
+                        });
+                    }
+
+                }
+            }
+
+            if (!changed)
+                throw new BadRequestException($"No puedes cambiar la reserva al estado {request.newState}");
+
+            await _reservationRepository.SaveAsync();
+        }
+
+        public async Task<ReservationDetailResponseDTO> GetReservationDetailAsync(int reservationId)
+        {
+            var userId = _authService.GetUserId();
+
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            await _userBusinessLogic.ValidateUserState(user);
+
+            var reservation = await GetReservationWithRelationsOrThrow(reservationId);
+
+            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(reservation.FieldId);
+            _fieldBusinessLogic.ValidateStatusField(field);
+
+            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
+            _complexBusinessLogic.ValidateAccessForBasicUser(complex);
+
+            // LA PROPIEDAD TOTALPRICE DE LA RESERVA YA VIENE CON EL ADICIONAL DE LA ILUMINACION(SI ES QUE LO HAY)
+
+            //
+            decimal illuminationAmount = CalculateIlluminationAmount(field, complex, reservation.InitTime);
+            decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalPrice.Value, field.HourPrice);
+
+
+            var response = new ReservationDetailResponseDTO
+            {
+                ReservationId = reservation.Id,
+
+                // contexto
+                IsAdmin = userId == complex.UserId,
+                State = reservation.ReservationState,
+
+                // fecha y hora
+                Date = reservation.Date,
+                InitTime = reservation.InitTime,
+
+                // pago
+                PayType = reservation.PayType,
+                TotalPrice = reservation.TotalPrice ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
+                PricePaid = reservation.PricePaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
+
+                // iluminación
+                HasFieldIllumination = field.Ilumination,
+                PaidIllumination = illuminationAmount > 0,
+                IlluminationAmount = illuminationAmountT,
+
+                // comprobante
+                VoucherUrl = reservation.VoucherPath,
+
+                // usuario
+                UserId = reservation.UserId,
+                UserFullName = $"{reservation.User.Name} {reservation.User.LastName}",
+                UserEmail = reservation.User.Email,
+                UserPhone = reservation.User.PhoneNumber,
+
+                // cancha
+                FieldId = field.Id,
+                FieldName = field.Name,
+                FieldType = field.FieldType.ToString(),
+                FloorType = field.FloorType.ToString(),
+                HourPrice = field.HourPrice,
+
+                // complejo
+                ComplexId = complex.Id,
+                ComplexName = complex.Name,
+                Street = complex.Street,
+                Number = complex.Number,
+                Locality = complex.Locality,
+                Phone = complex.Phone
+            };
+
+            return response;
+        }
+
+        private decimal CalculateIlluminationAmounTt(decimal totalPrice, decimal hourPrice)
+        {
+            var illuminationValue = totalPrice - hourPrice;
+ 
+            return (illuminationValue > 0) ? illuminationValue : 0;
+        }
+
+        private decimal CalculateIlluminationAmount(Field field, Domain.Entities.Complex complex, TimeOnly initTime)
+        {
+            if (!field.Ilumination)
+                return 0;
+
+            TimeOnly globalDayStart = new TimeOnly(8, 0);
+
+            bool isNightTime = initTime >= complex.StartIlumination;
+            bool isEarlyMorningTime = initTime < globalDayStart;
+
+            if (isNightTime || isEarlyMorningTime)
+            {
+                return (field.HourPrice * complex.AditionalIlumination) / 100;
+            }
+
+            return 0;
+        }
 
     }
 }

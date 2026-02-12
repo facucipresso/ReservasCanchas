@@ -6,6 +6,8 @@ import { ReservationProcessRequest } from '../models/reservation/reservationproc
 import { ReservationProcessResponse } from '../models/reservation/reservationprocessresponse.model';
 import { CheckoutInfo } from '../models/reservation/checkoutinfo.model';
 import { CreateReservationResponse } from '../models/reservation/createreservationresponse.model';
+import { ChangeStateReservation } from '../models/ChangeStateReservationRequest.model';
+import { ReservationDetailResponse } from '../models/reservation/ReservationDetailResponse.model';
 import { ReservationForUserResponse } from '../models/reservation/reservationforuserresponse.model';
 
 @Injectable({
@@ -38,6 +40,14 @@ export class Reservation {
 
   deleteProcessReservation(reservationProcessId:string):Observable<void>{
     return this.http.delete<void>(`${this.apiBaseUrl}/process/${reservationProcessId}`);
+  }
+
+  changeStateReservation(reservationId: number, request: ChangeStateReservation): Observable<void>{
+    return this.http.patch<void>(`${this.apiBaseUrl}/${reservationId}/state`, request);
+  }
+
+  getReservationDetail(reservationId: number): Observable<ReservationDetailResponse>{
+    return this.http.get<ReservationDetailResponse>(`${this.apiBaseUrl}/${reservationId}/detail`);
   }
 
 }
