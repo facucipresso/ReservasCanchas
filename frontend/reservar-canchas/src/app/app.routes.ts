@@ -7,6 +7,7 @@ import { CreatecomplexForm } from './createcomplex-form/createcomplex-form';
 import { ReservationCheckout } from './reservation/reservation-checkout/reservation-checkout';
 import { Profile } from './profile/profile';
 import { Buzon } from './buzon/buzon';
+import { ReservationDetail } from './reservation/reservation-detail/reservation-detail';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,10 @@ export const routes: Routes = [
   {
     path: 'reservation/checkout/:id',
     component: ReservationCheckout
+  },
+  {
+    path: 'reservation/:id',
+    component: ReservationDetail
   },
   {
     path: 'profile',

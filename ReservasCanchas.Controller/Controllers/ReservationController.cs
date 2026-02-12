@@ -91,7 +91,7 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpPatch("{reservationId}/state")]
         public async Task<ActionResult> ChangeStateReservation ([FromRoute] int reservationId, ChangeStateReservationRequestDTO request)
         {
-            await _reservationBusinessLogic.ChangeStateReservationAsync(reservationId, request); 
+            await _reservationBusinessLogic.ChangeStateReservationAsyncccc(reservationId, request); 
             return NoContent();
         }
 
@@ -110,6 +110,15 @@ namespace ReservasCanchas.Controller.Controllers
             await _reservationBusinessLogic.RejectReservationAsync(request);
             return NoContent();
         }
+
+        [HttpGet("{reservationId}/detail")]
+        public async Task<ActionResult<ReservationDetailResponseDTO>> GetReservationDetail([FromRoute] int reservationId)
+        {
+            var result = await _reservationBusinessLogic.GetReservationDetailAsync(reservationId);
+
+            return Ok(result);
+        }
+
 
     }
 }

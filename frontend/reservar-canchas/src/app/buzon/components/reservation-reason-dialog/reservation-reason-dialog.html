@@ -1,0 +1,35 @@
+<p-dialog
+  [header]="title"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '22rem' }"
+  (onHide)="onCancel()"
+>
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <input
+      pInputText
+      [(ngModel)]="reason"
+      placeholder="Ingrese la razón"
+      autocomplete="off"
+    />
+
+    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        (click)="onCancel()"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        [label]="confirmLabel"
+        [disabled]="!reason.trim()"
+        (click)="onConfirm()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>
+

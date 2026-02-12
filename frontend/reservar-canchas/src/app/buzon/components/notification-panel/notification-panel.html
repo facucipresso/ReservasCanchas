@@ -69,3 +69,11 @@
   </ng-template>
 
 </p-panel>
+
+<app-reservation-reason-dialog
+  [(visible)]="showReasonDialog"
+  title="Indique la razón del rechazo"
+  confirmLabel="Rechazar"
+  (confirm)="onReasonConfirm($event)"
+  (cancel)="onReasonCancel()"
+></app-reservation-reason-dialog>
