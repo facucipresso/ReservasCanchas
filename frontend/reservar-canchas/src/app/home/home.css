@@ -1,3 +1,12 @@
+:host {
+    --primary-color: #22c55e; 
+    --text-dark: #1f2937;
+    --text-gray: #6b7280;
+    --bg-light: #f9fafb;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --card-hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
 /* GENERAL */
 .home-container {
     display: flex;
@@ -33,7 +42,7 @@
     text-align: center;
     color: white;
     position: relative;
-    z-index: 2; /* por encima del overlay */
+    z-index: 2; 
 }
 
 .hero-content h1 {
@@ -47,114 +56,201 @@
 }
 
 /* ===================== */
-/* STATS SECTION        */
+/* STATS SECTION         */
 /* ===================== */
 
 .stats-section {
-    background: rgb(250,250,250);
-    padding: 4rem 1.5rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.45);
+    background-color: #ffffff;
+    padding: 5rem 1.5rem;
+    /* Eliminamos el border-bottom negro duro */
 }
 
 .stats-container {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: auto;
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2.5rem;
 }
 
 .stat-card {
-    background: rgb(250,250,250);
-    padding: 1rem 1rem;
-    border-radius: 16px;
+    flex: 1;
+    min-width: 280px;
+    background: #ffffff;
+    padding: 2.5rem 2rem;
+    border-radius: 24px; /* Bordes muy redondeados */
     text-align: center;
-    border: 2px solid #000;
-    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.45);
-    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+    /* Reemplazamos borde negro por sombra suave */
+    box-shadow: var(--card-shadow);
+    border: 1px solid #f3f4f6; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
 }
 
 .stat-card:hover {
-    transform: translateY(-6px);
-    background: #000;
-    color: rgb(250,250,250);
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.856);
+    transform: translateY(-8px);
+    box-shadow: var(--card-hover-shadow);
+    /* No cambiamos a negro el fondo, lo mantenemos limpio */
 }
 
+/* Círculos de iconos */
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+    font-size: 2.5rem;
+}
+
+/* Temas de color para los iconos */
+.user-theme { background-color: #dbeafe; color: #2563eb; } /* Azul */
+.complex-theme { background-color: #dcfce7; color: #16a34a; } /* Verde */
+.booking-theme { background-color: #f3e8ff; color: #9333ea; } /* Violeta */
+
 .stat-card h2 {
-    font-size: 2.8rem;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    font-size: 3rem;
+    margin: 0;
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1;
 }
 
 .stat-card p {
-  font-size: 1.7rem;
-  font-weight: 400;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-gray);
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* ===================== */
-/* INFO SECTION        */
+/* INFO SECTION          */
 /* ===================== */
 
 .info-section {
-  
-  padding: 10px 40px;
-  background: rgb(250,250,250);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    padding: 5rem 2rem;
+    background: var(--bg-light); /* Fondo gris muy suave */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-header {
+    text-align: center;
+    margin-bottom: 4rem;
 }
 
 .info-title {
-  font-size: 3.5rem;
-  margin-top: 30px;
-  font-weight: bold;
-  text-align: center;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
 }
 
-.role-title {
-  font-size: 2.2rem;
-  font-weight: 600;
-  margin-top: 30px;
-  margin-bottom: 30px;
-  text-align: center;
-  width: 100%;
-  max-width: 1000px;
+.info-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-gray);
+    font-weight: 400;
 }
 
+/* Agrupadores por rol */
+.role-group {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.mt-large {
+    margin-top: 3rem;
+}
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-badge {
+    background-color: #fff7ed;
+    color: #ea580c; /* Naranja */
+    border: 1px solid #ffedd5;
+}
+
+.user-badge {
+    background-color: #eff6ff;
+    color: #2563eb; /* Azul */
+    border: 1px solid #dbeafe;
+}
+
+/* Contenedor de Grid */
 .cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
-  max-width: 1000px;
-  width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Más ancho para mejor lectura */
+    gap: 1.5rem;
+    width: 100%;
 }
 
 .info-card {
-  background: rgb(250,250,250);
-  text-align: center;
-  border: 1px solid black;
-  border-radius: 14px;
-  padding: 18px;
-  font-weight: 500;
-  box-shadow: 0 2px 3px rgba(0,0,0,0.5);
-  transition: 
-    transform 0.25s ease,
-    background-color 0.25s ease,
-    color 0.25s ease,
-    box-shadow 0.25s ease;
-  cursor: pointer;
+    background: #ffffff;
+    border: 1px solid #e5e7eb; /* Borde sutil gris */
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center; /* Alineación horizontal icono-texto */
+    gap: 1rem;
+    text-align: left; /* Alineamos a la izquierda para mejor lectura */
+    transition: all 0.2s ease;
 }
 
+.info-card span {
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.card-icon {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    background-color: #f0fdf4;
+    padding: 10px;
+    border-radius: 12px;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Hover más sutil y elegante */
 .info-card:hover {
-  transform: translateY(-6px);
-  background: #000;
-  color: rgb(250,250,250);
-  box-shadow: 3px 3px 6px #444;
+    transform: translateY(-3px);
+    border-color: var(--primary-color); /* El borde se pinta verde */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.info-card:hover{
-  background-color: rgba(0, 0, 0, 0.856);
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stats-container {
+        flex-direction: column;
+    }
+    .info-title {
+        font-size: 2rem;
+    }
+    .cards-container {
+        grid-template-columns: 1fr; /* Una columna en móvil */
+    }
 }

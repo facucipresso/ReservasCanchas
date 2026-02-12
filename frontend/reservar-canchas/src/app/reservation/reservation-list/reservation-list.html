@@ -1,0 +1,74 @@
+<div class="list-reservations card-style">
+    <div class="header-section">
+      <h2>{{isAdminView ? 'Reservas del complejo ' + complex.name : 'Mis reservas'}}</h2>
+      @if(isAdminView){
+        <div class="filters-menu" style="margin-bottom: 15px; display: flex; align-items: center; gap: 20px;">
+          <p>Filtros: </p>
+            <p-select
+              [options]="fieldOptions"
+              [(ngModel)]="selectedFieldId"
+              (onChange)="onFilterChange()"
+            ></p-select>
+            <p-datepicker
+              dateFormat="dd.mm.yy"
+              [(ngModel)]="filterDate"
+              showIcon = "true"
+              calendar
+              (onSelect)="onFilterChange()"
+            />
+        </div>
+      }
+      <div class="options-menu">
+        <button class="filter-btn" [class.active]="selectedStatus === 'all'" (click)="selectedStatus = 'all'; applyFilter()">Todas</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Pendiente'" (click)="selectedStatus = 'Pendiente'; applyFilter()">Pendientes</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Aprobada'" (click)="selectedStatus = 'Aprobada'; applyFilter()">Aprobadas</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Completada'" (click)="selectedStatus = 'Completada'; applyFilter()">Completadas</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Cancelada'" (click)="selectedStatus = 'Cancelada'; applyFilter()">Canceladas</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Rechazada'" (click)="selectedStatus = 'Rechazada'; applyFilter()">Rechazadas</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <p-table [value]="filteredReservations" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+        <ng-template #header>
+          <tr>
+            <th>Id</th>
+            <th>Fecha</th> 
+            <th>Hora inicio</th>
+            @if(isAdminView && selectedFieldId == null){
+            <th>Cancha</th>
+            }
+            @if(selectedStatus == 'all'){
+              <th>Estado</th>
+            }
+            <th>Detalle</th> 
+          </tr>
+        </ng-template>
+        <ng-template #body let-reservation>
+          <tr>
+            <td>{{ reservation.reservationId }}</td>
+            <td>{{ reservation.date | date:'dd-MM-yyyy'}}</td>
+            <td>{{ reservation.initTime | slice:0:5 }}</td>
+            @if(isAdminView && selectedFieldId == null){
+            <td>{{reservation.fieldName}}</td>
+            }
+            @if(selectedStatus == 'all'){
+              <td>
+                <span class="status-badge" [attr.data-status]="reservation.state">
+                  {{ reservation.state | reservationStateText}}
+                </span>
+              </td>
+            }
+            <td>
+              <button 
+              pButton 
+              [ngClass]="selectedReservationId === reservation.reservationId ? 'btn-active' : 'btn-detalle p-button-text'"
+              label="Ver Detalle"
+              (click)="selectReservation(reservation.reservationId)">
+            </button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>

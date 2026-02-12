@@ -1,4 +1,4 @@
-import { ReservationState } from "../ReservationState.Enum";
+import { ReservationState } from "./reservationstate.enum";
 import { PayType } from "./paytype.enum";
 
 export interface ReservationDetailResponse{

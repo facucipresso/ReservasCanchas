@@ -1,0 +1,84 @@
+/* --- LAYOUT PRINCIPAL --- */
+.main-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1.5rem; 
+  padding: 2rem;
+  width: 100%;
+  max-width: 1600px; 
+  margin: 0 auto;
+  min-height: 100vh; 
+  box-sizing: border-box;
+  background-color: #f8f9fa; 
+}
+
+.card-style {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+}
+
+app-reservation-list {
+  flex: 1.5; 
+  min-width: 0; 
+}
+
+.detail-reservations {
+  flex: 1; 
+  display: flex;
+  position: relative;
+  flex-direction: column; 
+}
+
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; 
+  text-align: center;
+  color: #9ca3af;
+  padding: 2rem;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #d1d5db;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  color: #374151;
+  font-size: 1.1rem;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9rem;
+  max-width: 250px;
+}
+
+
+@media (max-width: 1024px) {
+  .main-container {
+    flex-direction: column; 
+    height: auto;
+  }
+  
+  .list-reservations, .detail-reservations {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .detail-reservations {
+    min-height: 300px; 
+  }
+}
+

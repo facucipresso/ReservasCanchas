@@ -50,4 +50,12 @@ export class Reservation {
     return this.http.get<ReservationDetailResponse>(`${this.apiBaseUrl}/${reservationId}/detail`);
   }
 
+  getReservationsByComplexAndDate(complexId:number, date:string): Observable<ReservationForUserResponse[]>{
+    return this.http.get<ReservationForUserResponse[]>(`${this.apiBaseUrl}/complex/${complexId}/search`,{params:{date}});
+  }
+
+  getReservationsByFieldAndDate(fieldId:number, date:string): Observable<ReservationForUserResponse[]>{
+    return this.http.get<ReservationForUserResponse[]>(`${this.apiBaseUrl}/field/${fieldId}/search`,{params:{date}});
+  }
+
 }

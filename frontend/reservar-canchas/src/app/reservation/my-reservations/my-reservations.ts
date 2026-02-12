@@ -5,10 +5,12 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { ReservationState } from '../../models/reservation/reservationstate.enum';
+import { ReservationDetail } from '../reservation-detail/reservation-detail';
+import { ReservationList } from '../reservation-list/reservation-list';
 
 @Component({
   selector: 'app-my-reservations',
-  imports: [TableModule, ButtonModule, CommonModule],
+  imports: [TableModule, ButtonModule, CommonModule, ReservationDetail, ReservationList],
   templateUrl: './my-reservations.html',
   styleUrl: './my-reservations.css',
 })
@@ -16,8 +18,9 @@ export class MyReservations implements OnInit {
 
   allReservations: ReservationForUserResponse[] = [];
   filteredReservations: ReservationForUserResponse[] = [];
+  selectedReservationId!: number | null;
   selectedStatus: string = 'all';
-
+  
   constructor(private reservationService: Reservation){}
 
   ngOnInit(){
@@ -39,16 +42,16 @@ export class MyReservations implements OnInit {
     });
   }
 
-  applyFilter(){
-    if(this.selectedStatus === 'all'){
-      this.filteredReservations = this.allReservations;
-    }else if(this.selectedStatus === 'Cancelada'){
-      this.filteredReservations = this.allReservations.filter(reservation =>{ 
-        return reservation.state === ReservationState.CanceladoConDevolucion || 
-               reservation.state === ReservationState.CanceladoSinDevolucion ||
-               reservation.state === ReservationState.CanceladoPorAdmin;});
-    } else {
-      this.filteredReservations = this.allReservations.filter(reservation => reservation.state === this.selectedStatus);
+
+  onReservationStateUpdated(newState: ReservationState) {
+    if (!this.selectedReservationId) return;
+
+    const index = this.allReservations.findIndex(r => r.reservationId === this.selectedReservationId);
+
+    if (index !== -1) {
+      const updatedReservations = [...this.allReservations];
+      updatedReservations[index].state = newState;
+      this.allReservations = updatedReservations;
     }
   }
 }

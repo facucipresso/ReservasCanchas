@@ -1,4 +1,9 @@
-<ng-container *ngIf="!loading; else loadingTpl"> 
+@if(isLoading){
+  <div class="loading-container">
+    <p-progress-spinner>
+    </p-progress-spinner>
+  </div>
+  }@else{
   <div class="reservation-detail-wrapper">
       <div class="reservation-detail-grid">
         <div class="col-left">
@@ -6,7 +11,7 @@
     
             <!-- HEADER -->
             <div class="card-header">
-              <i class="pi pi-receipt"></i>
+              <i class="pi pi-receipt" style="color: white;"></i>
               <h2>Detalles de la Reserva</h2>
             </div>
     
@@ -15,7 +20,11 @@
               <!-- COMPLEJO -->
               <div class="info-group">
                 <h3 class="section-title">Complejo</h3>
-                <p class="complex-name">{{ reservationDetail.complexName }}</p>
+                <div class="icon-row">
+                  <i class="pi pi-warehouse"></i>
+                  <span class="complex-name">{{ reservationDetail.complexName }}</span>
+                </div>
+                
     
                 <div class="icon-row">
                   <i class="pi pi-map-marker"></i>
@@ -52,7 +61,7 @@
                     <i class="pi pi-calendar"></i>
                     <div>
                       <span class="label">Fecha: </span>
-                      <span class="value">{{ reservationDetail.date }}</span>
+                      <span class="value">{{ reservationDetail.date | date:'dd-MM-yyyy' }}</span>
                     </div>
                   </div>
     
@@ -60,7 +69,7 @@
                     <i class="pi pi-clock"></i>
                     <div>
                       <span class="label">Hora: </span>
-                      <span class="value">{{ reservationDetail.initTime }}</span>
+                      <span class="value">{{ reservationDetail.initTime | slice:0:5 }}</span>
                     </div>
                   </div>
                 </div>
@@ -73,16 +82,17 @@
                 <h3 class="section-title">Cancha</h3>
     
                 <div class="field-highlight">
-                  <div class="field-name-large">{{ reservationDetail.fieldName }}</div>
+                  <div class="field-info">
+                    <div class="field-name-large">{{ reservationDetail.fieldName }}</div>
     
-                  <div class="field-meta-row">
-                    <span class="meta-item">
-                      <i class="pi pi-th-large"></i> {{ reservationDetail.fieldType }}
-                    </span>
-                    <span class="meta-divider">•</span>
-                    <span class="meta-item">
-                      <i class="pi pi-align-justify"></i> {{ reservationDetail.floorType }}
-                    </span>
+                    <div class="field-meta-row">
+                      <span class="meta-item">
+                        <i class="pi pi-th-large"></i> {{ reservationDetail.fieldType }}
+                      </span>
+                      <span class="meta-item">
+                        <i class="pi pi-align-justify"></i> {{ reservationDetail.floorType }}
+                      </span>
+                    </div>
                   </div>
     
                   <div class="price-breakdown-container compact">
@@ -90,75 +100,70 @@
                       <span>Alquiler Cancha</span>
                       <span>{{ basePrice | currency:'ARS':'symbol-narrow' }}</span>
                     </div>
-                    
+                    @if(reservationDetail.paidIllumination){
                     <div class="breakdown-row">
                       <span><i class="pi pi-bolt"></i> Iluminación</span>
                       <span>{{ reservationDetail.illuminationAmount | currency:'ARS':'symbol-narrow' }}</span>
                     </div>
-                    
-                    <div class="breakdown-row">
-                      <span>Monto abonado</span>
+                    }
+                    <div class="breakdown-row total-row">
+                      <span>Monto total de la cancha</span>
+                      <span>{{ totalAmount | currency:'ARS':'symbol-narrow' }}</span>
+                    </div>
+                    <div class="breakdown-divider"></div>
+                    <div class="breakdown-row" style="font-weight: 600;">
+                      <span>Monto abonado en la reserva</span>
                       <span>{{ amountPaid | currency:'ARS':'symbol-narrow' }}</span>
                     </div>
                     
                     <div class="breakdown-divider"></div>
                     
-                    <div class="breakdown-row total-row">
-                      <span>Total</span>
-                      <span>{{ totalAmount | currency:'ARS':'symbol-narrow' }}</span>
-                    </div>
                   </div>
                   
                 </div>
               </div>
     
               <hr class="divider" />
+              <div class="info-group">
+                <h3 class="section-title">Estado</h3>
+                <p class="status-badge" [attr.data-status]="reservationDetail.state">{{reservationDetail.state | reservationStateText}}</p>
+              </div>
+              <div class="breakdown-divider"></div>
     
               <!-- COMPROBANTE -->
               <div class="info-group">
-                <h3 class="section-title toggle-title" (click)="showVoucher = !showVoucher">
-                  Comprobante de Pago
-                  <i class="pi" [ngClass]="showVoucher ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-                </h3>
-    
-                <div *ngIf="showVoucher" class="voucher-box">
-                  <img [src]="'https://localhost:7004/' + reservationDetail.voucherUrl" />
-                </div>
+                <button pButton class="button-voucher" (click)="visible=true"> Ver comprobante </button>
               </div>
     
               <!-- ACCIONES -->
               <div class="actions-box">
+                @if(!isAdminRoute && reservationDetail.state == ReservationState.Pendiente){
                 <button 
-                  *ngIf="!isAdmin && reservationDetail.state == ReservationState.Pendiente" 
                   class="btn danger"
-                  (click)="changeState(ReservationState.CanceladoConDevolucion)">
+                  (click)="confirmCancelReservation(ReservationState.CanceladoConDevolucion)">
                   CANCELAR RESERVA
                 </button>
-
+                }
+                @if(!isAdminRoute && reservationDetail.state == ReservationState.Aprobada){
                 <button 
-                *ngIf="!isAdmin && reservationDetail.state == ReservationState.Aprobada" 
-                class="btn danger"
-                (click)="changeState(ReservationState.CanceladoConDevolucion)">
-                CANCELAR RESERVA
-              </button>
+                  class="btn danger"
+                  (click)="onClientCancelAprobada()">
+                  CANCELAR RESERVA
+                </button>
+                }
 
-                <ng-container *ngIf="!isAdmin && reservationDetail.state == ReservationState.Completada">
+                @if(!isAdminRoute && reservationDetail.state == ReservationState.Completada){
                   <button class="btn success">DEJAR RESEÑA</button>
-                  <button 
-                    class="btn danger"
-                    (click)="changeState(ReservationState.CanceladoConDevolucion)">
-                    CANCELAR RESERVA
-                  </button>
-                </ng-container>
+                }
 
-                <ng-container *ngIf="isAdmin && reservationDetail.state == ReservationState.Pendiente">
+                @if(isAdmin && isAdminRoute && reservationDetail.state == ReservationState.Pendiente){
                   <button (click)="changeState(ReservationState.Aprobada)" class="btn success">APROBAR</button>
                   <button (click)="openReasonDialog(ReservationState.Rechazada)" class="btn danger">RECHAZAR</button>
-                </ng-container>
+                }
 
-                <ng-container *ngIf="isAdmin && reservationDetail.state == ReservationState.Aprobada">
+                @if(isAdmin && isAdminRoute && reservationDetail.state == ReservationState.Aprobada){
                   <button (click)="openReasonDialog(ReservationState.CanceladoPorAdmin)" class="btn danger">CANCELAR RESERVA</button>
-                </ng-container>
+                }
               </div>
     
             </div>
@@ -166,22 +171,20 @@
         </div>
       </div>
     </div>
-  </ng-container>
+}
 
+ <p-dialog 
+  header="Comprobante" 
+  [modal]="true" 
+  [(visible)]="visible" 
+  [style]="{ width: '25rem' }"   
+  [draggable]="false"
+  [resizable]="false"
+  >
+  <div style="padding: 10px;">
+    <img [src]="'https://localhost:7004/' + reservationDetail.voucherUrl" />
+  </div>
+</p-dialog>
 
-  <ng-template #loadingTpl>
-    <div style="padding: 2rem; text-align: center; color: #6b7280;">
-      Cargando detalles de la reserva...
-    </div>
-  </ng-template>
-
-  <app-reservation-reason-dialog
-  [(visible)]="showReasonDialog"
-  title="Indique la razón"
-  confirmLabel="Confirmar"
-  (confirm)="onReasonConfirm($event)"
-  (cancel)="onReasonCancel()"
-></app-reservation-reason-dialog>
-
-  
+<p-confirmdialog />
     

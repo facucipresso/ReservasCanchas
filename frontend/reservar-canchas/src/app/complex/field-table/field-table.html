@@ -55,7 +55,7 @@
             <button 
               pButton 
               style="margin-right: 15px;" 
-              [disabled]="!selectedHours[field.id]" 
+              [disabled]="!selectedHours[field.id] || isAdmin" 
               (click)="onReserve(field, selectedHours[field.id])"
             >
               <i class="pi pi-check" pButtonIcon></i>

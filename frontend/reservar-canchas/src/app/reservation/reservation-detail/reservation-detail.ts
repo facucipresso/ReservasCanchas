@@ -1,56 +1,71 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Reservation } from '../../services/reservation';
 import { ReservationDetailResponse } from '../../models/reservation/ReservationDetailResponse.model';
-import { ReservationState } from '../../models/ReservationState.Enum';
-import { MessageService } from 'primeng/api';
+import { ReservationState } from '../../models/reservation/reservationstate.enum';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ChangeStateReservation } from '../../models/ChangeStateReservationRequest.model';
-import { ReservationReasonDialog } from '../../buzon/components/reservation-reason-dialog/reservation-reason-dialog';
+import { DialogModule } from 'primeng/dialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ReservationStatePipe } from '../../pipes/reservation-state-pipe';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-reservation-detail',
   standalone: true,
-  imports: [CommonModule, ReservationReasonDialog],
+  imports: [CommonModule, DialogModule, ProgressSpinnerModule, ReservationStatePipe, ConfirmDialog],
   templateUrl: './reservation-detail.html',
   styleUrl: './reservation-detail.css',
+  providers: [ConfirmationService]
 })
-export class ReservationDetail implements OnInit {
+export class ReservationDetail implements OnInit, OnChanges {
 
   reservationDetail!: ReservationDetailResponse;
-  showVoucher = false;
-  loading = true;
-
+  visible = false;
+  isLoading = true;
+  @Input() selectedReservationId!: number;
+  @Output() stateChanged = new EventEmitter<ReservationState>();
   showReasonDialog = false;
+  isAdminRoute = false;
   pendingState: ReservationState | null = null;
 
   ReservationState = ReservationState; // por si después querés usar enum
 
   constructor(
-    private route: ActivatedRoute,
     private reservationService: Reservation, 
-    private messageService : MessageService
+    private messageService : MessageService,
+    private confirmationService : ConfirmationService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    const reservationId = Number(this.route.snapshot.paramMap.get('id'));
+    this.loadReservation();
+    this.isAdminRoute = this.router.url.includes("/admin");
+  }
 
-    if (reservationId) {
-      this.reservationService.getReservationDetail(reservationId).subscribe({
-        next: (response) => {
-          //this.reservationDetail = response;
-          this.reservationDetail = {
-            ...response,
-            state: this.mapState(response.state)
-          };
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error loading reservation detail', err);
-          this.loading = false;
-        }
-      });
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedReservationId'] && this.selectedReservationId) {
+       this.loadReservation();
     }
+  }
+
+  private loadReservation(){
+    if (!this.selectedReservationId) return; 
+
+    this.reservationService.getReservationDetail(this.selectedReservationId).subscribe({
+      next: (response) => {
+        //this.reservationDetail = response;
+        this.reservationDetail = response;
+        console.log(response);
+        this.isLoading = false;
+        
+      },
+      error: (err) => {
+        console.error('Error loading reservation detail', err);
+        this.isLoading = false;
+      }
+    });
   }
 
   get isAdmin(): boolean {
@@ -76,15 +91,13 @@ export class ReservationDetail implements OnInit {
     return this.reservationDetail?.paidIllumination === true;
   }
 
-  private mapState(state: any): ReservationState {
-    return ReservationState[state as keyof typeof ReservationState];
-  }
-  
 
   changeState(newState: ReservationState) {
     const dto: ChangeStateReservation = {
       newState
     };
+
+    console.log(newState);
   
     this.reservationService
       .changeStateReservation(this.reservationDetail.reservationId, dto)
@@ -99,6 +112,7 @@ export class ReservationDetail implements OnInit {
   
           // refrescamos detalle
           this.reservationDetail.state = newState;
+          this.stateChanged.emit(newState);
         },
         error: (err) => {
           this.messageService.add({
@@ -124,9 +138,7 @@ export class ReservationDetail implements OnInit {
       cancelationReason: reason
     };
   
-    this.reservationService
-      .changeStateReservation(this.reservationDetail.reservationId, dto)
-      .subscribe({
+    this.reservationService.changeStateReservation(this.reservationDetail.reservationId, dto).subscribe({
         next: () => {
           this.messageService.add({
             severity: 'success',
@@ -153,6 +165,55 @@ export class ReservationDetail implements OnInit {
   onReasonCancel() {
     this.pendingState = null;
     this.showReasonDialog = false;
+  }
+
+  onClientCancelAprobada() {
+    if (!this.reservationDetail) return;
+
+    const dateStr = this.reservationDetail.date.toString(); 
+    const timeStr = this.reservationDetail.initTime.toString();
+
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const [hours, minutes] = timeStr.split(':').map(Number);
+
+    const matchDate = new Date(year, month - 1, day, hours, minutes);
+    
+    const now = new Date();
+
+    const diffMs = matchDate.getTime() - now.getTime();
+
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    console.log(`Horas restantes para el partido: ${diffHours}`);
+
+    let newState: ReservationState;
+
+    if (diffHours > 4) {
+      newState = ReservationState.CanceladoConDevolucion;
+    } else {
+      newState = ReservationState.CanceladoSinDevolucion;
+    }
+    this.confirmCancelReservation(newState);
+  }
+
+  confirmCancelReservation(state: ReservationState) {
+    this.confirmationService.confirm({
+      message: '¿Estás seguro que deseas cancelar la reserva? El reembolso sólo se realizará si la reserva '+
+      'se encuentra en estado pendiente o aprobada(con más de 4 horas para el inicio de la misma).',
+      header: 'Confirmar cancelación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: "none",
+      rejectIcon: "none",
+      rejectButtonStyleClass: "p-button-text",
+      acceptLabel: 'Confirmar',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        this.changeState(state);
+      },
+      reject: () => {
+        console.log('Eliminación cancelada');
+      }
+    });
   }
   
   

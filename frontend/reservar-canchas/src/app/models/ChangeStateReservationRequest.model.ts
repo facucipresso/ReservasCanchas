@@ -1,4 +1,4 @@
-import { ReservationState } from "./ReservationState.Enum"
+import { ReservationState } from "./reservation/reservationstate.enum"
 
 export interface ChangeStateReservation{
     newState : ReservationState,

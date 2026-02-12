@@ -11,10 +11,14 @@
     align-items: center;
     gap: 0.75rem;
     padding: 1.25rem 1.5rem;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    background-color: #3b82f6;
     color: white;
   }
   
+  .reservation-detail-grid{
+    display: flex;
+    justify-content: center;
+  }
   .card-body {
     padding: 1.5rem;
   }
@@ -38,6 +42,7 @@
   .inline-row,
   .user-inline {
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
     gap: 0.4rem;
     font-size: 0.85rem;
@@ -48,7 +53,12 @@
   
   .inline-row i,
   .user-inline i {
-    color: #6366f1;
+    color: #3b82f6;
+  }
+
+  i{
+    color: #3b82f6;
+    margin-right: 5px;
   }
   
   .dot {
@@ -152,10 +162,90 @@
   .reservation-detail-wrapper {
     max-width: 1200px;
     margin: auto;
-    padding: 2rem 1rem;
+    padding: 1rem;
   }
   
   .col-left {
     max-width: 560px;
   }
   
+  .button-voucher{
+    background: #111 ;
+    border: none ;
+    padding: .8rem 1.2rem ;
+    width: 45%;
+    border-radius: 8px ;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+.loading-container {
+  height: 70vh;              
+  display: flex;
+  align-items: center;       
+  justify-content: center;   
+}
+
+.field-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* ESTO CENTRA HORIZONTALMENTE */
+    width: 100%;
+    margin-bottom: 1.5rem; /* Separación con los precios */
+}
+
+/* --- COLORES POR ESTADO --- */
+
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 50px; /* Bordes redondeados tipo píldora */
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+  text-transform: uppercase; /* Opcional: Para que se vea más uniforme */
+  display: inline-block;
+  min-width: 90px; /* Para que todos tengan un ancho similar */
+  text-align: center;
+}
+
+
+/* 1. AMARILLO (Pendiente) */
+.status-badge[data-status="Pendiente"] {
+  background-color: #FEF9C3; /* Amarillo suave fondo */
+  color: #854D0E;           /* Amarillo oscuro texto */
+  border: 1px solid #FEF08A;
+}
+
+/* 2. VERDE (Aprobada) */
+.status-badge[data-status="Aprobada"] {
+  background-color: #DCFCE7; /* Verde suave fondo */
+  color: #166534;            /* Verde oscuro texto */
+  border: 1px solid #BBF7D0;
+}
+
+/* 3. AZUL (Completada) */
+.status-badge[data-status="Completada"] {
+  background-color: #DBEAFE; /* Azul suave fondo */
+  color: #1E40AF;            /* Azul oscuro texto */
+  border: 1px solid #BFDBFE;
+}
+
+/* 4. ROJO (Canceladas - Incluye todas las variantes) */
+/* El selector ~= busca la palabra completa, pero aquí usamos coincidencia exacta o múltiple */
+.status-badge[data-status="Cancelado"],
+.status-badge[data-status="CanceladoConDevolucion"], 
+.status-badge[data-status="CanceladoSinDevolucion"],
+.status-badge[data-status="CanceladoPorAdmin"] {
+  background-color: #FEE2E2; /* Rojo suave fondo */
+  color: #991B1B;            /* Rojo oscuro texto */
+  border: 1px solid #FECACA;
+}
+
+/* 5. OTRO (Rechazada) - Gris Oscuro / Negro suave */
+.status-badge[data-status="Rechazada"] {
+  background-color: #F3F4F6; /* Gris muy suave */
+  color: #374151;            /* Gris oscuro */
+  border: 1px solid #D1D5DB;
+}

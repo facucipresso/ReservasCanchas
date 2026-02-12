@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReservationReasonDialog } from './reservation-reason-dialog';
+import { ReservationList } from './reservation-list';
 
-describe('ReservationReasonDialog', () => {
-  let component: ReservationReasonDialog;
-  let fixture: ComponentFixture<ReservationReasonDialog>;
+describe('ReservationList', () => {
+  let component: ReservationList;
+  let fixture: ComponentFixture<ReservationList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReservationReasonDialog]
+      imports: [ReservationList]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ReservationReasonDialog);
+    fixture = TestBed.createComponent(ReservationList);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

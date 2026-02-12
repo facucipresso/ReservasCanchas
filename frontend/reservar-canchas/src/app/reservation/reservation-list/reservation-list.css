@@ -1,0 +1,230 @@
+.card-style {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+}
+
+/* --- IZQUIERDA: LISTA --- */
+.list-reservations {
+  flex: 3;
+  height: auto; 
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra los hijos (título, botonera) horizontalmente */
+}
+
+.list-reservations h2 {
+  margin: 0 0 1.5rem 0;
+  color: #111827;
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+}
+
+.header-section {
+  margin-bottom: 1.5rem;
+}
+
+.header-section h2 {
+  margin: 0 0 1rem 0;
+  color: #111827;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* --- DERECHA: DETALLE --- */
+.detail-reservations {
+  flex: 2; /* Ocupa el 40% del espacio aprox */
+  position: relative; /* Para posicionar elementos internos si hace falta */
+}
+
+/* --- MENU DE FILTROS (Botones tipo Pill) --- */
+.options-menu {
+  display: flex;
+  justify-content: center; /* Centra los botones horizontalmente */
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.table-container{
+  width: 100%;
+}
+
+.p-datatable {
+  width: 100%; /* Fuerza a la tabla a usar todo el espacio disponible */
+}
+
+/* Asegura que el contenedor de la tabla también sea full width */
+.list-reservations p-table {
+  width: 100%;
+}
+
+th,td{
+  text-align: center;
+}
+
+
+.filter-btn {
+  background-color: #f3f4f6;
+  border: 1px solid transparent;
+  color: #4b5563;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px; /* Pill shape */
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+/* Clase para el botón activo (debes agregarla con [class.active]="filter === 'X'") */
+.filter-btn.active {
+  background-color: #3b82f6; /* Azul primario */
+  color: white;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  
+  .list-reservations{
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* --- CENTRADO DE TABLA --- */
+/* Forzamos la alineación al centro en cabeceras y celdas */
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th,
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  text-align: center !important;
+  vertical-align: middle;
+}
+
+/* Opcional: Si quieres que la columna del botón tenga un ancho fijo */
+:host ::ng-deep .p-datatable th:last-child {
+  width: 140px;
+}
+
+/* --- ESTILO BOTÓN "VER DETALLE" --- */
+/* Sobre-escribimos o complementamos los estilos de PrimeNG */
+.btn-detalle {
+  background-color: #ffffff !important; /* Fondo blanco para resaltar */
+  color: #3b82f6 !important; /* Texto azul primario */
+  border: 1px solid #e5e7eb !important; /* Borde sutil */
+  border-radius: 8px !important; /* Bordes redondeados modernos */
+  padding: 0.5rem 1.2rem !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  
+  /* EL SOMBREADO QUE PEDISTE */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08) !important;
+  
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Efecto Hover: Se eleva y la sombra crece */
+.btn-detalle:hover {
+  background-color: #3b82f6 !important; /* Se vuelve azul al pasar el mouse */
+  color: #ffffff !important; /* Texto blanco */
+  border-color: #3b82f6 !important;
+  transform: translateY(-2px); /* Se mueve ligeramente hacia arriba */
+  
+  /* Sombra más intensa y difusa (Glow effect) */
+  box-shadow: 0 6px 12px rgba(59, 130, 246, 0.35) !important;
+}
+
+.btn-detalle:active {
+  transform: translateY(0); /* Al hacer click baja */
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* --- ESTILO BASE DEL BADGE --- */
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 50px; /* Bordes redondeados tipo píldora */
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+  text-transform: uppercase; /* Opcional: Para que se vea más uniforme */
+  display: inline-block;
+  min-width: 90px; /* Para que todos tengan un ancho similar */
+  text-align: center;
+}
+
+/* --- COLORES POR ESTADO --- */
+
+/* 1. AMARILLO (Pendiente) */
+.status-badge[data-status="Pendiente"] {
+  background-color: #FEF9C3; /* Amarillo suave fondo */
+  color: #854D0E;           /* Amarillo oscuro texto */
+  border: 1px solid #FEF08A;
+}
+
+/* 2. VERDE (Aprobada) */
+.status-badge[data-status="Aprobada"] {
+  background-color: #DCFCE7; /* Verde suave fondo */
+  color: #166534;            /* Verde oscuro texto */
+  border: 1px solid #BBF7D0;
+}
+
+/* 3. AZUL (Completada) */
+.status-badge[data-status="Completada"] {
+  background-color: #DBEAFE; /* Azul suave fondo */
+  color: #1E40AF;            /* Azul oscuro texto */
+  border: 1px solid #BFDBFE;
+}
+
+/* 4. ROJO (Canceladas - Incluye todas las variantes) */
+/* El selector ~= busca la palabra completa, pero aquí usamos coincidencia exacta o múltiple */
+.status-badge[data-status="Cancelado"],
+.status-badge[data-status="CanceladoConDevolucion"], 
+.status-badge[data-status="CanceladoSinDevolucion"],
+.status-badge[data-status="CanceladoPorAdmin"] {
+  background-color: #FEE2E2; /* Rojo suave fondo */
+  color: #991B1B;            /* Rojo oscuro texto */
+  border: 1px solid #FECACA;
+}
+
+/* 5. OTRO (Rechazada) - Gris Oscuro / Negro suave */
+.status-badge[data-status="Rechazada"] {
+  background-color: #F3F4F6; /* Gris muy suave */
+  color: #374151;            /* Gris oscuro */
+  border: 1px solid #D1D5DB;
+}
+
+.btn-active {
+  background-color: #3b82f6 !important; /* Fondo Azul */
+  color: #ffffff !important;            /* Texto Blanco */
+  border: 1px solid #3b82f6 !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1.2rem !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  box-shadow: inset 0 3px 5px rgba(0,0,0,0.2) !important; /* Sombra interna para efecto "presionado" */
+  cursor: default !important; /* Opcional: indica que ya está seleccionado */
+}
+
+.button-filter {
+  background: #111 !important;
+  border: none !important;
+  padding: .5rem 1.2rem !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+}
+
+.button-filter:hover {
+  background: #333 !important;
+}
+

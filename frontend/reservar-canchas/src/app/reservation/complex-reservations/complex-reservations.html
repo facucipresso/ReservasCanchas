@@ -1,1 +1,29 @@
-<p>complex-reservations works!</p>
+<div class="main-container">
+
+  <app-reservation-list
+    [allReservations]="allReservations"
+    [selectedReservationId]="selectedReservationId"
+    [isAdminView]="true"
+    [complex] = complex
+    [fields] = fields
+    (onSelect)="selectedReservationId = $event"
+    (onSearch)="searchReservations($event)"
+  ></app-reservation-list>
+  <div class="detail-reservations card-style" style="padding: 0;">
+    @if(!selectedReservationId){
+      <div class="empty-state">
+        <i class="pi pi-info-circle empty-icon"></i>
+        <h3>Selecciona una reserva</h3>
+        <p>Haz clic en "Ver Detalle" en la lista para ver la información completa aquí.</p>
+      </div>
+    }@else{
+      <app-reservation-detail
+      [selectedReservationId]="selectedReservationId"
+      (stateChanged)="onReservationStateUpdated($event)"
+      >
+
+      </app-reservation-detail>
+    }
+
+  </div>
+</div>
