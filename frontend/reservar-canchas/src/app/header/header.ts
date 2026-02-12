@@ -72,7 +72,10 @@ export class Header implements OnInit {
       {
         label: 'Menú',
         items: [
-          { label: 'Mis reservas', icon: 'pi pi-calendar' },
+          { label: 'Mis reservas',
+            icon: 'pi pi-calendar',
+            command: () => this.goToMyReservations() 
+          },
           ...(this.isAdmin ? [{
             label: 'Mis complejos',
             icon: 'pi pi-building',
@@ -161,15 +164,17 @@ export class Header implements OnInit {
     this.router.navigate(['/admin/complexes'])
   }
 
-  //agregado por facu
+  goToMyReservations(){
+    this.router.navigate(['/reservations'])
+  }
+
   goToProfile() {
     this.router.navigate(['/profile']);
   }
 
-    //agregado por facu
-    goToBuzon() {
-      this.router.navigate(['/buzon']);
-    }
+  goToBuzon() {
+    this.router.navigate(['/buzon']);
+  }
 
   logout(){
     this.authService.logout();

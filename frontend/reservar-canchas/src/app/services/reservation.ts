@@ -6,6 +6,7 @@ import { ReservationProcessRequest } from '../models/reservation/reservationproc
 import { ReservationProcessResponse } from '../models/reservation/reservationprocessresponse.model';
 import { CheckoutInfo } from '../models/reservation/checkoutinfo.model';
 import { CreateReservationResponse } from '../models/reservation/createreservationresponse.model';
+import { ReservationForUserResponse } from '../models/reservation/reservationforuserresponse.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,10 @@ export class Reservation {
   private apiBaseUrl = 'https://localhost:7004/api/reservations';
 
   constructor(private http:HttpClient) { }
+
+  getMyReservations():Observable<ReservationForUserResponse[]>{
+    return this.http.get<ReservationForUserResponse[]>(`${this.apiBaseUrl}/my`);
+  }
 
   getReservationsByDateForComplex(complexId: number, date: string):Observable<DailyReservationsComplex>{
     return this.http.get<DailyReservationsComplex>(`${this.apiBaseUrl}/complex/${complexId}/by-date/`,{params: { date }});

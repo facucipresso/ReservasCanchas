@@ -35,6 +35,10 @@ export class ComplexCard implements OnInit{
         }
       }
     );
-  }  
+  } 
+  
+  viewComplexReservations(){
+    this.router.navigate(["/admin", "complexes", this.complexCard.id, "reservations"]);
+  }
 }
 

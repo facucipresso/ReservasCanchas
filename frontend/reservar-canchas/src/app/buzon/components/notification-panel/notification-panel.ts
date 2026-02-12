@@ -31,13 +31,13 @@ export class NotificationPanelComponent {
   get actions(): string[] {
     switch (this.notification.title) {
       case NOTIFICATION_TITLES.COMPLEJO_PENDIENTE:
-        return ['VER_COMPLEJO', 'RECHAZAR'];
+        return ['VER COMPLEJO', 'RECHAZAR'];
 
       case NOTIFICATION_TITLES.RESERVA_PENDIENTE:
-        return ['VER_RESERVA', 'RECHAZAR'];
+        return ['VER RESERVA', 'RECHAZAR'];
 
       case NOTIFICATION_TITLES.COMPLEJO_APROBADO:
-        return ['VER_COMPLEJO'];
+        return ['VER COMPLEJO'];
 
       default:
         return [];

@@ -1,0 +1,59 @@
+<div class="main-container">
+  <div class="list-reservations card-style">
+    <div class="header-section">
+      <h2>Mis reservas</h2>
+      <div class="options-menu">
+        <button class="filter-btn" [class.active]="selectedStatus === 'all'" (click)="selectedStatus = 'all'; applyFilter()">Todas</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Pendiente'" (click)="selectedStatus = 'Pendiente'; applyFilter()">Pendientes</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Aprobada'" (click)="selectedStatus = 'Aprobada'; applyFilter()">Aprobadas</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Completada'" (click)="selectedStatus = 'Completada'; applyFilter()">Completadas</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Cancelada'" (click)="selectedStatus = 'Cancelada'; applyFilter()">Canceladas</button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'Rechazada'" (click)="selectedStatus = 'Rechazada'; applyFilter()">Rechazadas</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <p-table [value]="filteredReservations" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+        <ng-template #header>
+          <tr>
+            <th>Id</th>
+            <th>Fecha</th> 
+            <th>Hora inicio</th>
+            <th>Complejo</th>
+            @if(selectedStatus == 'all'){
+              <th>Estado</th>
+            }
+            <th>Detalle</th> 
+          </tr>
+        </ng-template>
+        <ng-template #body let-reservation>
+          <tr>
+            <td>{{ reservation.reservationId }}</td>
+            <td>{{ reservation.date | date:'dd-MM-yyyy'}}</td>
+            <td>{{ reservation.initTime | slice:0:5 }}</td>
+            <td>{{ reservation.complexName }}</td>
+            @if(selectedStatus == 'all'){
+              <td>
+                <span class="status-badge" [attr.data-status]="reservation.state">
+                  {{ reservation.state }}
+                </span>
+              </td>
+            }
+            <td>
+              <button pButton class=" btn-detalle p-button-text p-button-sm" label="Ver Detalle"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="detail-reservations card-style">
+    <div class="empty-state">
+      <i class="pi pi-info-circle empty-icon"></i>
+      <h3>Selecciona una reserva</h3>
+      <p>Haz clic en "Ver Detalle" en la lista para ver la información completa aquí.</p>
+    </div>
+
+  </div>
+</div>

@@ -70,14 +70,14 @@
                     <i class="pi pi-calendar"></i>
                     <div>
                       <span class="label">Fecha</span>
-                      <span class="value">{{ checkoutInfo.date }}</span>
+                      <span class="value">{{ checkoutInfo.date | date:'dd-MM-yyyy' }}</span>
                     </div>
                   </div>
                   <div class="dt-item">
                     <i class="pi pi-clock"></i>
                     <div>
                       <span class="label">Hora</span>
-                      <span class="value">{{ checkoutInfo.initTime }}</span>
+                      <span class="value">{{ checkoutInfo.initTime | slice:0:5 }}</span>
                     </div>
                   </div>
                 </div>

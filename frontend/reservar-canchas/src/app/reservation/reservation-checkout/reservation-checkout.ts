@@ -231,7 +231,7 @@ export class ReservationCheckout implements OnInit, OnDestroy {
           summary:'Reserva creada con exito.',
           life: 3000
         })//deberiamos redirigir a mis reservas
-        this.router.navigate(['/']);
+        this.router.navigate(['/reservations']);
       },
       error: (error)=>{
         const backendError = error?.error;
