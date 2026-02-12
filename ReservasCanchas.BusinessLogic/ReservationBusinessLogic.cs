@@ -469,13 +469,13 @@ namespace ReservasCanchas.BusinessLogic
                 {
                     UserId = complexAdminId,
                     Title = "Nueva reserva pendiente",
-                    Message = $"El usuario {user.Name} realizó una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}."
+                    Message = $"El usuario {user.UserName} realizó una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}."
                 };
                 var notificationForUser = new Notification
                 {
                     UserId = userId,
                     Title = "Reserva creada con éxito",
-                    Message = $"Has creado una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}. " +
+                    Message = $"Has creado una reserva en el complejo {complex.Name}, cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}. " +
                               $"Tu reserva está pendiente de aprobación por el administrador del complejo."
                 };
                 await _notificationBusinessLogic.CreateNotificationAsync(notificationForUser);

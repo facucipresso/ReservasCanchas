@@ -75,10 +75,10 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpDelete("{fieldId}/recurring-block/{idRb}")]
-        public async Task<ActionResult> DeleteRecurridFieldBlockToField([FromRoute] int fieldId, [FromRoute] int idRb)
+        public async Task<ActionResult<FieldDetailResponseDTO>> DeleteRecurridFieldBlockToField([FromRoute] int fieldId, [FromRoute] int idRb)
         {
-            await _fieldBusinessLogic.DeleteRecurringFieldBlockAsync(fieldId, idRb);
-            return NoContent();
+            var updateFieldDTO = await _fieldBusinessLogic.DeleteRecurringFieldBlockAsync(fieldId, idRb);
+            return Ok(updateFieldDTO);
         }
     }
 }
