@@ -163,6 +163,44 @@ namespace ReservasCanchas.BusinessLogic
             return dailyReservationForComplexResponse;
         }
 
+        public async Task<List<ReservationForUserResponseDTO>> GetReservationsByComplexAndDateAsync(int complexId, DateOnly date)
+        {
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
+
+            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(complexId);
+
+            if(userId != complex.UserId)
+            {
+                throw new ForbiddenException("No tienes permisos para ver las reservas del complejo");
+            }
+
+            var reservations = await _reservationRepository.GetReservationsByComplexAndDate(complexId, date);
+
+            var reservationsDTO = reservations.Select(ReservationMapper.ToReservationForUserDTO).ToList();
+
+            return reservationsDTO;
+        }
+
+        public async Task<List<ReservationForUserResponseDTO>> GetReservationsByFieldAndDateAsync(int fieldId, DateOnly date)
+        {
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
+
+            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(fieldId);
+
+            if (userId != field.Complex.UserId)
+            {
+                throw new ForbiddenException("No tienes permisos para ver las reservas del complejo");
+            }
+
+            var reservations = await _reservationRepository.GetReservationsByFieldAndDate(fieldId, date);
+
+            var reservationsDTO = reservations.Select(ReservationMapper.ToReservationForUserDTO).ToList();
+
+            return reservationsDTO;
+        }
+
         public async Task<CheckoutInfoDTO> GetCheckoutInfoAsync(string reservationProcessId)
         {
             var userId = _authService.GetUserIdOrNull();
@@ -852,9 +890,9 @@ namespace ReservasCanchas.BusinessLogic
                 var reservationDateTime = reservation.Date.ToDateTime(reservation.InitTime);
                 var diff = reservationDateTime - DateTime.Now;
 
-                if (reservation.ReservationState == ReservationState.Aprobada &&
+                if ((reservation.ReservationState == ReservationState.Aprobada &&
                     request.newState == ReservationState.CanceladoConDevolucion &&
-                    diff.TotalHours >= 4)
+                    diff.TotalHours >= 4) || (reservation.ReservationState == ReservationState.Pendiente && request.newState == ReservationState.CanceladoConDevolucion))
                 {
                     reservation.ReservationState = request.newState;
                     reservation.CancellationReason = null;

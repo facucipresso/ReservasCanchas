@@ -58,6 +58,20 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(reservationsAndRecurringBLocks);
         }
 
+        [HttpGet("complex/{complexId}/search")]
+        public async Task<ActionResult<ReservationForUserResponseDTO>> GetReservationsByComplexAndDate([FromRoute] int complexId, [FromQuery] DateOnly date)
+        {
+            var reservations = await _reservationBusinessLogic.GetReservationsByComplexAndDateAsync(complexId, date);
+            return Ok(reservations);
+        }
+
+        [HttpGet("field/{fieldId}/search")]
+        public async Task<ActionResult<ReservationForUserResponseDTO>> GetReservationsByFieldAndDate([FromRoute] int fieldId, [FromQuery] DateOnly date)
+        {
+            var reservations = await _reservationBusinessLogic.GetReservationsByFieldAndDateAsync(fieldId, date);
+            return Ok(reservations);
+        }
+
         [HttpGet("process/{processId}")]
         public async Task<ActionResult<CheckoutInfoDTO>> GetCheckoutInfoByProcessId([FromRoute] string processId)
         {
