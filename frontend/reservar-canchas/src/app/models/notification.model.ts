@@ -1,3 +1,5 @@
+import { NotificationContext } from "./NotificationContext.enum";
+
 export interface Notification {
     id: number;
     userId: number;
@@ -10,4 +12,6 @@ export interface Notification {
   
     reservationId?: number;
     complexId?: number;
+
+    context : NotificationContext
   }

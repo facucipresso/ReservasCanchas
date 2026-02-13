@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReservasCanchas.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +17,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Notification
         public bool IsRead { get; set; } 
         public int ReservationId { get; set; }
         public int ComplexId { get; set; }
+        public NotificationContext Context { get; set; }
     }
 }

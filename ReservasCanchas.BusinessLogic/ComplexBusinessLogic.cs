@@ -517,7 +517,8 @@ namespace ReservasCanchas.BusinessLogic
                     Message = newState == ComplexState.Habilitado
                         ? $"Tu complejo '{complex.Name}' fue aprobado."
                         : $"Tu complejo '{complex.Name}' fue rechazado.",
-                    ComplexId = complex.Id
+                    ComplexId = complex.Id,
+                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
                 };
 
                 await _notificationBusinessLogic.CreateNotificationAsync(notification);

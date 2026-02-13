@@ -45,7 +45,8 @@ namespace ReservasCanchas.BusinessLogic
                 Message = n.Message,
                 IsRead = n.IsRead,
                 ReservationId = n.ReservationId,
-                ComplexId = n.ComplexId
+                ComplexId = n.ComplexId,
+                Context = n.Context
             }).ToList();
         }
 

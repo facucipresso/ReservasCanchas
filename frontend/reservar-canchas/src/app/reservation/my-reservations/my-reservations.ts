@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { ReservationState } from '../../models/reservation/reservationstate.enum';
 import { ReservationDetail } from '../reservation-detail/reservation-detail';
 import { ReservationList } from '../reservation-list/reservation-list';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-my-reservations',
@@ -20,7 +21,7 @@ export class MyReservations implements OnInit {
   selectedReservationId!: number | null;
   selectedStatus: string = 'all';
   
-  constructor(private reservationService: Reservation){}
+  constructor(private reservationService: Reservation, private route : ActivatedRoute){}
 
   ngOnInit(){
     this.reservationService.getMyReservations().subscribe( (data) =>{
@@ -37,6 +38,15 @@ export class MyReservations implements OnInit {
 
     // Asignamos ya ordenado
     this.allReservations = data;
+    });
+
+    // bloque de queryparams por si navega desde el buzon
+    this.route.queryParamMap.subscribe(params => {
+      const reservationId = params.get('reservationId');
+  
+      if (reservationId) {
+        this.selectedReservationId = +reservationId;
+      }
     });
   }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReservasCanchas.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ namespace ReservasCanchas.Domain.Entities
         public bool IsRead { get; set; } = false;
         public int ComplexId { get; set; } 
         public int ReservationId { get; set; }
+        public NotificationContext Context { get; set; }
 
         public User User { get; set; } // Propiedad de navegación
 

@@ -11,6 +11,7 @@ import { ButtonSeverity } from 'primeng/button';
 import { NotificationService } from '../../../services/notification';
 import { Router } from '@angular/router';
 import { Reservation } from '../../../services/reservation';
+import { NotificationContext } from '../../../models/NotificationContext.enum';
 
 @Component({
   selector: 'app-notification-panel',
@@ -36,21 +37,23 @@ export class NotificationPanelComponent {
 
   // acciones según tipo de notificación
   get actions(): string[] {
-    switch (this.notification.title) {
-      case NOTIFICATION_TITLES.COMPLEJO_PENDIENTE:
+
+    console.log(
+      'Notification context:',
+      this.notification.context,
+      'type:',
+      typeof this.notification.context
+    );
+
+    switch (this.notification.context) {
+      case NotificationContext.ADMIN_COMPLEX_RESERVATION:
+        return ['VER RESERVAS'];
+
+      case NotificationContext.USER_RESERVATION:
+        return ['VER MIS RESERVAS'];
+      
+      case NotificationContext.ADMIN_COMPLEX_ACCTION:
         return ['VER COMPLEJO'];
-
-      case NOTIFICATION_TITLES.RESERVA_PENDIENTE:
-        return ['VER RESERVA'];
-
-      case NOTIFICATION_TITLES.COMPLEJO_APROBADO:
-        return ['VER COMPLEJO'];
-
-      case NOTIFICATION_TITLES.RESERVA_CREADA:
-        return ['VER RESERVA'];
-
-      case NOTIFICATION_TITLES.RESERVA_APROBADA:
-        return ['VER RESERVA'];
       
       default:
         return [];
@@ -75,13 +78,17 @@ export class NotificationPanelComponent {
     console.log('Acción:', action, 'Notificación:', this.notification);
 
     switch (action) {
-      case 'VER_COMPLEJO':
+      case 'VER COMPLEJO':
         this.goToComplex();
         break;
   
-      case 'VER_RESERVA':
-        this.goToReservation();
+      case 'VER RESERVAS':
+        this.goToComplexReservations();
         break;
+
+        case 'VER MIS RESERVAS':
+          this.goToMyReservations();
+          break;
 
     }
 
@@ -110,14 +117,30 @@ export class NotificationPanelComponent {
     this.router.navigate(['/complexes', this.notification.complexId]);
   }
 
-  private goToReservation() {
-    if (!this.notification.reservationId) {
-      console.warn('La notificación no tiene reservationId');
-      return;
-    }
+  private goToComplexReservations() {
+    if (!this.notification.complexId) return;
   
-    this.router.navigate(['/reservation', this.notification.reservationId]);
+    this.router.navigate(
+      ['/admin/complexes', this.notification.complexId, 'reservations'],
+      {
+        queryParams: this.notification.reservationId
+          ? { reservationId: this.notification.reservationId }
+          : {}
+      }
+    );
   }
+
+  private goToMyReservations() {
+    this.router.navigate(
+      ['/reservations'],
+      {
+        queryParams: this.notification.reservationId
+          ? { reservationId: this.notification.reservationId }
+          : {}
+      }
+    );
+  }
+
   
   
   onReasonCancel() {

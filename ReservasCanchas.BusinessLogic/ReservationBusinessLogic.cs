@@ -471,6 +471,8 @@ namespace ReservasCanchas.BusinessLogic
                     Title = "Nueva reserva pendiente",
                     Message = $"El usuario {user.UserName} realizó una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}.",
                     ReservationId = reservation.Id,
+                    ComplexId = complex.Id,
+                    Context = NotificationContext.ADMIN_COMPLEX_RESERVATION
                 };
                 var notificationForUser = new Notification
                 {
@@ -479,6 +481,8 @@ namespace ReservasCanchas.BusinessLogic
                     Message = $"Has creado una reserva en el complejo {complex.Name}, cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}. " +
                               $"Tu reserva está pendiente de aprobación por el administrador del complejo.",
                     ReservationId = reservation.Id,
+                    ComplexId = complex.Id,
+                    Context = NotificationContext.USER_RESERVATION
                 };
                 await _notificationBusinessLogic.CreateNotificationAsync(notificationForUser);
                 await _notificationBusinessLogic.CreateNotificationAsync(notificationForAdmin);
@@ -491,7 +495,10 @@ namespace ReservasCanchas.BusinessLogic
                     UserId = userId,
                     Title = "Bloqueo de cancha realizado",
                     Message = $"Has bloqueado la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}." +
-                              $"Motivo del bloqueo: {request.BlockReason}"
+                              $"Motivo del bloqueo: {request.BlockReason}",
+                    ReservationId = reservation.Id,
+                    ComplexId = complex.Id,
+                    Context = NotificationContext.ADMIN_COMPLEX_RESERVATION
                 };
                 await _notificationBusinessLogic.CreateNotificationAsync(notificationForAdmin);
             }
@@ -876,6 +883,8 @@ namespace ReservasCanchas.BusinessLogic
                         Title = "Reserva cancelada por usuario",
                         Message = $"El usuario {user.Name} {user.LastName} canceló la reserva del dia {reservation.Date}, horario {reservation.InitTime} con id {reservation.Id}.",
                         ReservationId = reservation.Id,
+                        ComplexId = complex.Id,
+                        Context = NotificationContext.ADMIN_COMPLEX_RESERVATION
                     });
                 }
             }
@@ -922,6 +931,8 @@ namespace ReservasCanchas.BusinessLogic
                                         $"Motivo: {reservation.CancellationReason}" :
                                         ""),
                             ReservationId = reservation.Id,
+                            ComplexId = complex.Id,
+                            Context = NotificationContext.USER_RESERVATION
                         });
                     }
                     else if(reservation.ReservationState == ReservationState.CanceladoPorAdmin)
@@ -935,6 +946,8 @@ namespace ReservasCanchas.BusinessLogic
                                         $"Motivo: {reservation.CancellationReason}" :
                                         ""),
                             ReservationId = reservation.Id,
+                            ComplexId = complex.Id,
+                            Context = NotificationContext.USER_RESERVATION
                         });
                     }
                     else
@@ -948,6 +961,8 @@ namespace ReservasCanchas.BusinessLogic
                                         $"Motivo: {reservation.CancellationReason}" :
                                         ""),
                             ReservationId = reservation.Id,
+                            ComplexId = complex.Id,
+                            Context= NotificationContext.USER_RESERVATION
                         });
                     }
 
