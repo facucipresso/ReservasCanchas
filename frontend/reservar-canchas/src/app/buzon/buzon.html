@@ -60,17 +60,34 @@
     "
   >
     <app-notification-panel
+      *ngFor="let notification of pagedNotifications"
+      [notification]="notification">
+    </app-notification-panel>
+
+    <div
+      *ngIf="totalRecords > rows"
+      style="
+        display: flex;
+        justify-content: center;
+        margin-top: 24px;
+      "
+    >
+      <p-paginator
+      (onPageChange)="onPageChange($event)"
+      [first]="first"
+      [rows]="rows"
+      [totalRecords]="120"
+      [pageLinkSize]="3"
+      [showFirstLastIcon]="true">
+    </p-paginator>
+    </div>
+<!-- 
+    <app-notification-panel
       *ngFor="let notification of notifications"
       [notification]="notification"
     ></app-notification-panel>
+     -->
   </div>
 
 </div>
 
-<!-- <div style="display: flex; flex-direction: column; gap: 12px;">
-  <app-notification-panel
-    *ngFor="let notification of notifications"
-    [notification]="notification"
-  >
-  </app-notification-panel>
-</div> -->

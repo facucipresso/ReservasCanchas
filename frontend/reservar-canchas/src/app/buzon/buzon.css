@@ -1,0 +1,4 @@
+/* Oculta el dropdown de filas por página */
+.p-paginator-rpp-options {
+    display: none !important;
+  }
