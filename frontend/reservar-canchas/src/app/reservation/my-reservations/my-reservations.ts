@@ -17,7 +17,6 @@ import { ReservationList } from '../reservation-list/reservation-list';
 export class MyReservations implements OnInit {
 
   allReservations: ReservationForUserResponse[] = [];
-  filteredReservations: ReservationForUserResponse[] = [];
   selectedReservationId!: number | null;
   selectedStatus: string = 'all';
   
@@ -38,7 +37,6 @@ export class MyReservations implements OnInit {
 
     // Asignamos ya ordenado
     this.allReservations = data;
-    this.filteredReservations = data;
     });
   }
 

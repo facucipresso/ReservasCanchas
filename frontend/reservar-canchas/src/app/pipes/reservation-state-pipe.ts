@@ -21,7 +21,7 @@ export class ReservationStatePipe implements PipeTransform {
       case ReservationState.Completada:
         return 'Completada';
       case ReservationState.CanceladoPorAdmin:
-        return 'Cancelada por el administrador';
+        return 'Cancelada por administrador';
       default:
         return value; 
     }

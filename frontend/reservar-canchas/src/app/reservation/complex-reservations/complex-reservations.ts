@@ -22,7 +22,6 @@ import { Field } from '../../services/field';
 export class ComplexReservations implements OnInit {
 
     allReservations: ReservationForUserResponse[] = [];
-    filteredReservations: ReservationForUserResponse[] = [];
     selectedReservationId!: number | null;
     selectedStatus: string = 'all';
     complexId!: number;
@@ -45,16 +44,14 @@ export class ComplexReservations implements OnInit {
           return 0; 
         });
   
-      // Asignamos ya ordenado
       this.allReservations = data;
-      this.filteredReservations = data;
       });
 
       this.route.paramMap.subscribe(params => {
         const idParam = params.get('id');
 
         if (idParam) {
-          this.complexId = +idParam; // Convertir a número
+          this.complexId = +idParam; 
           this.complexService.getComplexById(this.complexId).subscribe((res) =>{
             this.complex = res;
           })
@@ -62,13 +59,14 @@ export class ComplexReservations implements OnInit {
             this.fields = res;
             console.log(this.fields);
           })
+
+          const dateNow = new Date().toLocaleDateString('en-CA');
+          console.log(dateNow);
+          this.reservationService.getReservationsByComplexAndDate(this.complexId,dateNow).subscribe((res) => {
+            this.allReservations = res;
+          })
         }
       });
-
-      const dateNow = new Date().toISOString().substring(0, 10);
-      this.reservationService.getReservationsByComplexAndDate(this.complexId,dateNow).subscribe((res) => {
-        this.allReservations = res;
-      })
     }
   
   
@@ -86,7 +84,6 @@ export class ComplexReservations implements OnInit {
 
     searchReservations(filters: { date: Date, fieldId: number | null }) {
       const dateOnly = filters.date.toISOString().substring(0, 10);
-      const fieldOrComplexId = filters.fieldId == null ? this.complexId : filters.fieldId;
 
       if(filters.fieldId == null){
         this.reservationService.getReservationsByComplexAndDate(this.complexId,dateOnly).subscribe((res) => {

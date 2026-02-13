@@ -166,7 +166,7 @@
   }
   
   .col-left {
-    max-width: 560px;
+    width: 90%;
   }
   
   .button-voucher{
@@ -248,4 +248,47 @@
   background-color: #F3F4F6; /* Gris muy suave */
   color: #374151;            /* Gris oscuro */
   border: 1px solid #D1D5DB;
+}
+
+.textarea {
+  width: 100%;
+  resize: none; /* Evita que el usuario rompa el diseño redimensionando */
+  min-height: 100px;
+}
+
+.info-cancel {
+  display: flex;
+  gap: 1rem;
+  background-color: #fff7ed; /* Fondo naranja muy suave */
+  border-left: 4px solid #f97316; /* Borde naranja vibrante */
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  color: #431407; /* Texto marrón oscuro para contraste */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.info-icon i {
+  font-size: 1.5rem;
+  color: #ea580c; /* Icono naranja fuerte */
+  margin-top: 2px;
+}
+
+.info-content strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #9a3412;
+}
+
+.info-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.info-content .small-text {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #ea580c;
+  font-weight: 500;
 }

@@ -10,11 +10,15 @@ import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ReservationStatePipe } from '../../pipes/reservation-state-pipe';
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { ButtonModule } from 'primeng/button';
+import { TextareaModule } from 'primeng/textarea';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-reservation-detail',
   standalone: true,
-  imports: [CommonModule, DialogModule, ProgressSpinnerModule, ReservationStatePipe, ConfirmDialog],
+  imports: [CommonModule, DialogModule, ProgressSpinnerModule, FormsModule,
+    ReservationStatePipe, ConfirmDialog, ButtonModule, TextareaModule],
   templateUrl: './reservation-detail.html',
   styleUrl: './reservation-detail.css',
   providers: [ConfirmationService]
@@ -22,15 +26,15 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 export class ReservationDetail implements OnInit, OnChanges {
 
   reservationDetail!: ReservationDetailResponse;
+  visibleVoucherModal = false;
   visible = false;
   isLoading = true;
   @Input() selectedReservationId!: number;
   @Output() stateChanged = new EventEmitter<ReservationState>();
-  showReasonDialog = false;
   isAdminRoute = false;
   pendingState: ReservationState | null = null;
-
-  ReservationState = ReservationState; // por si después querés usar enum
+  reason!: string;
+  ReservationState = ReservationState; 
 
   constructor(
     private reservationService: Reservation, 
@@ -96,8 +100,6 @@ export class ReservationDetail implements OnInit, OnChanges {
     const dto: ChangeStateReservation = {
       newState
     };
-
-    console.log(newState);
   
     this.reservationService
       .changeStateReservation(this.reservationDetail.reservationId, dto)
@@ -106,7 +108,7 @@ export class ReservationDetail implements OnInit, OnChanges {
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
-            detail: 'Estado de la reserva actualizado',
+            detail: 'El estado de la reserva fue actualizado correctamente',
             life: 2500
           });
   
@@ -127,15 +129,16 @@ export class ReservationDetail implements OnInit, OnChanges {
 
   openReasonDialog(state: ReservationState) {
     this.pendingState = state;
-    this.showReasonDialog = true;
+    this.visible = true;
+    this.reason = '';
   }
 
-  onReasonConfirm(reason: string) {
+  onReasonConfirm() {
     if (!this.pendingState) return;
   
     const dto: ChangeStateReservation = {
       newState: this.pendingState,
-      cancelationReason: reason
+      cancelationReason: this.reason
     };
   
     this.reservationService.changeStateReservation(this.reservationDetail.reservationId, dto).subscribe({
@@ -143,13 +146,14 @@ export class ReservationDetail implements OnInit, OnChanges {
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
-            detail: 'La reserva fue actualizada correctamente',
+            detail: 'El estado de la reserva fue actualizado correctamente',
             life: 2500
           });
   
           this.reservationDetail.state = this.pendingState!;
+          this.stateChanged.emit(this.pendingState!);
           this.pendingState = null;
-          this.showReasonDialog = false;
+          this.visible = false;
         },
         error: (err) => {
           this.messageService.add({
@@ -158,13 +162,14 @@ export class ReservationDetail implements OnInit, OnChanges {
             detail: err?.error?.detail || 'No se pudo actualizar la reserva',
             life: 3000
           });
+          this.visible = false;
         }
       });
   }
 
   onReasonCancel() {
     this.pendingState = null;
-    this.showReasonDialog = false;
+    this.visible = false;
   }
 
   onClientCancelAprobada() {
@@ -199,7 +204,7 @@ export class ReservationDetail implements OnInit, OnChanges {
   confirmCancelReservation(state: ReservationState) {
     this.confirmationService.confirm({
       message: '¿Estás seguro que deseas cancelar la reserva? El reembolso sólo se realizará si la reserva '+
-      'se encuentra en estado pendiente o aprobada(con más de 4 horas para el inicio de la misma).',
+      'se encuentra en estado pendiente o aprobada (con más de 4 horas para el inicio de la misma).',
       header: 'Confirmar cancelación',
       icon: 'pi pi-exclamation-triangle',
       acceptIcon: "none",

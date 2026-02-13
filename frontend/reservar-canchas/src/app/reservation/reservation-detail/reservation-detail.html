@@ -1,190 +1,302 @@
-@if(isLoading){
+@if (isLoading) {
   <div class="loading-container">
-    <p-progress-spinner>
-    </p-progress-spinner>
+    <p-progress-spinner> </p-progress-spinner>
   </div>
-  }@else{
+} @else {
   <div class="reservation-detail-wrapper">
-      <div class="reservation-detail-grid">
-        <div class="col-left">
-          <div class="card checkout-card">
-    
-            <!-- HEADER -->
-            <div class="card-header">
-              <i class="pi pi-receipt" style="color: white;"></i>
-              <h2>Detalles de la Reserva</h2>
+    <div class="reservation-detail-grid">
+      <div class="col-left">
+        <div class="card checkout-card">
+          <!-- HEADER -->
+          <div class="card-header">
+            <i class="pi pi-receipt" style="color: white"></i>
+            <h2>Detalles de la Reserva</h2>
+          </div>
+
+          <div class="card-body">
+            <!-- COMPLEJO -->
+            <div class="info-group">
+              <h3 class="section-title">Complejo</h3>
+              <div class="icon-row">
+                <i class="pi pi-warehouse"></i>
+                <span class="complex-name">{{
+                  reservationDetail.complexName
+                }}</span>
+              </div>
+
+              <div class="icon-row">
+                <i class="pi pi-map-marker"></i>
+                <span
+                  >{{ reservationDetail.street }}
+                  {{ reservationDetail.number }},
+                  {{ reservationDetail.locality }}</span
+                >
+              </div>
+
+              <div class="icon-row">
+                <i class="pi pi-phone"></i>
+                <span>{{ reservationDetail.phone }}</span>
+              </div>
             </div>
-    
-            <div class="card-body">
-    
-              <!-- COMPLEJO -->
-              <div class="info-group">
-                <h3 class="section-title">Complejo</h3>
-                <div class="icon-row">
-                  <i class="pi pi-warehouse"></i>
-                  <span class="complex-name">{{ reservationDetail.complexName }}</span>
-                </div>
-                
-    
-                <div class="icon-row">
-                  <i class="pi pi-map-marker"></i>
-                  <span>{{ reservationDetail.street }} {{  reservationDetail.number }}, {{ reservationDetail.locality }}</span>
-                </div>
-    
-                <div class="icon-row">
-                  <i class="pi pi-phone"></i>
-                  <span>{{ reservationDetail.phone }}</span>
-                </div>
+
+            <hr class="divider" />
+
+            <!-- USUARIO -->
+            <div class="info-group compact">
+              <h3 class="section-title">Usuario</h3>
+              <div class="user-inline">
+                <span
+                  ><i class="pi pi-user"></i>
+                  {{ reservationDetail.userFullName }}</span
+                >
+                <span class="dot">•</span>
+                <span>{{ reservationDetail.userEmail }}</span>
+                <span class="dot">•</span>
+                <span
+                  ><i class="pi pi-phone"></i>
+                  {{ reservationDetail.userPhone }}</span
+                >
               </div>
-    
-              <hr class="divider" />
-    
-              <!-- USUARIO -->
-              <div class="info-group compact">
-                <h3 class="section-title">Usuario</h3>
-                <div class="user-inline">
-                  <span><i class="pi pi-user"></i> {{ reservationDetail.userFullName }}</span>
-                  <span class="dot">•</span>
-                  <span>{{ reservationDetail.userEmail }}</span>
-                  <span class="dot">•</span>
-                  <span><i class="pi pi-phone"></i> {{ reservationDetail.userPhone }}</span>
-                </div>
-              </div>
-    
-              <hr class="divider" />
-    
-              <!-- HORARIO -->
-              <div class="info-group">
-                <h3 class="section-title">Horario</h3>
-                <div class="date-time-box">
-                  <div class="dt-item">
-                    <i class="pi pi-calendar"></i>
-                    <div>
-                      <span class="label">Fecha: </span>
-                      <span class="value">{{ reservationDetail.date | date:'dd-MM-yyyy' }}</span>
-                    </div>
+            </div>
+
+            <hr class="divider" />
+
+            <!-- HORARIO -->
+            <div class="info-group">
+              <h3 class="section-title">Horario</h3>
+              <div class="date-time-box">
+                <div class="dt-item">
+                  <i class="pi pi-calendar"></i>
+                  <div>
+                    <span class="label">Fecha: </span>
+                    <span class="value">{{
+                      reservationDetail.date | date: "dd-MM-yyyy"
+                    }}</span>
                   </div>
-    
-                  <div class="dt-item">
-                    <i class="pi pi-clock"></i>
-                    <div>
-                      <span class="label">Hora: </span>
-                      <span class="value">{{ reservationDetail.initTime | slice:0:5 }}</span>
-                    </div>
+                </div>
+
+                <div class="dt-item">
+                  <i class="pi pi-clock"></i>
+                  <div>
+                    <span class="label">Hora: </span>
+                    <span class="value">{{
+                      reservationDetail.initTime | slice: 0 : 5
+                    }}</span>
                   </div>
                 </div>
               </div>
-    
-              <hr class="divider" />
-    
-              <!-- CANCHA -->
-              <div class="info-group">
-                <h3 class="section-title">Cancha</h3>
-    
-                <div class="field-highlight">
-                  <div class="field-info">
-                    <div class="field-name-large">{{ reservationDetail.fieldName }}</div>
-    
-                    <div class="field-meta-row">
-                      <span class="meta-item">
-                        <i class="pi pi-th-large"></i> {{ reservationDetail.fieldType }}
-                      </span>
-                      <span class="meta-item">
-                        <i class="pi pi-align-justify"></i> {{ reservationDetail.floorType }}
-                      </span>
-                    </div>
+            </div>
+
+            <hr class="divider" />
+
+            <!-- CANCHA -->
+            <div class="info-group">
+              <h3 class="section-title">Cancha</h3>
+
+              <div class="field-highlight">
+                <div class="field-info">
+                  <div class="field-name-large">
+                    {{ reservationDetail.fieldName }}
                   </div>
-    
-                  <div class="price-breakdown-container compact">
-                    <div class="breakdown-row">
-                      <span>Alquiler Cancha</span>
-                      <span>{{ basePrice | currency:'ARS':'symbol-narrow' }}</span>
-                    </div>
-                    @if(reservationDetail.paidIllumination){
+
+                  <div class="field-meta-row">
+                    <span class="meta-item">
+                      <i class="pi pi-th-large"></i>
+                      {{ reservationDetail.fieldType }}
+                    </span>
+                    <span class="meta-item">
+                      <i class="pi pi-align-justify"></i>
+                      {{ reservationDetail.floorType }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="price-breakdown-container compact">
+                  <div class="breakdown-row">
+                    <span>Alquiler Cancha</span>
+                    <span>{{
+                      basePrice | currency: "ARS" : "symbol-narrow"
+                    }}</span>
+                  </div>
+                  @if (reservationDetail.paidIllumination) {
                     <div class="breakdown-row">
                       <span><i class="pi pi-bolt"></i> Iluminación</span>
-                      <span>{{ reservationDetail.illuminationAmount | currency:'ARS':'symbol-narrow' }}</span>
+                      <span>{{
+                        reservationDetail.illuminationAmount
+                          | currency: "ARS" : "symbol-narrow"
+                      }}</span>
                     </div>
-                    }
-                    <div class="breakdown-row total-row">
-                      <span>Monto total de la cancha</span>
-                      <span>{{ totalAmount | currency:'ARS':'symbol-narrow' }}</span>
-                    </div>
-                    <div class="breakdown-divider"></div>
-                    <div class="breakdown-row" style="font-weight: 600;">
-                      <span>Monto abonado en la reserva</span>
-                      <span>{{ amountPaid | currency:'ARS':'symbol-narrow' }}</span>
-                    </div>
-                    
-                    <div class="breakdown-divider"></div>
-                    
+                  }
+                  <div class="breakdown-row total-row">
+                    <span>Monto total de la cancha</span>
+                    <span>{{
+                      totalAmount | currency: "ARS" : "symbol-narrow"
+                    }}</span>
                   </div>
-                  
+                  <div class="breakdown-divider"></div>
+                  <div class="breakdown-row" style="font-weight: 600">
+                    <span>Monto abonado en la reserva</span>
+                    <span>{{
+                      amountPaid | currency: "ARS" : "symbol-narrow"
+                    }}</span>
+                  </div>
+
+                  <div class="breakdown-divider"></div>
                 </div>
               </div>
-    
-              <hr class="divider" />
-              <div class="info-group">
-                <h3 class="section-title">Estado</h3>
-                <p class="status-badge" [attr.data-status]="reservationDetail.state">{{reservationDetail.state | reservationStateText}}</p>
-              </div>
-              <div class="breakdown-divider"></div>
-    
-              <!-- COMPROBANTE -->
-              <div class="info-group">
-                <button pButton class="button-voucher" (click)="visible=true"> Ver comprobante </button>
-              </div>
-    
-              <!-- ACCIONES -->
-              <div class="actions-box">
-                @if(!isAdminRoute && reservationDetail.state == ReservationState.Pendiente){
-                <button 
+            </div>
+
+            <div class="info-group" style="margin-top: 1rem">
+              <h3 class="section-title">Estado</h3>
+              <p
+                class="status-badge"
+                [attr.data-status]="reservationDetail.state"
+              >
+                {{ reservationDetail.state | reservationStateText }}
+              </p>
+            </div>
+            <div class="breakdown-divider"></div>
+
+            <!-- COMPROBANTE -->
+            <div class="info-group">
+              <button
+                pButton
+                class="button-voucher"
+                (click)="visibleVoucherModal = true"
+              >
+                Ver comprobante
+              </button>
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="actions-box">
+              @if (
+                !isAdminRoute &&
+                reservationDetail.state == ReservationState.Pendiente
+              ) {
+                <button
                   class="btn danger"
-                  (click)="confirmCancelReservation(ReservationState.CanceladoConDevolucion)">
+                  (click)="
+                    confirmCancelReservation(
+                      ReservationState.CanceladoConDevolucion
+                    )
+                  "
+                >
                   CANCELAR RESERVA
                 </button>
-                }
-                @if(!isAdminRoute && reservationDetail.state == ReservationState.Aprobada){
-                <button 
-                  class="btn danger"
-                  (click)="onClientCancelAprobada()">
+              }
+              @if (
+                !isAdminRoute &&
+                reservationDetail.state == ReservationState.Aprobada
+              ) {
+                <button class="btn danger" (click)="onClientCancelAprobada()">
                   CANCELAR RESERVA
                 </button>
-                }
+              }
 
-                @if(!isAdminRoute && reservationDetail.state == ReservationState.Completada){
-                  <button class="btn success">DEJAR RESEÑA</button>
-                }
+              @if (
+                !isAdminRoute &&
+                reservationDetail.state == ReservationState.Completada
+              ) {
+                <button class="btn success">DEJAR RESEÑA</button>
+              }
 
-                @if(isAdmin && isAdminRoute && reservationDetail.state == ReservationState.Pendiente){
-                  <button (click)="changeState(ReservationState.Aprobada)" class="btn success">APROBAR</button>
-                  <button (click)="openReasonDialog(ReservationState.Rechazada)" class="btn danger">RECHAZAR</button>
-                }
+              @if (
+                isAdmin &&
+                isAdminRoute &&
+                reservationDetail.state == ReservationState.Pendiente
+              ) {
+                <button
+                  (click)="changeState(ReservationState.Aprobada)"
+                  class="btn success"
+                >
+                  APROBAR
+                </button>
+                <button
+                  (click)="openReasonDialog(ReservationState.Rechazada)"
+                  class="btn danger"
+                >
+                  RECHAZAR
+                </button>
+              }
 
-                @if(isAdmin && isAdminRoute && reservationDetail.state == ReservationState.Aprobada){
-                  <button (click)="openReasonDialog(ReservationState.CanceladoPorAdmin)" class="btn danger">CANCELAR RESERVA</button>
-                }
-              </div>
-    
+              @if (
+                isAdmin &&
+                isAdminRoute &&
+                reservationDetail.state == ReservationState.Aprobada
+              ) {
+                <button
+                  (click)="openReasonDialog(ReservationState.CanceladoPorAdmin)"
+                  class="btn danger"
+                >
+                  CANCELAR RESERVA
+                </button>
+              }
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 }
 
- <p-dialog 
-  header="Comprobante" 
-  [modal]="true" 
-  [(visible)]="visible" 
-  [style]="{ width: '25rem' }"   
+<p-dialog
+  header="Comprobante"
+  [modal]="true"
+  [(visible)]="visibleVoucherModal"
   [draggable]="false"
   [resizable]="false"
-  >
-  <div style="padding: 10px;">
+  [style]="{ 'max-width': '1000px' }"
+>
+  <div style="padding: 10px">
     <img [src]="'https://localhost:7004/' + reservationDetail.voucherUrl" />
   </div>
 </p-dialog>
 
-<p-confirmdialog />
+<p-dialog
+  [header]="pendingState == ReservationState.Rechazada ? 'Rechazar reserva' : 'Cancelar reserva'"
+  [modal]="true"
+  [(visible)]="visible"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ 'min-width': '25rem' }"
+>
+  @if (pendingState == ReservationState.CanceladoPorAdmin) {
+    <div class="info-cancel">
+      <div class="info-icon">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <div class="info-content">
+        <strong>¡Atención!</strong>
+        <p>Al cancelar, el monto será reembolsado automáticamente.</p>
+        <p class="small-text">Cancelaciones frecuentes pueden afectar tu reputación.</p>
+      </div>
+    </div>
+  }
+
+  <textarea
+    pInputTextarea
+    [(ngModel)]="reason"
+    id="reason"
+    rows="3"
+    [placeholder]="pendingState == ReservationState.Rechazada ? 'Describe la razón del rechazo' : 'Describe la razón de la cancelación'"
+    class="full-width textarea"
     
+  ></textarea>
+  <ng-template pTemplate="footer">
+    <div style="display: flex; gap: 15px;">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        (click)="onReasonCancel()"
+      />
+      <p-button
+        label="Confirmar"
+        (click)="onReasonConfirm()"
+        [disabled]="!reason"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-confirmdialog />
