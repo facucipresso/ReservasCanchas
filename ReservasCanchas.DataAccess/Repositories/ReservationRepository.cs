@@ -58,6 +58,29 @@ namespace ReservasCanchas.DataAccess.Repositories
             return reservations;
         }
 
+        public async Task<List<Reservation>> GetReservationsByComplexAndDate(int complexId, DateOnly date)
+        {
+            var reservations = await _context.Reservation
+                    .Include(r => r.Field)
+                        .ThenInclude(f => f.Complex)
+                    .Include(r => r.User)   
+                    .Include(r => r.Review) 
+                    .Where(r => r.Field.Complex.Id == complexId && r.Date == date)
+                    .ToListAsync();
+            return reservations;
+        }
+
+        public async Task<List<Reservation>> GetReservationsByFieldAndDate(int fieldId, DateOnly date)
+        {
+            var reservations = await _context.Reservation
+                    .Include(r => r.Field)
+                    .Include(r => r.User)
+                    .Include(r => r.Review)
+                    .Where(r => r.FieldId == fieldId && r.Date == date)
+                    .ToListAsync();
+            return reservations;
+        }
+
 
         public async Task<List<Reservation>> GetReservationsByFieldId(int fieldId)
         {
