@@ -1,0 +1,29 @@
+<div class="review-card">
+  <div class="review-header">
+    <div class="user-info">
+      <p-avatar 
+        icon="pi pi-user"
+        styleClass="custom-avatar"
+        shape="circle" 
+        size="large">
+      </p-avatar>
+      
+      <div class="user-details">
+        <h4 class="user-name">{{ review.name }} {{ review.lastname }}</h4>
+        <span class="review-date">{{ review.creationDate | date:'longDate' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="review-rating">
+    <p-rating 
+        [ngModel]="review.score" 
+        [readonly]="true" 
+        iconCancelClass="hidden">
+    </p-rating>
+  </div>
+
+  <div class="review-body">
+    <p class="comment-text">"{{ review.comment }}"</p>
+  </div>
+</div>

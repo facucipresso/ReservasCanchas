@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ReservationForUserResponse } from '../../models/reservation/reservationforuserresponse.model';
 import { ReservationState } from '../../models/reservation/reservationstate.enum';
 import { TableModule } from 'primeng/table';
@@ -17,7 +17,7 @@ import { DatePicker } from 'primeng/datepicker';
   templateUrl: './reservation-list.html',
   styleUrl: './reservation-list.css',
 })
-export class ReservationList implements OnChanges {
+export class ReservationList implements OnChanges, OnInit {
 
   @Input() allReservations: ReservationForUserResponse[] = [];
   @Input() isAdminView: boolean = false;
@@ -32,6 +32,12 @@ export class ReservationList implements OnChanges {
   filterDate: Date = new Date(); 
   selectedFieldId: number | null = null; 
   fieldOptions: any[] = [];
+
+  maxDateValid = new Date();
+
+  ngOnInit(): void {
+    this.maxDateValid.setDate(this.maxDateValid.getDate() + 7);
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['allReservations']) {

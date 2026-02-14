@@ -22,6 +22,8 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Reservation } from '../../services/reservation';
 import { ReservationProcessRequest } from '../../models/reservation/reservationprocessrequest.model';
 import { Recblock } from '../../recblock/recblock';
+import { Review } from '../../services/review';
+import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
 type Mode = 'create' | 'edit';
 @Component({
   selector: 'app-complex-detail',
@@ -49,10 +51,13 @@ export class ComplexDetail implements OnInit{
 
   fieldFormMode:Mode = 'create';
   selectedField!: FieldModel;
+
+  reviews!: ReviewResponse[];
+
   constructor(private complexService:Complex, private route:ActivatedRoute, private messageService:MessageService,
      private authService: Auth, private router:Router, private fieldService:Field, 
      private servicesComplex:Complexservices, private confirmationService: ConfirmationService,
-     private reservationService:Reservation){}
+     private reservationService:Reservation, private reviewService:Review){}
 
   ngOnInit(){
     this.isLoading = true;
@@ -74,6 +79,11 @@ export class ComplexDetail implements OnInit{
 
       console.log('Selected date: ', this.selectedDate)
     });
+
+    this.reviewService.getReviewsByComplexId(this.complexId).subscribe((reviews) => {
+      this.reviews = reviews;
+      console.log(reviews);
+    })
   }
 
   loadComplex(complexId:number){

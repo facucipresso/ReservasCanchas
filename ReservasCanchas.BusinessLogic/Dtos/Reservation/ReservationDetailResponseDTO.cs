@@ -52,5 +52,9 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public string Number { get; set; } = string.Empty;
         public string Locality { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
+
+        // Review
+
+        public Boolean hasReservation { get; set; }
     }
 }
