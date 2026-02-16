@@ -196,9 +196,20 @@
 
               @if (
                 !isAdminRoute &&
-                reservationDetail.state == ReservationState.Completada
+                reservationDetail.state == ReservationState.Completada && 
+                !reservationDetail.hasReservation
               ) {
-                <button class="btn success">DEJAR RESEÑA</button>
+                <button class="btn success" (click)="openReviewDialog()">
+                  DEJAR RESEÑA
+                </button>
+              }
+
+              @if (
+                reservationDetail.state == ReservationState.Completada && reservationDetail.hasReservation
+              ) {
+                <button pButton severity="info" class="btn" (click)="openViewReviewDialog()">
+                  VER RESEÑA
+                </button>
               }
 
               @if (
@@ -297,6 +308,67 @@
       />
     </div>
   </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="Reseña del complejo"
+  [modal]="true"
+  [(visible)]="visibleReviewCreateModal"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="false"
+  [style]="{ 'min-width': '25rem' }"
+>
+<div class="rating-container">
+  <p>Calificación: </p>
+    <p-rating 
+        [(ngModel)]="ratingScore" 
+        [stars]="5">
+    </p-rating>
+    @if(ratingScore > 0){
+    <span class="rating-label">
+        {{ ratingScore }}/5
+    </span>
+    }
+  </div>
+  <textarea
+    pInputTextarea
+    [(ngModel)]="commentReview"
+    id="comment"
+    rows="3"
+    placeholder="Contanos tu experiencia con el complejo y tu reserva"
+    class="full-width textarea"
+    
+  ></textarea>
+  <ng-template pTemplate="footer">
+    <div style="display: flex; gap: 15px;">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        (click)="visibleReviewCreateModal = false; ratingScore = 0"
+      />
+      <p-button
+        label="Dejar reseña"
+        (click)="createReview(reservationDetail.reservationId)"
+        [disabled]="!ratingScore"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="Reseña"
+  [modal]="true"
+  [(visible)]="visibleReviewModal"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ 'min-width': '25rem' }"
+>
+  @if(review){
+    <app-review-card
+      [review] = "review"
+    ></app-review-card>
+  }
 </p-dialog>
 
 <p-confirmdialog />

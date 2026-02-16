@@ -9,6 +9,8 @@ import { CreateReservationResponse } from '../models/reservation/createreservati
 import { ChangeStateReservation } from '../models/ChangeStateReservationRequest.model';
 import { ReservationDetailResponse } from '../models/reservation/ReservationDetailResponse.model';
 import { ReservationForUserResponse } from '../models/reservation/reservationforuserresponse.model';
+import { ReviewResponse } from '../models/reservation/reviewresponse.model';
+import { CreateReviewRequest } from '../models/reservation/createreviewrequest.model';
 
 @Injectable({
   providedIn: 'root',

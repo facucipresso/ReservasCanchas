@@ -39,12 +39,30 @@
   gap: 1rem;
 }
 
-.rating-stars {
+.rating-container {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 1.6rem;
+  align-items: center; /* Alinea verticalmente al centro */
+  gap: 0.5rem; /* Espacio entre los elementos */
+  margin-top: 0.5rem; /* Separación del título o lo que haya arriba */
 }
+
+.label {
+  font-weight: 600;
+  color: black; /* Gris medio */
+  font-size: 1.2rem;
+}
+
+/* Estilo para el número (Badge) */
+.score-badge {
+  background-color: #f3f4f6; /* Fondo gris muy clarito */
+  color: #1f2937; /* Texto oscuro */
+  font-weight: 700;
+  font-size: 1.rrem;
+  padding: 2px 8px;
+  border-radius: 6px; /* Bordes redondeados */
+  border: 1px solid #e5e7eb;
+}
+
 
 .complex-description {
   font-size: 1.3rem;
@@ -128,4 +146,33 @@ p-panel ::ng-deep .p-toggleable-content {
 
 p-panel ::ng-deep .p-panel-content {
   padding: 1rem 1.5rem !important;
+}
+
+/* --- Estilos para cuando son pocas (Estático) --- */
+.static-reviews-container {
+    display: flex;
+    justify-content: center; /* Las centra en la pantalla */
+    gap: 1.5rem; /* Espacio entre ellas si hay 2 */
+    flex-wrap: wrap;
+}
+
+.static-card-wrapper {
+    width: 100%;
+    max-width: 350px; /* <--- ESTO EVITA QUE SE ESTIRE */
+    flex: 0 0 auto;
+}
+
+/* --- Estilos para el Carrusel --- */
+.carousel-item-wrapper {
+    padding: 10px;
+    height: 100%;
+    display: flex;       /* Flex para centrar si el slot es grande */
+    justify-content: center; 
+}
+
+/* Aplicamos el mismo límite de ancho dentro del carrusel */
+.carousel-item-wrapper app-review-card {
+    width: 100%;
+    max-width: 350px; /* <--- Mismo tamaño máximo para consistencia */
+    display: block;
 }

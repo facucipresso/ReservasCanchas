@@ -5,10 +5,15 @@ import { Message } from 'primeng/message';
 import { Panel } from 'primeng/panel';
 import { FieldModel } from '../../models/field.model';
 import { FieldTable } from '../field-table/field-table';
+import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
+import { ReviewCard } from '../../review-card/review-card';
+import { CarouselModule } from 'primeng/carousel';
+import { RatingModule } from 'primeng/rating';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-complex-info',
-  imports: [CommonModule,Message,Panel, FieldTable],
+  imports: [CommonModule,Message,Panel, FieldTable, ReviewCard, CarouselModule, RatingModule, FormsModule],
   templateUrl: './complex-info.html',
   styleUrl: './complex-info.css',
 })
@@ -17,11 +22,30 @@ export class ComplexInfo {
   @Input() isAdmin!: boolean;
   @Input() fields!: FieldModel[];
   @Input() selectedDate!: Date;
+  @Input() reviews!: ReviewResponse[];
 
   @Output() editField = new EventEmitter<FieldModel>();
   @Output() deleteField = new EventEmitter<number>();
   @Output() reserveField = new EventEmitter<{field:FieldModel, hour:string}>();
   @Output() recurringBlockField = new EventEmitter<FieldModel>();
+
+  responsiveOptions = [
+    {
+        breakpoint: '1199px',
+        numVisible: 3,
+        numScroll: 1
+    },
+    {
+        breakpoint: '991px',
+        numVisible: 2,
+        numScroll: 1
+    },
+    {
+        breakpoint: '767px',
+        numVisible: 1,
+        numScroll: 1
+    }
+  ];
 
   @ViewChild(FieldTable) fieldTableComponent!: FieldTable;
   backendUrl = 'https://localhost:7004';

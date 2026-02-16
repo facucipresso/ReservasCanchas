@@ -292,3 +292,16 @@
   color: #ea580c;
   font-weight: 500;
 }
+
+.rating-container {
+    display: flex;
+    align-items: center; 
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+}
+
+.rating-label {
+    font-weight: bold;
+    color: #666;
+    font-size: 0.9rem;
+}

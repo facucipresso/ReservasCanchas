@@ -13,12 +13,17 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ButtonModule } from 'primeng/button';
 import { TextareaModule } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
+import { CreateReviewRequest } from '../../models/reservation/createreviewrequest.model';
+import { RatingModule } from 'primeng/rating';
+import { Review } from '../../services/review';
+import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
+import { ReviewCard } from '../../review-card/review-card';
 
 @Component({
   selector: 'app-reservation-detail',
   standalone: true,
   imports: [CommonModule, DialogModule, ProgressSpinnerModule, FormsModule,
-    ReservationStatePipe, ConfirmDialog, ButtonModule, TextareaModule],
+    ReservationStatePipe, ConfirmDialog, ButtonModule, TextareaModule, RatingModule, ReviewCard],
   templateUrl: './reservation-detail.html',
   styleUrl: './reservation-detail.css',
   providers: [ConfirmationService]
@@ -35,9 +40,15 @@ export class ReservationDetail implements OnInit, OnChanges {
   pendingState: ReservationState | null = null;
   reason!: string;
   ReservationState = ReservationState; 
+  commentReview!: string;
+  ratingScore!: number;
+  visibleReviewCreateModal = false;
+  visibleReviewModal = false;
+  review!: ReviewResponse;
 
   constructor(
     private reservationService: Reservation, 
+    private reviewService: Review,
     private messageService : MessageService,
     private confirmationService : ConfirmationService,
     private router: Router
@@ -220,8 +231,58 @@ export class ReservationDetail implements OnInit, OnChanges {
       }
     });
   }
-  
-  
-  
+
+  openReviewDialog(){
+    this.visibleReviewCreateModal = true;
+    this.commentReview = '';
+
+  }
+
+  createReview(reservationId:number){
+    const reviewDTO: CreateReviewRequest = {
+      reservationId : reservationId,
+      comment : this.commentReview,
+      score : this.ratingScore
+    } 
+
+    this.reviewService.createReview(reviewDTO).subscribe({
+      next: (res) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Éxito',
+            detail: 'Reseña realizada correctamente.',
+            life: 2500
+          });
+          console.log(res)
+          this.reservationDetail.hasReservation = true;
+          this.visibleReviewCreateModal = false;
+          this.commentReview = '';
+          this.ratingScore = 0;
+        },
+        error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err?.error?.detail || 'Error al realizar la reseña.',
+            life: 3000
+          });
+          console.log(err);
+          this.visibleReviewCreateModal = false;
+          this.commentReview = '';
+          this.ratingScore = 0;
+        }
+      });
+    }
+
+    openViewReviewDialog(){
+      this.visibleReviewModal = true
+      this.reviewService.getReviewByReservationId(this.reservationDetail.reservationId).subscribe((review) => {
+        this.review = review;
+      })
+    }
 }
+  
+  
+  
+
 

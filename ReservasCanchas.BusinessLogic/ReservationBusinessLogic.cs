@@ -1079,7 +1079,11 @@ namespace ReservasCanchas.BusinessLogic
                 Street = complex.Street,
                 Number = complex.Number,
                 Locality = complex.Locality,
-                Phone = complex.Phone
+                Phone = complex.Phone,
+
+                //review
+                hasReservation = reservation.Review != null ? true : false
+
             };
 
             return response;
