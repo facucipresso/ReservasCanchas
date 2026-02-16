@@ -62,11 +62,12 @@
   [resizable]="false"
   [focusOnShow]="false">
 
-  <app-recblock 
-    *ngIf="visibleRecBlockModal"
-    [field]="selectedField"
-    (blocksUpdated)="infoComponent.refreshFieldReservations()"
-  ></app-recblock>
+  @if (visibleRecBlockModal) {
+    <app-recblock 
+      [field]="selectedField"
+      (blocksUpdated)="infoComponent.refreshFieldReservations()"
+    ></app-recblock>
+  }
 </p-dialog>
 }
 
@@ -79,14 +80,16 @@
   [resizable]="false"
   [style]="{ width: '60%', minHeight: '90%', color: '#111' }"
 >
-  <app-editcomplex-form
-  *ngIf="visibleEditComplexModal" 
-  [complex]="complex" 
-  [allServices]="allServices"
-  (saveBasic)="updateBasicInfo($event)"
-  (saveTimeSlots)="updateTimeSlots($event)"
-  (saveServices)="updateServices($event)"
-  ></app-editcomplex-form>
+
+  @if (visibleEditComplexModal) {
+    <app-editcomplex-form
+      [complex]="complex" 
+      [allServices]="allServices"
+      (saveBasic)="updateBasicInfo($event)"
+      (saveTimeSlots)="updateTimeSlots($event)"
+      (saveServices)="updateServices($event)"
+    ></app-editcomplex-form>
+  }
 </p-dialog>
 
 <p-dialog
@@ -98,16 +101,18 @@
   [resizable]="false"
   [focusOnShow]="false"
 >
-<app-fieldform 
-  *ngIf="visibleFieldFormModal" 
-  [complex]="complex" 
-  [field]="selectedField" 
-  [formMode]="fieldFormMode" 
-  (create)="createField($event)"
-  (updateBasic)="updateBasicInfoField($event)"
-  (updateTimeSlots)="updateTimeSlotsField($event)"
-  (updateState)="updateStateField($event)"
-></app-fieldform>
+
+@if (visibleFieldFormModal) {
+  <app-fieldform 
+    [complex]="complex" 
+    [field]="selectedField" 
+    [formMode]="fieldFormMode" 
+    (create)="createField($event)"
+    (updateBasic)="updateBasicInfoField($event)"
+    (updateTimeSlots)="updateTimeSlotsField($event)"
+    (updateState)="updateStateField($event)"
+  ></app-fieldform>
+}
 </p-dialog>
 
 

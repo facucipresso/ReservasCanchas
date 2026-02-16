@@ -112,30 +112,31 @@
                     }}</span>
                   </div>
 
-                  <div class="breakdown-row" *ngIf="illuminationCost > 0">
-                    <span>
-                      <i
-                        class="pi pi-bolt"
-                        style="color: #eab308; font-size: 0.9rem"
-                      ></i>
-                      Iluminación (+20%)
-                    </span>
-                    <span>{{
-                      illuminationCost | currency: "ARS" : "symbol-narrow"
-                    }}</span>
-                  </div>
+                  @if (illuminationCost > 0) {
+                    <div class="breakdown-row">
+                      <span>
+                        <i
+                          class="pi pi-bolt"
+                          style="color: #eab308; font-size: 0.9rem"
+                        ></i>
+                        Iluminación (+20%)
+                      </span>
+                      <span>
+                        {{ illuminationCost | currency: "ARS" : "symbol-narrow" }}
+                      </span>
+                    </div>
+                  }
 
                   <div class="breakdown-divider"></div>
 
-                  <div
-                    class="breakdown-row total-row"
-                    *ngIf="illuminationCost > 0"
-                  >
-                    <span>Subtotal</span>
-                    <span>{{
-                      totalAmount | currency: "ARS" : "symbol-narrow"
-                    }}</span>
-                  </div>
+                  @if (illuminationCost > 0) {
+                    <div class="breakdown-row total-row">
+                      <span>Subtotal</span>
+                      <span>
+                        {{ totalAmount | currency: "ARS" : "symbol-narrow" }}
+                      </span>
+                    </div>
+                  }
                 </div>
 
                 <div class="payment-selection">
