@@ -6,7 +6,7 @@
       <p-progress-spinner></p-progress-spinner>
     </div>
 }@else{
-<div class="complex-detail-container" [class.disabled]="complex.state === 'Deshabilitado'">
+<div class="complex-detail-container">
     <app-complex-info 
     #infoComponent
     [complex]="complex" 
@@ -87,6 +87,7 @@
   (saveBasic)="updateBasicInfo($event)"
   (saveTimeSlots)="updateTimeSlots($event)"
   (saveServices)="updateServices($event)"
+  (saveImage)="updateImage($event)"
   ></app-editcomplex-form>
 </p-dialog>
 

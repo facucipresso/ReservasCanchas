@@ -22,6 +22,13 @@
     >
       Servicios
     </button>
+        <button
+      type="button"
+      (click)="setSection('image')"
+      [ngClass]="{ active: activeSection === 'image' }"
+    >
+      Imagen
+    </button>
   </div>
   @if(activeSection === 'basic'){
   <form
@@ -252,4 +259,51 @@
       />
     </div>
   </form>
+  }@if(activeSection === 'image'){
+    <div class="upload-section">
+      <label>Seleccionar nueva imagen del complejo:</label>
+      <div class="custom-fileupload">
+        <p-fileupload
+          #fu
+          mode="basic"
+          chooseLabel="Cargar imagen"
+          chooseIcon="pi pi-upload"
+          name="image"
+          accept="image/*"
+          maxFileSize="5000000"
+          [auto]="true"
+          customUpload="true"
+          (uploadHandler)="onFileSelect($event)"
+          styleClass="p-button-outlined w-full"
+        ></p-fileupload>
+      </div>
+      @if(selectedImage) {
+        <div class="file-selected-info" style="margin-top: 10px;">
+          <i class="pi pi-image" style="margin-right: 5px;"></i>
+          <span style="font-weight: bold;">{{ selectedImage!.name }}</span>
+          <i
+            class="pi pi-times text-red-500"
+            style="margin-left: 10px; cursor: pointer; color: red;"
+            (click)="clearFile()"
+            pTooltip="Quitar archivo"
+          ></i>
+        </div>
+      }
+      @if(previewUrl){
+        <div class="image-preview">
+          <img [src]="previewUrl" alt="Preview" />
+        </div>
+        } @if (imageErrorMessage) {
+        <small style="color: red; display: block">
+          {{ imageErrorMessage }}
+        </small>
+        }
+    </div>
+        <div class="form-actions">
+      <p-button
+        label="Confirmar cambios"
+        (click)="onSubmitImage()"
+        [disabled]="!selectedImage"
+      />
+    </div>
   }

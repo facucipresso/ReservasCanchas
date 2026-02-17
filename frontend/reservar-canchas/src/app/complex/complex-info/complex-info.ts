@@ -10,10 +10,12 @@ import { ReviewCard } from '../../review-card/review-card';
 import { CarouselModule } from 'primeng/carousel';
 import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { PopoverModule } from 'primeng/popover';
 
 @Component({
   selector: 'app-complex-info',
-  imports: [CommonModule,Message,Panel, FieldTable, ReviewCard, CarouselModule, RatingModule, FormsModule],
+  imports: [CommonModule,Message,Panel, FieldTable, ReviewCard, CarouselModule, RatingModule, FormsModule, PopoverModule, ButtonModule],
   templateUrl: './complex-info.html',
   styleUrl: './complex-info.css',
 })

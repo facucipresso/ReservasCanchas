@@ -11,11 +11,14 @@ import { InputNumber } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-type EditSection = 'basic' | 'timeslots' | 'services';
+import { FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
+import { TooltipModule } from 'primeng/tooltip';
+type EditSection = 'basic' | 'timeslots' | 'services' | 'image';
 
 @Component({
   selector: 'app-editcomplex-form',
-  imports: [FloatLabel,InputText,SelectModule,Checkbox,ReactiveFormsModule,InputNumber,TextareaModule,ButtonModule,CommonModule],
+  imports: [FloatLabel,InputText,SelectModule,Checkbox,ReactiveFormsModule,
+    InputNumber,TextareaModule,ButtonModule,CommonModule, FileUploadModule, TooltipModule],
   templateUrl: './editcomplex-form.html',
   styleUrl: './editcomplex-form.css',
 })
@@ -26,6 +29,7 @@ export class EditcomplexForm implements OnInit {
   @Output() saveBasic = new EventEmitter<any>();
   @Output() saveTimeSlots = new EventEmitter<any>();
   @Output() saveServices = new EventEmitter<number[]>();
+  @Output() saveImage = new EventEmitter<any>();
   editBasicInfoForm!:FormGroup;
   editTimeSlotsForm!:FormGroup;
   editServicesForm!:FormGroup;
@@ -37,6 +41,10 @@ export class EditcomplexForm implements OnInit {
     '20:00','21:00','22:00','23:00','00:00','01:00','02:00'
   ]
   invalidSchedulesError: string | null = null;
+  selectedImage :File | null = null;
+  imageErrorMessage:string | null = null;
+  previewUrl: string | null = null;
+
   constructor(private fb: FormBuilder){}
 
   ngOnInit(){
@@ -188,5 +196,54 @@ export class EditcomplexForm implements OnInit {
     console.log('ServicesIds:', ids);
     this.saveServices.emit(ids);
     this.editServicesForm.markAsPristine();
+  }
+
+  onFileSelect(event: FileUploadHandlerEvent){
+    const file = event.files[0];
+    this.selectedImage = file;
+    console.log(this.selectedImage);
+
+    this.imageErrorMessage = null;
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!validTypes.includes(this.selectedImage!.type)) {
+      this.imageErrorMessage = 'Formato de imagen inválido (solo JPG o PNG)';
+      this.selectedImage = null;
+      return;
+    }
+
+    const maxSizeInBytes = 5 * 1024 * 1024; 
+    if (this.selectedImage!.size > maxSizeInBytes) {
+      this.imageErrorMessage = 'La imagen no puede superar 5 MB de tamaño';
+      this.selectedImage = null;
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  clearFile(){
+    this.selectedImage = null;
+    this.imageErrorMessage = null;
+    this.previewUrl = null;
+  }
+
+  onSubmitImage(){
+    const form= new FormData();
+
+    if (!this.selectedImage) {
+      this.imageErrorMessage = "La imagen del complejo es obligatoria"
+      return;
+    }
+
+    form.append('image', this.selectedImage, this.selectedImage?.name);
+
+    this.saveImage.emit(form);
+
+    this.clearFile();
   }
 }

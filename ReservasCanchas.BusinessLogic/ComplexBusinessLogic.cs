@@ -344,6 +344,30 @@ namespace ReservasCanchas.BusinessLogic
             return ComplexMapper.toComplexDetailResponseDTO(complex);
         }
 
+        public async Task<ComplexDetailResponseDTO> UpdateImageAsync(int complexId, IFormFile image, string uploadPath)
+        {
+            var complex = await GetComplexBasicOrThrow(complexId);
+            //Chequeamos owner
+            var userId = _authService.GetUserId();
+            //var userId = 1;
+            ValidateOwnerShip(complex, userId);
+            ValidateEditable(complex);
+
+            var oldFileName = Path.GetFileName(complex.ImagePath);
+            var oldFullPath = Path.Combine(uploadPath, oldFileName);
+            Console.WriteLine($"VIEJA IMAGEN: {oldFullPath}");
+            if (File.Exists(oldFullPath))
+            {
+                File.Delete(oldFullPath);
+            }
+
+            string newRelativePath = await ValidateAndSaveImage(image, uploadPath);
+
+            complex.ImagePath = newRelativePath;
+            await _complexRepository.SaveAsync();
+            return ComplexMapper.toComplexDetailResponseDTO(complex);
+        }
+
         public async Task<ComplexDetailResponseDTO> ChangeStateComplexAsync(int complexId, ComplexState newState)
         {//Hay transiciones de estado que puede hacer el superadmin y otras que puede hacer el admin del complejo.
 
@@ -693,6 +717,7 @@ namespace ReservasCanchas.BusinessLogic
             // Generar nombre único
             var fileName = $"{Guid.NewGuid()}{ext}";
             var fullPath = Path.Combine(uploadPath, fileName);
+            Console.WriteLine($"NUEVA IMAGEN: {fullPath}");
 
             using (var stream = new FileStream(fullPath, FileMode.Create))
                 await image.CopyToAsync(stream);

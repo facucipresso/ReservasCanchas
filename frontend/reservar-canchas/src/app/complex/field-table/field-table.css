@@ -65,9 +65,13 @@ h3{
 
 
 th{
-  text-align: center;
+  text-align: center !important;
 }
 
 td{
-  text-align: center;
+  text-align: center !important;
+}
+
+.disabled{
+  background-color: #ffedd5!important;
 }
