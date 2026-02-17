@@ -90,7 +90,7 @@ export class ComplexDetail implements OnInit{
     this.complexService.getComplexById(complexId).subscribe({
       next: (complex) => {
         this.complex = complex;
-        console.log(this.complex);
+        console.log('Complejo: ', this.complex);
         this.isAdmin = this.complex.userId === parseInt(this.authService.getUserId());
         this.loadFields(this.complexId);
         this.loadServices();
@@ -117,7 +117,7 @@ export class ComplexDetail implements OnInit{
     this.fieldService.getFieldsByComplexId(complexId).subscribe({
       next: (fields) => {
         this.fields = fields;
-        console.log(fields);
+        console.log('CANCHAS: ', fields);
       }
     })
   }
@@ -231,6 +231,33 @@ export class ComplexDetail implements OnInit{
           this.messageService.add({
             severity:'success',
             summary:'Servicios del complejo actualizados exitosamente.',
+            life: 2000
+          })        
+          this.loadComplex(this.complexId);
+        },
+        error: err => {
+          console.log('ERROR DEL BACKEND:', err);
+          const backendError = err?.error;
+          const message = backendError?.detail || 'Error desconocido';
+
+          this.messageService.add({
+            severity:'error',
+            summary:backendError?.title || 'Error',
+            detail: message,
+            life: 2000
+          })        
+        } 
+      });
+  }
+
+  updateImage(formImage: FormData){
+this.complexService.updateComplexImage(
+      formImage,
+      this.complex.id).subscribe({
+        next: response => {
+          this.messageService.add({
+            severity:'success',
+            summary:'Imagen del complejo actualizada exitosamente.',
             life: 2000
           })        
           this.loadComplex(this.complexId);

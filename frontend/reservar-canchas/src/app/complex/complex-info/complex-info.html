@@ -9,6 +9,31 @@
       <ng-content select="[delete-complex-button]"></ng-content>
       <ng-content select="[changestate-complex-button]"></ng-content>
     </div>
+    @if(isAdmin){
+      <div class="complex-state-container">
+        <span class="state-label">Estado del complejo:</span>
+        <span class="state-badge" [ngClass]="complex.state.toLowerCase()">
+          {{ complex.state }}
+        </span>
+        <i class="pi pi-info-circle info-icon" 
+            (mouseenter)="op.toggle($event)" 
+            (mouseleave)="op.toggle($event)"
+            style="cursor: pointer; margin-left: 8px; color: #666;">
+        </i>
+        <p-popover #op>
+          <div class="popover-info-content">
+            <h4 class="popover-title">Referencia de Estados</h4>
+            <ul class="popover-list">
+              <li><span class="dot pendiente"></span> <strong>Pendiente:</strong> En proceso de verificación.</li>
+              <li><span class="dot habilitado"></span> <strong>Habilitado:</strong> Disponible para reservas.</li>
+              <li><span class="dot deshabilitado"></span> <strong>Deshabilitado:</strong> Inactivo temporalmente. No aparece en búsquedas.</li>
+              <li><span class="dot bloqueado"></span> <strong>Bloqueado:</strong> Suspendido por administración. Debes comunicarte con soporte.</li>
+              <li><span class="dot rechazado"></span> <strong>Rechazado:</strong> No cumple requisitos. Puedes editarlo y enviarlo para nueva verificación.</li>
+            </ul>
+          </div>
+        </p-popover>
+      </div>
+    }
     @if (complex.averageRating) {
       <div class="rating-container">
         <span class="label">Calificación:</span>

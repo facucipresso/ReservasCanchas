@@ -95,6 +95,14 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(updated);
         }
 
+        [HttpPatch("{id}/image")]
+        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexImage([FromRoute] int id, [FromForm] IFormFile image)
+        {
+            var uploadPath = Path.Combine(_env.WebRootPath, "uploads", "complexes");
+            var updated = await _complexBusinessLogic.UpdateImageAsync(id, image, uploadPath);
+            return Ok(updated);
+        }
+
         [HttpPatch("{id}/state")]
         public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexState([FromRoute] int id, [FromBody] UpdateComplexStateDTO requestUpdateDTO)
         {//Cambio de estado del complejo (Super Admin o Admin del complejo, dependiendo de la transición)

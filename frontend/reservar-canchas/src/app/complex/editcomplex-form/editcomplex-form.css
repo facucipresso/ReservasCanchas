@@ -1,6 +1,6 @@
 .section-tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
+  grid-template-columns: repeat(4, 1fr); 
   width: 100%;
   margin-bottom: 5px;
 }
@@ -175,4 +175,35 @@ small {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
+}
+
+/* Upload */
+.upload-section {
+  padding: 0.5rem 0;
+  margin-top: 1rem;
+}
+
+.upload-section label {
+  display: block;
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.custom-fileupload {
+  width: 100%;
+}
+
+.image-preview {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.image-preview img {
+  max-width: 250px;
+  max-height: 250px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
 }

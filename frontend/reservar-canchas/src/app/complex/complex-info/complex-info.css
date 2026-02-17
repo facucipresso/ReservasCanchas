@@ -43,7 +43,6 @@
   display: flex;
   align-items: center; /* Alinea verticalmente al centro */
   gap: 0.5rem; /* Espacio entre los elementos */
-  margin-top: 0.5rem; /* Separación del título o lo que haya arriba */
 }
 
 .label {
@@ -175,4 +174,108 @@ p-panel ::ng-deep .p-panel-content {
     width: 100%;
     max-width: 350px; /* <--- Mismo tamaño máximo para consistencia */
     display: block;
+}
+
+.complex-state-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.state-label {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #000;
+}
+
+/* Base del Badge */
+.state-badge {
+  padding: 6px 14px;
+  border-radius: 20px; /* Estilo píldora */
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid transparent;
+}
+
+/* Variaciones por estado */
+.state-badge.habilitado {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.state-badge.pendiente {
+  background-color: #fef9c3;
+  color: #a16207;
+  border-color: #fef08a;
+}
+
+.state-badge.bloqueado {
+  background-color: #fee2e2;
+  color: #b91c1c; /* Rojo fuerte */
+  border-color: #fecaca;
+}
+
+.state-badge.rechazado {
+  background-color: #fff1f2;
+  color: #fb7185; /* Rojo claro / rosado fuerte */
+  border-color: #ffe4e6;
+}
+
+.state-badge.deshabilitado {
+  background-color: #ffedd5;
+  color: #c2410c; /* Naranja */
+  border-color: #fed7aa;
+}
+
+.popover-info-content {
+  padding: 0.5rem;
+  max-width: 350px;
+}
+
+.popover-title {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+  color: #111;
+}
+
+.popover-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.popover-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: #444;
+}
+
+/* Los puntos de color para vinculación visual rápida */
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot.habilitado { background-color: #22c55e; }
+.dot.pendiente { background-color: #eab308; }
+.dot.bloqueado { background-color: #ef4444; }
+.dot.rechazado { background-color: #f87171; }
+.dot.deshabilitado { background-color: #f97316; }
+
+/* Personalización del componente PrimeNG (opcional) */
+::ng-deep .p-popover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+  border-radius: 12px !important;
+  border: 1px solid #e5e7eb !important;
 }

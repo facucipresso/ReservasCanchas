@@ -6,7 +6,7 @@
       <p-progress-spinner></p-progress-spinner>
     </div>
 }@else{
-<div class="complex-detail-container" [class.disabled]="complex.state === 'Deshabilitado'">
+<div class="complex-detail-container">
     <app-complex-info 
     #infoComponent
     [complex]="complex" 
@@ -81,16 +81,15 @@
   [resizable]="false"
   [style]="{ width: '60%', minHeight: '90%', color: '#111' }"
 >
-
-  @if (visibleEditComplexModal) {
-    <app-editcomplex-form
-      [complex]="complex" 
-      [allServices]="allServices"
-      (saveBasic)="updateBasicInfo($event)"
-      (saveTimeSlots)="updateTimeSlots($event)"
-      (saveServices)="updateServices($event)"
-    ></app-editcomplex-form>
-  }
+  <app-editcomplex-form
+  *ngIf="visibleEditComplexModal" 
+  [complex]="complex" 
+  [allServices]="allServices"
+  (saveBasic)="updateBasicInfo($event)"
+  (saveTimeSlots)="updateTimeSlots($event)"
+  (saveServices)="updateServices($event)"
+  (saveImage)="updateImage($event)"
+  ></app-editcomplex-form>
 </p-dialog>
 
 <p-dialog
