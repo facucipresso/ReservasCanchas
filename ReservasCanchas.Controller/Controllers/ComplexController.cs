@@ -7,6 +7,7 @@ using ReservasCanchas.BusinessLogic.Dtos.Notification;
 using ReservasCanchas.BusinessLogic.JWTService;
 using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
+using System.Runtime.CompilerServices;
 
 namespace ReservasCanchas.Controller.Controllers
 {
@@ -15,14 +16,16 @@ namespace ReservasCanchas.Controller.Controllers
     public class ComplexController : ControllerBase
     {
         private readonly ComplexBusinessLogic _complexBusinessLogic;
+        private readonly StatisticsBusinessLogic _statisticsBusinessLogic;
         private readonly TokenService _tokenService;
         private readonly AuthService _authService;
         private readonly UserManager<User> _userManager;
         private readonly IWebHostEnvironment _env; // para WebRootPath
-        public ComplexController(ComplexBusinessLogic complexBusinessLogic, IWebHostEnvironment env,
+        public ComplexController(ComplexBusinessLogic complexBusinessLogic, StatisticsBusinessLogic statisticsBusinessLogic, IWebHostEnvironment env,
             TokenService tokenService, UserManager<User> userManager, AuthService authService)
         {
             _complexBusinessLogic = complexBusinessLogic;
+            _statisticsBusinessLogic = statisticsBusinessLogic;
             _env = env;
             _tokenService = tokenService;
             _userManager = userManager;
@@ -60,22 +63,29 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(complex);
         }
 
+        [HttpGet("stats/{id}")]
+        public async Task<ActionResult<ComplexStatsDTO>> GetComplexStats([FromRoute] int id, [FromQuery] DateOnly date, [FromQuery] int? fieldId)
+        {
+            var stats = await _statisticsBusinessLogic.GetComplexStats(id, date, fieldId);
+            return Ok(stats);
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateComplex([FromForm] CreateComplexRequestDTO requestCreateDTO)
         {//Creacion de complejo
             var uploadPath = Path.Combine(_env.WebRootPath, "uploads", "complexes");
             var created = await _complexBusinessLogic.CreateComplexAsync(requestCreateDTO, uploadPath);
-            
+
             var userId = _authService.GetUserId();
             //var user = await _userManager.FindByIdAsync(userId.ToString());
             //var newToken = await _tokenService.CreateToken(user);
             var newToken = await _tokenService.CreateTokenByUserId(userId);
 
-            return CreatedAtAction(nameof(GetComplexById), new { id = created.Id }, new{complex = created,token = newToken});      
+            return CreatedAtAction(nameof(GetComplexById), new { id = created.Id }, new { complex = created, token = newToken });
         }
 
         [HttpPatch("{id}/basic-info")]
-        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexBasicInfo([FromRoute] int id,[FromBody] UpdateComplexBasicInfoRequestDTO requestUpdateDTO)
+        public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexBasicInfo([FromRoute] int id, [FromBody] UpdateComplexBasicInfoRequestDTO requestUpdateDTO)
         {//Edicion de info basica del complejo (Solo admin del complejo)
             var updatedComplexDTO = await _complexBusinessLogic.UpdateComplexAsync(id, requestUpdateDTO);
             return Ok(updatedComplexDTO);
@@ -137,10 +147,10 @@ namespace ReservasCanchas.Controller.Controllers
         }
         */
 
-        [HttpGet("getComplexOwner/{idComplex}")]
-        public async Task<ActionResult<ComplexOwnerDTO>> GetComplexOwner(int idComplex)
+        [HttpGet("getComplexOwner/{id}")]
+        public async Task<ActionResult<ComplexOwnerDTO>> GetComplexOwner([FromRoute] int id)
         {
-            var datos = await _complexBusinessLogic.GetComplexOwnerAsync(idComplex);
+            var datos = await _complexBusinessLogic.GetComplexOwnerAsync(id);
             return Ok(datos);
         }
 

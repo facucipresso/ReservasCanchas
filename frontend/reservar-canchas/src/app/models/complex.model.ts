@@ -17,6 +17,7 @@ export interface ComplexModel{
   percentageSign:number;
   startIlumination:string;
   aditionalIlumination:number;
+  cancelationReason?:string;
   state:ComplexState;
   services: ComplexServiceModel[];
   timeSlots: TimeSlotComplexModel[];

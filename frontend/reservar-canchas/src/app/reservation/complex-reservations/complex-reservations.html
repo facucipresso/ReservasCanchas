@@ -1,29 +1,75 @@
 <div class="main-container">
-
-  <app-reservation-list
-    [allReservations]="allReservations"
-    [selectedReservationId]="selectedReservationId"
-    [isAdminView]="true"
-    [complex] = complex
-    [fields] = fields
-    (onSelect)="selectedReservationId = $event"
-    (onSearch)="searchReservations($event)"
-  ></app-reservation-list>
-  <div class="detail-reservations card-style" style="padding: 0;">
-    @if(!selectedReservationId){
-      <div class="empty-state">
-        <i class="pi pi-info-circle empty-icon"></i>
-        <h3>Selecciona una reserva</h3>
-        <p>Haz clic en "Ver Detalle" en la lista para ver la información completa aquí.</p>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon occupancy-bg">
+        <i class="pi pi-chart-bar"></i>
       </div>
-    }@else{
-      <app-reservation-detail
+      <div class="stat-content">
+        <span class="stat-label">Ocupación</span>
+        <div class="stat-value">
+          {{
+            (complexStats.occupiedSlots || 0) /
+              (complexStats.totalPossibleSlots || 1) | percent: "1.1-1"
+          }}
+        </div>
+        <div class="stat-subtext">
+          {{ complexStats.occupiedSlots }} de
+          {{ complexStats.totalPossibleSlots }} turnos
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon revenue-bg">
+        <i class="pi pi-money-bill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Ganancias Totales</span>
+        <div class="stat-value">
+          {{ complexStats.totalRevenue | currency: "ARS" : "symbol-narrow" }}
+        </div>
+        <div class="stat-subtext">Ingresos del día</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon reservations-bg">
+        <i class="pi pi-calendar"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Reservas</span>
+        <div class="stat-value">{{ complexStats.occupiedSlots }}</div>
+        <div class="stat-subtext">Aprobadas / Completadas</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-wrapper">
+    <app-reservation-list
+      [allReservations]="allReservations"
       [selectedReservationId]="selectedReservationId"
-      (stateChanged)="onReservationStateUpdated($event)"
-      >
-
-      </app-reservation-detail>
-    }
-
+      [isAdminView]="true"
+      [complex]="complex"
+      [fields]="fields"
+      (onSelect)="selectedReservationId = $event"
+      (onSearch)="searchReservations($event)"
+    ></app-reservation-list>
+    <div class="detail-reservations card-style" style="padding: 0">
+      @if (!selectedReservationId) {
+        <div class="empty-state">
+          <i class="pi pi-info-circle empty-icon"></i>
+          <h3>Selecciona una reserva</h3>
+          <p>
+            Haz clic en "Ver Detalle" en la lista para ver la información
+            completa aquí.
+          </p>
+        </div>
+      } @else {
+        <app-reservation-detail
+          [selectedReservationId]="selectedReservationId"
+          (stateChanged)="onReservationStateUpdated($event)"
+        >
+        </app-reservation-detail>
+      }
+    </div>
   </div>
 </div>
