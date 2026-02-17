@@ -419,9 +419,11 @@ namespace ReservasCanchas.BusinessLogic
         }
 
         // metodo que hace lo mismo que el de arriba pero refactorizado sin bugs
-        public async Task<ComplexDetailResponseDTO> ChangeStateCompIexAsync( int complexId,ComplexState newState)
+        /*
+        public async Task<ComplexDetailResponseDTO> ChangeStateCompIexAsync( int complexId, UpdateComplexStateDTO requestUpdateDTO)
         {
             var complex = await GetComplexBasicOrThrow(complexId);
+            var newState = requestUpdateDTO.State;
 
             if (complex.State == newState)
                 throw new BadRequestException("El complejo ya se encuentra en este estado");
@@ -481,6 +483,8 @@ namespace ReservasCanchas.BusinessLogic
                         throw new BadRequestException(
                             "No se puede bloquear el complejo porque tiene reservas activas");
                     }
+                    if (string.IsNullOrWhiteSpace(requestUpdateDTO.CancelationReason))
+                        throw new BadRequestException("Debe ingresar un motivo");
 
                     complex.State = newState;
                     changed = true;
@@ -501,22 +505,203 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException(
                     $"No se puede cambiar el estado de {previousState} a {newState}");
 
+
             // NOTIFICACIÓN (POST CAMBIO)
-            if (
-                userRol == "SuperAdmin" &&
-                previousState == ComplexState.Pendiente &&
-                (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado)
-            )
+            if (userRol == "SuperAdmin" && (previousState == ComplexState.Pendiente && newState == ComplexState.Habilitado))
             {
                 var notification = new Notification
                 {
                     UserId = complex.UserId,
-                    Title = newState == ComplexState.Habilitado
-                        ? "Tu complejo fue aprobado"
-                        : "Tu complejo fue rechazado",
-                    Message = newState == ComplexState.Habilitado
-                        ? $"Tu complejo '{complex.Name}' fue aprobado."
-                        : $"Tu complejo '{complex.Name}' fue rechazado.",
+                    Title = "Tu complejo fue aprobado",
+                    Message =  $"Tu complejo '{complex.Name}' fue aprobado.",
+                    ComplexId = complex.Id,
+                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                };
+
+                await _notificationBusinessLogic.CreateNotificationAsync(notification);
+
+            }else if(userRol == "SuperAdmin" && (previousState == ComplexState.Pendiente && newState == ComplexState.Rechazado))
+            {
+                var notification = new Notification
+                {
+                    UserId = complex.UserId,
+                    Title = "Tu complejo fue rechazado",
+                    Message =  $"La complejo: {complex.Name} fue rechazado por el administrador. " +
+                                      (requestUpdateDTO.CancelationReason != null ?
+                                        $"Motivo: {requestUpdateDTO.CancelationReason}" :
+                                        ""),
+                    ComplexId = complex.Id,
+                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                };
+                
+                //ACA IRIA LO DE PONER EL CANCELATIONREAZOM, LA PROPIDAD DEL COMPLEJO (QUE TODAVIA NO TENEMOS) PARA DESPUES LLEVARLA AL COMPLEJO
+                complex.CancelationReason = requestUpdateDTO.CancelationReason;
+                await _notificationBusinessLogic.CreateNotificationAsync(notification);
+            
+            }
+            else if (userRol == "SuperAdmin" && (previousState == ComplexState.Habilitado && newState == ComplexState.Bloqueado))
+            {
+                var notification = new Notification
+                {
+                    UserId = complex.UserId,
+                    Title = "Tu complejo fue bloqueado",
+                    Message = $"La complejo: {complex.Name} fue bloqueado por el administrador. " +
+                                      (requestUpdateDTO.CancelationReason != null ?
+                                        $"Motivo: {requestUpdateDTO.CancelationReason}" :
+                                        ""),
+                    ComplexId = complex.Id,
+                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                };
+
+                //ACA IRIA LO DE PONER EL CANCELATIONREAZOM, LA PROPIDAD DEL COMPLEJO (QUE TODAVIA NO TENEMOS) PARA DESPUES LLEVARLA AL COMPLEJO
+                complex.CancelationReason = requestUpdateDTO.CancelationReason;
+                await _notificationBusinessLogic.CreateNotificationAsync(notification);
+            }
+
+            await _complexRepository.SaveAsync();
+
+            return ComplexMapper.toComplexDetailResponseDTO(complex);
+        }
+        */
+
+        public async Task<ComplexDetailResponseDTO> ChangeStateCompIexAsync(int complexId, UpdateComplexStateDTO requestUpdateDTO)
+        {
+            var complex = await GetComplexBasicOrThrow(complexId);
+            var newState = requestUpdateDTO.State;
+
+            if (complex.State == newState)
+                throw new BadRequestException("El complejo ya se encuentra en este estado");
+
+            var userId = _authService.GetUserId();
+            var userRol = _authService.GetUserRole();
+
+            // Validación de permisos base
+            if (userRol == "AdminComplejo")
+            {
+                ValidateOwnerShip(complex, userId);
+            }
+            else if (userRol != "SuperAdmin")
+            {
+                throw new ForbiddenException("No tiene los permisos para hacer esta operación");
+            }
+
+            var previousState = complex.State;
+            bool changed = false;
+
+            // TRANSICIONES ADMIN COMPLEJO
+            if (userRol == "AdminComplejo")
+            {
+                if (
+                    (previousState == ComplexState.Habilitado && newState == ComplexState.Deshabilitado) ||
+                    (previousState == ComplexState.Deshabilitado && newState == ComplexState.Habilitado) ||
+                    (previousState == ComplexState.Rechazado && newState == ComplexState.Pendiente)
+                )
+                {
+                    complex.State = newState;
+                    changed = true;
+                }
+            }
+
+            // TRANSICIONES SUPERADMIN
+            if (userRol == "SuperAdmin")
+            {
+                // Pendiente → Habilitado / Rechazado
+                if (
+                    previousState == ComplexState.Pendiente &&
+                    (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado)
+                )
+                {
+                    if (newState == ComplexState.Rechazado &&
+                        string.IsNullOrWhiteSpace(requestUpdateDTO.CancelationReason))
+                    {
+                        throw new BadRequestException("Debe ingresar un motivo");
+                    }
+
+                    complex.State = newState;
+                    changed = true;
+                }
+
+                // Habilitado / Deshabilitado → Bloqueado
+                else if (
+                    (previousState == ComplexState.Habilitado || previousState == ComplexState.Deshabilitado) &&
+                    newState == ComplexState.Bloqueado
+                )
+                {
+                    if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
+                    {
+                        throw new BadRequestException(
+                            "No se puede bloquear el complejo porque tiene reservas activas");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(requestUpdateDTO.CancelationReason))
+                        throw new BadRequestException("Debe ingresar un motivo");
+
+                    complex.State = newState;
+                    changed = true;
+                }
+
+                // Bloqueado → Habilitado
+                else if (
+                    previousState == ComplexState.Bloqueado &&
+                    newState == ComplexState.Habilitado
+                )
+                {
+                    complex.State = newState;
+                    changed = true;
+                }
+            }
+
+            if (!changed)
+                throw new BadRequestException(
+                    $"No se puede cambiar el estado de {previousState} a {newState}");
+
+            // Solo guardar motivo si el estado final es Rechazado o Bloqueado
+            if (complex.State == ComplexState.Rechazado ||
+                complex.State == ComplexState.Bloqueado)
+            {
+                complex.CancelationReason = requestUpdateDTO.CancelationReason;
+            }
+            else
+            {
+                complex.CancelationReason = null;
+            }
+
+            // NOTIFICACIONES
+            if (userRol == "SuperAdmin" && (previousState == ComplexState.Pendiente && newState == ComplexState.Habilitado))
+            {
+                var notification = new Notification
+                {
+                    UserId = complex.UserId,
+                    Title = "Tu complejo fue aprobado",
+                    Message = $"Tu complejo '{complex.Name}' fue aprobado.",
+                    ComplexId = complex.Id,
+                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                };
+
+                await _notificationBusinessLogic.CreateNotificationAsync(notification);
+            }
+            else if (userRol == "SuperAdmin" && (previousState == ComplexState.Pendiente && newState == ComplexState.Rechazado))
+            {
+                var notification = new Notification
+                {
+                    UserId = complex.UserId,
+                    Title = "Tu complejo fue rechazado",
+                    Message = $"La complejo: {complex.Name} fue rechazado por el administrador. " +
+                              $"Motivo: {requestUpdateDTO.CancelationReason}",
+                    ComplexId = complex.Id,
+                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                };
+
+                await _notificationBusinessLogic.CreateNotificationAsync(notification);
+            }
+            else if (userRol == "SuperAdmin" && (previousState == ComplexState.Habilitado && newState == ComplexState.Bloqueado))
+            {
+                var notification = new Notification
+                {
+                    UserId = complex.UserId,
+                    Title = "Tu complejo fue bloqueado",
+                    Message = $"La complejo: {complex.Name} fue bloqueado por el administrador. " +
+                              $"Motivo: {requestUpdateDTO.CancelationReason}",
                     ComplexId = complex.Id,
                     Context = NotificationContext.ADMIN_COMPLEX_ACCTION
                 };

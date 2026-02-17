@@ -143,6 +143,8 @@ builder.Services.AddScoped<ReviewRepository>();
 builder.Services.AddScoped<NotificationBusinessLogic>();
 builder.Services.AddScoped<NotificationRepository>();
 
+builder.Services.AddScoped<DashboardBusinessLogic>();
+
 builder.Services.AddScoped<AccountBusinessLogic>();
 
 builder.Services.AddScoped<RedisRepository>();

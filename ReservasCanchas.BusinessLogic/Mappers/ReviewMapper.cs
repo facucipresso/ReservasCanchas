@@ -25,6 +25,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
 
         public static ReviewResponseDTO ToReviewResponseDTO(Review r)
         {
+            var complexName = r.Reservation.Field.Complex.Name;
             return new ReviewResponseDTO
             {
                 Id = r.Id,
@@ -32,6 +33,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 UserId = r.UserId,
                 Name = r.User.Name,
                 LastName = r.User.LastName,
+                ComplexName = complexName,
                 Comment = r.Comment,
                 Score = r.Score,
                 CreationDate = r.CreationDate

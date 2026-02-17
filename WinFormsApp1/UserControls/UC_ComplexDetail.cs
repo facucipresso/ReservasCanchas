@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinFormsApp1.Enum;
+using WinFormsApp1.Forms.Complex;
 using WinFormsApp1.Infrastructure;
 using WinFormsApp1.Models.Complex;
 using WinFormsApp1.Models.Service;
@@ -230,25 +231,66 @@ namespace WinFormsApp1.UserControls
         private async void buttonCambioDeEstado2_Click(object sender, EventArgs e)
         {
             UpdateComplexStateDTO newState = new UpdateComplexStateDTO();
+            string? reason = null;
+            string? action;
+            string? successMessage = null;
+
             switch (buttonCambioDeEstado2.Text)
             {
                 case "Habilitar":
                     newState.State = ComplexState.Habilitado;
+                    successMessage = "Complejo habilitado correctamente";
                     break;
                 case "Rechazar":
+                    //newState.State = ComplexState.Rechazado;
+                    action = buttonCambioDeEstado2.Text;
+
+                    using (var modal = new FormReasonModal(action))
+                    {
+                        if (modal.ShowDialog(this) == DialogResult.OK)
+                        {
+                            reason = modal.ReasonText;
+                        }
+                        else
+                        {
+                            return; // Si cancela, no hacemos nada
+                        }
+                    }
                     newState.State = ComplexState.Rechazado;
+                    successMessage = "Complejo rechazado correctamente";
                     break;
                 case "Bloquear":
+                    //newState.State = ComplexState.Bloqueado;
+                    action = buttonCambioDeEstado2.Text;
+
+                    using (var modal = new FormReasonModal(action))
+                    {
+                        if (modal.ShowDialog(this) == DialogResult.OK)
+                        {
+                            reason = modal.ReasonText;
+                        }
+                        else
+                        {
+                            return; // Si cancela, no hacemos nada
+                        }
+                    }
                     newState.State = ComplexState.Bloqueado;
+                    successMessage = "Complejo bloqueado correctamente";
                     break;
                 default:
                     //newState.State = ComplexState.Rechazado;
                     break;
             }
 
+            newState.CancelationReason = reason; // null si no corresponde
+
             await _complexService.ChangeStateComplexAsync(_complexId, newState);
             
             await LoadComplexDetailAsync();
+
+            MessageBox.Show("Antes del toast");
+            Notifier.Show(successMessage, NotificationType.Success);
+            MessageBox.Show("Despues del toast");
 
         }
     }

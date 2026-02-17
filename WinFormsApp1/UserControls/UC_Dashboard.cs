@@ -7,14 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinFormsApp1.Services;
 
 namespace WinFormsApp1.UserControls
 {
     public partial class UC_Dashboard : UserControl
     {
+        private readonly DashboardService _dashboardService; 
         public UC_Dashboard()
         {
             InitializeComponent();
+
+            //para datos reales
+            _dashboardService = new DashboardService();
+            //para datos reales
+            this.Load += UC_Dashboard_Load;
+
 
             var cardNotificaciones = new UC_DashboardCard
             {
@@ -51,9 +59,9 @@ namespace WinFormsApp1.UserControls
 
             AdjustDashboardCardsWidth();
 
-            LoadFakeComplexes();
-            LoadFakeUsers();
-            LoadFakeReviews();
+            //LoadFakeComplexes();
+            //LoadFakeUsers();
+            //LoadFakeReviews();
 
         }
 
@@ -180,6 +188,7 @@ namespace WinFormsApp1.UserControls
             string userName,
             int rating)
         {
+            rating = Math.Max(0, Math.Min(5, rating));
             var panel = new Panel
             {
                 Height = 60,
@@ -254,6 +263,79 @@ namespace WinFormsApp1.UserControls
                 card.Height = flpCards.ClientSize.Height - 10;
             }
         }
+
+        private async void UC_Dashboard_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                await LoadRealDataAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async Task LoadRealDataAsync()
+        {
+            await LoadRealSummaryAsync();
+            await LoadRealComplexesAsync();
+            await LoadRealUsersAsync();
+            await LoadRealReviewsAsync();
+        }
+
+        private async Task LoadRealSummaryAsync()
+        {
+            var summary = await _dashboardService.GetDashboardDataAsync();
+
+            ((UC_DashboardCard)flpCards.Controls[0]).DisplayValue = summary.PendingNotifications.ToString();
+            ((UC_DashboardCard)flpCards.Controls[1]).DisplayValue = summary.TotalUsers.ToString();
+            ((UC_DashboardCard)flpCards.Controls[2]).DisplayValue = summary.EnabledComplexes.ToString();
+            ((UC_DashboardCard)flpCards.Controls[3]).DisplayValue = summary.TotalReviews.ToString();
+        }
+
+        private async Task LoadRealComplexesAsync()
+        {
+            var complexes = await _dashboardService.GetLastFiveComplexesBySuperAdminAsync();
+
+            flpUltimosComplejos.Controls.Clear();
+
+            foreach (var c in complexes)
+            {
+                flpUltimosComplejos.Controls.Add(
+                    CreateFakeComplexItem(c.Name, c.State.ToString()));
+            }
+        }
+
+        private async Task LoadRealUsersAsync()
+        {
+            var users = await _dashboardService.GetLastSixUsersWithRoleAsync();
+
+            flpUltimosUsuarios.Controls.Clear();
+
+            foreach (var u in users)
+            {
+                flpUltimosUsuarios.Controls.Add(
+                    CreateFakeUserItem(u.UserName, u.Role));
+            }
+        }
+
+        private async Task LoadRealReviewsAsync()
+{
+    var reviews = await _dashboardService.GetLastFourReviewsAsync();
+
+    flpUltimasReseñas.Controls.Clear();
+
+    foreach (var r in reviews)
+    {
+        flpUltimasReseñas.Controls.Add(
+            CreateComplexReview(
+                r.ComplexName,
+                $"{r.Name} {r.LastName}", //ver si esto esta bien concatenado
+                r.Score
+            ));
+    }
+}
 
 
 

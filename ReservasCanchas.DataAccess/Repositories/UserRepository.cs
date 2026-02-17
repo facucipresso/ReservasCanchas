@@ -110,7 +110,7 @@ namespace ReservasCanchas.DataAccess.Repositories
         public async Task<int> GetTotalUsersAsync()
         {
             var totalUsers = await _context.Users
-                .Where(u => u.Active ==  true)
+                //.Where(u => u.Active ==  true)
                 .CountAsync();
 
             return totalUsers;
@@ -119,7 +119,7 @@ namespace ReservasCanchas.DataAccess.Repositories
         public async Task<List<User>> GetLastSixUsersAsync()
         {
             var totalUsers = _context.Users
-                .Where(u => u.Active == true)
+                //.Where(u => u.Active == true)
                 .OrderByDescending(e => e.Id)
                 .Take(6)
                 .ToList();

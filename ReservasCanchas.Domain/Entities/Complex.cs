@@ -29,6 +29,7 @@ namespace ReservasCanchas.Domain.Entities
         public string CBU { get; set; }
         public ComplexState State { get; set; }
         public bool Active { get; set; }
+        public string? CancelationReason { get; set; }
 
         // Propiedad de navegacion Usuario, esta es la que tiene que ser null, sino cada vez que se crea un complejo, crea un usuario nuevo
         public User User { get; set; } = null!;

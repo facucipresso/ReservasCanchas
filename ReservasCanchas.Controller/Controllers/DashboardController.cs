@@ -20,29 +20,29 @@ namespace ReservasCanchas.Controller.Controllers
 
 
 
-        [HttpGet("/dashboard-summary")]
+        [HttpGet("dashboard-summary")]
         public async Task<ActionResult<SumaryDashboardDTO>> GetDashboardData()
         {
             var response = await _dasboardBusinessLogic.GetDashboardDataAsync();
             return Ok(response);
         }
 
-        [HttpGet("/dashboard-complex")]
-        public async Task<ActionResult<ComplexSuperAdminResponseDTO>> GetLastFiveComplexesBySuperAdminAsync()
+        [HttpGet("dashboard-complex")]
+        public async Task<ActionResult<List<ComplexSuperAdminResponseDTO>>> GetLastFiveComplexesBySuperAdminAsync()
         {
             var response = await _dasboardBusinessLogic.GetLastFiveComplexesBySuperAdminAsync();
             return Ok(response);
         }
 
-        [HttpGet("/dashboard-users")]
-        public async Task<ActionResult<UserResponseWithRoleDTO>> GetLastSixUsersWithRoleAsync()
+        [HttpGet("dashboard-users")]
+        public async Task<ActionResult<List<UserResponseWithRoleDTO>>> GetLastSixUsersWithRoleAsync()
         {
             var response = await _dasboardBusinessLogic.GetLastSixUsersWithRoleAsync();
             return Ok(response);
         }
 
-        [HttpGet("/dashboard-review")]
-        public async Task<ActionResult<ReviewResponseDTO>> GetLastFourReviewsAsync()
+        [HttpGet("dashboard-review")]
+        public async Task<ActionResult<List<ReviewResponseDTO>>> GetLastFourReviewsAsync()
         {
             var response = await _dasboardBusinessLogic.GetLastFourReviewsAsync();
             return Ok(response);

@@ -78,6 +78,10 @@ namespace ReservasCanchas.DataAccess.Repositories
         public async Task<List<Review>> GetLastFourReviewAsync()
         {
             var lastFourReviews = _context.Review
+                .Include(r => r.User)
+                .Include(r => r.Reservation)
+                    .ThenInclude(i => i.Field)
+                        .ThenInclude(h => h.Complex)
                 .OrderByDescending(e => e.CreationDate)
                 .Take(4)
                 .ToList();

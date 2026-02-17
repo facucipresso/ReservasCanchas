@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Review
         public int UserId { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
+        public string ComplexName { get; set; }
         public int ReservationId { get; set; }
         public string? Comment { get; set; }
         public int Score { get; set; }
