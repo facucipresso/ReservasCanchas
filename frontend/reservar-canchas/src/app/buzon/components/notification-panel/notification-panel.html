@@ -25,12 +25,13 @@
       >
         <span>{{ notification.createdAt | date:'short' }}</span>
 
-        <span
-          *ngIf="!notification.isRead"
-          style="color: blue; font-size: 10px;"
-        >
-          ●
-        </span>
+        @if (!notification.isRead) {
+          <span
+            style="color: blue; font-size: 10px;"
+          >
+            ●
+          </span>
+        }
 
         <i
           class="pi"
@@ -42,30 +43,34 @@
   </ng-template>
 
   <!-- BODY -->
-  <p *ngIf="!collapsed" style="margin: 0; padding-top: 8px;">
-    {{ notification.message }}
-  </p>
+  @if (!collapsed) {
+    <p style="margin: 0; padding-top: 8px;">
+      {{ notification.message }}
+    </p>
+  }
 
   <!-- FOOTER -->
   <ng-template pTemplate="footer">
-    <div
-      *ngIf="!collapsed && actions.length > 0"
-      style="
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-      "
-    >
-      <button
-        *ngFor="let action of actions"
-        pButton
-        type="button"
-        [label]="action"
-        size="small"
-        [severity]="getButtonSeverity(action)"
-        (click)="onAction(action)"
-      ></button>
-    </div>
+    @if (!collapsed && actions.length > 0) {
+      <div
+        style="
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+        "
+      >
+        @for (action of actions; track action) {
+          <button
+            pButton
+            type="button"
+            [label]="action"
+            size="small"
+            [severity]="getButtonSeverity(action)"
+            (click)="onAction(action)"
+          ></button>
+        }
+      </div>
+    }
   </ng-template>
 
 </p-panel>

@@ -32,21 +32,6 @@ export class ComplexReservations implements OnInit {
       private complexService:Complex, private fieldService: Field){}
   
     ngOnInit(){
-/*       this.reservationService.getMyReservations().subscribe( (data) =>{
-        data.sort((a, b) => {
-  
-          if (a.date < b.date) return 1;  
-          if (a.date > b.date) return -1; 
-        
-          if (a.initTime < b.initTime) return 1;
-          if (a.initTime > b.initTime) return -1;
-        
-          return 0; 
-        });
-  
-      this.allReservations = data;
-      }); */
-
       this.route.paramMap.subscribe(params => {
         const idParam = params.get('id');
 

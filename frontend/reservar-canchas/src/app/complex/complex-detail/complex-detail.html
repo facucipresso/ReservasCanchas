@@ -63,11 +63,12 @@
   [resizable]="false"
   [focusOnShow]="false">
 
-  <app-recblock 
-    *ngIf="visibleRecBlockModal"
-    [field]="selectedField"
-    (blocksUpdated)="infoComponent.refreshFieldReservations()"
-  ></app-recblock>
+  @if (visibleRecBlockModal) {
+    <app-recblock 
+      [field]="selectedField"
+      (blocksUpdated)="infoComponent.refreshFieldReservations()"
+    ></app-recblock>
+  }
 </p-dialog>
 }
 
@@ -100,16 +101,18 @@
   [resizable]="false"
   [focusOnShow]="false"
 >
-<app-fieldform 
-  *ngIf="visibleFieldFormModal" 
-  [complex]="complex" 
-  [field]="selectedField" 
-  [formMode]="fieldFormMode" 
-  (create)="createField($event)"
-  (updateBasic)="updateBasicInfoField($event)"
-  (updateTimeSlots)="updateTimeSlotsField($event)"
-  (updateState)="updateStateField($event)"
-></app-fieldform>
+
+@if (visibleFieldFormModal) {
+  <app-fieldform 
+    [complex]="complex" 
+    [field]="selectedField" 
+    [formMode]="fieldFormMode" 
+    (create)="createField($event)"
+    (updateBasic)="updateBasicInfoField($event)"
+    (updateTimeSlots)="updateTimeSlotsField($event)"
+    (updateState)="updateStateField($event)"
+  ></app-fieldform>
+}
 </p-dialog>
 
 

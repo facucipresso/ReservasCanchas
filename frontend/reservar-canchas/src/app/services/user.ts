@@ -12,18 +12,10 @@ export class User {
 
   constructor(private http:HttpClient){}
 
-  /*
-    getUserInfoById(userId:string):Observable<UserInfoModel>{
-    return this.http.get<UserInfoModel>(`${this.apiBaseUrl}/${userId}`);
-  }
-  */
-
-  //le saco el tipado
   getUserInfoById(userId:string){
     return this.http.get<any>(`${this.apiBaseUrl}/${userId}`);
   }
 
-  // servicio agregado por facu
   updateUserInfoById(userId: string, userUpdated : userRequestModel) : Observable<UserInfoModel>{
     return this.http.put<UserInfoModel>(`${this.apiBaseUrl}/${userId}`, userUpdated);
   }

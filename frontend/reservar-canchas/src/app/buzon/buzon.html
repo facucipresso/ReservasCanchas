@@ -1,6 +1,3 @@
-<!-- <p>buzon works!</p> -->
-<!-- <h2>"Mis notificaciones"</h2> -->
-
 <div
   style="
     padding-top: 32px;
@@ -59,34 +56,31 @@
       margin: 0 auto;
     "
   >
+  @for (notification of pagedNotifications; track notification.id) {
     <app-notification-panel
-      *ngFor="let notification of pagedNotifications"
       [notification]="notification">
     </app-notification-panel>
+  }
 
-    <div
-      *ngIf="totalRecords > rows"
-      style="
-        display: flex;
-        justify-content: center;
-        margin-top: 24px;
-      "
-    >
-      <p-paginator
-      (onPageChange)="onPageChange($event)"
-      [first]="first"
-      [rows]="rows"
-      [totalRecords]="120"
-      [pageLinkSize]="3"
-      [showFirstLastIcon]="true">
-    </p-paginator>
-    </div>
-<!-- 
-    <app-notification-panel
-      *ngFor="let notification of notifications"
-      [notification]="notification"
-    ></app-notification-panel>
-     -->
+    @if (totalRecords > rows) {
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          margin-top: 24px;
+        "
+      >
+        <p-paginator
+          (onPageChange)="onPageChange($event)"
+          [first]="first"
+          [rows]="rows"
+          [totalRecords]="120"
+          [pageLinkSize]="3"
+          [showFirstLastIcon]="true">
+        </p-paginator>
+      </div>
+    }
+
   </div>
 
 </div>

@@ -31,26 +31,6 @@ export class Buzon implements OnInit{
       this.loadNotifications();
   }
 
-
-/*   loadNotifications(): void {
-    this.notificationService.getMyNotifications().subscribe({
-      next:(notis) => {
-        console.log('Notifications: ', notis);
-        //this.notifications = notis;
-        this.notifications = notis.map(n => ({
-          ...n,
-          createdAt: new Date(n.createdAt)
-        }));
-        this.loading = false;
-      },
-      error:(err) =>{
-        console.error('Error cargando las notificaciones', err);
-        this.loading = false;
-      }
-    })
-  } */
-
-
     loadNotifications(): void {
       this.notificationService.getMyNotifications().subscribe({
         next: (notis) => {
