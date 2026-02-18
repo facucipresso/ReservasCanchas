@@ -1,10 +1,12 @@
-import { HttpClient, HttpResponse} from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable} from 'rxjs';
 import { ComplexCardModel } from '../models/complexcard.model';
 import { ComplexModel } from '../models/complex.model';
 import { basic } from '@primeuix/themes/aura/fileupload';
 import { TimeSlotCreateModel } from '../models/timeslotscreate.model';
+import { ComplexStats } from '../models/complexstats.model';
+import { ComplexState } from '../models/complexstate.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +26,15 @@ export class Complex {
 
   getMyComplexes():Observable<ComplexCardModel[]>{
     return this.http.get<ComplexCardModel[]>(`${this.apiBaseUrl}/my`)
+  }
+
+  getComplexStats(complexId:number, date: string, fieldId:number | null):Observable<ComplexStats>{
+    let params = new HttpParams().set('date', date);
+
+    if (fieldId !== null && fieldId) {
+      params = params.set('fieldId', fieldId.toString());
+    }
+    return this.http.get<ComplexStats>(`${this.apiBaseUrl}/stats/${complexId}`, {params});
   }
 
   createComplex(formData:FormData):Observable<HttpResponse<any>>{
@@ -46,7 +57,7 @@ export class Complex {
     return this.http.patch<ComplexModel>(`${this.apiBaseUrl}/${complexId}/image`, formData);
   }
 
-  updateComplexState(newStateObject:{state:string}, complexId:number):Observable<ComplexModel>{
+  updateComplexState(newStateObject:{state:ComplexState}, complexId:number):Observable<ComplexModel>{
     return this.http.patch<ComplexModel>(`${this.apiBaseUrl}/${complexId}/state`,newStateObject);
   }
 

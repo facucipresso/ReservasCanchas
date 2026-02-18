@@ -18,6 +18,7 @@
     (deleteField)="confirmDeleteField($event)"
     (reserveField)="onReserveField($event)"
     (recurringBlockField)="onRecurringBlockField($event)"
+    (stateChanged)="changeComplexState()"
     >
         @if(isAdmin){
           <button pButton (click)="showDialogComplex()" edit-complex-button>

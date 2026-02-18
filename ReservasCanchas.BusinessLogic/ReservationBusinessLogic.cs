@@ -111,13 +111,13 @@ namespace ReservasCanchas.BusinessLogic
             return reservations.Select(ReservationMapper.ToReservationResponseDTO).ToList();
         }
 
-        public async Task<DailyReservationsForComplexResponseDTO> GetReservationsByDateForComplexAsync(int complexId, DateOnly date)
+        public async Task<DailyReservationsForComplexResponseDTO> GetReservationsByDateForComplexAsync(int complexId, DateOnly date, bool withBlocks)
         {
 
             var complex = await _complexBusinessLogic.GetComplexWithFieldsOrThrow(complexId);
 
             // valido la fecha
-            if (date < DateOnly.FromDateTime(DateTime.Today))
+            if (date < DateOnly.FromDateTime(DateTime.Today) && withBlocks)
                 throw new BadRequestException("La fecha no puede ser anterior al día actual.");
 
             WeekDay requestWeekDay = _complexBusinessLogic.ConvertToWeekDay(date);
@@ -135,9 +135,16 @@ namespace ReservasCanchas.BusinessLogic
             foreach (Field field in fields)
             {
                 var reservationsForField = await _reservationRepository.GetReservationsByFieldId(field.Id);
-                var recurringBlocksForField = field.RecurringCourtBlocks.Where(b => b.WeekDay == requestWeekDay).ToList();
-                var reservationsForFieldFiltered = reservationsForField.Where
-                    (r => (r.Date == date || (r.Date == nextDate && r.InitTime.Hour < 2)) && (r.ReservationState == ReservationState.Pendiente || r.ReservationState == ReservationState.Aprobada)).ToList();
+                var reservationsForFieldFiltered = new List<Reservation>();
+
+                if (withBlocks)
+                {
+                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date || (r.Date == nextDate && r.InitTime.Hour < 2)) && (r.ReservationState == ReservationState.Pendiente || r.ReservationState == ReservationState.Aprobada)).ToList();
+                }
+                else
+                {
+                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date || (r.Date == nextDate && r.InitTime.Hour < 2)) && (r.ReservationState == ReservationState.Completada || r.ReservationState == ReservationState.Aprobada)).ToList();
+                }
 
                 var reservationsForFieldDTO = new ReservationsForFieldDTO
                 {
@@ -147,13 +154,17 @@ namespace ReservasCanchas.BusinessLogic
                 var reservationsHoursForField = reservationsForFieldFiltered.Select(r => r.InitTime).ToList();
                 reservationsForFieldDTO.ReservedHours.AddRange(reservationsHoursForField);
 
-                foreach (var block in recurringBlocksForField)
+                if (withBlocks)
                 {
-                    var current = block.InitHour;
-                    while (current < block.EndHour)
+                    var recurringBlocksForField = field.RecurringCourtBlocks.Where(b => b.WeekDay == requestWeekDay).ToList();
+                    foreach (var block in recurringBlocksForField)
                     {
-                        reservationsForFieldDTO.ReservedHours.Add(current);
-                        current = current.AddHours(1);
+                        var current = block.InitHour;
+                        while (current < block.EndHour)
+                        {
+                            reservationsForFieldDTO.ReservedHours.Add(current);
+                            current = current.AddHours(1);
+                        }
                     }
                 }
 
@@ -433,7 +444,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
             }
 
-            var existingReservations = await GetReservationsByDateForComplexAsync(complex.Id, request.Date);
+            var existingReservations = await GetReservationsByDateForComplexAsync(complex.Id, request.Date, true);
 
             var reservationsForField = existingReservations.FieldsWithReservedHours.First(f => f.FieldId == field.Id);
 

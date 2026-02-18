@@ -12,10 +12,12 @@ import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { PopoverModule } from 'primeng/popover';
+import { ComplexState } from '../../models/complexstate.enum';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-complex-info',
-  imports: [CommonModule,Message,Panel, FieldTable, ReviewCard, CarouselModule, RatingModule, FormsModule, PopoverModule, ButtonModule],
+  imports: [CommonModule,Message,Panel, FieldTable, ReviewCard, CarouselModule, RatingModule, FormsModule, PopoverModule, ButtonModule, DialogModule],
   templateUrl: './complex-info.html',
   styleUrl: './complex-info.css',
 })
@@ -24,12 +26,13 @@ export class ComplexInfo {
   @Input() isAdmin!: boolean;
   @Input() fields!: FieldModel[];
   @Input() selectedDate!: Date;
-  @Input() reviews!: ReviewResponse[];
+  @Input() reviews: ReviewResponse[] = [];
 
   @Output() editField = new EventEmitter<FieldModel>();
   @Output() deleteField = new EventEmitter<number>();
   @Output() reserveField = new EventEmitter<{field:FieldModel, hour:string}>();
   @Output() recurringBlockField = new EventEmitter<FieldModel>();
+  @Output() stateChanged = new EventEmitter<any>();
 
   responsiveOptions = [
     {
@@ -51,7 +54,8 @@ export class ComplexInfo {
 
   @ViewChild(FieldTable) fieldTableComponent!: FieldTable;
   backendUrl = 'https://localhost:7004';
-  
+  complexState = ComplexState;
+  visible = false;
   onEditField(field: FieldModel) {
     this.editField.emit(field);
   }
@@ -68,7 +72,13 @@ export class ComplexInfo {
     this.recurringBlockField.emit(field);
   }
 
+  onStateChange(){
+    this.stateChanged.emit();
+    this.visible = false;
+  }
+
   public refreshFieldReservations() {
     this.fieldTableComponent.refreshReservations();
   }
+
 }

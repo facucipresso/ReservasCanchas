@@ -9,29 +9,61 @@
       <ng-content select="[delete-complex-button]"></ng-content>
       <ng-content select="[changestate-complex-button]"></ng-content>
     </div>
-    @if(isAdmin){
+    @if (isAdmin) {
       <div class="complex-state-container">
         <span class="state-label">Estado del complejo:</span>
         <span class="state-badge" [ngClass]="complex.state.toLowerCase()">
           {{ complex.state }}
         </span>
-        <i class="pi pi-info-circle info-icon" 
-            (mouseenter)="op.toggle($event)" 
-            (mouseleave)="op.toggle($event)"
-            style="cursor: pointer; margin-left: 8px; color: #666;">
+        <i
+          class="pi pi-info-circle info-icon"
+          (mouseenter)="op.toggle($event)"
+          (mouseleave)="op.toggle($event)"
+          style="cursor: pointer; margin-left: 8px; color: #666"
+        >
         </i>
         <p-popover #op>
           <div class="popover-info-content">
             <h4 class="popover-title">Referencia de Estados</h4>
             <ul class="popover-list">
-              <li><span class="dot pendiente"></span> <strong>Pendiente:</strong> En proceso de verificación.</li>
-              <li><span class="dot habilitado"></span> <strong>Habilitado:</strong> Disponible para reservas.</li>
-              <li><span class="dot deshabilitado"></span> <strong>Deshabilitado:</strong> Inactivo temporalmente. No aparece en búsquedas.</li>
-              <li><span class="dot bloqueado"></span> <strong>Bloqueado:</strong> Suspendido por administración. Debes comunicarte con soporte.</li>
-              <li><span class="dot rechazado"></span> <strong>Rechazado:</strong> No cumple requisitos. Puedes editarlo y enviarlo para nueva verificación.</li>
+              <li>
+                <span class="dot pendiente"></span>
+                <strong>Pendiente:</strong> En proceso de verificación.
+              </li>
+              <li>
+                <span class="dot habilitado"></span>
+                <strong>Habilitado:</strong> Disponible para reservas.
+              </li>
+              <li>
+                <span class="dot deshabilitado"></span>
+                <strong>Deshabilitado:</strong> Inactivo temporalmente. No
+                aparece en búsquedas.
+              </li>
+              <li>
+                <span class="dot bloqueado"></span>
+                <strong>Bloqueado:</strong> Suspendido por administración. Debes
+                comunicarte con soporte.
+              </li>
+              <li>
+                <span class="dot rechazado"></span>
+                <strong>Rechazado:</strong> No cumple requisitos. Puedes
+                editarlo y enviarlo para nueva verificación.
+              </li>
             </ul>
           </div>
         </p-popover>
+        @if (
+          complex.state === complexState.Rechazado ||
+          complex.state === complexState.Bloqueado
+        ) {
+          <button pButton (click)="visible = true">
+            <span pButtonLabel style="font-weight: 600">{{
+              complex.state === complexState.Rechazado
+                ? "Ver razón de rechazo"
+                : "Ver razón de bloqueo"
+            }}</span>
+          </button>
+        }
       </div>
     }
     @if (complex.averageRating) {
@@ -90,35 +122,35 @@
     (recurringBlockField)="onRecurringBlockField($event)"
   >
   </app-field-table>
-
-  <div style="padding: 1rem">
-    <h3 style="font-size: 25px; margin-bottom: 1rem">Últimas reseñas</h3>
-    @if (reviews.length < 3) {
-      <div class="static-reviews-container">
-        @for (review of reviews; track review.id) {
-          <div class="static-card-wrapper">
-            <app-review-card [review]="review"></app-review-card>
-          </div>
-        }
-      </div>
-
-    } @else {
-      <p-carousel
-        [value]="reviews"
-        [numVisible]="3"
-        [numScroll]="1"
-        [circular]="true"
-        [responsiveOptions]="responsiveOptions"
-        [autoplayInterval]="5000"
-      >
-        <ng-template pTemplate="item" let-review>
-          <div class="carousel-item-wrapper">
-            <app-review-card [review]="review"></app-review-card>
-          </div>
-        </ng-template>
-      </p-carousel>
-    }
-  </div>
+  @if (reviews.length > 1) {
+    <div style="padding: 1rem">
+      <h3 style="font-size: 25px; margin-bottom: 1rem">Últimas reseñas</h3>
+      @if (reviews.length < 3) {
+        <div class="static-reviews-container">
+          @for (review of reviews; track review.id) {
+            <div class="static-card-wrapper">
+              <app-review-card [review]="review"></app-review-card>
+            </div>
+          }
+        </div>
+      } @else {
+        <p-carousel
+          [value]="reviews"
+          [numVisible]="3"
+          [numScroll]="1"
+          [circular]="true"
+          [responsiveOptions]="responsiveOptions"
+          [autoplayInterval]="5000"
+        >
+          <ng-template pTemplate="item" let-review>
+            <div class="carousel-item-wrapper">
+              <app-review-card [review]="review"></app-review-card>
+            </div>
+          </ng-template>
+        </p-carousel>
+      }
+    </div>
+  }
 
   <div class="info-extra-container">
     <p-panel header="Horarios del club" [toggleable]="true">
@@ -146,3 +178,61 @@
     </p-panel>
   </div>
 </div>
+
+<p-dialog
+  header="{{
+    complex.state === complexState.Rechazado
+      ? 'Estado de la Solicitud' : 'Aviso de Restricción'
+  }}"
+  [modal]="true"
+  [(visible)]="visible"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '450px' }"
+  styleClass="modern-dialog"
+>
+<div class="dialog-content">
+    <div class="status-icon-container" [ngClass]="complex.state === complexState.Rechazado ? 'rejected' : 'blocked'">
+      <i [class]="complex.state === complexState.Rechazado ? 'pi pi-exclamation-circle' : 'pi pi-lock'"></i>
+    </div>
+
+    @if (complex.state === complexState.Rechazado) {
+      <div class="message-body">
+        <h3>Solicitud de revisión denegada</h3>
+        <p>Lamentamos informarte que tu complejo no ha superado el proceso de validación técnica en este momento.</p>
+        
+        <div class="reason-box">
+          <strong>Motivo observado:</strong>
+          <p>{{ complex.cancelationReason }}</p>
+        </div>
+
+        <p class="instruction">
+          Puedes realizar los ajustes necesarios siguiendo nuestras normativas y solicitar una nueva evaluación.
+        </p>
+      </div>
+      
+      <div class="dialog-footer">
+        <button (click)="onStateChange()" pButton label="Enviar nuevamente a revisión" icon="pi pi-refresh" class="p-button-raised p-button-primary"></button>
+      </div>
+
+    } @else {
+      <div class="message-body">
+        <h3>Acceso restringido</h3>
+        <p>El perfil de tu complejo ha sido suspendido temporalmente por el equipo de administración.</p>
+
+        <div class="reason-box warning">
+          <strong>Causa de la suspensión:</strong>
+          <p>{{ complex.cancelationReason }}</p>
+        </div>
+
+        <p class="instruction">
+          Para restablecer el servicio o realizar aclaraciones, por favor contacta a nuestro departamento de soporte técnico.
+        </p>
+      </div>
+
+      <div class="dialog-footer">
+        <button pButton label="Contactar Soporte" icon="pi pi-envelope" class="p-button-outlined p-button-secondary"></button>
+      </div>
+    }
+  </div>
+</p-dialog>

@@ -147,6 +147,8 @@ builder.Services.AddScoped<DashboardBusinessLogic>();
 
 builder.Services.AddScoped<AccountBusinessLogic>();
 
+builder.Services.AddScoped<StatisticsBusinessLogic>();
+
 builder.Services.AddScoped<RedisRepository>();
 
 

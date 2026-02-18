@@ -12,6 +12,7 @@ import { Complex } from '../../services/complex';
 import { ComplexModel } from '../../models/complex.model';
 import { FieldModel } from '../../models/field.model';
 import { Field } from '../../services/field';
+import { ComplexStats } from '../../models/complexstats.model';
 
 @Component({
   selector: 'app-complex-reservations',
@@ -27,6 +28,7 @@ export class ComplexReservations implements OnInit {
     complexId!: number;
     complex!: ComplexModel;
     fields!: FieldModel[];
+    complexStats!: ComplexStats;
     
     constructor(private reservationService: Reservation, private route:ActivatedRoute, 
       private complexService:Complex, private fieldService: Field){}
@@ -49,6 +51,10 @@ export class ComplexReservations implements OnInit {
           console.log(dateNow);
           this.reservationService.getReservationsByComplexAndDate(this.complexId,dateNow).subscribe((res) => {
             this.allReservations = res;
+          })
+          this.complexService.getComplexStats(this.complexId, dateNow, null).subscribe((stats) => {
+            this.complexStats = stats;
+            console.log('STATS: ', this.complexStats);
           })
         }
       });
@@ -87,5 +93,9 @@ export class ComplexReservations implements OnInit {
           this.allReservations = res;
         })
       }
+
+      this.complexService.getComplexStats(this.complexId, dateOnly, filters.fieldId).subscribe((res) => {
+          this.complexStats = res;
+      })
     }
 }

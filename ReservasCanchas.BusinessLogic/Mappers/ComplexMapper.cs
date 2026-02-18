@@ -43,6 +43,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 PercentageSign = complex.PercentageSign,
                 StartIlumination = complex.StartIlumination,
                 AditionalIlumination = complex.AditionalIlumination,
+                CancelationReason = complex.CancelationReason,
                 CBU = complex.CBU,
                 State = complex.State,
                 Services = complex.Services.Select(ServiceMapper.ToServiceResponseDTO).ToList(),

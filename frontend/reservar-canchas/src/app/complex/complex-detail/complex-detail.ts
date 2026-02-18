@@ -24,6 +24,7 @@ import { ReservationProcessRequest } from '../../models/reservation/reservationp
 import { Recblock } from '../../recblock/recblock';
 import { Review } from '../../services/review';
 import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
+import { ComplexState } from '../../models/complexstate.enum';
 type Mode = 'create' | 'edit';
 @Component({
   selector: 'app-complex-detail',
@@ -82,13 +83,14 @@ export class ComplexDetail implements OnInit{
 
     this.reviewService.getReviewsByComplexId(this.complexId).subscribe((reviews) => {
       this.reviews = reviews;
-      console.log(reviews);
+      console.log('REVIEWS: ',reviews);
     })
   }
 
   loadComplex(complexId:number){
     this.complexService.getComplexById(complexId).subscribe({
       next: (complex) => {
+        console.log('COMPLEJO RESPUESTA: ', complex);
         this.complex = complex;
         console.log('Complejo: ', this.complex);
         this.isAdmin = this.complex.userId === parseInt(this.authService.getUserId());
@@ -278,7 +280,15 @@ this.complexService.updateComplexImage(
   }
 
   changeComplexState(){
-    const newState = this.complex.state === 'Habilitado' ? 'Deshabilitado' : 'Habilitado';
+    let newState;
+    if(this.complex.state === ComplexState.Habilitado){
+      newState = ComplexState.Deshabilitado;
+    }else if(this.complex.state === ComplexState.Deshabilitado){
+      newState = ComplexState.Habilitado;
+    }else{
+      newState = ComplexState.Pendiente;
+    }
+    
     const payload = { state: newState };
     console.log('Nuevo estado: ',payload);
     this.complexService.updateComplexState(payload, this.complex.id).subscribe({
@@ -572,4 +582,10 @@ this.complexService.updateComplexImage(
     this.visibleRecBlockModal = true;
     console.log('Solicitud de bloqueo recurrente para la cancha: ', field);
   }
+
+  onStateChange(newState:ComplexState){
+
+  }
+
+
 }

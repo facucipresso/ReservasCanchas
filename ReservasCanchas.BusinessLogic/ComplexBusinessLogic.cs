@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
 using ReservasCanchas.BusinessLogic.Dtos.Notification;
+using ReservasCanchas.BusinessLogic.Dtos.Reservation;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
@@ -27,7 +29,9 @@ namespace ReservasCanchas.BusinessLogic
         private readonly NotificationBusinessLogic _notificationBusinessLogic;
         private readonly AuthService _authService;
 
-        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, UserBusinessLogic usuarioBusinessLogic, UserRepository userRepository,NotificationBusinessLogic notificationBusinessLogic, AuthService authService)
+        public ComplexBusinessLogic(ComplexRepository complexRepository, ServiceBusinessLogic serviceBusinessLogic, 
+            UserBusinessLogic usuarioBusinessLogic, UserRepository userRepository,
+            NotificationBusinessLogic notificationBusinessLogic, AuthService authService)
         {
             _complexRepository = complexRepository;
             _serviceBusinessLogic = serviceBusinessLogic;
@@ -669,6 +673,10 @@ namespace ReservasCanchas.BusinessLogic
                     previousState == ComplexState.Bloqueado &&
                     newState == ComplexState.Habilitado
                 )
+                {
+                    complex.State = newState;
+                    changed = true;
+                }else if(previousState == ComplexState.Rechazado && newState == ComplexState.Habilitado)
                 {
                     complex.State = newState;
                     changed = true;

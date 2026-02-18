@@ -26,6 +26,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         public TimeOnly StartIlumination { get; set; }
         public int AditionalIlumination { get; set; }
         public double? AverageRating { get; set; }
+        public string? CancelationReason { get; set; }
         public string CBU { get; set; }
         public ComplexState State { get; set; }
         public ICollection<ServiceResponseDTO> Services { get; set; } = new List<ServiceResponseDTO>();

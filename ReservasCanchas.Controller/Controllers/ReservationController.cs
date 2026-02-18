@@ -54,19 +54,19 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpGet("complex/{complexId}/by-date")]
         public async Task<ActionResult<DailyReservationsForComplexResponseDTO>> GetReservationsByDateForComplex([FromRoute] int complexId, [FromQuery] DateOnly date)
         {
-            var reservationsAndRecurringBLocks = await _reservationBusinessLogic.GetReservationsByDateForComplexAsync(complexId, date);
+            var reservationsAndRecurringBLocks = await _reservationBusinessLogic.GetReservationsByDateForComplexAsync(complexId, date, true);
             return Ok(reservationsAndRecurringBLocks);
         }
 
         [HttpGet("complex/{complexId}/search")]
-        public async Task<ActionResult<ReservationForUserResponseDTO>> GetReservationsByComplexAndDate([FromRoute] int complexId, [FromQuery] DateOnly date)
+        public async Task<ActionResult<List<ReservationForUserResponseDTO>>> GetReservationsByComplexAndDate([FromRoute] int complexId, [FromQuery] DateOnly date)
         {
             var reservations = await _reservationBusinessLogic.GetReservationsByComplexAndDateAsync(complexId, date);
             return Ok(reservations);
         }
 
         [HttpGet("field/{fieldId}/search")]
-        public async Task<ActionResult<ReservationForUserResponseDTO>> GetReservationsByFieldAndDate([FromRoute] int fieldId, [FromQuery] DateOnly date)
+        public async Task<ActionResult<List<ReservationForUserResponseDTO>>> GetReservationsByFieldAndDate([FromRoute] int fieldId, [FromQuery] DateOnly date)
         {
             var reservations = await _reservationBusinessLogic.GetReservationsByFieldAndDateAsync(fieldId, date);
             return Ok(reservations);
