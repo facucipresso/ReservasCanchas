@@ -119,6 +119,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task DeleteReview(int id)
         {
+            var userRol = _authService.GetUserRole();
             var userId = _authService.GetUserId(); //_authService.GetUserIdFromToken();
 
             var review = await _reviewRepository.GetReviewByIdAsync(id);
@@ -126,8 +127,8 @@ namespace ReservasCanchas.BusinessLogic
             if (review == null)
                 throw new NotFoundException($"Review con id {id} no encontrada");
 
-            if (userId != review.UserId)
-                throw new BadRequestException("La review solo puede ser eliminada por el usuario que la realizó");
+            if (userId != review.UserId && userRol != "SuperAdmin")
+                throw new BadRequestException("La review solo puede ser eliminada por el usuario que la realizó o el super admin");
 
             await _reviewRepository.DeleteReviewAsync(review);
         }

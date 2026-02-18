@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic.Dtos.Notification;
 using ReservasCanchas.BusinessLogic.Dtos.Reservation;
 using ReservasCanchas.BusinessLogic.Exceptions;
+using ReservasCanchas.BusinessLogic.Jobs;
 using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
@@ -15,6 +16,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Hangfire;
 
 namespace ReservasCanchas.BusinessLogic
 {
@@ -380,7 +382,7 @@ namespace ReservasCanchas.BusinessLogic
             var user = await _userBusinessLogic.GetUserOrThrow(userId);
             await _userBusinessLogic.ValidateUserState(user);
 
-            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(request.FieldId);
+            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow2(request.FieldId);
             _fieldBusinessLogic.ValidateStatusField(field);
 
             // obtengo el complejo
@@ -508,6 +510,17 @@ namespace ReservasCanchas.BusinessLogic
 
             await _reservationRepository.CreateReservationAsync(reservation);
 
+
+            if (!isBlock)
+            {
+                DateTime executionTime = CalculateAutoApprovalExecutionTime(field);
+
+                BackgroundJob.Schedule<ReservationAutoApprovalJob>(
+                    job => job.ExecuteAsync(reservation.Id),
+                    executionTime
+                );
+            }
+
             if (!isBlock)
             {
                 var voucherPath = await ValidateAndSavePaymentVoucher(request.Image, uploadPath, reservation.Id);
@@ -565,95 +578,84 @@ namespace ReservasCanchas.BusinessLogic
                 return ReservationMapper.ToCreateReservationResponseDTO(reservation);
         }
 
-        /*public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)
+        private DateTime CalculateAutoApprovalExecutionTime(Field field)
         {
-            var userRol = Rol.AdminComplejo; //_authService.GetUserRolFromToken();
-            var userId = 1; //_authService.GetUserIdFromToken();
+            DateTime now = DateTime.Now;
+            TimeOnly nowTime = TimeOnly.FromDateTime(now);
 
-            var user = await _userBusinessLogic.GetUserOrThrow(userId);
-            _userBusinessLogic.ValidateUserState(user);
+            var complex = field.Complex;
+            var timeSlots = complex.TimeSlots;
 
-            var reservation = await GetReservationWithRelationsOrThrow(reservationId);
+            // Convertimos DayOfWeek (0=Sunday) a tu enum (0=Lunes)
+            WeekDay todayWeekDay = now.DayOfWeek switch
+            {
+                DayOfWeek.Monday => WeekDay.Lunes,
+                DayOfWeek.Tuesday => WeekDay.Martes,
+                DayOfWeek.Wednesday => WeekDay.Miercoles,
+                DayOfWeek.Thursday => WeekDay.Jueves,
+                DayOfWeek.Friday => WeekDay.Viernes,
+                DayOfWeek.Saturday => WeekDay.Sabado,
+                DayOfWeek.Sunday => WeekDay.Domingo,
+                _ => WeekDay.Lunes
+            };
 
-            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(reservation.FieldId);
-            _fieldBusinessLogic.ValidateStatusField(field);
+            var todaySlot = timeSlots.FirstOrDefault(ts => ts.WeekDay == todayWeekDay);
 
-            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
-            _complexBusinessLogic.ValidateAccessForBasicUser(complex);
+            bool isOpenNow = false;
 
-            bool changed = false;
+            if (todaySlot != null && todaySlot.InitTime != todaySlot.EndTime)
+            {
+                bool crossesMidnight = todaySlot.EndTime < todaySlot.InitTime;
 
-            if((userRol == Rol.Usuario && userId == reservation.UserId) || (userRol == Rol.AdminComplejo && userId == reservation.UserId))
-            { //AdminComplejo HACE UNA ACCIÓN COMO USUARIO NORMAL
-                if (userId == reservation.UserId)
+                if (crossesMidnight)
                 {
-                    var reservationDateTime = reservation.Date.ToDateTime(reservation.InitTime);
-                    var diff = reservationDateTime - DateTime.Now;
-
-                    if (reservation.ReservationState == ReservationState.Aprobada && request.newState == ReservationState.CanceladoConDevolucion
-                        && diff.TotalHours >= 4)
-                    {
-                        reservation.ReservationState = request.newState;
-                        changed = true;
-                    }
-                    else if(reservation.ReservationState == ReservationState.Aprobada && request.newState == ReservationState.CanceladoSinDevolucion)
-                    {
-                        reservation.ReservationState = request.newState;
-                        changed = true;
-                    }
-
-                    if (changed)
-                    {
-                        // si el estado cambio genero la notificacion
-                        var notification = new Notification
-                        {
-                            UserId = complex.UserId,
-                            Title = "Reserva cancelada",
-                            Message = $"La reserva con id {reservation.Id} fue cancelada por el usuario {user.Name} {user.LastName}.",
-                            ReservationId = reservation.Id,
-                        };
-
-                        await _notificationBusinessLogic.CreateNotificationAsync(notification);
-                    }
+                    if (nowTime >= todaySlot.InitTime || nowTime < todaySlot.EndTime)
+                        isOpenNow = true;
+                }
+                else
+                {
+                    if (nowTime >= todaySlot.InitTime && nowTime < todaySlot.EndTime)
+                        isOpenNow = true;
                 }
             }
-            if(userRol == Rol.AdminComplejo && complex.UserId == userId)
-            {//AdminComplejo HACE UNA ACCIÓN COMO DUEÑO DEL COMPLEJO
-                if (reservation.ReservationState == ReservationState.Pendiente 
-                    && (request.newState == ReservationState.Aprobada || request.newState == ReservationState.Rechazada))
+
+            // si está abierto ahora , 30 minutos desde ahora
+            if (isOpenNow)
+                return now.AddMinutes(30);
+
+            // si está cerrado,  buscar próxima apertura
+            DateTime searchDate = now.Date;
+
+            for (int i = 0; i < 7; i++)
+            {
+                WeekDay weekDay = searchDate.DayOfWeek switch
                 {
-                    reservation.ReservationState = request.newState;
-                    changed = true;
-                }else if(reservation.ReservationState == ReservationState.Aprobada && request.newState == ReservationState.CanceladoPorAdmin)
+                    DayOfWeek.Monday => WeekDay.Lunes,
+                    DayOfWeek.Tuesday => WeekDay.Martes,
+                    DayOfWeek.Wednesday => WeekDay.Miercoles,
+                    DayOfWeek.Thursday => WeekDay.Jueves,
+                    DayOfWeek.Friday => WeekDay.Viernes,
+                    DayOfWeek.Saturday => WeekDay.Sabado,
+                    DayOfWeek.Sunday => WeekDay.Domingo,
+                    _ => WeekDay.Lunes
+                };
+
+                var slot = timeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
+
+                if (slot != null && slot.InitTime != slot.EndTime)
                 {
-                    if (string.IsNullOrWhiteSpace(request.CancelationReason))
-                        throw new BadRequestException($"Para cancelar una reserva aprobada debes incluir la razón de cancelación");
-                    
-                    reservation.ReservationState = request.newState;
-                    reservation.CancellationReason = request.CancelationReason;
-                    changed = true;
+                    DateTime openDateTime = searchDate.Add(slot.InitTime.ToTimeSpan());
+
+                    if (openDateTime > now)
+                        return openDateTime.AddMinutes(30);
                 }
 
-                if (changed)
-                {
-                    //aca creo que deberia generar la otra notificacion PERO ESTA VEZ DEL COMPLEXADMIN AL USUARIO
-                    var notification = new Notification
-                    {
-                        UserId = reservation.UserId,
-                        Title = "Reserva cancelada",
-                        Message = $"La reserva con id {reservation.Id} fue cancelada. Motivo: {reservation.CancellationReason}.",
-                        ReservationId = reservation.Id,
-                    };
-
-                    await _notificationBusinessLogic.CreateNotificationAsync(notification);
-                }
-
+                searchDate = searchDate.AddDays(1);
             }
 
-            if (!changed)
-                throw new BadRequestException($"No puedes cambiar la reserva al estado {request.newState}");
-            await _reservationRepository.SaveAsync();
-        }*/
+            // Fallback extremo (nunca debería pasar)
+            return now.AddMinutes(30);
+        }
 
         public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)
         {

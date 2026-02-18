@@ -316,7 +316,7 @@ namespace WinFormsApp1.Services
             );
             */
 
-            var response = await _httpClient.GetAsync($"api/reviews/{reviewId}");
+            var response = await _httpClient.DeleteAsync($"api/reviews/{reviewId}");
 
             if (!response.IsSuccessStatusCode)
             {

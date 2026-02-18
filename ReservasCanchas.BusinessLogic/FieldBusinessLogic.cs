@@ -376,6 +376,15 @@ namespace ReservasCanchas.BusinessLogic
             }
             return field;
         }
+        public async Task<Field?> GetFieldWithRelationsOrThrow2(int fieldId)
+        {
+            var field = await _fieldRepository.GetFieldByIdWithRelations2Async(fieldId);
+            if (field == null)
+            {
+                throw new NotFoundException($"La cancha con id {fieldId} no existe");
+            }
+            return field;
+        }
 
         public void ValidateStatusField(Field field)
         {

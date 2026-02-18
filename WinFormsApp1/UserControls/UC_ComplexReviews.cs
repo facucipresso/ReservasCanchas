@@ -33,6 +33,7 @@ namespace WinFormsApp1.UserControls
 
             btnVolver.Click += (s, e) => VolverClicked?.Invoke();
             btnCerrar.Click += (s, e) => CerrarClicked?.Invoke();
+            //aca tenog que agregar el evento para eliminar creo
 
 
         }
@@ -50,6 +51,66 @@ namespace WinFormsApp1.UserControls
             }
         }
 
+        private async Task LoadComplexReviewsAsync()
+        {
+            try
+            {
+                var lista = await _complexService.GetAllComplexReviewsAsync(_complexId);
+
+                flowLayoutPanelReviews.Controls.Clear();
+
+                if (lista == null || !lista.Any())
+                {
+                    ShowEmptyState();
+                    return;
+                }
+
+                ShowCards();
+
+                foreach (var review in lista)
+                {
+                    var card = new UC_ReviewCard(review);
+
+                    card.Width = flowLayoutPanelReviews.ClientSize.Width - 25;
+
+                    card.DeleteClicked += async (id) =>
+                    {
+                        var confirm = MessageBox.Show(
+                            $"¿Deseas eliminar el review {id}?",
+                            "Confirmar",
+                            MessageBoxButtons.YesNo);
+
+                        if (confirm == DialogResult.Yes)
+                        {
+                            await _complexService.DeleteReviewsAsync(id);
+
+                            Notifier.Show(this.FindForm(), "Review eliminada correctamente", NotificationType.Success);
+                            await LoadComplexReviewsAsync();
+                        }
+                    };
+
+                    flowLayoutPanelReviews.Controls.Add(card);
+                }
+            }
+            catch (Exception ex)
+            {
+                DialogService.ShowError( Form.ActiveForm ?? this.TopLevelControl as Form, "Error cargando reviews: " + ex.Message);
+            }
+        }
+
+        private void ShowCards()
+        {
+            flowLayoutPanelReviews.Visible = true;
+            labelComplexReviewEmpty.Visible = false;
+        }
+
+        private void ShowEmptyState()
+        {
+            flowLayoutPanelReviews.Visible = false;
+            labelComplexReviewEmpty.Visible = true;
+        }
+
+        /*
         private async Task LoadComplexReviewsAsync()
         {
             try
@@ -98,7 +159,9 @@ namespace WinFormsApp1.UserControls
 
 
         }
+        */
 
+        /*
         private async void dgvComplexReviews_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             // 1. Verificar que el clic no sea en el encabezado (fila -1)
@@ -123,19 +186,25 @@ namespace WinFormsApp1.UserControls
                 }
             }
         }
+        */
 
         //esto se agrega para el label
+        /*
         private void ShowEmptyState()
         {
             dgvComplexReviews.Visible = false;
             labelComplexReviewEmpty.Visible = true;
         }
+        */
+
         //esto se agrega para el label
+        /*
         private void ShowGrid()
         {
             dgvComplexReviews.Visible = true;
             labelComplexReviewEmpty.Visible = false;
         }
+        */
 
     }
 }

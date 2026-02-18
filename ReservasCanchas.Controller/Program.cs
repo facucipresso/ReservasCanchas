@@ -1,3 +1,5 @@
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -5,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ReservasCanchas.BusinessLogic;
+using ReservasCanchas.BusinessLogic.Jobs;
 using ReservasCanchas.BusinessLogic.JWTService;
 using ReservasCanchas.BusinessLogic.Middlewares;
 using ReservasCanchas.Controller.Background;
@@ -60,6 +63,15 @@ builder.Services.AddSwaggerGen(option =>
 // Defino la conexión a la base de datos PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSql")));
+
+// HANGFIRE
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(options =>
+        options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("PostgreSql"))
+    ));
+
+builder.Services.AddHangfireServer();
+
 // Defino la conexión a la base de datos Redis
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
@@ -150,6 +162,8 @@ builder.Services.AddScoped<AccountBusinessLogic>();
 builder.Services.AddScoped<StatisticsBusinessLogic>();
 
 builder.Services.AddScoped<RedisRepository>();
+
+builder.Services.AddScoped<ReservationAutoApprovalJob>();
 
 
 // PARA EL TRABAJO EN BACKGROUND
@@ -257,6 +271,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseMiddleware<ExceptionMiddleware>();
+// entro a https://localhost:7004/hangfire y puedo ver los jobs programados
+app.UseHangfireDashboard("/hangfire");
 
 
 app.UseHttpsRedirection();

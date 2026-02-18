@@ -133,23 +133,7 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(result);
         }
 
-        /*
-        [HttpGet("complex/{complexId}/search")]
-        public async Task<ActionResult<List<ReservationResponseDTO>>>GetReservationsByComplexAndDate(int complexId, [FromQuery] DateOnly date)
-        {
-            var reservations = await _reservationBusinessLogic.GetReservationsByComplexAndDate(complexId, date);
 
-            return Ok(reservations);
-        }
-
-        [HttpGet("field/{fieldId}/search")]
-        public async Task<ActionResult<List<ReservationResponseDTO>>>GetReservationsByFieldAndDate(int fieldId, [FromQuery] DateOnly date)
-        {
-            var reservations = await _reservationBusinessLogic.GetReservationsByFieldAndDate(fieldId, date);
-
-            return Ok(reservations);
-        }
-        */
 
 
     }
