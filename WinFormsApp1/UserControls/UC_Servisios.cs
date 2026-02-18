@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinFormsApp1.Enum;
 using WinFormsApp1.Models.Service;
 using WinFormsApp1.Services;
 
@@ -54,13 +55,15 @@ namespace WinFormsApp1.UserControls
                     ServiceUpdateDTO serviceUpdateDTO = new ServiceUpdateDTO();
                     serviceUpdateDTO.ServiceDescription = textServiceDescription.Text;
                     await _serService.CreateServiceAsync(serviceUpdateDTO);
-                    MessageBox.Show("Se inserto correctamente el nuevo servicio");
+                    //MessageBox.Show("Se inserto correctamente el nuevo servicio");
+                    Notifier.Show(this.FindForm(), "Se inserto el nuevo servicio correctamente", NotificationType.Success);
                     await LoadServicesAsync();
                     textServiceDescription.Clear();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("No se pudo insertar correctamente el nuevo servicio por: " + ex);
+                    DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "No se pudo insertar correctamente el nuevo servicio por: " + ex);
+                    //MessageBox.Show("No se pudo insertar correctamente el nuevo servicio por: " + ex);
                 }
             }
             // CUANDO EDITO UN SERVICIO
@@ -71,13 +74,15 @@ namespace WinFormsApp1.UserControls
                     ServiceUpdateDTO serviceUpdateDTO = new ServiceUpdateDTO();
                     serviceUpdateDTO.ServiceDescription = textServiceDescription.Text;
                     await _serService.UpdateServiceByIdAsync(Convert.ToInt32(idSeleccionado), serviceUpdateDTO);
-                    MessageBox.Show("Se edito correctamente el servicio");
+                    Notifier.Show(this.FindForm(), "Se edito correctamente el servicio", NotificationType.Success);
+                    //MessageBox.Show("Se edito correctamente el servicio");
                     await LoadServicesAsync();
                     CancelarEdicion();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("No se pudo editar correctamente el servicio por: " + ex);
+                    DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "No se pudo editar correctamente el servicio por: " + ex);
+                    //MessageBox.Show("No se pudo editar correctamente el servicio por: " + ex);
                 }
 
             }
@@ -102,7 +107,8 @@ namespace WinFormsApp1.UserControls
             }
             else
             {
-                MessageBox.Show("Por favor seleccione una fila para editar");
+                Notifier.Show(this.FindForm(), "Por favor seleccione una fila para editar", NotificationType.Info);
+                //MessageBox.Show("Por favor seleccione una fila para editar");
             }
         }
 
@@ -121,19 +127,23 @@ namespace WinFormsApp1.UserControls
 
                 if (deleted == false)
                 {
+                    Notifier.Show(this.FindForm(), "No se pudo borrar el servicio", NotificationType.Error);
+                    /*
                     MessageBox.Show("No se pudo borrar el servicio.",
-                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);*/
                     return;
                 }
 
-                MessageBox.Show("Se elimino correctamente el servicio");
+                Notifier.Show(this.FindForm(), "Se elimino correctamente el servicio", NotificationType.Success);
+                //MessageBox.Show("Se elimino correctamente el servicio");
 
                 await LoadServicesAsync();
                 //bindingSource1.Remove(servicio);  Esto actualiza el grid inmediatamente
             }
             else
             {
-                MessageBox.Show("Por favor seleccione una fila para eliminar");
+                Notifier.Show(this.FindForm(), "Por favor seleccione una fila para eliminar", NotificationType.Info);
+                //MessageBox.Show("Por favor seleccione una fila para eliminar");
             }
         }
 

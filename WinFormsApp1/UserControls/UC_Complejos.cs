@@ -36,7 +36,8 @@ namespace WinFormsApp1.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
+                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -68,19 +69,7 @@ namespace WinFormsApp1.UserControls
 
         private void ComplexCard_EnterClicked(int? complexId, string? nameOwner, string? lastNameOwner)
         {
-            //Esto todavia no va a pasar, tengo que tener terminado esto primero
             if (complexId == null || nameOwner == null || lastNameOwner == null) return;
-
-            // Abrir otro formulario con detalle del complejo o pasar el id al dashboard
-            // Por ejemplo:
-            /*
-            using (var formDetail = new FormComplexDetail(complexId.Value))
-            {
-                formDetail.ShowDialog();
-                // si se hicieron cambios en detail, recargar:
-                _ = LoadComplexesAsync();
-            }
-            */
 
             using (var formComplexWorkspace = new FormComplexWorkspace(complexId.Value, nameOwner, lastNameOwner))//aca tambien nombre y apellido
             {
@@ -88,12 +77,6 @@ namespace WinFormsApp1.UserControls
             }
             
         }
-
-        // esto aca ni iria porque no tengo este evento en este form, esto quedo de FormComplex
-        //private void buttonVolver_Click(object sender, EventArgs e)
-        //{
-        //   this.Close();
-        //}
 
         private void FlowLayoutPanelComplexes_SizeChanged(object? sender, EventArgs e)
         {
@@ -105,12 +88,12 @@ namespace WinFormsApp1.UserControls
             if (flowLayoutPanelComplexes.Controls.Count == 0)
                 return;
 
-            int cardMinWidth = 350; // el ancho base que ya usás
-            int spacing = 20;       // margen aproximado entre cards
+            int cardMinWidth = 350; // el ancho base
+            int spacing = 20;       // margen entre cards
 
             int panelWidth = flowLayoutPanelComplexes.ClientSize.Width;
 
-            // cuántas cards entran por fila
+            // cuantas cards entran por fila
             int cardsPerRow = Math.Max(1, panelWidth / (cardMinWidth + spacing));
 
             // nuevo ancho para que ocupen todo el espacio

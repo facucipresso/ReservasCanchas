@@ -710,7 +710,7 @@ namespace ReservasCanchas.BusinessLogic
                 {
                     UserId = complex.UserId,
                     Title = "Tu complejo fue rechazado",
-                    Message = $"La complejo: {complex.Name} fue rechazado por el administrador. " +
+                    Message = $"El complejo: {complex.Name} fue rechazado por el administrador. " +
                               $"Motivo: {requestUpdateDTO.CancelationReason}",
                     ComplexId = complex.Id,
                     Context = NotificationContext.ADMIN_COMPLEX_ACCTION
@@ -724,7 +724,7 @@ namespace ReservasCanchas.BusinessLogic
                 {
                     UserId = complex.UserId,
                     Title = "Tu complejo fue bloqueado",
-                    Message = $"La complejo: {complex.Name} fue bloqueado por el administrador. " +
+                    Message = $"El complejo: {complex.Name} fue bloqueado por el administrador. " +
                               $"Motivo: {requestUpdateDTO.CancelationReason}",
                     ComplexId = complex.Id,
                     Context = NotificationContext.ADMIN_COMPLEX_ACCTION

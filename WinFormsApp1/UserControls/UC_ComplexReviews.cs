@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinFormsApp1.Enum;
 using WinFormsApp1.Models.Review;
 using WinFormsApp1.Services;
 
@@ -44,7 +45,8 @@ namespace WinFormsApp1.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
+                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -90,7 +92,8 @@ namespace WinFormsApp1.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error ocurrido cargando las reservas de la cancha por: " + ex.Message);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "Error ocurrido cargando las reservas de la cancha por: " + ex.Message);
+                //MessageBox.Show("Error ocurrido cargando las reservas de la cancha por: " + ex.Message);
             }
 
 
@@ -116,6 +119,7 @@ namespace WinFormsApp1.UserControls
 
                     // refresco el dgv
                     await LoadComplexReviewsAsync();
+                    Notifier.Show(this.FindForm(), "Review eliminada correctamente", NotificationType.Success);
                 }
             }
         }

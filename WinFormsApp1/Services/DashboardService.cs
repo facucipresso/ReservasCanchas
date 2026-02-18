@@ -40,13 +40,14 @@ namespace WinFormsApp1.Services
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
+                */
 
                 throw new Exception($"Error obteniendo la data del dashboard: {body}");
             }
@@ -67,14 +68,14 @@ namespace WinFormsApp1.Services
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
-
+                */
                 throw new Exception($"Error obteniendo los datos de complejo para el dashboard: {body}");
             }
 
@@ -113,14 +114,14 @@ namespace WinFormsApp1.Services
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
-
+                */
                 throw new Exception($"Error obteniendo los datos de ususarios para el dashboard: {body}");
             }
 
@@ -162,14 +163,14 @@ namespace WinFormsApp1.Services
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
-
+                */
                 throw new Exception($"Error obteniendo los datos de reviews para el dashboard: {body}");
             }
 

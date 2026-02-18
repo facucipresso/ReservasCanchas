@@ -272,7 +272,8 @@ namespace WinFormsApp1.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
+                //MessageBox.Show(ex.Message);
             }
         }
 
@@ -302,8 +303,7 @@ namespace WinFormsApp1.UserControls
 
             foreach (var c in complexes)
             {
-                flpUltimosComplejos.Controls.Add(
-                    CreateFakeComplexItem(c.Name, c.State.ToString()));
+                flpUltimosComplejos.Controls.Add(CreateFakeComplexItem(c.Name, c.State.ToString()));
             }
         }
 
@@ -321,21 +321,21 @@ namespace WinFormsApp1.UserControls
         }
 
         private async Task LoadRealReviewsAsync()
-{
-    var reviews = await _dashboardService.GetLastFourReviewsAsync();
+        {
+            var reviews = await _dashboardService.GetLastFourReviewsAsync();
 
-    flpUltimasReseñas.Controls.Clear();
+            flpUltimasReseñas.Controls.Clear();
 
-    foreach (var r in reviews)
-    {
-        flpUltimasReseñas.Controls.Add(
-            CreateComplexReview(
-                r.ComplexName,
-                $"{r.Name} {r.LastName}", //ver si esto esta bien concatenado
-                r.Score
-            ));
-    }
-}
+            foreach (var r in reviews)
+            {
+                flpUltimasReseñas.Controls.Add(
+                    CreateComplexReview(
+                        r.ComplexName,
+                        $"{r.Name} {r.LastName}", //ver si esto esta bien concatenado
+                        r.Score
+                    ));
+            }
+        }
 
 
 

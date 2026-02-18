@@ -8,12 +8,14 @@ namespace WinFormsApp1.Forms
 {
     public partial class FormToastNotification : Form
     {
-        // 🔥 CLAVE: no roba foco
+        private readonly Form _owner;
         protected override bool ShowWithoutActivation => true;
 
-        public FormToastNotification(string message, NotificationType type)
+        public FormToastNotification(Form owner, string message, NotificationType type)
         {
             InitializeComponent();
+
+            _owner = owner;
 
             lblMessage.Text = message;
             SetColor(type);
@@ -44,11 +46,13 @@ namespace WinFormsApp1.Forms
 
         private void PositionForm()
         {
-            var screen = Screen.PrimaryScreen.WorkingArea;
+            //var screen = Screen.PrimaryScreen.WorkingArea;
+            var screen = Screen.FromControl(_owner);
+            var workingArea = screen.WorkingArea;
 
             Location = new Point(
-                screen.Right - Width - 20,
-                screen.Top + 20
+                workingArea.Right - Width - 20,
+                workingArea.Top + 20
             );
         }
 

@@ -7,15 +7,15 @@ namespace WinFormsApp1.Services
     {
         private static FormToastNotification? _currentToast;
 
-        public static void Show(string message, NotificationType type)
+        public static void Show(Form owner, string message, NotificationType type)
         {
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
             _currentToast?.Close();
 
-            _currentToast = new FormToastNotification(message, type);
-            _currentToast.Show();
+            _currentToast = new FormToastNotification(owner, message, type);
+            _currentToast.Show(owner);
         }
     }
 }

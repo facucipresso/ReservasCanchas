@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.Logging;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +11,7 @@ using System.Windows.Forms;
 using WinFormsApp1.Enum;
 using WinFormsApp1.Models.User;
 using WinFormsApp1.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WinFormsApp1.UserControls
 {
@@ -62,7 +64,8 @@ namespace WinFormsApp1.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error ocurrido cargando los usuarios por: " + ex.Message);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "Error ocurrido cargando los usuarios por: " + ex.Message);
+                //MessageBox.Show("Error ocurrido cargando los usuarios por: " + ex.Message);
             }
         }
 
@@ -95,6 +98,7 @@ namespace WinFormsApp1.UserControls
 
                         // refresco el dgv
                         await LoadUsersAsync();
+                        Notifier.Show(this.FindForm(), "Usuario desbloqueado correctamente", NotificationType.Success);
                     }
 
                     return;
@@ -109,6 +113,7 @@ namespace WinFormsApp1.UserControls
 
                     // refresco el dgv
                     await LoadUsersAsync();
+                    Notifier.Show(this.FindForm(), "Usuario bloqueado correctamente", NotificationType.Success);
                 }
             }
 

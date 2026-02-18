@@ -36,14 +36,14 @@ namespace WinFormsApp1.Services
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
-);
-
+                );
+                */
                 throw new Exception($"Error obteniendo servicios: {body}");
             }
 
@@ -59,26 +59,27 @@ namespace WinFormsApp1.Services
         public async Task<ServiceResponseDTO> UpdateServiceByIdAsync(int id, ServiceUpdateDTO serviceDto)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
+            /*
             MessageBox.Show(
                 $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
                 "DEBUG",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
-
+            */
             var response = await _httpClient.PutAsJsonAsync("api/services/"+id, serviceDto);
 
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                  );
-
+                */
                 throw new Exception($"Error obteniendo servicios: {body}");
             }
 
@@ -98,14 +99,14 @@ namespace WinFormsApp1.Services
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
-
+                */
                 throw new Exception($"Error creando servicio: {body}");
             }
 
@@ -122,13 +123,14 @@ namespace WinFormsApp1.Services
         public async Task<bool> DeleteServiceByIdAsync(int id) 
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
+            /*
             MessageBox.Show(
                 $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
                 "DEBUG",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
-
+            */
             var response = await _httpClient.DeleteAsync("api/services/" + id);//aca tambien toma el id solo
 
             if (response.IsSuccessStatusCode) return true;
@@ -136,14 +138,14 @@ namespace WinFormsApp1.Services
 
 
            var body = await response.Content.ReadAsStringAsync();
-
+            /*
            MessageBox.Show(
                 $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                 "ERROR DEBUG",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error
             );
-
+            */
             return false;
         }
     }

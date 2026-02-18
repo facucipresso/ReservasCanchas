@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinFormsApp1.Enum;
 using WinFormsApp1.Models.Notification;
 using WinFormsApp1.Services;
 
@@ -70,7 +71,8 @@ namespace WinFormsApp1.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error ocurrido cargando las notificaciones por: " + ex.Message);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
+                //MessageBox.Show("Error ocurrido cargando las notificaciones por: " + ex.Message);
             }
         }
 
@@ -91,6 +93,7 @@ namespace WinFormsApp1.UserControls
                 if (notificacion.IsRead == true)
                 {
                     // opcional: tooltip o mensaje suave
+                    Notifier.Show(this.FindForm(), "La notificacion ya esta marcada como leida", NotificationType.Warning);
                     // MessageBox.Show("La notificacion ya esta marcada como leida");
                     return;
                 }

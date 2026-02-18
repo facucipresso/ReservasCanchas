@@ -65,7 +65,8 @@ namespace WinFormsApp1.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
+                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -75,7 +76,8 @@ namespace WinFormsApp1.UserControls
 
             if (complex == null)
             {
-                MessageBox.Show("No se pudo mostrar el complejo");
+                Notifier.Show(this.FindForm(), "No se pudo mostrar el complejo", NotificationType.Error);
+                //MessageBox.Show("No se pudo mostrar el complejo");
                 return;
             }
 
@@ -288,9 +290,8 @@ namespace WinFormsApp1.UserControls
             
             await LoadComplexDetailAsync();
 
-            MessageBox.Show("Antes del toast");
-            Notifier.Show(successMessage, NotificationType.Success);
-            MessageBox.Show("Despues del toast");
+            Notifier.Show(this.FindForm(), successMessage, NotificationType.Success);
+            //DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "Ocurrió un error inesperado.");
 
         }
     }

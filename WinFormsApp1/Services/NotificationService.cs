@@ -35,14 +35,14 @@ namespace WinFormsApp1.Services
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
-
+                */
                 throw new Exception($"Error obteniendo notificaciones: {body}");
             }
 
@@ -58,26 +58,27 @@ namespace WinFormsApp1.Services
         public async Task MarkAsReadAsync(int id)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
+            /*
             MessageBox.Show(
                 $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
                 "DEBUG",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
-
+            */
             var response = await _httpClient.PatchAsync($"api/notifications/{id}/read", null);
 
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
-
+                */
                 throw new Exception($"Error marcando como leida la notificacion: {body}");
             }
         }

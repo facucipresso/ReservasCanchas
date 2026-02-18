@@ -63,13 +63,15 @@ namespace WinFormsApp1
             }
             catch (Exception ex)
             {
-                //labelMsjBienvenida.Text += ex.Message;
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
+                /*
                 MessageBox.Show(
                     "Error ocurrido cargando las reservas del complejo:\n" + ex.Message,
                     "Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
+                */
             }
         }
 

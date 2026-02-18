@@ -59,14 +59,14 @@ namespace WinFormsApp1.Services
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
-
+                */
                 throw new Exception($"Error obteniendo los usuarios: {body}");
             }
 
@@ -95,14 +95,14 @@ namespace WinFormsApp1.Services
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
-
+                /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
                     "ERROR DEBUG",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
-
+                */
                 throw new Exception($"Error obteniendo los usuarios: {body}");
             }
 
