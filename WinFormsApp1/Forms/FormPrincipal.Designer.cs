@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPrincipal));
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges1 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges2 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges3 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
@@ -43,7 +42,6 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges12 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             panel1 = new Panel();
             label2 = new Label();
-            label1 = new Label();
             pictureBox1 = new PictureBox();
             panel2 = new Panel();
             buttomCerrarSesion1 = new Guna.UI2.WinForms.Guna2Button();
@@ -60,9 +58,8 @@
             // 
             // panel1
             // 
-            panel1.BackColor = Color.FromArgb(19, 15, 64);
+            panel1.BackColor = Color.MediumBlue;
             panel1.Controls.Add(label2);
-            panel1.Controls.Add(label1);
             panel1.Controls.Add(pictureBox1);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
@@ -81,24 +78,13 @@
             label2.TabIndex = 1;
             label2.Text = "Bienvenido Facundo";
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.ForeColor = Color.White;
-            label1.Location = new Point(96, 17);
-            label1.Name = "label1";
-            label1.Size = new Size(121, 31);
-            label1.TabIndex = 1;
-            label1.Text = "Cancha Ya";
-            // 
             // pictureBox1
             // 
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(12, 6);
+            pictureBox1.Image = Properties.Resources.logo_canchaYa;
+            pictureBox1.Location = new Point(12, -26);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(70, 51);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.Size = new Size(190, 122);
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
@@ -295,7 +281,6 @@
         private PictureBox pictureBox1;
         private Panel panelContainer;
         private Guna.UI2.WinForms.Guna2Button buttomDasboard1;
-        private Label label1;
         private Guna.UI2.WinForms.Guna2Button buttomCerrarSesion1;
         private Guna.UI2.WinForms.Guna2Button buttomNotificaciones1;
         private Guna.UI2.WinForms.Guna2Button buttomServisios1;

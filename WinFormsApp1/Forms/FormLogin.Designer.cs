@@ -124,10 +124,10 @@
             // 
             // pictureBox3
             // 
-            pictureBox3.Image = (Image)resources.GetObject("pictureBox3.Image");
-            pictureBox3.Location = new Point(62, 109);
+            pictureBox3.Image = Properties.Resources.logo_canchaYa;
+            pictureBox3.Location = new Point(3, 46);
             pictureBox3.Name = "pictureBox3";
-            pictureBox3.Size = new Size(121, 103);
+            pictureBox3.Size = new Size(247, 240);
             pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox3.TabIndex = 0;
             pictureBox3.TabStop = false;
