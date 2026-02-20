@@ -105,7 +105,7 @@
             // labelMsjBienvenida
             // 
             labelMsjBienvenida.AutoSize = true;
-            labelMsjBienvenida.ForeColor = Color.White;
+            labelMsjBienvenida.ForeColor = Color.FromArgb(15, 15, 15);
             labelMsjBienvenida.Location = new Point(257, 266);
             labelMsjBienvenida.Name = "labelMsjBienvenida";
             labelMsjBienvenida.Size = new Size(162, 20);
@@ -157,6 +157,8 @@
             // linkLabel1
             // 
             linkLabel1.AutoSize = true;
+            linkLabel1.ForeColor = Color.FromArgb(15, 15, 15);
+            linkLabel1.LinkColor = Color.FromArgb(15, 15, 15);
             linkLabel1.Location = new Point(515, 268);
             linkLabel1.Name = "linkLabel1";
             linkLabel1.Size = new Size(76, 20);

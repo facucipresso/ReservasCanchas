@@ -64,7 +64,7 @@ namespace WinFormsApp1.UserControls
             }
             catch (Exception ex)
             {
-                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "Error ocurrido cargando los usuarios por: " + ex.Message);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
                 //MessageBox.Show("Error ocurrido cargando los usuarios por: " + ex.Message);
             }
         }

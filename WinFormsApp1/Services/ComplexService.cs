@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
@@ -25,29 +26,17 @@ namespace WinFormsApp1.Services
         public async Task<List<ComplexSuperAdminResponseDTO>> GetAllComplexesAsync()
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /*
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
 
             var response = await _httpClient.GetAsync("api/complexes/super-admin");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo complejos: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo complejos: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<List<ComplexSuperAdminResponseDTO>>();
@@ -62,14 +51,6 @@ namespace WinFormsApp1.Services
         public async Task<ComplexDetailResponseDTO> ChangeStateComplexAsync(int id, UpdateComplexStateDTO newState)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /*
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
 
             var response = await _httpClient.PatchAsJsonAsync($"api/complexes/{id}/state", newState);
 
@@ -117,35 +98,20 @@ namespace WinFormsApp1.Services
         public async Task<ComplexDetailResponseDTO> GetComplexDetailByIdAsync(int id) 
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /*
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
 
             var response = await _httpClient.GetAsync($"api/complexes/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo el detalle del complejo: {body}");
-                //los throw new Exception me los tira automaticamente en forma de message box
-                //y aca no tendria que retornar directametne antes de throw new Exception($"Error obteniendo el detalle del complejo: {body}");
-                //porque me como dos carteles de error
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo el detalle del complejo: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
+
             }
 
-            //las clases anidadas se convierten solas porque ya tengo creadas dichas clases en este proyecto
             var respuesta = await response.Content.ReadFromJsonAsync<ComplexDetailResponseDTO>();
             if (respuesta == null)
             {
@@ -158,29 +124,17 @@ namespace WinFormsApp1.Services
         public async Task<List<FieldDetailResponseDTO>> GetAllFieldsOfComplexAsync(int complexId)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /* 
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
 
             var response = await _httpClient.GetAsync($"api/fields/by-complex/{complexId}"); 
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo canchas: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo canchas: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<List<FieldDetailResponseDTO>>();
@@ -195,29 +149,17 @@ namespace WinFormsApp1.Services
         public async Task<List<ReservationResponseDTO>> GetAllReservationsForFieldAsync(int fieldId)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization; 
-            /* 
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK, 
-                MessageBoxIcon.Information
-            );
-            */
 
             var response = await _httpClient.GetAsync($"api/reservations/field/{fieldId}");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo las reservas de la cancha: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo las reservas de la cancha: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<List<ReservationResponseDTO>>();
@@ -232,29 +174,17 @@ namespace WinFormsApp1.Services
         public async Task<List<ReservationResponseDTO>> GetAllComplexReservationsAsync(int complexId)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /* 
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK, 
-                MessageBoxIcon.Information
-            );
-            */
 
             var response = await _httpClient.GetAsync($"api/reservations/complex/{complexId}");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo las reservas del complejo: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo las reservas del complejo: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<List<ReservationResponseDTO>>();
@@ -269,30 +199,18 @@ namespace WinFormsApp1.Services
         public async Task<List<ReviewResponseDTO>> GetAllComplexReviewsAsync(int complexId)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /* 
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK, 
-                MessageBoxIcon.Information
-            );
-            */
 
             //porque lo recibe como FromQuery
             var response = await _httpClient.GetAsync($"api/reviews?complexId={complexId}");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo las reseñas del complejo: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo las reseñas del complejo: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<List<ReviewResponseDTO>>();
@@ -307,29 +225,17 @@ namespace WinFormsApp1.Services
         public async Task DeleteReviewsAsync(int reviewId)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /* 
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK, 
-                MessageBoxIcon.Information
-            );
-            */
 
             var response = await _httpClient.DeleteAsync($"api/reviews/{reviewId}");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error eliminando la reseña: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error eliminando la reseña: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             /* ESTO CREO QUE NO VA, PORQUE SI SALE TODO BIEN RETORNA 'NO CONTENT'

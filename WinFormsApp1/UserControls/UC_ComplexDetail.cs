@@ -34,6 +34,8 @@ namespace WinFormsApp1.UserControls
         //public event Action VolverClicked;
         public event Action CerrarClicked;
 
+        public event Action? ComplexUpdated;
+
 
         public UC_ComplexDetail(int complexId, string? nameOwner = null, string? lastnameOwner = null)
         {
@@ -105,7 +107,7 @@ namespace WinFormsApp1.UserControls
 
             labelContactoComplejoDetail.Text = $"Contacto: {complex.Phone}";
             labelPorsentajeSenia.Text = $"Porcentaje de seña: {complex.PercentageSign}%";
-            labelHoraComienzoIlum.Text = $"Inicio iluminación: {complex.StartIlumination}hs";
+            labelHoraComienzoIlum.Text = $"Inicio iluminación: {complex.StartIlumination}";
             labelAddPorIlum.Text = $"Adicional iluminación: {complex.AditionalIlumination}%";
             labelCBU.Text = $"CBU: {complex.CBU}";
             labelEstadoComplejoDetail.Text = $"Estado: {complex.State}";
@@ -172,7 +174,13 @@ namespace WinFormsApp1.UserControls
                     buttonCambioDeEstado2.Text = "Bloquear";
                     buttonCambioDeEstado2.BackColor = Color.Red;
                     break;
-                
+                case "Rechazado":
+                    buttonCambioDeEstado1.Hide();
+                    buttonCambioDeEstado2.Hide();
+                    //buttonCambioDeEstado2.Text = "Bloquear";
+                    //buttonCambioDeEstado2.BackColor = Color.Red;
+                    break;
+
                 case "Deshabilitado":
                     buttonCambioDeEstado1.Hide();
                     buttonCambioDeEstado2.Show();
@@ -228,6 +236,7 @@ namespace WinFormsApp1.UserControls
             await _complexService.ChangeStateComplexAsync(_complexId, newState);
             
             await LoadComplexDetailAsync();
+            ComplexUpdated?.Invoke();
         }
 
         private async void buttonCambioDeEstado2_Click(object sender, EventArgs e)
@@ -289,6 +298,7 @@ namespace WinFormsApp1.UserControls
             await _complexService.ChangeStateComplexAsync(_complexId, newState);
             
             await LoadComplexDetailAsync();
+            ComplexUpdated?.Invoke();
 
             Notifier.Show(this.FindForm(), successMessage, NotificationType.Success);
             //DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "Ocurrió un error inesperado.");

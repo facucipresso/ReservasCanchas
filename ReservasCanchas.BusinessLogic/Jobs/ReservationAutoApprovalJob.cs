@@ -22,7 +22,7 @@ namespace ReservasCanchas.BusinessLogic.Jobs
             if (reservation == null)
                 return;
 
-            // Si todavía está pendiente → aprobar
+            // Si todavía está pendiente, aprobar
             if (reservation.ReservationState == ReservationState.Pendiente)
             {
                 reservation.ReservationState = ReservationState.Aprobada;

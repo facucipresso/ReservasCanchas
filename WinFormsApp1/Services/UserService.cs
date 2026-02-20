@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
@@ -20,54 +21,18 @@ namespace WinFormsApp1.Services
             _httpClient = ApiClient.Http;
         }
 
-        /*
-        public async Task<List<UserResponseDTO>> GetAllUsersAsync()
-        {
-            var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-
-
-            var response = await _httpClient.GetAsync("api/users");
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadAsStringAsync();
-
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-);
-
-                throw new Exception($"Error obteniendo los usuarios: {body}");
-            }
-
-            var respuesta = await response.Content.ReadFromJsonAsync<List<UserResponseDTO>>();
-            if (respuesta == null)
-            {
-                throw new Exception("Respuesta invalida de la api al conseguir los usuarios");
-            }
-
-            return respuesta;
-        }
-        */
-
         public async Task<List<UserResponseDTO>> GetAllUsersAsync()
         {
             var response = await _httpClient.GetAsync("api/users");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo los usuarios: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo los usuarios: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -94,16 +59,12 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo los usuarios: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo los usuarios: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -127,21 +88,14 @@ namespace WinFormsApp1.Services
         public async Task<ComplexOwnerDTO> GetComplxOwnerByIdAsync(int idComplex)
         {
             var response = await _httpClient.GetAsync($"api/complexes/getComplexOwner/{idComplex}");
-            /*
+            
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-
-                throw new Exception($"Error obteniendo los usuarios: {body}");
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
-            */
+            
 
             var respuesta = await response.Content.ReadFromJsonAsync<ComplexOwnerDTO>();
             if (respuesta == null)
@@ -171,16 +125,11 @@ namespace WinFormsApp1.Services
             //ver bien esto porque me retorna no content si sale todo bien el endpoint
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-);
-
-                throw new Exception($"Error bloqueando en usuario: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error bloqueando en usuario: {body}");
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
             /*
             var respuesta = await response.Content.ReadFromJsonAsync<List<UserResponseDTO>>();
@@ -208,16 +157,12 @@ namespace WinFormsApp1.Services
             //ver bien esto porque me retorna no content si sale todo bien el endpoint
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error desbloqueando en usuario: {body}");
 
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-);
-
-                throw new Exception($"Error desbloqueando en usuario: {body}");
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
             /*
             var respuesta = await response.Content.ReadFromJsonAsync<List<UserResponseDTO>>();
