@@ -76,11 +76,11 @@ namespace WinFormsApp1.Models.Complex
             labelPhone.Text = $"{dto.Street} {dto.Number} · {dto.Phone}";
 
             //aca hacer un if para setear el color del estado, rojo/naranja/verde
-            labelState.Text = $"Estado: {dto.State}";
-            if (dto.State.Equals("Pendiente"))
+            labelState.Text = $"Estado: {dto.ComplexState}";
+            if (dto.ComplexState.Equals("Pendiente"))
             {
                 labelState.ForeColor = Color.Orange;
-            }else if (dto.State.Equals("Habilitado"))
+            }else if (dto.ComplexState.Equals("Habilitado"))
             {
                 labelState.ForeColor = Color.Green;
             }

@@ -96,9 +96,9 @@ namespace ReservasCanchas.BusinessLogic
                     );
                 }
 
-                var cInit = complexSlot.InitTime.ToTimeSpan();
+                var cInit = complexSlot.StartTime.ToTimeSpan();
                 var cEnd = complexSlot.EndTime.ToTimeSpan();
-                var fInit = fieldSlot.InitTime.ToTimeSpan();
+                var fInit = fieldSlot.StartTime.ToTimeSpan();
                 var fEnd = fieldSlot.EndTime.ToTimeSpan();
 
                 // cerrado = init == end
@@ -132,7 +132,7 @@ namespace ReservasCanchas.BusinessLogic
                 if (fInit < cInit)
                 {
                     throw new BadRequestException(
-                        $"La cancha el día {day} no puede abrir antes que el complejo ({fieldSlot.InitTime} < {complexSlot.InitTime})"
+                        $"La cancha el día {day} no puede abrir antes que el complejo ({fieldSlot.StartTime} < {complexSlot.StartTime})"
                     );
                 }
 
@@ -168,7 +168,7 @@ namespace ReservasCanchas.BusinessLogic
             field.FieldType = fieldUpdateDTO.FieldType;
             field.FloorType = fieldUpdateDTO.FloorType;
             field.HourPrice = fieldUpdateDTO.HourPrice;
-            field.Ilumination = fieldUpdateDTO.Ilumination;
+            field.Illumination = fieldUpdateDTO.Illumination;
             field.Covered = fieldUpdateDTO.Covered;
             await _fieldRepository.SaveAsync();
             return FieldMapper.ToFieldDetailResponseDTO(field);
@@ -213,9 +213,9 @@ namespace ReservasCanchas.BusinessLogic
                     );
                 }
 
-                var cInit = complexSlot.InitTime.ToTimeSpan();
+                var cInit = complexSlot.StartTime.ToTimeSpan();
                 var cEnd = complexSlot.EndTime.ToTimeSpan();
-                var fInit = fieldSlot.InitTime.ToTimeSpan();
+                var fInit = fieldSlot.StartTime.ToTimeSpan();
                 var fEnd = fieldSlot.EndTime.ToTimeSpan();
 
                 // cerrado = init == end
@@ -249,7 +249,7 @@ namespace ReservasCanchas.BusinessLogic
                 if (fInit < cInit)
                 {
                     throw new BadRequestException(
-                        $"La cancha el día {day} no puede abrir antes que el complejo ({fieldSlot.InitTime} < {complexSlot.InitTime})"
+                        $"La cancha el día {day} no puede abrir antes que el complejo ({fieldSlot.StartTime} < {complexSlot.StartTime})"
                     );
                 }
 
@@ -264,7 +264,7 @@ namespace ReservasCanchas.BusinessLogic
             foreach (var slotDto in slots)
             {
                 var existing = field.TimeSlotsField.First(ts => ts.WeekDay == slotDto.WeekDay);
-                existing.InitTime = slotDto.InitTime;
+                existing.StartTime = slotDto.StartTime;
                 existing.EndTime = slotDto.EndTime;
             }
             await _fieldRepository.SaveAsync();
@@ -314,13 +314,13 @@ namespace ReservasCanchas.BusinessLogic
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
-            if (recurringBlockDTO.InitHour >= recurringBlockDTO.EndHour) 
+            if (recurringBlockDTO.StartTime >= recurringBlockDTO.EndTime) 
                 throw new BadRequestException("La hora inicial debe ser menor que la hora final");
 
             var recurringBlockExisting = field.RecurringCourtBlocks;
             foreach (var rbe in recurringBlockExisting)
             {
-                bool solapamiento = rbe.WeekDay == recurringBlockDTO.WeekDay && rbe.InitHour < recurringBlockDTO.EndHour && rbe.EndHour > recurringBlockDTO.InitHour;
+                bool solapamiento = rbe.WeekDay == recurringBlockDTO.WeekDay && rbe.StartTime < recurringBlockDTO.EndTime && rbe.EndTime > recurringBlockDTO.StartTime;
                 if(solapamiento)
                 {
                     throw new BadRequestException("No se puede crear el bloqueo porque se superpone con otro existente");

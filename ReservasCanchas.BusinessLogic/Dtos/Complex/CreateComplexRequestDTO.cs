@@ -33,10 +33,10 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         [Range(0, 100, ErrorMessage = "El porcentaje de seña debe estar entre 0 y 100")]
         public int PercentageSign { get; set; }
         [Required(ErrorMessage ="El horario de inicio de iluminación es obligatorio")]
-        public TimeOnly StartIlumination { get; set; }
+        public TimeOnly StartIllumination { get; set; }
         [Required(ErrorMessage ="El porcentaje de aumento por iluminación es obligatorio")]
         //[Range(0,100,ErrorMessage ="El porcentaje de aumento por iluminación debe estar entre 0 y 100")]
-        public int AditionalIlumination { get; set; }
+        public int AditionalIllumination { get; set; }
         [Required(ErrorMessage ="El CBU es obligatorio")]
         [Length(22,22,ErrorMessage ="El CBU debe tener 22 caracteres")]
         public string CBU { get; set; }

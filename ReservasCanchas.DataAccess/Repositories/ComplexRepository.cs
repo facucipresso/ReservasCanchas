@@ -52,7 +52,7 @@ namespace ReservasCanchas.DataAccess.Repositories
 
                         .Include(c => c.TimeSlots)
 
-                        .FirstOrDefaultAsync(c => c.Id == id && c.Active && c.State == ComplexState.Habilitado);
+                        .FirstOrDefaultAsync(c => c.Id == id && c.Active && c.ComplexState == ComplexState.Habilitado);
         }
 
         public async Task<List<Complex>> GetAllComplexesAsync()
@@ -120,7 +120,7 @@ namespace ReservasCanchas.DataAccess.Repositories
                     c.Locality == locality &&
                     c.Province == province &&
                     c.Active &&
-                    c.State == ComplexState.Habilitado
+                    c.ComplexState == ComplexState.Habilitado
                 )
                 .ToListAsync();
 
@@ -161,7 +161,7 @@ namespace ReservasCanchas.DataAccess.Repositories
         public async Task<int> GetNumberOfComplexEnabled()
         {
             var numberOfComplexEnabled = await _context.Complex
-                .Where(c => c.State == ComplexState.Habilitado)
+                .Where(c => c.ComplexState == ComplexState.Habilitado)
                 .CountAsync();
 
             return numberOfComplexEnabled;
@@ -170,7 +170,7 @@ namespace ReservasCanchas.DataAccess.Repositories
         public async Task<List<Complex>> GetLastFiveComplexAsync()
         {
             var lastFourComplexes = _context.Complex
-                .Where(c => c.State == ComplexState.Habilitado)
+                .Where(c => c.ComplexState == ComplexState.Habilitado)
                 .OrderByDescending(e => e.Id)
                 .Take(5)
                 .ToList();

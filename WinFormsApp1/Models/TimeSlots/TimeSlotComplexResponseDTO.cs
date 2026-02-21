@@ -12,7 +12,7 @@ namespace WinFormsApp1.Models.TimeSlots
         public int ComplexId { get; set; }
         //paso a string en dia de la semana
         public string WeekDay { get; set; }
-        public TimeOnly InitTime { get; set; }
+        public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
     }
 }

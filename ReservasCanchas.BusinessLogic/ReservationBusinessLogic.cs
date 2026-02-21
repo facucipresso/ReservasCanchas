@@ -141,11 +141,11 @@ namespace ReservasCanchas.BusinessLogic
 
                 if (withBlocks)
                 {
-                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date || (r.Date == nextDate && r.InitTime.Hour < 2)) && (r.ReservationState == ReservationState.Pendiente || r.ReservationState == ReservationState.Aprobada)).ToList();
+                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date || (r.Date == nextDate && r.StartTime.Hour < 2)) && (r.ReservationState == ReservationState.Pendiente || r.ReservationState == ReservationState.Aprobada)).ToList();
                 }
                 else
                 {
-                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date || (r.Date == nextDate && r.InitTime.Hour < 2)) && (r.ReservationState == ReservationState.Completada || r.ReservationState == ReservationState.Aprobada)).ToList();
+                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date || (r.Date == nextDate && r.StartTime.Hour < 2)) && (r.ReservationState == ReservationState.Completada || r.ReservationState == ReservationState.Aprobada)).ToList();
                 }
 
                 var reservationsForFieldDTO = new ReservationsForFieldDTO
@@ -153,7 +153,7 @@ namespace ReservasCanchas.BusinessLogic
                     FieldId = field.Id
                 };
 
-                var reservationsHoursForField = reservationsForFieldFiltered.Select(r => r.InitTime).ToList();
+                var reservationsHoursForField = reservationsForFieldFiltered.Select(r => r.StartTime).ToList();
                 reservationsForFieldDTO.ReservedHours.AddRange(reservationsHoursForField);
 
                 if (withBlocks)
@@ -161,8 +161,8 @@ namespace ReservasCanchas.BusinessLogic
                     var recurringBlocksForField = field.RecurringCourtBlocks.Where(b => b.WeekDay == requestWeekDay).ToList();
                     foreach (var block in recurringBlocksForField)
                     {
-                        var current = block.InitHour;
-                        while (current < block.EndHour)
+                        var current = block.StartTime;
+                        while (current < block.EndTime)
                         {
                             reservationsForFieldDTO.ReservedHours.Add(current);
                             current = current.AddHours(1);
@@ -253,22 +253,22 @@ namespace ReservasCanchas.BusinessLogic
             var weekDay = _complexBusinessLogic.ConvertToWeekDay(request.Date);
 
             var timeSlot = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
-            Console.WriteLine($"Dia: {timeSlot.WeekDay}, Horarios: {timeSlot.InitTime} y {timeSlot.EndTime}");
-            if (timeSlot.InitTime == timeSlot.EndTime)
+            Console.WriteLine($"Dia: {timeSlot.WeekDay}, Horarios: {timeSlot.StartTime} y {timeSlot.EndTime}");
+            if (timeSlot.StartTime == timeSlot.EndTime)
                 throw new BadRequestException($"El complejo está cerrado los días {weekDay}.");
 
-            bool crossesMidnight = timeSlot.EndTime < timeSlot.InitTime;
+            bool crossesMidnight = timeSlot.EndTime < timeSlot.StartTime;
 
             if (crossesMidnight)
             {
-                if (request.StartTime >= timeSlot.EndTime && request.StartTime < timeSlot.InitTime)
+                if (request.StartTime >= timeSlot.EndTime && request.StartTime < timeSlot.StartTime)
                 {
                     throw new BadRequestException("El horario está fuera del horario de atención del complejo .");
                 }
             }
             else
             {
-                if (request.StartTime < timeSlot.InitTime || request.StartTime >= timeSlot.EndTime)
+                if (request.StartTime < timeSlot.StartTime || request.StartTime >= timeSlot.EndTime)
                 {
                     throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
                 }
@@ -315,9 +315,9 @@ namespace ReservasCanchas.BusinessLogic
 
             bool ilumination = false;
 
-            if (field.Ilumination)
+            if (field.Illumination)
             {
-                bool isNightTime = request.StartTime >= complex.StartIlumination;
+                bool isNightTime = request.StartTime >= complex.StartIllumination;
                 bool isEarlyMorningTime = request.StartTime < globalDayStart;
                 if(isNightTime || isEarlyMorningTime)
                 {
@@ -333,8 +333,8 @@ namespace ReservasCanchas.BusinessLogic
                 FieldId = request.FieldId,
                 ExpirationTime = expirationTime,
                 Date = finalDate,
-                InitTime = request.StartTime,
-                Ilumination = ilumination
+                StartTime = request.StartTime,
+                Illumination = ilumination
             };
 
             await _redisRepository.SetCheckoutContextAsync(checkoutKey, checkoutInfo, expiry);
@@ -367,7 +367,7 @@ namespace ReservasCanchas.BusinessLogic
 
             CheckoutInfoDTO checkoutInfoJson = JsonSerializer.Deserialize<CheckoutInfoDTO>(checkoutInfo);
 
-            string lockKey = $"lock:cancha:{checkoutInfoJson.FieldId}:{checkoutInfoJson.Date:yyyyMMdd}:{checkoutInfoJson.InitTime:HHmm}";
+            string lockKey = $"lock:cancha:{checkoutInfoJson.FieldId}:{checkoutInfoJson.Date:yyyyMMdd}:{checkoutInfoJson.StartTime:HHmm}";
 
             await _redisRepository.DeleteKeyAsync(lockKey);
             await _redisRepository.DeleteKeyAsync(checkoutKey);
@@ -402,7 +402,7 @@ namespace ReservasCanchas.BusinessLogic
             // que no sea una fecha pasada y q no sea una reserva para más de 7 días despues del actual
 
             DateOnly operationalDate = request.Date;
-            if (request.InitTime.Hour < 2)
+            if (request.StartTime.Hour < 2)
             {
                 operationalDate = request.Date.AddDays(-1);
             }
@@ -414,30 +414,30 @@ namespace ReservasCanchas.BusinessLogic
 
             var timeSlot = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
 
-            if (timeSlot == null || timeSlot.InitTime == timeSlot.EndTime)
+            if (timeSlot == null || timeSlot.StartTime == timeSlot.EndTime)
                 throw new BadRequestException($"El complejo está cerrado el día operativo {weekDay}.");
 
             bool isValidTime = false;
-            bool crossesMidnight = timeSlot.EndTime < timeSlot.InitTime; 
+            bool crossesMidnight = timeSlot.EndTime < timeSlot.StartTime; 
 
             if (crossesMidnight)
             {
                 // CASO A: Madrugada (00, 01)
-                if (request.InitTime.Hour < 2)
+                if (request.StartTime.Hour < 2)
                 {
                     // Debe ser menor al cierre (ej: 01:00 < 02:00)
-                    if (request.InitTime < timeSlot.EndTime) isValidTime = true;
+                    if (request.StartTime < timeSlot.EndTime) isValidTime = true;
                 }
                 // CASO B: Noche normal (20:00, 21:00)
                 else
                 {
                     // Debe ser mayor al inicio (ej: 20:00 >= 18:00)
-                    if (request.InitTime >= timeSlot.InitTime) isValidTime = true;
+                    if (request.StartTime >= timeSlot.StartTime) isValidTime = true;
                 }
             }
             else // Horario normal (ej: 09:00 a 23:00)
             {
-                if (request.InitTime >= timeSlot.InitTime && request.InitTime < timeSlot.EndTime)
+                if (request.StartTime >= timeSlot.StartTime && request.StartTime < timeSlot.EndTime)
                     isValidTime = true;
             }
 
@@ -450,31 +450,31 @@ namespace ReservasCanchas.BusinessLogic
 
             var reservationsForField = existingReservations.FieldsWithReservedHours.First(f => f.FieldId == field.Id);
 
-            var existingOverlapping = reservationsForField.ReservedHours.Any(h => h == request.InitTime);
+            var existingOverlapping = reservationsForField.ReservedHours.Any(h => h == request.StartTime);
 
             if (existingOverlapping)
                 throw new BadRequestException($"La cancha con id ${field.Id} ya esta reservada en ese horario");
 
-            TimeOnly openningTime = timeSlot.InitTime;
+            TimeOnly openningTime = timeSlot.StartTime;
 
             decimal finalTotalPrice = field.HourPrice;
 
-            if (field.Ilumination)
+            if (field.Illumination)
             {
                 TimeOnly globalDayStart = new TimeOnly(8, 0);
-                bool isNightTime = request.InitTime >= complex.StartIlumination;
-                bool isEarlyMorningTime = request.InitTime < globalDayStart;
+                bool isNightTime = request.StartTime >= complex.StartIllumination;
+                bool isEarlyMorningTime = request.StartTime < globalDayStart;
 
                 if(isNightTime || isEarlyMorningTime)
                 {
-                    decimal surcharge = (field.HourPrice * complex.AditionalIlumination) / 100;
+                    decimal surcharge = (field.HourPrice * complex.AditionalIllumination) / 100;
                     finalTotalPrice += surcharge;
                 }
             }
 
             decimal expectedPrice = finalTotalPrice;
 
-            if(request.PayType == PayType.PagoParcial)
+            if(request.PaymentType == PaymentType.PagoParcial)
             {
                 expectedPrice = (finalTotalPrice * complex.PercentageSign) / 100;
             }
@@ -483,7 +483,7 @@ namespace ReservasCanchas.BusinessLogic
             {
                 
                 decimal backendPrice = Math.Round(expectedPrice, 2);
-                decimal frontendPrice = Math.Round(request.PricePaid, 2);
+                decimal frontendPrice = Math.Round(request.AmountPaid, 2);
 
                 if (backendPrice != frontendPrice)
                 {
@@ -498,11 +498,11 @@ namespace ReservasCanchas.BusinessLogic
                 UserId = userId,
                 FieldId = field.Id,
                 Date = request.Date,
-                InitTime = request.InitTime,
-                CreationDate = DateTime.UtcNow,
-                PayType = isBlock ? null : request.PayType,
-                TotalPrice = finalTotalPrice,
-                PricePaid = isBlock ? 0 : expectedPrice,
+                StartTime = request.StartTime,
+                CreatedAt = DateTime.UtcNow,
+                PaymentType = isBlock ? null : request.PaymentType,
+                TotalAmount = finalTotalPrice,
+                AmountPaid = isBlock ? 0 : expectedPrice,
                 BlockReason = isBlock ? request.BlockReason : null,
                 ReservationType = isBlock ? ReservationType.Bloqueo : ReservationType.Partido,
                 ReservationState = isBlock ? ReservationState.Aprobada : ReservationState.Pendiente,
@@ -531,20 +531,20 @@ namespace ReservasCanchas.BusinessLogic
                 {
                     UserId = complexAdminId,
                     Title = "Nueva reserva pendiente",
-                    Message = $"El usuario {user.UserName} realizó una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}.",
+                    Message = $"El usuario {user.UserName} realizó una reserva en la cancha '{field.Name}' para el {request.Date} a las {request.StartTime:HH\\:mm}.",
                     ReservationId = reservation.Id,
                     ComplexId = complex.Id,
-                    Context = NotificationContext.ADMIN_COMPLEX_RESERVATION
+                    Context = NotificationContext.AdminComplexReservation
                 };
                 var notificationForUser = new Notification
                 {
                     UserId = userId,
                     Title = "Reserva creada con éxito",
-                    Message = $"Has creado una reserva en el complejo {complex.Name}, cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}. " +
+                    Message = $"Has creado una reserva en el complejo {complex.Name}, cancha '{field.Name}' para el {request.Date} a las {request.StartTime:HH\\:mm}. " +
                               $"Tu reserva está pendiente de aprobación por el administrador del complejo.",
                     ReservationId = reservation.Id,
                     ComplexId = complex.Id,
-                    Context = NotificationContext.USER_RESERVATION
+                    Context = NotificationContext.UserReservation
                 };
                 await _notificationBusinessLogic.CreateNotificationAsync(notificationForUser);
                 await _notificationBusinessLogic.CreateNotificationAsync(notificationForAdmin);
@@ -556,18 +556,18 @@ namespace ReservasCanchas.BusinessLogic
                 {
                     UserId = userId,
                     Title = "Bloqueo de cancha realizado",
-                    Message = $"Has bloqueado la cancha '{field.Name}' para el {request.Date} a las {request.InitTime:HH\\:mm}." +
+                    Message = $"Has bloqueado la cancha '{field.Name}' para el {request.Date} a las {request.StartTime:HH\\:mm}." +
                               $"Motivo del bloqueo: {request.BlockReason}",
                     ReservationId = reservation.Id,
                     ComplexId = complex.Id,
-                    Context = NotificationContext.ADMIN_COMPLEX_RESERVATION
+                    Context = NotificationContext.AdminComplexReservation
                 };
                 await _notificationBusinessLogic.CreateNotificationAsync(notificationForAdmin);
             }
 
             if (!string.IsNullOrEmpty(request.ProcessId))
             {
-                string lockKey = $"lock:cancha:{request.FieldId}:{request.Date:yyyyMMdd}:{request.InitTime:HHmm}";
+                string lockKey = $"lock:cancha:{request.FieldId}:{request.Date:yyyyMMdd}:{request.StartTime:HHmm}";
                 string checkoutKey = $"checkout:{request.ProcessId}";
                 string userKey = $"user:{userId}";
                 await _redisRepository.DeleteKeyAsync(lockKey);
@@ -603,18 +603,18 @@ namespace ReservasCanchas.BusinessLogic
 
             bool isOpenNow = false;
 
-            if (todaySlot != null && todaySlot.InitTime != todaySlot.EndTime)
+            if (todaySlot != null && todaySlot.StartTime != todaySlot.EndTime)
             {
-                bool crossesMidnight = todaySlot.EndTime < todaySlot.InitTime;
+                bool crossesMidnight = todaySlot.EndTime < todaySlot.StartTime;
 
                 if (crossesMidnight)
                 {
-                    if (nowTime >= todaySlot.InitTime || nowTime < todaySlot.EndTime)
+                    if (nowTime >= todaySlot.StartTime || nowTime < todaySlot.EndTime)
                         isOpenNow = true;
                 }
                 else
                 {
-                    if (nowTime >= todaySlot.InitTime && nowTime < todaySlot.EndTime)
+                    if (nowTime >= todaySlot.StartTime && nowTime < todaySlot.EndTime)
                         isOpenNow = true;
                 }
             }
@@ -642,9 +642,9 @@ namespace ReservasCanchas.BusinessLogic
 
                 var slot = timeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
 
-                if (slot != null && slot.InitTime != slot.EndTime)
+                if (slot != null && slot.StartTime != slot.EndTime)
                 {
-                    DateTime openDateTime = searchDate.Add(slot.InitTime.ToTimeSpan());
+                    DateTime openDateTime = searchDate.Add(slot.StartTime.ToTimeSpan());
 
                     if (openDateTime > now)
                         return openDateTime.AddMinutes(30);
@@ -679,7 +679,7 @@ namespace ReservasCanchas.BusinessLogic
             if ((userRol == "Usuario" && userId == reservation.UserId) ||
                 (userRol == "AdminComplejo" && userId == reservation.UserId))
             {
-                var reservationDateTime = reservation.Date.ToDateTime(reservation.InitTime);
+                var reservationDateTime = reservation.Date.ToDateTime(reservation.StartTime);
                 var diff = reservationDateTime - DateTime.Now;
 
                 if (reservation.ReservationState == ReservationState.Aprobada &&
@@ -704,7 +704,7 @@ namespace ReservasCanchas.BusinessLogic
                     {
                         UserId = complex.UserId,
                         Title = "Reserva cancelada por usuario",
-                        Message = $"El usuario {user.Name} {user.LastName} canceló la reserva del dia {reservation.Date}, horario {reservation.InitTime} con id {reservation.Id}.",
+                        Message = $"El usuario {user.Name} {user.LastName} canceló la reserva del dia {reservation.Date}, horario {reservation.StartTime} con id {reservation.Id}.",
                         ReservationId = reservation.Id,
                     });
                 }
@@ -805,7 +805,7 @@ namespace ReservasCanchas.BusinessLogic
             {
                 UserId = reservation.UserId,
                 Title = "Tu reserva fue aprobada",
-                Message = $"Tu reserva en '{reservation.Field.Name}' para el {reservation.Date} a las {reservation.InitTime:HH\\:mm} fue aprobada.",
+                Message = $"Tu reserva en '{reservation.Field.Name}' para el {reservation.Date} a las {reservation.StartTime:HH\\:mm} fue aprobada.",
                 ReservationId = reservation.Id,
                 ComplexId = reservation.Field.ComplexId
             };
@@ -907,7 +907,7 @@ namespace ReservasCanchas.BusinessLogic
             if ((userRol == "Usuario" && userId == reservation.UserId) ||
                 (userRol == "AdminComplejo" && userId == reservation.UserId))
             {
-                var reservationDateTime = reservation.Date.ToDateTime(reservation.InitTime);
+                var reservationDateTime = reservation.Date.ToDateTime(reservation.StartTime);
                 var diff = reservationDateTime - DateTime.Now;
 
                 if ((reservation.ReservationState == ReservationState.Aprobada &&
@@ -932,10 +932,10 @@ namespace ReservasCanchas.BusinessLogic
                     {
                         UserId = complex.UserId,
                         Title = "Reserva cancelada por usuario",
-                        Message = $"El usuario {user.Name} {user.LastName} canceló la reserva del dia {reservation.Date}, horario {reservation.InitTime} con id {reservation.Id}.",
+                        Message = $"El usuario {user.Name} {user.LastName} canceló la reserva del dia {reservation.Date}, horario {reservation.StartTime} con id {reservation.Id}.",
                         ReservationId = reservation.Id,
                         ComplexId = complex.Id,
-                        Context = NotificationContext.ADMIN_COMPLEX_RESERVATION
+                        Context = NotificationContext.AdminComplexReservation
                     });
                 }
             }
@@ -983,7 +983,7 @@ namespace ReservasCanchas.BusinessLogic
                                         ""),
                             ReservationId = reservation.Id,
                             ComplexId = complex.Id,
-                            Context = NotificationContext.USER_RESERVATION
+                            Context = NotificationContext.UserReservation
                         });
                     }
                     else if(reservation.ReservationState == ReservationState.CanceladoPorAdmin)
@@ -998,7 +998,7 @@ namespace ReservasCanchas.BusinessLogic
                                         ""),
                             ReservationId = reservation.Id,
                             ComplexId = complex.Id,
-                            Context = NotificationContext.USER_RESERVATION
+                            Context = NotificationContext.UserReservation
                         });
                     }
                     else
@@ -1013,7 +1013,7 @@ namespace ReservasCanchas.BusinessLogic
                                         ""),
                             ReservationId = reservation.Id,
                             ComplexId = complex.Id,
-                            Context= NotificationContext.USER_RESERVATION
+                            Context= NotificationContext.UserReservation
                         });
                     }
 
@@ -1044,8 +1044,8 @@ namespace ReservasCanchas.BusinessLogic
             // LA PROPIEDAD TOTALPRICE DE LA RESERVA YA VIENE CON EL ADICIONAL DE LA ILUMINACION(SI ES QUE LO HAY)
 
             //
-            decimal illuminationAmount = CalculateIlluminationAmount(field, complex, reservation.InitTime);
-            decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalPrice.Value, field.HourPrice);
+            decimal illuminationAmount = CalculateIlluminationAmount(field, complex, reservation.StartTime);
+            decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalAmount.Value, field.HourPrice);
 
 
             var response = new ReservationDetailResponseDTO
@@ -1054,19 +1054,19 @@ namespace ReservasCanchas.BusinessLogic
 
                 // contexto
                 IsAdmin = userId == complex.UserId,
-                State = reservation.ReservationState,
+                ReservationState = reservation.ReservationState,
 
                 // fecha y hora
                 Date = reservation.Date,
-                InitTime = reservation.InitTime,
+                StartTime = reservation.StartTime,
 
                 // pago
-                PayType = reservation.PayType,
-                TotalPrice = reservation.TotalPrice ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
-                PricePaid = reservation.PricePaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
+                PaymentType = reservation.PaymentType,
+                TotalAmount = reservation.TotalAmount ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
+                AmountPaid = reservation.AmountPaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
 
                 // iluminación
-                HasFieldIllumination = field.Ilumination,
+                HasFieldIllumination = field.Illumination,
                 PaidIllumination = illuminationAmount > 0,
                 IlluminationAmount = illuminationAmountT,
 
@@ -1111,17 +1111,17 @@ namespace ReservasCanchas.BusinessLogic
 
         private decimal CalculateIlluminationAmount(Field field, Domain.Entities.Complex complex, TimeOnly initTime)
         {
-            if (!field.Ilumination)
+            if (!field.Illumination)
                 return 0;
 
             TimeOnly globalDayStart = new TimeOnly(8, 0);
 
-            bool isNightTime = initTime >= complex.StartIlumination;
+            bool isNightTime = initTime >= complex.StartIllumination;
             bool isEarlyMorningTime = initTime < globalDayStart;
 
             if (isNightTime || isEarlyMorningTime)
             {
-                return (field.HourPrice * complex.AditionalIlumination) / 100;
+                return (field.HourPrice * complex.AditionalIllumination) / 100;
             }
 
             return 0;

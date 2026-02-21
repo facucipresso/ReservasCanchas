@@ -245,12 +245,12 @@ namespace ReservasCanchas.BusinessLogic
             {
                 foreach(var item in userComplex)
                 {
-                    item.State = ComplexState.Deshabilitado;
+                    item.ComplexState = ComplexState.Deshabilitado;
                 }
                 await _complexRepo.SaveAsync();
             }
 
-            user.Status = UserStatus.Bloqueado;
+            user.UserState = UserState.Bloqueado;
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -272,12 +272,12 @@ namespace ReservasCanchas.BusinessLogic
             {
                 foreach (var item in userComplex)
                 {
-                    item.State = ComplexState.Pendiente;
+                    item.ComplexState = ComplexState.Pendiente;
                 }
                 await _complexRepo.SaveAsync();
             }
 
-            user.Status = UserStatus.Activo;
+            user.UserState = UserState.Activo;
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -315,7 +315,7 @@ namespace ReservasCanchas.BusinessLogic
         }
         public async Task ValidateUserState(User user)
         {
-            if (user.Status == UserStatus.Bloqueado)
+            if (user.UserState == UserState.Bloqueado)
                 throw new BadRequestException($"El usuario con id {user.Id} esta bloqueado");
         }
 

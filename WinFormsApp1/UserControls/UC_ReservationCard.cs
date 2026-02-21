@@ -21,15 +21,15 @@ namespace WinFormsApp1.UserControls
         public void SetData(ReservationResponseDTO dto)
         {
             labelFechaReserva.Text = dto.Date.ToString("dd/MM/yyyy");
-            labelHoraReserva.Text = $"{dto.InitTime.ToString(@"hh\:mm")} hs    "; //agrego ToString();
+            labelHoraReserva.Text = $"{dto.StartTime.ToString(@"hh\:mm")} hs    "; //agrego ToString();
             labelNombreQuienReserva.Text = $"{dto.UserName} {dto.UserLastName}";
             labelCanchaReserva.Text = dto.FieldName;
 
             labelEstadoReserva.Text = $"Estado: {dto.ReservationState}";
-            labelTipoPagoReserva.Text = $"Pago: {dto.PayType}";
-            labelValorTotalReserva.Text = $"Total: ${dto.TotalPrice:N0}";
+            labelTipoPagoReserva.Text = $"Pago: {dto.PaymentType}";
+            labelValorTotalReserva.Text = $"Total: ${dto.TotalAmount:N0}";
             labelTipoReserva.Text = $"Tipo: {dto.ReservationType}";
-            labelFechaCreacionReserva.Text = $"Reserva creada: {dto.CreationDate:dd/MM/yyyy}";
+            labelFechaCreacionReserva.Text = $"Reserva creada: {dto.CreatedAt:dd/MM/yyyy}";
         }
 
         public void SetCompactMode(bool compact)

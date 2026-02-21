@@ -49,7 +49,7 @@ namespace ReservasCanchas.DataAccess.Repositories
                 .Include(r => r.Reservation)
                     .ThenInclude(res => res.Field)
                 .Where(r => r.Reservation.Field.ComplexId == complexId)
-                .OrderByDescending(r => r.CreationDate)
+                .OrderByDescending(r => r.CreatedAt)
                 .Take(10)
                 .ToListAsync();
         }
@@ -82,7 +82,7 @@ namespace ReservasCanchas.DataAccess.Repositories
                 .Include(r => r.Reservation)
                     .ThenInclude(i => i.Field)
                         .ThenInclude(h => h.Complex)
-                .OrderByDescending(e => e.CreationDate)
+                .OrderByDescending(e => e.CreatedAt)
                 .Take(4)
                 .ToList();
 

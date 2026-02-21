@@ -11,8 +11,8 @@ namespace WinFormsApp1.Models.TimeSlots
         public int Id { get; set; }
         public int FieldId { get; set; }
         public string WeekDay { get; set; }
-        public TimeOnly InitHour { get; set; }
-        public TimeOnly EndHour { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
         public string Reason { get; set; } = string.Empty;
     }
 }

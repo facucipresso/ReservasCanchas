@@ -110,7 +110,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException("Esta reserva ya tiene una review.");
 
             Review review = ReviewMapper.ToReview(createReviewDTO, userId);
-            review.CreationDate = DateTime.UtcNow;
+            review.CreatedAt = DateTime.UtcNow;
 
             await _reviewRepository.CreateReviewAsync(review);
 

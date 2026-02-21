@@ -17,7 +17,7 @@ namespace ReservasCanchas.Domain.Entities
         public string LastName { get; set; } = string.Empty;
         //public string Email { get; set; } = string.Empty;     lo maneja identity, usar 'Email'
         //public string Phone { get; set; } = string.Empty;     lo maneja identity, usar 'PhoneNumber'
-        public UserStatus Status { get; set; }
+        public UserState UserState { get; set; }
         //public Rol Rol { get; set; }                          manejo los roles con identity
         //capaz esta prop la podriamos sacar
         public bool Active { get; set; }

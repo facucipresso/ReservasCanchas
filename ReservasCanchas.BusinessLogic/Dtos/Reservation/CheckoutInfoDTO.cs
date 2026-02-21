@@ -13,7 +13,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public int FieldId { get; set; }
         public DateTime ExpirationTime { get; set; }
         public DateOnly Date { get; set; }
-        public TimeOnly InitTime { get; set; }
-        public bool Ilumination { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public bool Illumination { get; set; }
     }
 }

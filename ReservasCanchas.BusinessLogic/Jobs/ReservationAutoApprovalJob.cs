@@ -34,7 +34,7 @@ namespace ReservasCanchas.BusinessLogic.Jobs
                 {
                     UserId = reservation.UserId,
                     Title = "Tu reserva fue aprobada",
-                    Message = $"Tu reserva en '{reservation.Field.Name}' para el {reservation.Date} a las {reservation.InitTime:HH\\:mm} fue aprobada.",
+                    Message = $"Tu reserva en '{reservation.Field.Name}' para el {reservation.Date} a las {reservation.StartTime:HH\\:mm} fue aprobada.",
                     ReservationId = reservation.Id,
                     ComplexId = reservation.Field.ComplexId
                 };

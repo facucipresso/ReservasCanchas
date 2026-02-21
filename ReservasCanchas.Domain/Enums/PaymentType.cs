@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinFormsApp1.Enum
+namespace ReservasCanchas.Domain.Enums
 {
-    public enum UserStatus
+    public enum PaymentType
     {
-        Activo = 0,
-        Bloqueado = 1
+        PagoParcial = 0,
+        PagoTotal = 1,
     }
 }

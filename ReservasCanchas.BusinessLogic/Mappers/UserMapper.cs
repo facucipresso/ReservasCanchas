@@ -24,7 +24,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 LastName = user.LastName,
                 Email = user.Email,
                 Phone = user.PhoneNumber,
-                Status = user.Status
+                UserState = user.UserState
               
             };
         }
@@ -37,7 +37,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 UserName = user.UserName,
                 Email = user.Email,
                 Phone = user.PhoneNumber,
-                Status = user.Status,
+                UserState = user.UserState,
                 Role = role
             };
         }
@@ -50,7 +50,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 LastName = userRequest.LastName,
                 Email = userRequest.Email,
                 PhoneNumber = userRequest.Phone, 
-                Status = UserStatus.Activo
+                UserState = UserState.Activo
                 // Faltaria agregar el rol
             };
         }

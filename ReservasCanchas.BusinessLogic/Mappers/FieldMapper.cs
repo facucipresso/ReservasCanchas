@@ -19,7 +19,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 FieldType = fieldRequestDTO.FieldType,
                 FloorType = fieldRequestDTO.FloorType,
                 HourPrice = fieldRequestDTO.HourPrice,
-                Ilumination = fieldRequestDTO.Ilumination,
+                Illumination = fieldRequestDTO.Illumination,
                 Covered = fieldRequestDTO.Covered,
                 TimeSlotsField = fieldRequestDTO.TimeSlotsField.Select(ToTimeSlotField).ToList(),
                 RecurringCourtBlocks = new List<RecurringFieldBlock>()
@@ -36,7 +36,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 FieldType = field.FieldType,
                 FloorType = field.FloorType,
                 HourPrice = field.HourPrice,
-                Ilumination = field.Ilumination,
+                Illumination = field.Illumination,
                 Covered = field.Covered,
                 Active = field.Active,
                 FieldState = field.FieldState,
@@ -52,7 +52,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Id = timeSlotField.Id,
                 FieldId = timeSlotField.FieldId,
                 WeekDay = timeSlotField.WeekDay,
-                InitTime = timeSlotField.InitTime,
+                StartTime = timeSlotField.StartTime,
                 EndTime = timeSlotField.EndTime
             };
         }
@@ -62,7 +62,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             return new TimeSlotField
             {
                 WeekDay = timeSlotFieldRequestDTO.WeekDay,
-                InitTime = timeSlotFieldRequestDTO.InitTime,
+                StartTime = timeSlotFieldRequestDTO.StartTime,
                 EndTime = timeSlotFieldRequestDTO.EndTime
             };
         }
@@ -74,8 +74,8 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Id = recurringFieldBlock.Id,
                 FieldId = recurringFieldBlock.FieldId,
                 WeekDay = recurringFieldBlock.WeekDay,
-                InitHour = recurringFieldBlock.InitHour,
-                EndHour = recurringFieldBlock.EndHour,
+                StartTime = recurringFieldBlock.StartTime,
+                EndTime = recurringFieldBlock.EndTime,
                 Reason = recurringFieldBlock.Reason
             };
         }
@@ -85,8 +85,8 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             return new RecurringFieldBlock
             {
                 WeekDay = recurringFieldBlockRequestDTO.WeekDay,
-                InitHour = recurringFieldBlockRequestDTO.InitHour,
-                EndHour = recurringFieldBlockRequestDTO.EndHour,
+                StartTime = recurringFieldBlockRequestDTO.StartTime,
+                EndTime = recurringFieldBlockRequestDTO.EndTime,
                 Reason = recurringFieldBlockRequestDTO.Reason
             };
         }

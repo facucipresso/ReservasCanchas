@@ -50,7 +50,7 @@ namespace WinFormsApp1.UserControls
                 //cambio los nombres de las columnas autogeneradas
                 dgvUsuarios.Columns["UserName"].HeaderText = "Usuario";
                 dgvUsuarios.Columns["Phone"].HeaderText = "Telefono";
-                dgvUsuarios.Columns["Status"].HeaderText = "Estado";
+                dgvUsuarios.Columns["UserState"].HeaderText = "Estado";
                 dgvUsuarios.Columns["Role"].HeaderText = "Rol";
 
                 //ColumnAcciones
@@ -83,7 +83,7 @@ namespace WinFormsApp1.UserControls
                 if (user == null) return;
 
 
-                if (user.Status == UserStatus.Bloqueado)
+                if (user.UserState == UserState.Bloqueado)
                 {
                     // opcional: tooltip o mensaje suave
                     // MessageBox.Show("El usuario ya se encuentra bloqueado");
@@ -127,7 +127,7 @@ namespace WinFormsApp1.UserControls
             var user = dgvUsuarios.Rows[e.RowIndex].DataBoundItem as UserResponseWithRoleDTO;
             if (user == null) return;
 
-            if (user.Status == UserStatus.Bloqueado)
+            if (user.UserState == UserState.Bloqueado)
             {
                 dgvUsuarios.Rows[e.RowIndex].DefaultCellStyle.BackColor =
                     Color.FromArgb(255, 235, 238);
@@ -138,7 +138,7 @@ namespace WinFormsApp1.UserControls
 
             if (dgvUsuarios.Columns[e.ColumnIndex].Name == "ColumnAcciones")
             {
-                if (user.Status == UserStatus.Bloqueado)
+                if (user.UserState == UserState.Bloqueado)
                 {
                     e.Value = Properties.Resources.icono_usuario_bloqueado;
                 }

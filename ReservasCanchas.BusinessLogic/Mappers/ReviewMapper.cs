@@ -36,7 +36,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 ComplexName = complexName,
                 Comment = r.Comment,
                 Score = r.Score,
-                CreationDate = r.CreationDate
+                CreatedAt = r.CreatedAt
             };
         }
 

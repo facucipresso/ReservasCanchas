@@ -303,7 +303,7 @@ namespace WinFormsApp1.UserControls
 
             foreach (var c in complexes)
             {
-                flpUltimosComplejos.Controls.Add(CreateFakeComplexItem(c.Name, c.State.ToString()));
+                flpUltimosComplejos.Controls.Add(CreateFakeComplexItem(c.Name, c.ComplexState.ToString()));
             }
         }
 

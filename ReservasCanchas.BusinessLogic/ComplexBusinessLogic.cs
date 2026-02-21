@@ -141,7 +141,7 @@ namespace ReservasCanchas.BusinessLogic
 
             foreach (var slot in slots)
             {
-                var init = slot.InitTime.ToTimeSpan();
+                var init = slot.StartTime.ToTimeSpan();
                 var end = slot.EndTime.ToTimeSpan();
 
                 // indentifico si cierra despues de medianoche
@@ -168,7 +168,7 @@ namespace ReservasCanchas.BusinessLogic
             /*
             foreach (var slot in slots)
             {
-                if (slot.EndTime < slot.InitTime)
+                if (slot.EndTime < slot.StartTime)
                 {
                     throw new BadRequestException($"El horario de fin debe ser mayor al horario de inicio para el día: {slot.WeekDay}");
                 }
@@ -212,7 +212,7 @@ namespace ReservasCanchas.BusinessLogic
 
             complex.ImagePath = imagePath;
             complex.Active = true;
-            complex.State = ComplexState.Pendiente;
+            complex.ComplexState = ComplexState.Pendiente;
             await _complexRepository.CreateComplexAsync(complex);
             
             await _userBusinessLogic.UpdateUserRolAsync(complex.UserId, "AdminComplejo");
@@ -272,8 +272,8 @@ namespace ReservasCanchas.BusinessLogic
             complex.Phone = updateComplexDTO.Phone;
             complex.CBU = updateComplexDTO.CBU;
             complex.PercentageSign =    updateComplexDTO.PercentageSign;
-            complex.AditionalIlumination = updateComplexDTO.AditionalIlumination;
-            complex.StartIlumination = updateComplexDTO.StartIlumination;
+            complex.AditionalIllumination = updateComplexDTO.AditionalIllumination;
+            complex.StartIllumination = updateComplexDTO.StartIllumination;
 
             await _complexRepository.SaveAsync();
             return ComplexMapper.toComplexDetailResponseDTO(complex);
@@ -302,7 +302,7 @@ namespace ReservasCanchas.BusinessLogic
 
             foreach (var slot in slotsDTO)
             {
-                var init = slot.InitTime.ToTimeSpan();
+                var init = slot.StartTime.ToTimeSpan();
                 var end = slot.EndTime.ToTimeSpan();
 
                 bool closesNextDay = end < init;
@@ -325,7 +325,7 @@ namespace ReservasCanchas.BusinessLogic
                 var existingSlot = complejo.TimeSlots
                     .FirstOrDefault(s => s.WeekDay == slot.WeekDay);
 
-                existingSlot.InitTime = slot.InitTime;
+                existingSlot.StartTime = slot.StartTime;
                 existingSlot.EndTime = slot.EndTime;
             }
 
@@ -377,7 +377,7 @@ namespace ReservasCanchas.BusinessLogic
 
             var complex = await GetComplexBasicOrThrow(complexId);
 
-            if (complex.State == newState)
+            if (complex.ComplexState == newState)
             {
                 throw new BadRequestException($"El complejo ya se encuentra en este estado");
             }
@@ -405,32 +405,32 @@ namespace ReservasCanchas.BusinessLogic
             if (userRol == "AdminComplejo")
             {
                 ValidateOwnerShip(complex, userId);
-                if(complex.State == ComplexState.Habilitado && newState == ComplexState.Deshabilitado ||
-                   complex.State == ComplexState.Deshabilitado && newState == ComplexState.Habilitado ||
-                   complex.State == ComplexState.Rechazado && newState == ComplexState.Pendiente)
+                if(complex.ComplexState == ComplexState.Habilitado && newState == ComplexState.Deshabilitado ||
+                   complex.ComplexState == ComplexState.Deshabilitado && newState == ComplexState.Habilitado ||
+                   complex.ComplexState == ComplexState.Rechazado && newState == ComplexState.Pendiente)
                 {
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
             }
             else if(userRol == "SuperAdmin")
             {
-                if(complex.State == ComplexState.Pendiente && (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado))
+                if(complex.ComplexState == ComplexState.Pendiente && (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado))
                 {
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
-                else if ((complex.State == ComplexState.Habilitado || complex.State == ComplexState.Deshabilitado) && newState == ComplexState.Bloqueado)
+                else if ((complex.ComplexState == ComplexState.Habilitado || complex.ComplexState == ComplexState.Deshabilitado) && newState == ComplexState.Bloqueado)
                 {
                     if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
                     {
                         throw new BadRequestException("No se puede bloquear el complejo porque tiene reservas activas en sus canchas");
                     }
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
-                }else if (complex.State == ComplexState.Bloqueado && newState == ComplexState.Habilitado)
+                }else if (complex.ComplexState == ComplexState.Bloqueado && newState == ComplexState.Habilitado)
                 {
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
             }
@@ -440,7 +440,7 @@ namespace ReservasCanchas.BusinessLogic
             }
 
             if (!changed)
-                throw new BadRequestException($"Transición no permitida: no se puede cambiar de {complex.State} a {newState} con su rol actual");
+                throw new BadRequestException($"Transición no permitida: no se puede cambiar de {complex.ComplexState} a {newState} con su rol actual");
 
             await _complexRepository.SaveAsync();
             return ComplexMapper.toComplexDetailResponseDTO(complex);
@@ -451,9 +451,9 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<ComplexDetailResponseDTO> ChangeStateCompIexAsync( int complexId, UpdateComplexStateDTO requestUpdateDTO)
         {
             var complex = await GetComplexBasicOrThrow(complexId);
-            var newState = requestUpdateDTO.State;
+            var newState = requestUpdateDTO.ComplexState;
 
-            if (complex.State == newState)
+            if (complex.ComplexState == newState)
                 throw new BadRequestException("El complejo ya se encuentra en este estado");
 
             var userId = _authService.GetUserId();
@@ -469,7 +469,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new ForbiddenException("No tiene los permisos para hacer esta operación");
             }
 
-            var previousState = complex.State;
+            var previousState = complex.ComplexState;
             bool changed = false;
 
             
@@ -482,7 +482,7 @@ namespace ReservasCanchas.BusinessLogic
                     (previousState == ComplexState.Rechazado && newState == ComplexState.Pendiente)
                 )
                 {
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
             }
@@ -496,7 +496,7 @@ namespace ReservasCanchas.BusinessLogic
                     (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado)
                 )
                 {
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
 
@@ -514,7 +514,7 @@ namespace ReservasCanchas.BusinessLogic
                     if (string.IsNullOrWhiteSpace(requestUpdateDTO.CancelationReason))
                         throw new BadRequestException("Debe ingresar un motivo");
 
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
 
@@ -524,7 +524,7 @@ namespace ReservasCanchas.BusinessLogic
                     newState == ComplexState.Habilitado
                 )
                 {
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
             }
@@ -543,7 +543,7 @@ namespace ReservasCanchas.BusinessLogic
                     Title = "Tu complejo fue aprobado",
                     Message =  $"Tu complejo '{complex.Name}' fue aprobado.",
                     ComplexId = complex.Id,
-                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                    Context = NotificationContext.AdminComplexAction
                 };
 
                 await _notificationBusinessLogic.CreateNotificationAsync(notification);
@@ -559,7 +559,7 @@ namespace ReservasCanchas.BusinessLogic
                                         $"Motivo: {requestUpdateDTO.CancelationReason}" :
                                         ""),
                     ComplexId = complex.Id,
-                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                    Context = NotificationContext.AdminComplexAction
                 };
                 
                 //ACA IRIA LO DE PONER EL CANCELATIONREAZOM, LA PROPIDAD DEL COMPLEJO (QUE TODAVIA NO TENEMOS) PARA DESPUES LLEVARLA AL COMPLEJO
@@ -578,7 +578,7 @@ namespace ReservasCanchas.BusinessLogic
                                         $"Motivo: {requestUpdateDTO.CancelationReason}" :
                                         ""),
                     ComplexId = complex.Id,
-                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                    Context = NotificationContext.AdminComplexAction
                 };
 
                 //ACA IRIA LO DE PONER EL CANCELATIONREAZOM, LA PROPIDAD DEL COMPLEJO (QUE TODAVIA NO TENEMOS) PARA DESPUES LLEVARLA AL COMPLEJO
@@ -595,9 +595,9 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<ComplexDetailResponseDTO> ChangeStateCompIexAsync(int complexId, UpdateComplexStateDTO requestUpdateDTO)
         {
             var complex = await GetComplexBasicOrThrow(complexId);
-            var newState = requestUpdateDTO.State;
+            var newState = requestUpdateDTO.ComplexState;
 
-            if (complex.State == newState)
+            if (complex.ComplexState == newState)
                 throw new BadRequestException("El complejo ya se encuentra en este estado");
 
             var userId = _authService.GetUserId();
@@ -613,7 +613,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new ForbiddenException("No tiene los permisos para hacer esta operación");
             }
 
-            var previousState = complex.State;
+            var previousState = complex.ComplexState;
             bool changed = false;
 
             // TRANSICIONES ADMIN COMPLEJO
@@ -625,7 +625,7 @@ namespace ReservasCanchas.BusinessLogic
                     (previousState == ComplexState.Rechazado && newState == ComplexState.Pendiente)
                 )
                 {
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
             }
@@ -645,7 +645,7 @@ namespace ReservasCanchas.BusinessLogic
                         throw new BadRequestException("Debe ingresar un motivo");
                     }
 
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
 
@@ -664,7 +664,7 @@ namespace ReservasCanchas.BusinessLogic
                     if (string.IsNullOrWhiteSpace(requestUpdateDTO.CancelationReason))
                         throw new BadRequestException("Debe ingresar un motivo");
 
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
 
@@ -674,11 +674,11 @@ namespace ReservasCanchas.BusinessLogic
                     newState == ComplexState.Habilitado
                 )
                 {
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }else if(previousState == ComplexState.Rechazado && newState == ComplexState.Habilitado)
                 {
-                    complex.State = newState;
+                    complex.ComplexState = newState;
                     changed = true;
                 }
             }
@@ -688,8 +688,8 @@ namespace ReservasCanchas.BusinessLogic
                     $"No se puede cambiar el estado de {previousState} a {newState}");
 
             // Solo guardar motivo si el estado final es Rechazado o Bloqueado
-            if (complex.State == ComplexState.Rechazado ||
-                complex.State == ComplexState.Bloqueado)
+            if (complex.ComplexState == ComplexState.Rechazado ||
+                complex.ComplexState == ComplexState.Bloqueado)
             {
                 complex.CancelationReason = requestUpdateDTO.CancelationReason;
             }
@@ -707,7 +707,7 @@ namespace ReservasCanchas.BusinessLogic
                     Title = "Tu complejo fue aprobado",
                     Message = $"Tu complejo '{complex.Name}' fue aprobado.",
                     ComplexId = complex.Id,
-                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                    Context = NotificationContext.AdminComplexAction
                 };
 
                 await _notificationBusinessLogic.CreateNotificationAsync(notification);
@@ -721,7 +721,7 @@ namespace ReservasCanchas.BusinessLogic
                     Message = $"El complejo: {complex.Name} fue rechazado por el administrador. " +
                               $"Motivo: {requestUpdateDTO.CancelationReason}",
                     ComplexId = complex.Id,
-                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                    Context = NotificationContext.AdminComplexAction
                 };
 
                 await _notificationBusinessLogic.CreateNotificationAsync(notification);
@@ -735,7 +735,7 @@ namespace ReservasCanchas.BusinessLogic
                     Message = $"El complejo: {complex.Name} fue bloqueado por el administrador. " +
                               $"Motivo: {requestUpdateDTO.CancelationReason}",
                     ComplexId = complex.Id,
-                    Context = NotificationContext.ADMIN_COMPLEX_ACCTION
+                    Context = NotificationContext.AdminComplexAction
                 };
 
                 await _notificationBusinessLogic.CreateNotificationAsync(notification);
@@ -767,13 +767,13 @@ namespace ReservasCanchas.BusinessLogic
                 {
                     if (ts.WeekDay != weekDay) return false;
 
-                    if (ts.EndTime > ts.InitTime)
+                    if (ts.EndTime > ts.StartTime)
                     {
-                        return complexFiltersDTO.Hour >= ts.InitTime && complexFiltersDTO.Hour < ts.EndTime;
+                        return complexFiltersDTO.Hour >= ts.StartTime && complexFiltersDTO.Hour < ts.EndTime;
                     }
                     else
                     {
-                        return complexFiltersDTO.Hour >= ts.InitTime || complexFiltersDTO.Hour < ts.EndTime;
+                        return complexFiltersDTO.Hour >= ts.StartTime || complexFiltersDTO.Hour < ts.EndTime;
                     }
                 });
 
@@ -788,7 +788,7 @@ namespace ReservasCanchas.BusinessLogic
                     // Checkeo que no tenga reservas
                     bool hasReservation = field.Reservations.Any(r =>
                         r.Date == complexFiltersDTO.Date &&
-                        r.InitTime == complexFiltersDTO.Hour &&
+                        r.StartTime == complexFiltersDTO.Hour &&
                         (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Pendiente)
                     );
 
@@ -798,8 +798,8 @@ namespace ReservasCanchas.BusinessLogic
                     // Checkeo que no tenga un bloqueo reccurrente en ese dia y hora
                     bool isBlocked = field.RecurringCourtBlocks.Any(b =>
                         b.WeekDay == weekDay &&
-                        b.InitHour <= complexFiltersDTO.Hour &&
-                        b.EndHour > complexFiltersDTO.Hour
+                        b.StartTime <= complexFiltersDTO.Hour &&
+                        b.EndTime > complexFiltersDTO.Hour
                     );
 
                     if (isBlocked)
@@ -869,7 +869,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public void ValidateEditable(Complex complex)
         {
-            if (complex.State == ComplexState.Bloqueado || complex.State == ComplexState.Pendiente)
+            if (complex.ComplexState == ComplexState.Bloqueado || complex.ComplexState == ComplexState.Pendiente)
             {
                 throw new BadRequestException("El complejo no puede ser editado mientras está en estado pendiente o bloqueado");
             }
@@ -885,7 +885,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public void ValidateAccessForBasicUser(Complex complex)
         {
-            if (complex.State != ComplexState.Habilitado)
+            if (complex.ComplexState != ComplexState.Habilitado)
             {
                 throw new BadRequestException("El complejo no se encuentra habilitado");
             }
@@ -920,7 +920,7 @@ namespace ReservasCanchas.BusinessLogic
 
         public void ValidateFieldOperationsAllowed(Domain.Entities.Complex complex)
         {
-            if (complex.State == ComplexState.Pendiente || complex.State == ComplexState.Rechazado || complex.State == ComplexState.Bloqueado)
+            if (complex.ComplexState == ComplexState.Pendiente || complex.ComplexState == ComplexState.Rechazado || complex.ComplexState == ComplexState.Bloqueado)
             {
                 throw new BadRequestException("No se pueden manipular las canchas del complejo en el estado actual");
             }
@@ -938,7 +938,7 @@ namespace ReservasCanchas.BusinessLogic
             // Validaciones
             ValidateComplexApproval(complex, userRol);
 
-            complex.State = ComplexState.Habilitado;
+            complex.ComplexState = ComplexState.Habilitado;
             await _complexRepository.SaveAsync();
 
             // creo la notificacion 
@@ -962,7 +962,7 @@ namespace ReservasCanchas.BusinessLogic
 
             ValidateComplexApproval(complex, userRol);
 
-            complex.State = ComplexState.Rechazado;
+            complex.ComplexState = ComplexState.Rechazado;
             await _complexRepository.SaveAsync();
 
             var notification = new Notification
@@ -984,7 +984,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException("El complejo no existe");
 
             // debe estar pendiente
-            if (complex.State != ComplexState.Pendiente)
+            if (complex.ComplexState != ComplexState.Pendiente)
                 throw new BadRequestException("Solo se pueden aprobar complejos pendientes");
 
             // debe ser admin del complejo o superuser

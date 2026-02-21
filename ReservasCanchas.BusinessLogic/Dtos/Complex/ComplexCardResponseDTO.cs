@@ -16,7 +16,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
         public string Locality { get; set; } = string.Empty;
         public string Street { get; set; } = string.Empty;
         public string Number { get; set; } = string.Empty;
-        public ComplexState State { get; set; }
+        public ComplexState ComplexState { get; set; }
         public string ImagePath { get; set; } = string.Empty;
         public decimal LowestPricePerField { get; set; }
 

@@ -24,10 +24,10 @@ namespace ReservasCanchas.Domain.Entities
         public string Phone { get; set; } = string.Empty;
         public string ImagePath { get; set; } = string.Empty;
         public int PercentageSign { get; set; }
-        public TimeOnly StartIlumination { get; set; }
-        public int AditionalIlumination { get; set; }
+        public TimeOnly StartIllumination { get; set; }
+        public int AditionalIllumination { get; set; }
         public string CBU { get; set; }
-        public ComplexState State { get; set; }
+        public ComplexState ComplexState { get; set; }
         public bool Active { get; set; }
         public string? CancelationReason { get; set; }
 

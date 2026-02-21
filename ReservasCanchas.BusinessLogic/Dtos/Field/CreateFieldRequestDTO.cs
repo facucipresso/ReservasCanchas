@@ -23,7 +23,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Field
         [Range(0.0, (double)decimal.MaxValue, ErrorMessage = "El precio por hora no puede ser negativo")]
         public decimal HourPrice { get; set; }
         [Required(ErrorMessage = "La iluminacion de la cancha es obligatoria")]
-        public bool Ilumination { get; set; }
+        public bool Illumination { get; set; }
         [Required(ErrorMessage = "El cerramiento de la cancha es obligatorio")]
         public bool Covered { get; set; }
 

@@ -46,7 +46,7 @@ namespace WinFormsApp1.UserControls
 
             labelTipoSuelo.Text = _field.FloorType == "CespedNatural" ? $"Suelo: NATURAL" : $"Suelo: SINTETICO";
             labelPrecioXHora.Text = $"Precio por hora: {_field.HourPrice}";
-            labelIluminacionBool.Text = _field.Ilumination == true ? $"Iluminacion: SI" : $"Iluminacion: NO";
+            labelIluminacionBool.Text = _field.Illumination == true ? $"Iluminacion: SI" : $"Iluminacion: NO";
             labelCanchaCubiertaBool.Text = _field.Covered == true ? $"Cancha cubierta: SI" : $"Cancha cubierta: NO";
             labelEstadoCancha.Text = _field.Active == true ? $"Estado: ACTIVA" : $"ESTADO: NO ACTIVA";
         }

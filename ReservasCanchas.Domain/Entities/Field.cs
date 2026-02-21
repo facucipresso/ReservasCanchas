@@ -19,7 +19,7 @@ namespace ReservasCanchas.Domain.Entities
         public FieldType FieldType { get; set; }
         public FloorType FloorType { get; set; }
         public decimal HourPrice {  get; set; }
-        public bool Ilumination { get; set; }
+        public bool Illumination { get; set; }
         public bool Covered { get; set; }
         public bool Active { get; set; }
 

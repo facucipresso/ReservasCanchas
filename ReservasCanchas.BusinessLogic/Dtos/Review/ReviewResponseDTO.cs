@@ -17,6 +17,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Review
         public int ReservationId { get; set; }
         public string? Comment { get; set; }
         public int Score { get; set; }
-        public DateTime CreationDate { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

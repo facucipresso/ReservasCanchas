@@ -21,7 +21,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Locality = complex.Locality,
                 Street = complex.Street,
                 Number = complex.Number,
-                State = complex.State,
+                ComplexState = complex.ComplexState,
                 ImagePath = complex.ImagePath,
                 LowestPricePerField = lowestPrice
             };
@@ -41,11 +41,11 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Phone = complex.Phone,
                 ImagePath = complex.ImagePath,
                 PercentageSign = complex.PercentageSign,
-                StartIlumination = complex.StartIlumination,
-                AditionalIlumination = complex.AditionalIlumination,
+                StartIllumination = complex.StartIllumination,
+                AditionalIllumination = complex.AditionalIllumination,
                 CancelationReason = complex.CancelationReason,
                 CBU = complex.CBU,
-                State = complex.State,
+                ComplexState = complex.ComplexState,
                 Services = complex.Services.Select(ServiceMapper.ToServiceResponseDTO).ToList(),
                 TimeSlots = complex.TimeSlots.Select(ToTimeSlotComplexResponseDTO).ToList()
             };
@@ -64,7 +64,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Street = complex.Street,
                 Number = complex.Number,
                 Phone = complex.Phone,
-                State = complex.State,
+                ComplexState = complex.ComplexState,
             };
         }
 
@@ -81,14 +81,14 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Number = complexDTO.Number,
                 Phone = complexDTO.Phone,
                 PercentageSign = complexDTO.PercentageSign,
-                StartIlumination = complexDTO.StartIlumination,
-                AditionalIlumination = complexDTO.AditionalIlumination,
+                StartIllumination = complexDTO.StartIllumination,
+                AditionalIllumination = complexDTO.AditionalIllumination,
                 CBU = complexDTO.CBU,
                 TimeSlots = complexDTO.TimeSlots.Select(ToTimeSlotComplex).ToList()
                 /*TimeSlots = complexDTO.TimeSlotsList.Select(ts => new TimeSlotComplex
                 {
                     WeekDay = ts.WeekDay,
-                    InitTime = ts.InitTime,
+                    StartTime = ts.StartTime,
                     EndTime = ts.EndTime
                 }).ToList()
                 */
@@ -100,7 +100,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             return new TimeSlotComplex
             {
                 WeekDay = timeSlotDTO.WeekDay,
-                InitTime = timeSlotDTO.InitTime,
+                StartTime = timeSlotDTO.StartTime,
                 EndTime = timeSlotDTO.EndTime
             };
         }
@@ -111,7 +111,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             {
                 Id = timeSlot.Id,
                 WeekDay = timeSlot.WeekDay,
-                InitTime = timeSlot.InitTime,
+                StartTime = timeSlot.StartTime,
                 EndTime = timeSlot.EndTime
             };
         }
