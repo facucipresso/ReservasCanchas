@@ -287,8 +287,10 @@ this.complexService.updateComplexImage(
     }else{
       newState = ComplexState.Pendiente;
     }
+
+    console.log(newState);
     
-    const payload = { state: newState };
+    const payload = { complexState: newState };
     console.log('Nuevo estado: ',payload);
     this.complexService.updateComplexState(payload, this.complex.id).subscribe({
       next: response => {

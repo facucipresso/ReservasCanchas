@@ -76,7 +76,7 @@ export class ComplexReservations implements OnInit {
   
       if (index !== -1) {
         const updatedReservations = [...this.allReservations];
-        updatedReservations[index].state = newState;
+        updatedReservations[index].reservationState = newState;
         this.allReservations = updatedReservations;
       }
     }

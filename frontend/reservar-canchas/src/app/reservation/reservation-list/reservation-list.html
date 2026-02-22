@@ -55,8 +55,8 @@
             }
             @if(selectedStatus == 'all'){
               <td>
-                <span class="status-badge" [attr.data-status]="reservation.state">
-                  {{ reservation.state | reservationStateText}}
+                <span class="status-badge" [attr.data-status]="reservation.reservationState">
+                  {{ reservation.reservationState | reservationStateText}}
                 </span>
               </td>
             }

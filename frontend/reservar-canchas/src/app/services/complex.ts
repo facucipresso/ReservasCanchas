@@ -57,7 +57,7 @@ export class Complex {
     return this.http.patch<ComplexDetailModel>(`${this.apiBaseUrl}/${complexId}/image`, formData);
   }
 
-  updateComplexState(newStateObject:{state:ComplexState}, complexId:number):Observable<ComplexDetailModel>{
+  updateComplexState(newStateObject:{complexState:ComplexState}, complexId:number):Observable<ComplexDetailModel>{
     return this.http.patch<ComplexDetailModel>(`${this.apiBaseUrl}/${complexId}/state`,newStateObject);
   }
 

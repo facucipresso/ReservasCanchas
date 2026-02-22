@@ -7,7 +7,7 @@ export interface ReservationDetailResponse{
 
     // contexto
     isAdmin: boolean;
-    state: ReservationState;
+    reservationState: ReservationState;
   
     // fecha y hora
     date: string;
