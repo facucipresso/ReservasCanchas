@@ -1,16 +1,16 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { WeekDay } from '../../models/weekday.enum';
-import { FieldType } from '../../models/fieldtype.enum';
-import { FloorType } from '../../models/floortype.enum';
+import { WeekDay } from '../../models/complex/weekday.enum';
+import { FieldType } from '../../models/field/fieldtype.enum';
+import { FloorType } from '../../models/field/floortype.enum';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { Checkbox } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { InputNumber } from 'primeng/inputnumber';
-import { ComplexModel } from '../../models/complex.model';
-import { FieldModel } from '../../models/field.model';
+import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
+import { FieldDetailModel } from '../../models/field/field.model';
 import { RadioButtonModule } from 'primeng/radiobutton';
 
 
@@ -41,8 +41,8 @@ export class Fieldform implements OnInit {
   invalidSchedulesError: string | null = null;
   fieldForm!: FormGroup;
   @Input() formMode !:string;
-  @Input() field :FieldModel | undefined;
-  @Input() complex !: ComplexModel;
+  @Input() field :FieldDetailModel | undefined;
+  @Input() complex !: ComplexDetailModel;
   @Output() create = new EventEmitter<any>();
   @Output() updateBasic = new EventEmitter<any>();
   @Output() updateTimeSlots = new EventEmitter<any>();
@@ -60,14 +60,14 @@ export class Fieldform implements OnInit {
         fieldType:['',Validators.required],
         floorType:['',Validators.required],
         hourPrice:[null,Validators.required],
-        ilumination:[false],
+        illumination:[false],
         covered:[false]
       }),
       timeSlotsField: this.fb.array(
         this.weekDays.map((day) =>
           this.fb.group({
             weekDay: [day],
-            initTime: ['',Validators.required],   
+            startTime: ['',Validators.required],   
             endTime: ['',Validators.required],
           })
         ) 
@@ -97,7 +97,7 @@ export class Fieldform implements OnInit {
         fieldType: FieldType[this.field!.fieldType],
         floorType: FloorType[this.field!.floorType],
         hourPrice: this.field?.hourPrice,
-        ilumination: this.field?.ilumination,
+        illumination: this.field?.illumination,
         covered: this.field?.covered
       })
 
@@ -114,7 +114,7 @@ export class Fieldform implements OnInit {
 
         if (fieldSlot) {
           slotGroup.patchValue({
-          initTime: fieldSlot.initTime.slice(0, 5),
+          startTime: fieldSlot.startTime.slice(0, 5),
           endTime: fieldSlot.endTime.slice(0, 5)
           });
         }
@@ -127,7 +127,7 @@ export class Fieldform implements OnInit {
     if (!timeSlots) return;
 
     const hasInvalidSchedule = timeSlots.some((slot: any) => {
-      const initIndex = this.availableHours.indexOf(slot.initTime);
+      const initIndex = this.availableHours.indexOf(slot.startTime);
       const endIndex = this.availableHours.indexOf(slot.endTime);
       return initIndex > endIndex && endIndex != -1;
     });
@@ -147,17 +147,17 @@ export class Fieldform implements OnInit {
 
       if (!complexSlot) return;
 
-      const currentInit = slotGroup.get('initTime')?.value;
+      const currentInit = slotGroup.get('startTime')?.value;
       const currentEnd = slotGroup.get('endTime')?.value;
 
-      const newInit = complexSlot.initTime.slice(0, 5);
+      const newInit = complexSlot.startTime.slice(0, 5);
       const newEnd = complexSlot.endTime.slice(0, 5);
 
       if (currentInit !== newInit || currentEnd !== newEnd) {
         hasChanges = true;
 
         slotGroup.patchValue({
-          initTime: newInit,
+          startTime: newInit,
           endTime: newEnd
         });
       }

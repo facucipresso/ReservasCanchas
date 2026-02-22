@@ -6,5 +6,5 @@ export interface ReviewResponse{
   lastname:string;
   comment:string;
   score:number;
-  creationDate:string;
+  createdAt:string;
 }

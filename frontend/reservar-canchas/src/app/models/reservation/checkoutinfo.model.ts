@@ -4,6 +4,6 @@ export interface CheckoutInfo{
   fieldId:number;
   expirationTime:string;
   date:string;
-  initTime:string;
-  ilumination: boolean;
+  startTime:string;
+  illumination: boolean;
 }

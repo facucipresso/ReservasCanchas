@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ComplexModel } from '../../models/complex.model';
-import { FieldModel } from '../../models/field.model';
+import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
+import { FieldDetailModel } from '../../models/field/field.model';
 import { CheckoutInfo } from '../../models/reservation/checkoutinfo.model';
 import { UserInfoModel } from '../../models/user/userinfo.model';
 import { Reservation } from '../../services/reservation';
@@ -17,7 +17,7 @@ import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ReservationType } from '../../models/reservation/reservationtype.enum';
-import { PayType } from '../../models/reservation/paytype.enum';
+import { PaymentType } from '../../models/reservation/paymenttype.enum';
 
 @Component({
   selector: 'app-reservation-checkout',
@@ -26,8 +26,8 @@ import { PayType } from '../../models/reservation/paytype.enum';
   styleUrl: './reservation-checkout.css',
 })
 export class ReservationCheckout implements OnInit, OnDestroy {
-  complex!:ComplexModel;
-  field!:FieldModel;
+  complex!:ComplexDetailModel;
+  field!:FieldDetailModel;
   checkoutInfo!:CheckoutInfo;
   checkoutId:string | null = null;
   user!:UserInfoModel;
@@ -164,10 +164,10 @@ export class ReservationCheckout implements OnInit, OnDestroy {
 
   
   get illuminationCost(): number {
-    if (!this.checkoutInfo.ilumination){
+    if (!this.checkoutInfo.illumination){
       return 0;
     }
-    const percentage = this.complex.aditionalIlumination;
+    const percentage = this.complex.aditionalIllumination;
     return this.basePrice * (percentage / 100);
   }
 
@@ -218,10 +218,10 @@ export class ReservationCheckout implements OnInit, OnDestroy {
     formData.append('processId', this.checkoutId!);
     formData.append('fieldId', this.checkoutInfo.fieldId.toString());
     formData.append('date', this.checkoutInfo.date);
-    formData.append('initTime', this.checkoutInfo.initTime);
-    formData.append('pricePaid', this.finalPriceToPay.toString());
+    formData.append('startTime', this.checkoutInfo.startTime);
+    formData.append('amountPaid', this.finalPriceToPay.toString());
     formData.append('reservationType',  ReservationType.Partido.toString());
-    formData.append('payType', this.paymentOption === 'total' ? PayType.PagoTotal.toString() : PayType.PagoParcial.toString());
+    formData.append('paymentType', this.paymentOption === 'total' ? PaymentType.PagoTotal.toString() : PaymentType.PagoParcial.toString());
     formData.append('image', this.selectedImage!);
     this.reservationService.createReservation(formData).subscribe({
       next: (data)=>{

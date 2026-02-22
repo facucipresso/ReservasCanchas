@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { ComplexModel } from '../../models/complex.model';
+import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
 import { CommonModule } from '@angular/common';
 import { Message } from 'primeng/message';
 import { Panel } from 'primeng/panel';
-import { FieldModel } from '../../models/field.model';
+import { FieldDetailModel } from '../../models/field/field.model';
 import { FieldTable } from '../field-table/field-table';
 import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
 import { ReviewCard } from '../../review-card/review-card';
@@ -12,7 +12,7 @@ import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { PopoverModule } from 'primeng/popover';
-import { ComplexState } from '../../models/complexstate.enum';
+import { ComplexState } from '../../models/complex/complexstate.enum';
 import { DialogModule } from 'primeng/dialog';
 
 @Component({
@@ -22,16 +22,16 @@ import { DialogModule } from 'primeng/dialog';
   styleUrl: './complex-info.css',
 })
 export class ComplexInfo {
-  @Input() complex!: ComplexModel;
+  @Input() complex!: ComplexDetailModel;
   @Input() isAdmin!: boolean;
-  @Input() fields!: FieldModel[];
+  @Input() fields!: FieldDetailModel[];
   @Input() selectedDate!: Date;
   @Input() reviews: ReviewResponse[] = [];
 
-  @Output() editField = new EventEmitter<FieldModel>();
+  @Output() editField = new EventEmitter<FieldDetailModel>();
   @Output() deleteField = new EventEmitter<number>();
-  @Output() reserveField = new EventEmitter<{field:FieldModel, hour:string}>();
-  @Output() recurringBlockField = new EventEmitter<FieldModel>();
+  @Output() reserveField = new EventEmitter<{field:FieldDetailModel, hour:string}>();
+  @Output() recurringBlockField = new EventEmitter<FieldDetailModel>();
   @Output() stateChanged = new EventEmitter<any>();
 
   responsiveOptions = [
@@ -56,7 +56,7 @@ export class ComplexInfo {
   backendUrl = 'https://localhost:7004';
   complexState = ComplexState;
   visible = false;
-  onEditField(field: FieldModel) {
+  onEditField(field: FieldDetailModel) {
     this.editField.emit(field);
   }
 
@@ -64,11 +64,11 @@ export class ComplexInfo {
     this.deleteField.emit(fieldId);
   }
 
-  onReserveField( event:{field:FieldModel, hour:string}){
+  onReserveField( event:{field:FieldDetailModel, hour:string}){
     this.reserveField.emit(event);
   }
 
-  onRecurringBlockField(field: FieldModel){
+  onRecurringBlockField(field: FieldDetailModel){
     this.recurringBlockField.emit(field);
   }
 

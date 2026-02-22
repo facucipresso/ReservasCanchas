@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, numberAttribute, OnInit } from '@angular/core';
-import { ComplexCardModel } from '../models/complexcard.model';
+import { ComplexCardModel } from '../models/complex/complexcard.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Complex } from '../services/complex';
 import { ComplexCard } from '../complex-card/complex-card';

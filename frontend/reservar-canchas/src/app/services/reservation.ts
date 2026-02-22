@@ -6,11 +6,9 @@ import { ReservationProcessRequest } from '../models/reservation/reservationproc
 import { ReservationProcessResponse } from '../models/reservation/reservationprocessresponse.model';
 import { CheckoutInfo } from '../models/reservation/checkoutinfo.model';
 import { CreateReservationResponse } from '../models/reservation/createreservationresponse.model';
-import { ChangeStateReservation } from '../models/ChangeStateReservationRequest.model';
+import { ChangeStateReservation } from '../models/reservation/ChangeStateReservationRequest.model';
 import { ReservationDetailResponse } from '../models/reservation/ReservationDetailResponse.model';
 import { ReservationForUserResponse } from '../models/reservation/reservationforuserresponse.model';
-import { ReviewResponse } from '../models/reservation/reviewresponse.model';
-import { CreateReviewRequest } from '../models/reservation/createreviewrequest.model';
 
 @Injectable({
   providedIn: 'root',

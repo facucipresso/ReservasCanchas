@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ComplexServiceModel } from '../models/complexservice.model';
+import { ComplexServiceModel } from '../models/complex/complexservice.model';
 
 @Injectable({
   providedIn: 'root',

@@ -1,5 +1,5 @@
 import { ReservationState } from "./reservationstate.enum";
-import { PayType } from "./paytype.enum";
+import { PaymentType } from "./paymenttype.enum";
 
 export interface ReservationDetailResponse{
 
@@ -11,12 +11,12 @@ export interface ReservationDetailResponse{
   
     // fecha y hora
     date: string;
-    initTime: string;
+    startTime: string;
   
     // pago
-    payType?: string;
-    totalPrice: number;
-    pricePaid: number;
+    paymentType?: string;
+    totalAmount: number;
+    amountPaid: number;
   
     // iluminación
     hasFieldIllumination: boolean;

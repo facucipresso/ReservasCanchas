@@ -427,3 +427,7 @@ FodyWeavers.xsd
 *.msm
 *.msp
 ClassLibrary1/ 
+
+# Imagenes comprobantes y complejos
+**/wwwroot/uploads/complexes/
+**/wwwroot/uploads/reservations/

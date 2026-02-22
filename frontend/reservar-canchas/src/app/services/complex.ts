@@ -1,12 +1,12 @@
 import { HttpClient, HttpParams, HttpResponse} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable} from 'rxjs';
-import { ComplexCardModel } from '../models/complexcard.model';
-import { ComplexModel } from '../models/complex.model';
+import { ComplexCardModel } from '../models/complex/complexcard.model';
+import { ComplexDetailModel } from '../models/complex/complexdetail.model';
 import { basic } from '@primeuix/themes/aura/fileupload';
-import { TimeSlotCreateModel } from '../models/timeslotscreate.model';
-import { ComplexStats } from '../models/complexstats.model';
-import { ComplexState } from '../models/complexstate.enum';
+import { TimeSlotCreateModel } from '../models/complex/timeslotscreate.model';
+import { ComplexStats } from '../models/complex/complexstats.model';
+import { ComplexState } from '../models/complex/complexstate.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -20,8 +20,8 @@ export class Complex {
     return this.http.get<ComplexCardModel[]>(`${this.apiBaseUrl}/filters`,{params:filters});
   }
 
-  getComplexById(id:number):Observable<ComplexModel>{
-        return this.http.get<ComplexModel>(`${this.apiBaseUrl}/${id}`);
+  getComplexById(id:number):Observable<ComplexDetailModel>{
+        return this.http.get<ComplexDetailModel>(`${this.apiBaseUrl}/${id}`);
   }
 
   getMyComplexes():Observable<ComplexCardModel[]>{
@@ -41,24 +41,24 @@ export class Complex {
     return this.http.post<any>(this.apiBaseUrl,formData,{observe: 'response'});
   }
 
-  updateComplexBasicInfo(basicInfo:any, complexId:number):Observable<ComplexModel>{
-    return this.http.patch<ComplexModel>(`${this.apiBaseUrl}/${complexId}/basic-info`,basicInfo);
+  updateComplexBasicInfo(basicInfo:any, complexId:number):Observable<ComplexDetailModel>{
+    return this.http.patch<ComplexDetailModel>(`${this.apiBaseUrl}/${complexId}/basic-info`,basicInfo);
   }
 
-  updateComplexTimeSlots(timeSlots:TimeSlotCreateModel[], complexId:number):Observable<ComplexModel>{
-    return this.http.put<ComplexModel>(`${this.apiBaseUrl}/${complexId}/time-slots`,timeSlots);
+  updateComplexTimeSlots(timeSlots:TimeSlotCreateModel[], complexId:number):Observable<ComplexDetailModel>{
+    return this.http.put<ComplexDetailModel>(`${this.apiBaseUrl}/${complexId}/time-slots`,timeSlots);
   }
 
-  updateComplexServices(body:{servicesIds:number[]}, complexId:number):Observable<ComplexModel>{
-    return this.http.put<ComplexModel>(`${this.apiBaseUrl}/${complexId}/services`,body);
+  updateComplexServices(body:{servicesIds:number[]}, complexId:number):Observable<ComplexDetailModel>{
+    return this.http.put<ComplexDetailModel>(`${this.apiBaseUrl}/${complexId}/services`,body);
   }
 
-  updateComplexImage(formData:FormData, complexId:number):Observable<ComplexModel>{
-    return this.http.patch<ComplexModel>(`${this.apiBaseUrl}/${complexId}/image`, formData);
+  updateComplexImage(formData:FormData, complexId:number):Observable<ComplexDetailModel>{
+    return this.http.patch<ComplexDetailModel>(`${this.apiBaseUrl}/${complexId}/image`, formData);
   }
 
-  updateComplexState(newStateObject:{state:ComplexState}, complexId:number):Observable<ComplexModel>{
-    return this.http.patch<ComplexModel>(`${this.apiBaseUrl}/${complexId}/state`,newStateObject);
+  updateComplexState(newStateObject:{state:ComplexState}, complexId:number):Observable<ComplexDetailModel>{
+    return this.http.patch<ComplexDetailModel>(`${this.apiBaseUrl}/${complexId}/state`,newStateObject);
   }
 
   deleteComplex(complexId:number):Observable<any>{

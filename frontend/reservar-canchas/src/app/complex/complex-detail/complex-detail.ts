@@ -1,20 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Complex } from '../../services/complex';
-import { ComplexModel } from '../../models/complex.model';
+import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
 import { ActivatedRoute, Router} from '@angular/router';
-import { Toast, ToastModule } from 'primeng/toast';
+import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Auth } from '../../services/auth';
 import { ComplexInfo } from '../complex-info/complex-info';
-import { ProgressSpinner, ProgressSpinnerModule } from 'primeng/progressspinner';
-import { FieldModel } from '../../models/field.model';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { FieldDetailModel } from '../../models/field/field.model';
 import { Field } from '../../services/field';
-import { FieldTable } from '../field-table/field-table';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Complexservices } from '../../services/complexservices';
-import { ComplexServiceModel } from '../../models/complexservice.model';
+import { ComplexServiceModel } from '../../models/complex/complexservice.model';
 import { Dialog } from 'primeng/dialog';
 import { EditcomplexForm } from '../editcomplex-form/editcomplex-form';
 import { Fieldform } from '../fieldform/fieldform';
@@ -24,7 +23,7 @@ import { ReservationProcessRequest } from '../../models/reservation/reservationp
 import { Recblock } from '../../recblock/recblock';
 import { Review } from '../../services/review';
 import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
-import { ComplexState } from '../../models/complexstate.enum';
+import { ComplexState } from '../../models/complex/complexstate.enum';
 type Mode = 'create' | 'edit';
 @Component({
   selector: 'app-complex-detail',
@@ -36,13 +35,13 @@ type Mode = 'create' | 'edit';
 })
 export class ComplexDetail implements OnInit{
 
-  complex!: ComplexModel;
+  complex!: ComplexDetailModel;
   isAdmin!: boolean;
   complexId!: number;
   selectedDate!: Date;
   dateNow = new Date();
   maxDateValid = new Date();
-  fields!: FieldModel[];
+  fields!: FieldDetailModel[];
   allServices !:ComplexServiceModel[];
   isLoading: boolean = false;
 
@@ -51,7 +50,7 @@ export class ComplexDetail implements OnInit{
   visibleRecBlockModal = false;
 
   fieldFormMode:Mode = 'create';
-  selectedField!: FieldModel;
+  selectedField!: FieldDetailModel;
 
   reviews!: ReviewResponse[];
 
@@ -158,7 +157,7 @@ export class ComplexDetail implements OnInit{
     });
   }
 
-  onEditField(field:FieldModel){
+  onEditField(field:FieldDetailModel){
     this.fieldFormMode = 'edit';
     this.selectedField = field;
     this.visibleFieldFormModal = true;
@@ -281,9 +280,9 @@ this.complexService.updateComplexImage(
 
   changeComplexState(){
     let newState;
-    if(this.complex.state === ComplexState.Habilitado){
+    if(this.complex.complexState === ComplexState.Habilitado){
       newState = ComplexState.Deshabilitado;
-    }else if(this.complex.state === ComplexState.Deshabilitado){
+    }else if(this.complex.complexState === ComplexState.Deshabilitado){
       newState = ComplexState.Habilitado;
     }else{
       newState = ComplexState.Pendiente;
@@ -523,7 +522,7 @@ this.complexService.updateComplexImage(
     })
   }
 
-  onReserveField(event:{field:FieldModel, hour:string}){
+  onReserveField(event:{field:FieldDetailModel, hour:string}){
     console.log('Reserva solicitada: ', event);
     console.log(this.selectedDate.toISOString().substring(0,10));
     if(!this.authService.isLoggedIn()){
@@ -577,15 +576,10 @@ this.complexService.updateComplexImage(
     });
   }
 
-  onRecurringBlockField(field: FieldModel){
+  onRecurringBlockField(field: FieldDetailModel){
     this.selectedField = field;
     this.visibleRecBlockModal = true;
     console.log('Solicitud de bloqueo recurrente para la cancha: ', field);
   }
-
-  onStateChange(newState:ComplexState){
-
-  }
-
 
 }

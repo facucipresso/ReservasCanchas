@@ -5,7 +5,7 @@ import { Reservation } from '../../services/reservation';
 import { ReservationDetailResponse } from '../../models/reservation/ReservationDetailResponse.model';
 import { ReservationState } from '../../models/reservation/reservationstate.enum';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ChangeStateReservation } from '../../models/ChangeStateReservationRequest.model';
+import { ChangeStateReservation } from '../../models/reservation/ChangeStateReservationRequest.model';
 import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ReservationStatePipe } from '../../pipes/reservation-state-pipe';
@@ -88,17 +88,17 @@ export class ReservationDetail implements OnInit, OnChanges {
   }
 
   get totalAmount(): number {
-    return this.reservationDetail?.totalPrice ?? 0;
+    return this.reservationDetail?.totalAmount ?? 0;
   }
 
   get amountPaid(): number {
-    return this.reservationDetail?.pricePaid ?? 0;
+    return this.reservationDetail?.amountPaid ?? 0;
   }
 
   get basePrice(): number {
     if (!this.reservationDetail) return 0;
   
-    return this.reservationDetail.totalPrice
+    return this.reservationDetail.totalAmount
          - this.reservationDetail.illuminationAmount;
   }
   
@@ -187,7 +187,7 @@ export class ReservationDetail implements OnInit, OnChanges {
     if (!this.reservationDetail) return;
 
     const dateStr = this.reservationDetail.date.toString(); 
-    const timeStr = this.reservationDetail.initTime.toString();
+    const timeStr = this.reservationDetail.startTime.toString();
 
     const [year, month, day] = dateStr.split('-').map(Number);
     const [hours, minutes] = timeStr.split(':').map(Number);

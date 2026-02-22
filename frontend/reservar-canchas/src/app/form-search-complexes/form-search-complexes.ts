@@ -3,7 +3,7 @@ import {FormBuilder,FormGroup,ReactiveFormsModule,Validators,} from '@angular/fo
 import { Location } from '../services/location';
 import { Select } from 'primeng/select';
 import {AutoCompleteCompleteEvent,AutoCompleteModule,} from 'primeng/autocomplete';
-import { FieldType } from '../models/fieldtype.enum';
+import { FieldType } from '../models/field/fieldtype.enum';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import {  Router } from '@angular/router';

@@ -49,7 +49,7 @@
           <tr>
             <td>{{ reservation.reservationId }}</td>
             <td>{{ reservation.date | date:'dd-MM-yyyy'}}</td>
-            <td>{{ reservation.initTime | slice:0:5 }}</td>
+            <td>{{ reservation.startTime | slice:0:5 }}</td>
             @if(isAdminView && selectedFieldId == null){
             <td>{{reservation.fieldName}}</td>
             }

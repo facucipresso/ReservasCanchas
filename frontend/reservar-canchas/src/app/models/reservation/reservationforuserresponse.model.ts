@@ -4,10 +4,10 @@ export interface ReservationForUserResponse{
   reservationId: number;
   date: string;
   state: ReservationState;
-  initTime: string;
+  startTime: string;
   complexName: string;
   fieldName: string;
-  totalPrice: number;
-  pricePaid: number;
+  totalAmount: number;
+  amountPaid: number;
   canReview: boolean;
 }

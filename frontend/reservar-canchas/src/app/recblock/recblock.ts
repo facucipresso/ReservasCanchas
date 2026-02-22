@@ -1,17 +1,17 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FieldModel } from '../models/field.model';
+import { FieldDetailModel } from '../models/field/field.model';
 import { ButtonModule } from 'primeng/button';
-import { RecBlockResponseModel } from '../models/recblockresponse.model';
+import { RecBlockResponseModel } from '../models/recblock/recblockresponse.model';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { WeekDay } from '../models/weekday.enum';
+import { WeekDay } from '../models/complex/weekday.enum';
 import { CommonModule } from '@angular/common';
 import { TextareaModule } from 'primeng/textarea';
 import { Field } from '../services/field';
-import { RecBlockRequestModel } from '../models/reqblockrequest.model';
+import { RecBlockRequestModel } from '../models/recblock/reqblockrequest.model';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
@@ -25,7 +25,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
   providers: [ConfirmationService]
 })
 export class Recblock implements OnInit{
-  @Input() field !: FieldModel;
+  @Input() field !: FieldDetailModel;
   @Output() blocksUpdated = new EventEmitter<void>();
   blocks!: RecBlockResponseModel[];
   visibleAddBlockModal = false;
@@ -70,7 +70,7 @@ export class Recblock implements OnInit{
     const timeSlot = this.field.timeSlotsField.find(ts => ts.weekDay === day);
     
     if (timeSlot) {
-      this.availableHours = this.generateHourRange(timeSlot.initTime, timeSlot.endTime);
+      this.availableHours = this.generateHourRange(timeSlot.startTime, timeSlot.endTime);
     } else {
       this.availableHours = [];
     }
@@ -107,10 +107,10 @@ export class Recblock implements OnInit{
   }
 
   onAddBlock() {
-    const initTime = parseInt(this.blockForm.value.startTime.split(':')[0]);
+    const startTime = parseInt(this.blockForm.value.startTime.split(':')[0]);
     const endTime = parseInt(this.blockForm.value.endTime.split(':')[0]);
 
-    if(endTime <= initTime || (initTime === 23 && endTime === 0) || (initTime === 1 && endTime === 0)) {
+    if(endTime <= startTime || (startTime === 23 && endTime === 0) || (startTime === 1 && endTime === 0)) {
       this.invalidHoursError = "La hora de fin debe ser mayor que la hora de inicio";
       return;
     }
@@ -118,8 +118,8 @@ export class Recblock implements OnInit{
     if (this.blockForm.valid) {
       const newBlock: RecBlockRequestModel = {
         weekDay: this.blockForm.value.day,
-        initHour: this.blockForm.value.startTime,
-        endHour: this.blockForm.value.endTime,
+        startTime: this.blockForm.value.startTime,
+        endTime: this.blockForm.value.endTime,
         reason: this.blockForm.value.reason
       };
       this.fieldService.addRecurringBlock(this.field.id, newBlock).subscribe({

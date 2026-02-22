@@ -10,8 +10,8 @@ import { Select, SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { Location } from '../services/location';
 import { Complexservices } from '../services/complexservices';
-import { ComplexServiceModel } from '../models/complexservice.model';
-import { WeekDay } from '../models/weekday.enum';
+import { ComplexServiceModel } from '../models/complex/complexservice.model';
+import { WeekDay } from '../models/complex/weekday.enum';
 import { Auth } from '../services/auth';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
@@ -64,8 +64,8 @@ export class CreatecomplexForm {
       number: ['',[Validators.required]],
       phone: ['',[Validators.required,Validators.pattern(/^\d*$/)]],
       percentageSign: [null,[Validators.required,Validators.min(0), Validators.max(100)]],
-      startIlumination: ['',Validators.required],
-      aditionalIlumination: [null,Validators.required],
+      startIllumination: ['',Validators.required],
+      aditionalIllumination: [null,Validators.required],
       cbu: ['', [Validators.required,Validators.pattern(/^\d*$/),Validators.minLength(22), Validators.maxLength(22)]],
       services: [[]],
 
@@ -73,7 +73,7 @@ export class CreatecomplexForm {
         this.weekDays.map((day) =>
           this.fb.group({
             weekDay: [day],
-            initTime: ['',Validators.required],   
+            startTime: ['',Validators.required],   
             endTime: ['',Validators.required],
           })
         ) 
@@ -186,7 +186,7 @@ export class CreatecomplexForm {
     if (!timeSlots) return;
 
     const hasInvalidSchedule = timeSlots.some((slot: any) => {
-      const initIndex = this.availableHours.indexOf(slot.initTime);
+      const initIndex = this.availableHours.indexOf(slot.startTime);
       const endIndex = this.availableHours.indexOf(slot.endTime);
       return initIndex > endIndex && endIndex != -1;
     });
@@ -208,8 +208,8 @@ export class CreatecomplexForm {
     formData.append('Number', value.number);
     formData.append('Phone', value.phone);
     formData.append('PercentageSign', value.percentageSign);
-    formData.append('StartIlumination', value.startIlumination);
-    formData.append('AditionalIlumination', value.aditionalIlumination);
+    formData.append('StartIllumination', value.startIllumination);
+    formData.append('AditionalIllumination', value.aditionalIllumination);
     formData.append('CBU', value.cbu);
 
     if (!this.selectedImage) {
@@ -232,7 +232,7 @@ export class CreatecomplexForm {
 
     value.timeSlots.forEach((slot: any, index: number) => {
       formData.append(`TimeSlots[${index}].WeekDay`, slot.weekDay); 
-      formData.append(`TimeSlots[${index}].InitTime`, slot.initTime); 
+      formData.append(`TimeSlots[${index}].StartTime`, slot.startTime); 
       formData.append(`TimeSlots[${index}].EndTime`, slot.endTime); 
     })
 

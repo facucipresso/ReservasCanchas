@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { UserInfoLogin } from '../models/userInfoLogin.model';
-import { UserRegistration } from '../models/userRegistration.model';
+import { UserInfoLogin } from '../models/user/userInfoLogin.model';
+import { UserRegistration } from '../models/user/userRegistration.model';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +18,13 @@ export class Auth {
   private roleSubject = new BehaviorSubject<string | null>(this.getUserRole());
   role$ = this.roleSubject.asObservable();
 
-  constructor(private http:HttpClient, private route:Router){}
+  constructor(private http:HttpClient, private route:Router){
+    const token = this.getToken();
+  
+    if (token && this.isTokenExpired()) {
+      this.logout();
+    }
+  }
 
   register(userInfoRegistration: UserRegistration):Observable<UserInfoLogin>{
     return this.http.post<UserInfoLogin>(`${this.apiBaseUrl}/register`, userInfoRegistration);

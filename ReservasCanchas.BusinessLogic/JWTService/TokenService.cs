@@ -70,7 +70,7 @@ namespace ReservasCanchas.BusinessLogic.JWTService
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(7), //ver que onda con esto DateTime.UtcNow por la base de datos
+                Expires = DateTime.UtcNow.AddDays(1), //ver que onda con esto DateTime.UtcNow por la base de datos
                 SigningCredentials = creds,
                 Issuer = _config["JWT:Issuer"],
                 Audience = _config["JWT:Audience"]
