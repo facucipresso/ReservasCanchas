@@ -40,7 +40,8 @@ namespace WinFormsApp1.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
+                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             /*
             try
@@ -77,7 +78,8 @@ namespace WinFormsApp1.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
+                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

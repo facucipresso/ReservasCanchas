@@ -13,7 +13,7 @@ namespace ReservasCanchas.Domain.Entities
         public int UserId { get; set; }
         public string? Comment { get; set; } = string.Empty;
         public int Score { get; set; }
-        public DateTime CreationDate { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         // Propiedad de navegacion
         public User User { get; set; } = null!;

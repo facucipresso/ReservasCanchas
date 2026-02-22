@@ -84,11 +84,11 @@ namespace WinFormsApp1.Forms.Complex
             labelUbicacionComplejoDetail.Text = $"Ubicacion: {complexDetail.Province} - {complexDetail.Locality} - {complexDetail.Street} {complexDetail.Number}";
             labelContactoComplejoDetail.Text = $"Contacto: {complexDetail.Phone}";
             labelPorcentajeSenia.Text = $"Porcentaje de seña: {complexDetail.PercentageSign}%";
-            labelHoraComiezoIlum.Text = $"Horario comienzo iluminacion: {complexDetail.StartIlumination}hs";
-            labelAdPorIlum.Text = $"Adicional por iluminacion: {complexDetail.AditionalIlumination}%";
+            labelHoraComiezoIlum.Text = $"Horario comienzo iluminacion: {complexDetail.StartIllumination}hs";
+            labelAdPorIlum.Text = $"Adicional por iluminacion: {complexDetail.AditionalIllumination}%";
             labelCBU.Text = $"CBU: {complexDetail.CBU}";
             labelServicios.Text = "Servicios:";
-            labelEstadoComplejoDetail.Text = $"Estado: {complexDetail.State}";
+            labelEstadoComplejoDetail.Text = $"Estado: {complexDetail.ComplexState}";
 
             var serviciosComplejo = complexDetail.Services;
             if(serviciosComplejo != null)
@@ -100,7 +100,7 @@ namespace WinFormsApp1.Forms.Complex
                 dgvServiciosComplejoDetail.Columns["ServiceDescription"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
 
-            switch (complexDetail.State)
+            switch (complexDetail.ComplexState)
             {
                 case "Pendiente":
                     labelEstadoComplejoDetail.ForeColor = Color.Orange;

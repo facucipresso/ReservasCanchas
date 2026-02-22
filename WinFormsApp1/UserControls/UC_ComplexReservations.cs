@@ -80,91 +80,11 @@ namespace WinFormsApp1.UserControls
             }
             catch (Exception ex)
             {
-                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "Error ocurrido cargando las reservas del complejo:\n" + ex.Message);
-
-                /*
-                MessageBox.Show(
-                    "Error ocurrido cargando las reservas del complejo:\n" + ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-            }
-        }
-        /*
-        private async Task LoadComplexReservationsAsync()
-        {
-            try
-            {
-                var lista = await _complexService.GetAllComplexReservationsAsync(_complexId);
-
-                if (lista == null || !lista.Any())
-                {
-                    ShowEmptyState();
-                    return;
-                }
-
-                ShowGrid();
-
-                _reservations = new BindingList<ReservationResponseDTO>(lista);
-                dgvComplexReservations.DataSource = _reservations;
-
-                //ALGUNAS CONFIGURACIONES EXTRAS
-                dgvComplexReservations.AutoGenerateColumns = true;
-                dgvComplexReservations.ReadOnly = true;
-                dgvComplexReservations.AllowUserToAddRows = false;
-                dgvComplexReservations.AllowUserToDeleteRows = false;
-                dgvComplexReservations.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                dgvComplexReservations.MultiSelect = false;
-                dgvComplexReservations.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-
-
-                //OCULTO COLUMNAS QUE NO QUIERO QUE SE VEAN
-                dgvComplexReservations.Columns["ReservationId"].Visible = false;
-                dgvComplexReservations.Columns["FieldId"].Visible = false;
-                //dgvComplexReservations.Columns["FieldName"].Visible = false;
-                dgvComplexReservations.Columns["UserId"].Visible = false;
-                dgvComplexReservations.Columns["UserLastName"].Visible = false;
-                dgvComplexReservations.Columns["UserEmail"].Visible = false;
-                dgvComplexReservations.Columns["UserPhone"].Visible = false;
-                dgvComplexReservations.Columns["PricePaid"].Visible = false;
-
-                //CAMBIO NOMBRE DE LAS COLUMNAS AUTOGENERADAS
-                dgvComplexReservations.Columns["CreationDate"].HeaderText = "Creacion";
-                dgvComplexReservations.Columns["Date"].HeaderText = "Fecha";
-                dgvComplexReservations.Columns["InitTime"].HeaderText = "Horario";
-                dgvComplexReservations.Columns["ReservationState"].HeaderText = "Estado";
-                dgvComplexReservations.Columns["UserName"].HeaderText = "Usuario";
-                dgvComplexReservations.Columns["PayType"].HeaderText = "Tipo pago";
-                dgvComplexReservations.Columns["TotalPrice"].HeaderText = "Total";
-                dgvComplexReservations.Columns["ReservationType"].HeaderText = "Tipo";
-                dgvComplexReservations.Columns["VoucherPath"].HeaderText = "Comprobante";
-                dgvComplexReservations.Columns["FieldName"].HeaderText = "Cancha";
-
-
+                DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
 
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error ocurrido cargando las reservas de la cancha por: " + ex.Message);
-            }
-        }*/
+        }
 
-        //esto se agrega para el label
-        /*
-        private void ShowEmptyState()
-        {
-            dgvComplexReservations.Visible = false;
-            labelComplexReservationsEmpty.Visible = true;
-        }
-        //esto se agrega para el label
-        private void ShowGrid()
-        {
-            dgvComplexReservations.Visible = true;
-            labelComplexReservationsEmpty.Visible = false;
-        }
-        */
 
         private void ShowEmptyState()
         {

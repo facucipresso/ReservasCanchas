@@ -16,11 +16,11 @@ namespace ReservasCanchas.Domain.Entities
         public int UserId { get; set; }
         public int FieldId { get; set; }
         public DateOnly Date {  get; set; }
-        public TimeOnly InitTime { get; set; }
-        public DateTime CreationDate { get; set; }
-        public PayType? PayType { get; set; }
-        public decimal? TotalPrice { get; set; }
-        public decimal? PricePaid { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public PaymentType? PaymentType { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public decimal? AmountPaid { get; set; }
         public ReservationType ReservationType { get; set; }
         public string? BlockReason { get; set; } = string.Empty;
         public ReservationState ReservationState { get; set; }

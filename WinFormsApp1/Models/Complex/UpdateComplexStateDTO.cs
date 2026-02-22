@@ -9,7 +9,7 @@ namespace WinFormsApp1.Models.Complex
 {
     public class UpdateComplexStateDTO
     {
-        public ComplexState State { get; set; }
+        public ComplexState ComplexState { get; set; }
         public string? CancelationReason { get; set; }
     }
 }

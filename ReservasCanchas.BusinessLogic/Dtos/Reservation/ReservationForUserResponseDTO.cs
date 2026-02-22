@@ -12,14 +12,14 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public int ReservationId { get; set; }
 
         public DateOnly Date { get; set; }
-        public TimeOnly InitTime { get; set; }
-        public ReservationState State { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public ReservationState ReservationState { get; set; }
 
         public string ComplexName { get; set; } = string.Empty;
         public string FieldName { get; set; } = string.Empty;
 
-        public decimal? TotalPrice { get; set; }
-        public decimal? PricePaid { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public decimal? AmountPaid { get; set; } 
 
         public bool CanReview { get; set; }
     }

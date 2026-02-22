@@ -67,13 +67,18 @@ namespace WinFormsApp1.UserControls
             AdjustCardWidths();
         }
 
-        private void ComplexCard_EnterClicked(int? complexId, string? nameOwner, string? lastNameOwner)
+        private async void ComplexCard_EnterClicked(int? complexId, string? nameOwner, string? lastNameOwner)
         {
             if (complexId == null || nameOwner == null || lastNameOwner == null) return;
 
             using (var formComplexWorkspace = new FormComplexWorkspace(complexId.Value, nameOwner, lastNameOwner))//aca tambien nombre y apellido
             {
-                formComplexWorkspace.ShowDialog(); 
+                formComplexWorkspace.ShowDialog();
+
+                if (formComplexWorkspace.ComplexWasModified)
+                {
+                    await LoadComplexesAsync();
+                }
             }
             
         }

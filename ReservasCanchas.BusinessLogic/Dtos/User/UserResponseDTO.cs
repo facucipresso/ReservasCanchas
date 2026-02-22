@@ -15,7 +15,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Usuario
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
-        public UserState Status { get; set; }
+        public UserState UserState { get; set; }
         // Ver si devolvemos complejos, reservas o reseñas
     }
 }

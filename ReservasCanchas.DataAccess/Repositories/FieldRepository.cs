@@ -32,6 +32,14 @@ namespace ReservasCanchas.DataAccess.Repositories
                 .FirstOrDefaultAsync(f => f.Id == id && f.Active);
         }
 
+        public Task<Field?> GetFieldByIdWithRelations2Async(int id)
+        {
+            return _context.Field
+                .Include(f => f.Complex)
+                    .ThenInclude(t => t.TimeSlots)
+                .FirstOrDefaultAsync(f => f.Id == id);
+        }
+
         public Task<List<Field>> GetAllFieldsByComplexIdWithRelationsAsync(int complexId)
         {
             return _context.Field

@@ -19,9 +19,9 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             return new ReservationResponseDTO
             {
                 ReservationId = r.Id,
-                CreationDate = r.CreationDate,
+                CreatedAt = r.CreatedAt,
                 Date = r.Date,
-                InitTime = r.InitTime,
+                StartTime = r.StartTime,
                 ReservationState = r.ReservationState,
                 FieldId = r.FieldId,
                 FieldName = r.Field.Name,
@@ -33,9 +33,9 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 UserEmail = isBlock ? null : r.User.Email,
                 UserPhone = isBlock ? null : r.User.PhoneNumber,
 
-                PayType = isBlock ? null : r.PayType,
-                PricePaid = isBlock ? null : r.PricePaid,
-                TotalPrice = isBlock ? null : r.TotalPrice,
+                PaymentType = isBlock ? null : r.PaymentType,
+                AmountPaid = isBlock ? null : r.AmountPaid,
+                TotalAmount = isBlock ? null : r.TotalAmount,
                 VoucherPath = isBlock ? null : r.VoucherPath,
             };
         }
@@ -45,12 +45,12 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             {
                     ReservationId = r.Id,
                     Date = r.Date,
-                    InitTime = r.InitTime,
-                    State = r.ReservationState,
+                    StartTime = r.StartTime,
+                    ReservationState = r.ReservationState,
                     ComplexName = r.Field.Complex.Name,
                     FieldName = r.Field.Name,
-                    TotalPrice = r.TotalPrice,
-                    PricePaid = r.PricePaid,
+                    TotalAmount = r.TotalAmount,
+                    AmountPaid = r.AmountPaid,
                     CanReview = r.ReservationState == ReservationState.Completada &&
                         r.Review == null
             };
@@ -62,14 +62,14 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             {
                 ReservationId = r.Id,
                 FieldId = r.FieldId,
-                CreationDate = r.CreationDate,
+                CreatedAt = r.CreatedAt,
                 Date = r.Date,
-                InitTime = r.InitTime,
-                EndTime = r.InitTime.AddHours(1),
-                State = r.ReservationState,
+                StartTime = r.StartTime,
+                EndTime = r.StartTime.AddHours(1),
+                ReservationState = r.ReservationState,
                 ReservationType = r.ReservationType,
-                TotalPrice = r.TotalPrice,
-                PricePaid = r.PricePaid,
+                TotalAmount = r.TotalAmount,
+                AmountPaid = r.AmountPaid,
             };
         }
     }

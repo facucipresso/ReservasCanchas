@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
@@ -21,29 +22,18 @@ namespace WinFormsApp1.Services
         public async Task<List<NotificacionResponseDTO>> GetAllNotificationsAsync()
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /*
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
+
 
             var response = await _httpClient.GetAsync("api/notifications/my");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo notificaciones: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo notificaciones: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<List<NotificacionResponseDTO>>();
@@ -58,28 +48,17 @@ namespace WinFormsApp1.Services
         public async Task MarkAsReadAsync(int id)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /*
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
+
             var response = await _httpClient.PatchAsync($"api/notifications/{id}/read", null);
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error marcando como leida la notificacion: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error marcando como leida la notificacion: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
         }
     }

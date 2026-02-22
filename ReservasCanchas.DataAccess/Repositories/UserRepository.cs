@@ -27,7 +27,7 @@ namespace ReservasCanchas.DataAccess.Repositories
         {
             return await _context.Users
                 //.Where(u => u.Id == id && u.Active)
-                //.Where (u => u.Id == id && u.Status == UserStatus.Activo) me da error cuando el admin lo busca
+                //.Where (u => u.Id == id && u.UserState == UserState.Activo) me da error cuando el admin lo busca
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
@@ -52,7 +52,7 @@ namespace ReservasCanchas.DataAccess.Repositories
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _context.Users
-                //.Where (u => u.Status == UserStatus.Activo) comento esta linea porque el admin tiene que ver todos los usuarios
+                //.Where (u => u.UserState == UserState.Activo) comento esta linea porque el admin tiene que ver todos los usuarios
                 .ToListAsync();
         }
 

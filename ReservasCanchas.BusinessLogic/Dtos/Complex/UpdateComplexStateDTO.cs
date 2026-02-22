@@ -11,7 +11,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Complex
      public class UpdateComplexStateDTO
     {
         [Required(ErrorMessage ="El estado del complejo es obligatorio")]
-        public ComplexState State { get; set; }
+        public ComplexState ComplexState { get; set; }
         public string? CancelationReason { get; set; }
     }
 }

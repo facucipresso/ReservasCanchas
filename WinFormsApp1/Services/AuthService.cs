@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
@@ -30,26 +31,19 @@ namespace WinFormsApp1.Services
 
             try
             {
-                // Poner ruta correcta
                 var response = await _http.PostAsJsonAsync("api/account/login", request);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    var error = await response.Content.ReadAsStringAsync();
-                    throw new InvalidOperationException($"Error en login: {response.StatusCode} - {error}");
+                    //var error = await response.Content.ReadAsStringAsync();
+                    //throw new InvalidOperationException($"Error en login: {response.StatusCode} - {error}");
+
+                    var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                    var message = problem?.Detail ?? "Error desconocido";
+                    throw new Exception(message);
                 }
 
-                // si tengo respuesta la deserealizo
-                /*
-                var loginResponse = await response.Content.ReadFromJsonAsync<RespGeneric<LoginResponse>>();
-
-                if (loginResponse?.Value == null)
-                    throw new InvalidOperationException("La API no devolvió un token válido.");
-
-                var loginData = loginResponse.Value;
-                */
-                var loginData = await response.Content
-                   .ReadFromJsonAsync<LoginResponse>();
+                var loginData = await response.Content.ReadFromJsonAsync<LoginResponse>();
 
                 if (loginData == null || string.IsNullOrEmpty(loginData.Token))
                     throw new InvalidOperationException("La API no devolvió un token válido.");

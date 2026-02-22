@@ -8,8 +8,9 @@ namespace ReservasCanchas.Domain.Enums
 {
     public enum NotificationContext
     {
-        USER_RESERVATION = 0,
-        ADMIN_COMPLEX_RESERVATION = 1,
-        ADMIN_COMPLEX_ACCTION = 2
+        UserReservation = 0,
+        AdminComplexReservation = 1,
+        AdminComplexAction = 2
+
     }
 }

@@ -12,8 +12,8 @@ using ReservasCanchas.DataAccess.Persistance;
 namespace ReservasCanchas.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260213135332_AddNotificationContext")]
-    partial class AddNotificationContext
+    [Migration("20260221003802_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -203,12 +203,18 @@ namespace ReservasCanchas.DataAccess.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("AditionalIlumination")
+                    b.Property<int>("AditionalIllumination")
                         .HasColumnType("integer");
 
                     b.Property<string>("CBU")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("CancelationReason")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ComplexState")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -241,11 +247,8 @@ namespace ReservasCanchas.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<TimeOnly>("StartIlumination")
+                    b.Property<TimeOnly>("StartIllumination")
                         .HasColumnType("time without time zone");
-
-                    b.Property<int>("State")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Street")
                         .IsRequired()
@@ -290,7 +293,7 @@ namespace ReservasCanchas.DataAccess.Migrations
                     b.Property<decimal>("HourPrice")
                         .HasColumnType("numeric");
 
-                    b.Property<bool>("Ilumination")
+                    b.Property<bool>("Illumination")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
@@ -353,18 +356,18 @@ namespace ReservasCanchas.DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<TimeOnly>("EndHour")
+                    b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time without time zone");
 
                     b.Property<int>("FieldId")
                         .HasColumnType("integer");
 
-                    b.Property<TimeOnly>("InitHour")
-                        .HasColumnType("time without time zone");
-
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone");
 
                     b.Property<int>("WeekDay")
                         .HasColumnType("integer");
@@ -384,13 +387,16 @@ namespace ReservasCanchas.DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal?>("AmountPaid")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("BlockReason")
                         .HasColumnType("text");
 
                     b.Property<string>("CancellationReason")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateOnly>("Date")
@@ -399,14 +405,8 @@ namespace ReservasCanchas.DataAccess.Migrations
                     b.Property<int>("FieldId")
                         .HasColumnType("integer");
 
-                    b.Property<TimeOnly>("InitTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<int?>("PayType")
+                    b.Property<int?>("PaymentType")
                         .HasColumnType("integer");
-
-                    b.Property<decimal?>("PricePaid")
-                        .HasColumnType("numeric");
 
                     b.Property<int>("ReservationState")
                         .HasColumnType("integer");
@@ -414,7 +414,10 @@ namespace ReservasCanchas.DataAccess.Migrations
                     b.Property<int>("ReservationType")
                         .HasColumnType("integer");
 
-                    b.Property<decimal?>("TotalPrice")
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<decimal?>("TotalAmount")
                         .HasColumnType("numeric");
 
                     b.Property<int>("UserId")
@@ -443,7 +446,7 @@ namespace ReservasCanchas.DataAccess.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ReservationId")
@@ -499,7 +502,7 @@ namespace ReservasCanchas.DataAccess.Migrations
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time without time zone");
 
-                    b.Property<TimeOnly>("InitTime")
+                    b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time without time zone");
 
                     b.Property<int>("WeekDay")
@@ -526,7 +529,7 @@ namespace ReservasCanchas.DataAccess.Migrations
                     b.Property<int>("FieldId")
                         .HasColumnType("integer");
 
-                    b.Property<TimeOnly>("InitTime")
+                    b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time without time zone");
 
                     b.Property<int>("WeekDay")
@@ -598,15 +601,15 @@ namespace ReservasCanchas.DataAccess.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<int>("UserState")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

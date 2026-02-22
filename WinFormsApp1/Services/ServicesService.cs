@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using WinFormsApp1.Infrastructure;
 using WinFormsApp1.Models;
 using WinFormsApp1.Models.Service;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace WinFormsApp1.Services
 {
@@ -35,7 +37,15 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
+                // ESTO ERA EL MANEJO DE ERRORES DE ANTES
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo servicios: {body}");
+
+                //MANEJO DE ERRORES DE AHORA
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
+
                 /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
@@ -44,7 +54,7 @@ namespace WinFormsApp1.Services
                     MessageBoxIcon.Error
                 );
                 */
-                throw new Exception($"Error obteniendo servicios: {body}");
+                
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<List<ServiceResponseDTO>>();
@@ -71,7 +81,7 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
+                //var body = await response.Content.ReadAsStringAsync();
                 /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
@@ -80,7 +90,11 @@ namespace WinFormsApp1.Services
                     MessageBoxIcon.Error
                  );
                 */
-                throw new Exception($"Error obteniendo servicios: {body}");
+                //throw new Exception($"Error obteniendo servicios: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<ServiceResponseDTO>();
@@ -98,7 +112,7 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
+                //var body = await response.Content.ReadAsStringAsync();
                 /*
                 MessageBox.Show(
                     $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
@@ -107,7 +121,10 @@ namespace WinFormsApp1.Services
                     MessageBoxIcon.Error
                 );
                 */
-                throw new Exception($"Error creando servicio: {body}");
+                //throw new Exception($"Error creando servicio: {body}");
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<ServiceResponseDTO>();

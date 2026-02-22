@@ -16,6 +16,9 @@ namespace WinFormsApp1.Forms.Complex
         private readonly int _complexId;
         private readonly string _nameOwner;
         private readonly string _lastNameOwner;
+
+        private bool _complexWasModified = false;
+        public bool ComplexWasModified => _complexWasModified;
         public FormComplexWorkspace(int complexId, string nameOwnwer, string lastNameOwnwer)
         {
             InitializeComponent();
@@ -32,6 +35,7 @@ namespace WinFormsApp1.Forms.Complex
         private void LoadInitialView()
         {
             var ucDetail = new UC_ComplexDetail(_complexId, _nameOwner, _lastNameOwner);
+            ucDetail.ComplexUpdated += () => { _complexWasModified = true; };
 
             ucDetail.VerCanchasClicked += OnVerCanchas;
             

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinFormsApp1.Enum;
+using WinFormsApp1.Services;
 
 namespace WinFormsApp1.Forms.Complex
 {
@@ -28,8 +30,8 @@ namespace WinFormsApp1.Forms.Complex
         {
             if (string.IsNullOrWhiteSpace(textBoxReasonModal.Text))
             {
-                MessageBox.Show("Debe ingresar una razón.", "Validación",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Notifier.Show(this.FindForm(), "Debe ingresar una razon", NotificationType.Warning);
+                //MessageBox.Show("Debe ingresar una razón.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

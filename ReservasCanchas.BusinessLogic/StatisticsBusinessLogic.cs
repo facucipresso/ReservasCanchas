@@ -41,22 +41,22 @@ namespace ReservasCanchas.BusinessLogic
                 var fieldStats = reservationsForComplex.FieldsWithReservedHours.FirstOrDefault(f => f.FieldId == fieldId);
                 ocuppiedSlots = fieldStats.ReservedHours.Count();
                 List<ReservationForUserResponseDTO> reservationsField = await _reservationBusinessLogic.GetReservationsByFieldAndDateAsync(fieldId ?? 0, date);
-                totalRevenue = reservationsField.Where(r => r.State == ReservationState.Aprobada || r.State == ReservationState.Completada).Sum(r => r.TotalPrice ?? 0);
+                totalRevenue = reservationsField.Where(r => r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada).Sum(r => r.TotalAmount ?? 0);
 
             }
             else
             {
                 ocuppiedSlots = reservationsForComplex.FieldsWithReservedHours.Sum(f => f.ReservedHours.Count());
                 List<ReservationForUserResponseDTO> reservationsComplex = await _reservationBusinessLogic.GetReservationsByComplexAndDateAsync(complexId, date);
-                totalRevenue = reservationsComplex.Where(r => r.State == ReservationState.Aprobada || r.State == ReservationState.Completada).Sum(r => r.TotalPrice ?? 0);
+                totalRevenue = reservationsComplex.Where(r => r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada).Sum(r => r.TotalAmount ?? 0);
             }
 
             var dayOfWeek = _complexBusinessLogic.ConvertToWeekDay(date);
             var timeSlotComplex = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == dayOfWeek);
 
-            if (timeSlotComplex.InitTime != timeSlotComplex.EndTime)
+            if (timeSlotComplex.StartTime != timeSlotComplex.EndTime)
             {
-                var start = timeSlotComplex.InitTime.Hour;
+                var start = timeSlotComplex.StartTime.Hour;
                 var end = timeSlotComplex.EndTime.Hour;
 
                 int hoursOpen = 0;

@@ -108,7 +108,7 @@ namespace ReservasCanchas.DataAccess.Repositories
                 .AnyAsync(r =>
                     r.FieldId == fieldId &&
                     r.Date == date &&
-                    r.InitTime == initTime &&
+                    r.StartTime == initTime &&
                     (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Pendiente)
                 );
         }
@@ -128,7 +128,7 @@ namespace ReservasCanchas.DataAccess.Repositories
                     r.ReservationState == ReservationState.Aprobada &&
                     (
                         r.Date < today ||
-                        (r.Date == today && r.InitTime.AddHours(1) <= timeNowOnly)
+                        (r.Date == today && r.StartTime.AddHours(1) <= timeNowOnly)
                     )
                 )
                 .ToListAsync();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
@@ -26,30 +27,17 @@ namespace WinFormsApp1.Services
         public async Task<SumaryDashboardDTO> GetDashboardDataAsync() 
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /*
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
 
             var response = await _httpClient.GetAsync("api/admin/dashboard-summary");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo la data del dashboard: {body}");
 
-                throw new Exception($"Error obteniendo la data del dashboard: {body}");
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var respuesta = await response.Content.ReadFromJsonAsync<SumaryDashboardDTO>();
@@ -67,16 +55,12 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo los datos de complejo para el dashboard: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo los datos de complejo para el dashboard: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -100,29 +84,17 @@ namespace WinFormsApp1.Services
         public async Task<List<UserResponseWithRoleDTO>> GetLastSixUsersWithRoleAsync() 
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /* 
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK, 
-                MessageBoxIcon.Information
-            );
-            */
-
+ 
             var response = await _httpClient.GetAsync("api/admin/dashboard-users");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo los datos de ususarios para el dashboard: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo los datos de ususarios para el dashboard: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             
@@ -149,29 +121,17 @@ namespace WinFormsApp1.Services
         public async Task<List<ReviewResponseDTO>> GetLastFourReviewsAsync()
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /* 
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK, 
-                MessageBoxIcon.Information
-            );
-            */
 
             var response = await _httpClient.GetAsync("api/admin/dashboard-review");
 
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                throw new Exception($"Error obteniendo los datos de reviews para el dashboard: {body}");
+                //var body = await response.Content.ReadAsStringAsync();
+                //throw new Exception($"Error obteniendo los datos de reviews para el dashboard: {body}");
+
+                var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+                var message = problem?.Detail ?? "Error desconocido";
+                throw new Exception(message);
             }
 
             //var respuesta = await response.Content.ReadFromJsonAsync<List<ReviewResponseDTO>>();

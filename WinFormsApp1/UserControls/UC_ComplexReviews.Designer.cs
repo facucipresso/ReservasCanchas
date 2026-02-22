@@ -33,10 +33,8 @@
             btnCerrar = new Button();
             labelReseniaDelComplejo = new Label();
             labelComplexReviewEmpty = new Label();
-            dgvComplexReviews = new DataGridView();
-            ColumnEliminarReview = new DataGridViewImageColumn();
+            flowLayoutPanelReviews = new FlowLayoutPanel();
             panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvComplexReviews).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -85,47 +83,38 @@
             labelComplexReviewEmpty.Dock = DockStyle.Fill;
             labelComplexReviewEmpty.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Italic);
             labelComplexReviewEmpty.ForeColor = Color.Gray;
-            labelComplexReviewEmpty.Location = new Point(0, 60);
+            labelComplexReviewEmpty.Location = new Point(0, 0);
             labelComplexReviewEmpty.Name = "labelComplexReviewEmpty";
-            labelComplexReviewEmpty.Size = new Size(774, 841);
+            labelComplexReviewEmpty.Size = new Size(774, 901);
             labelComplexReviewEmpty.TabIndex = 10;
             labelComplexReviewEmpty.Text = "Este complejo aún no recibió reseñas.";
             labelComplexReviewEmpty.TextAlign = ContentAlignment.MiddleCenter;
             labelComplexReviewEmpty.Visible = false;
             // 
-            // dgvComplexReviews
+            // flowLayoutPanelReviews
             // 
-            dgvComplexReviews.BackgroundColor = SystemColors.Control;
-            dgvComplexReviews.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvComplexReviews.Columns.AddRange(new DataGridViewColumn[] { ColumnEliminarReview });
-            dgvComplexReviews.Dock = DockStyle.Fill;
-            dgvComplexReviews.Location = new Point(0, 60);
-            dgvComplexReviews.Name = "dgvComplexReviews";
-            dgvComplexReviews.RowHeadersWidth = 51;
-            dgvComplexReviews.Size = new Size(774, 841);
-            dgvComplexReviews.TabIndex = 1;
-            dgvComplexReviews.CellContentClick += dgvComplexReviews_CellContentClick;
-            // 
-            // ColumnEliminarReview
-            // 
-            ColumnEliminarReview.HeaderText = "Eliminar";
-            ColumnEliminarReview.MinimumWidth = 6;
-            ColumnEliminarReview.Name = "ColumnEliminarReview";
-            ColumnEliminarReview.Width = 125;
+            flowLayoutPanelReviews.AutoScroll = true;
+            flowLayoutPanelReviews.Dock = DockStyle.Fill;
+            flowLayoutPanelReviews.FlowDirection = FlowDirection.TopDown;
+            flowLayoutPanelReviews.Location = new Point(0, 60);
+            flowLayoutPanelReviews.Name = "flowLayoutPanelReviews";
+            flowLayoutPanelReviews.Padding = new Padding(10);
+            flowLayoutPanelReviews.Size = new Size(774, 841);
+            flowLayoutPanelReviews.TabIndex = 0;
+            flowLayoutPanelReviews.WrapContents = false;
             // 
             // UC_ComplexReviews
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BorderStyle = BorderStyle.FixedSingle;
-            Controls.Add(labelComplexReviewEmpty);
-            Controls.Add(dgvComplexReviews);
+            Controls.Add(flowLayoutPanelReviews);
             Controls.Add(panel1);
+            Controls.Add(labelComplexReviewEmpty);
             Name = "UC_ComplexReviews";
             Size = new Size(774, 901);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvComplexReviews).EndInit();
             ResumeLayout(false);
 
 
@@ -135,10 +124,9 @@
 
         private Panel panel1;
         private Label labelComplexReviewEmpty; //esto se agrega para el label
-        private DataGridView dgvComplexReviews;
-        private DataGridViewImageColumn ColumnEliminarReview;
         private Label labelReseniaDelComplejo;
         private Button btnCerrar;
         private Button btnVolver;
+        private FlowLayoutPanel flowLayoutPanelReviews;
     }
 }

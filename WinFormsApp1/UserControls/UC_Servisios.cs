@@ -29,7 +29,14 @@ namespace WinFormsApp1.UserControls
 
         private async void UC_Servisios_Load(object sender, EventArgs e)
         {
-            await LoadServicesAsync();
+            try
+            {
+                await LoadServicesAsync();
+            }
+            catch (Exception ex)
+            {
+                DialogService.ShowError(this.FindForm(), ex.Message);
+            }
         }
 
         private async Task LoadServicesAsync()
@@ -62,7 +69,7 @@ namespace WinFormsApp1.UserControls
                 }
                 catch (Exception ex)
                 {
-                    DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "No se pudo insertar correctamente el nuevo servicio por: " + ex);
+                    DialogService.ShowError(this.FindForm(), ex.Message);
                     //MessageBox.Show("No se pudo insertar correctamente el nuevo servicio por: " + ex);
                 }
             }
@@ -81,7 +88,7 @@ namespace WinFormsApp1.UserControls
                 }
                 catch (Exception ex)
                 {
-                    DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "No se pudo editar correctamente el servicio por: " + ex);
+                    DialogService.ShowError(this.FindForm(), ex.Message);
                     //MessageBox.Show("No se pudo editar correctamente el servicio por: " + ex);
                 }
 

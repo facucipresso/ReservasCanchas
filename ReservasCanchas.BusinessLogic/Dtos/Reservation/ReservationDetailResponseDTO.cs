@@ -13,16 +13,16 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 
         // Contexto
         public bool IsAdmin { get; set; }
-        public ReservationState State { get; set; }
+        public ReservationState ReservationState { get; set; }
 
         // Fecha y hora
         public DateOnly Date { get; set; }
-        public TimeOnly InitTime { get; set; }
+        public TimeOnly StartTime { get; set; }
 
         // Pago
-        public PayType? PayType { get; set; }
-        public decimal TotalPrice { get; set; }
-        public decimal PricePaid { get; set; }
+        public PaymentType? PaymentType { get; set; }
+        public decimal TotalAmount { get; set; }
+        public decimal AmountPaid { get; set; }
 
         // Iluminación
         public bool HasFieldIllumination { get; set; }

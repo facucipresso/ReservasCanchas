@@ -15,7 +15,7 @@ namespace WinFormsApp1.Models.User
         //public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
-        public UserStatus Status { get; set; }
+        public UserState UserState { get; set; }
         // Ver si devolvemos complejos, reservas o reseñas
     }
 }
