@@ -122,16 +122,16 @@
       <div>
         <p-floatlabel variant="on">
           <p-select
-            formControlName="startIlumination"
+            formControlName="startIllumination"
             [options]="availableHours"
             style="width: 100%"
           >
           </p-select>
           <label for="on_label">Horario inicio de iluminación</label>
         </p-floatlabel>
-        @if(editBasicInfoForm.get('startIlumination')?.touched &&
-        editBasicInfoForm.get('startIlumination')?.invalid){
-        @if(editBasicInfoForm.get('startIlumination')?.errors?.['required']){
+        @if(editBasicInfoForm.get('startIllumination')?.touched &&
+        editBasicInfoForm.get('startIllumination')?.invalid){
+        @if(editBasicInfoForm.get('startIllumination')?.errors?.['required']){
         <small style="color: red; display: block"
           >El horario de inicio de iluminación es obligatorio</small
         >
@@ -139,12 +139,12 @@
       </div>
       <div>
         <p-floatlabel variant="on">
-          <p-inputNumber formControlName="aditionalIlumination"></p-inputNumber>
+          <p-inputNumber formControlName="aditionalIllumination"></p-inputNumber>
           <label for="on_label">Porcentaje extra por iluminación</label>
         </p-floatlabel>
-        @if(editBasicInfoForm.get('aditionalIlumination')?.touched &&
-        editBasicInfoForm.get('aditionalIlumination')?.invalid){
-        @if(editBasicInfoForm.get('aditionalIlumination')?.errors?.['required']){
+        @if(editBasicInfoForm.get('aditionalIllumination')?.touched &&
+        editBasicInfoForm.get('aditionalIllumination')?.invalid){
+        @if(editBasicInfoForm.get('aditionalIllumination')?.errors?.['required']){
         <small style="color: red; display: block"
           >El porcentaje de aumento por iluminación es obligatorio</small
         >
@@ -200,7 +200,7 @@
         }}</label>
 
         <p-select
-          formControlName="initTime"
+          formControlName="startTime"
           [options]="availableHours"
           placeholder="Apertura"
         >
@@ -211,7 +211,7 @@
           placeholder="Cierre"
         >
         </p-select>
-        @if((slot.get('initTime')?.touched && slot.get('initTime')?.invalid) ||
+        @if((slot.get('startTime')?.touched && slot.get('startTime')?.invalid) ||
         (slot.get('endTime')?.touched && slot.get('endTime')?.invalid) ){
         <div class="time-error">
           El horario de apertura y cierre son requeridos

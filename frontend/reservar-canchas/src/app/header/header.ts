@@ -50,21 +50,17 @@ export class Header implements OnInit {
     this.authService.isLoggedIn$.subscribe(isLogged => {
       this.isLoggedIn = isLogged;
       this.username = this.authService.getUsername();
+      console.log(this.username);
     });
-
-    this.username = this.authService.getUsername();
-    console.log(this.username);
-
     this.authService.role$.subscribe(role => {
       this.isAdmin = role === 'AdminComplejo';
-      console.log("isAdmin: ", this.isAdmin);
+      console.log("El usuario : ", this.username, " es admin?: ", this.isAdmin);
       this.initMenu();
     });
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
     });
-    this.initMenu();
   }
 
   private initMenu() {
@@ -131,8 +127,6 @@ export class Header implements OnInit {
         if(this.router.url.startsWith('/register')){
           this.router.navigate(['/'])
         }
-        this.isLoggedIn = true;
-        this.isAdmin = this.authService.getUserRole() == 'AdminComplejo' ? true : false;
         this.visible = false; 
         this.loginForm.reset();
       },
@@ -185,7 +179,5 @@ export class Header implements OnInit {
       life: 1500
     })
     this.router.navigate(['/']);
-    this.isLoggedIn = false;
-    this.isAdmin = false;
   }
 }

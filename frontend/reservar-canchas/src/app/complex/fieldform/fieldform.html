@@ -87,7 +87,7 @@
         } }
       </div>
       <div class="field-item" style="height: 40px">
-        <p-checkbox [binary]="true" formControlName="ilumination"></p-checkbox>
+        <p-checkbox [binary]="true" formControlName="illumination"></p-checkbox>
         <span style="margin-left: 8px"> Iluminación nocturna </span>
       </div>
       <div class="field-item">
@@ -119,7 +119,7 @@
         }}</label>
 
         <p-select
-          formControlName="initTime"
+          formControlName="startTime"
           [options]="availableHours"
           placeholder="Apertura"
         >
@@ -130,7 +130,7 @@
           placeholder="Cierre"
         >
         </p-select>
-        @if((slot.get('initTime')?.touched && slot.get('initTime')?.invalid) ||
+        @if((slot.get('startTime')?.touched && slot.get('startTime')?.invalid) ||
         (slot.get('endTime')?.touched && slot.get('endTime')?.invalid) ){
         <div class="time-error">
           <small style="color: red;">El horario de apertura y cierre son requeridos</small>

@@ -3,12 +3,12 @@ import { InitEditableRow } from "primeng/table";
 export interface CreateReservationResponse{
   reservationId: number;
   fieldId: number;
-  creationDate: string;
+  createdAt: string;
   date: string;
-  initTime: string;
+  startTime: string;
   endTime: string;
   reservationState:string;
   reservationType:string;
-  totalPrice:number;
-  pricePaid:number;
+  totalAmount:number;
+  amountPaid:number;
 }

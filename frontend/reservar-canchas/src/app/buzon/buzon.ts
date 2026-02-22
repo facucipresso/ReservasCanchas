@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PaginatorModule } from 'primeng/paginator';
-import { Notification } from '../models/notification.model';
+import { Notification } from '../models/notifications/notification.model';
 import { NOTIFICATION_TITLES } from '../constants/notification-titles';
 import { NotificationPanelComponent } from './components/notification-panel/notification-panel';
 import { StadisticCard } from './components/stadistic-card/stadistic-card';

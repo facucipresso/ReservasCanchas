@@ -12,8 +12,8 @@
     @if (isAdmin) {
       <div class="complex-state-container">
         <span class="state-label">Estado del complejo:</span>
-        <span class="state-badge" [ngClass]="complex.state.toLowerCase()">
-          {{ complex.state }}
+        <span class="state-badge" [ngClass]="complex.complexState.toLowerCase()">
+          {{ complex.complexState }}
         </span>
         <i
           class="pi pi-info-circle info-icon"
@@ -53,12 +53,12 @@
           </div>
         </p-popover>
         @if (
-          complex.state === complexState.Rechazado ||
-          complex.state === complexState.Bloqueado
+          complex.complexState === complexState.Rechazado ||
+          complex.complexState === complexState.Bloqueado
         ) {
           <button pButton (click)="visible = true">
             <span pButtonLabel style="font-weight: 600">{{
-              complex.state === complexState.Rechazado
+              complex.complexState === complexState.Rechazado
                 ? "Ver razón de rechazo"
                 : "Ver razón de bloqueo"
             }}</span>
@@ -96,8 +96,8 @@
     <div style="display: inline-flex">
       <p-message severity="info" variant="outlined">
         *Aclaración: Este complejo cobra un extra por iluminación a partir de
-        las {{ complex.startIlumination.slice(0, 5) }}hs de un
-        {{ complex.aditionalIlumination }}% sobre el valor base de la cancha.
+        las {{ complex.startIllumination.slice(0, 5) }}hs de un
+        {{ complex.aditionalIllumination }}% sobre el valor base de la cancha.
       </p-message>
     </div>
   </div>
@@ -159,9 +159,9 @@
           <p style="font-weight: 600">{{ timeSlot.weekDay }}:</p>
           <p>
             {{
-              timeSlot.initTime === timeSlot.endTime
+              timeSlot.startTime === timeSlot.endTime
                 ? "Cerrado"
-                : timeSlot.initTime.slice(0, 5) +
+                : timeSlot.startTime.slice(0, 5) +
                   " a " +
                   timeSlot.endTime.slice(0, 5)
             }}
@@ -181,7 +181,7 @@
 
 <p-dialog
   header="{{
-    complex.state === complexState.Rechazado
+    complex.complexState === complexState.Rechazado
       ? 'Estado de la Solicitud' : 'Aviso de Restricción'
   }}"
   [modal]="true"
@@ -192,11 +192,11 @@
   styleClass="modern-dialog"
 >
 <div class="dialog-content">
-    <div class="status-icon-container" [ngClass]="complex.state === complexState.Rechazado ? 'rejected' : 'blocked'">
-      <i [class]="complex.state === complexState.Rechazado ? 'pi pi-exclamation-circle' : 'pi pi-lock'"></i>
+    <div class="status-icon-container" [ngClass]="complex.complexState === complexState.Rechazado ? 'rejected' : 'blocked'">
+      <i [class]="complex.complexState === complexState.Rechazado ? 'pi pi-exclamation-circle' : 'pi pi-lock'"></i>
     </div>
 
-    @if (complex.state === complexState.Rechazado) {
+    @if (complex.complexState === complexState.Rechazado) {
       <div class="message-body">
         <h3>Solicitud de revisión denegada</h3>
         <p>Lamentamos informarte que tu complejo no ha superado el proceso de validación técnica en este momento.</p>

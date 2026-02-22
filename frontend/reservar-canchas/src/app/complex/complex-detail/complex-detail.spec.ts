@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ComplexDetail } from './complex-detail';
+import { ComplexDetailModel } from './complex-detail';
 
 describe('ComplexDetail', () => {
-  let component: ComplexDetail;
-  let fixture: ComponentFixture<ComplexDetail>;
+  let component: ComplexDetailModel;
+  let fixture: ComponentFixture<ComplexDetailModel>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ComplexDetail]
+      imports: [ComplexDetailModel]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ComplexDetail);
+    fixture = TestBed.createComponent(ComplexDetailModel);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

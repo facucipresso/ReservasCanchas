@@ -34,7 +34,7 @@
         }
         @if(isAdmin){  
          <button pButton (click)="changeComplexState()" changestate-complex-button>
-            <span pButtonLabel style="font-weight: 600;">{{complex.state === 'Habilitado' ? 'Deshabilitar' : 'Habilitar'}}</span>
+            <span pButtonLabel style="font-weight: 600;">{{complex.complexState === 'Habilitado' ? 'Deshabilitar' : 'Habilitar'}}</span>
           </button>
         }
         <p-datepicker

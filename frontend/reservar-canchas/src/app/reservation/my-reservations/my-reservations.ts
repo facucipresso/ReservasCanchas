@@ -30,8 +30,8 @@ export class MyReservations implements OnInit {
         if (a.date < b.date) return 1;  
         if (a.date > b.date) return -1; 
       
-        if (a.initTime < b.initTime) return 1;
-        if (a.initTime > b.initTime) return -1;
+        if (a.startTime < b.startTime) return 1;
+        if (a.startTime > b.startTime) return -1;
       
         return 0; 
       });

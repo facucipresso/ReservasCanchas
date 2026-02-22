@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { WeekDay } from '../../models/weekday.enum';
-import { ComplexServiceModel } from '../../models/complexservice.model';
-import { ComplexModel } from '../../models/complex.model';
+import { WeekDay } from '../../models/complex/weekday.enum';
+import { ComplexServiceModel } from '../../models/complex/complexservice.model';
+import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -24,7 +24,7 @@ type EditSection = 'basic' | 'timeslots' | 'services' | 'image';
 })
 export class EditcomplexForm implements OnInit {
 
-  @Input() complex!: ComplexModel;
+  @Input() complex!: ComplexDetailModel;
   @Input() allServices!: ComplexServiceModel[];
   @Output() saveBasic = new EventEmitter<any>();
   @Output() saveTimeSlots = new EventEmitter<any>();
@@ -63,8 +63,8 @@ export class EditcomplexForm implements OnInit {
         Validators.maxLength(22)
       ]],
       percentageSign: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
-      startIlumination: ['', Validators.required],
-      aditionalIlumination: [0, Validators.required]
+      startIllumination: ['', Validators.required],
+      aditionalIllumination: [0, Validators.required]
     });
 
     this.editTimeSlotsForm = this.fb.group({
@@ -72,7 +72,7 @@ export class EditcomplexForm implements OnInit {
         this.weekDays.map((day) => {
           return this.fb.group({
             weekDay:[day],
-            initTime:['',Validators.required],
+            startTime:['',Validators.required],
             endTime:['',Validators.required]
           })
         })
@@ -129,8 +129,8 @@ export class EditcomplexForm implements OnInit {
       phone: this.complex.phone,
       cbu: this.complex.cbu,
       percentageSign: this.complex.percentageSign,
-      startIlumination: this.complex.startIlumination.slice(0,5),
-      aditionalIlumination: this.complex.aditionalIlumination
+      startIllumination: this.complex.startIllumination.slice(0,5),
+      aditionalIllumination: this.complex.aditionalIllumination
     });
   }
 
@@ -145,7 +145,7 @@ export class EditcomplexForm implements OnInit {
       
       if(slot){
         control.patchValue({
-          initTime:slot.initTime.slice(0,5),
+          startTime:slot.startTime.slice(0,5),
           endTime: slot.endTime.slice(0,5)
         })
       }
@@ -158,7 +158,7 @@ export class EditcomplexForm implements OnInit {
     if (!timeSlots) return;
 
     const hasInvalidSchedule = timeSlots.some((slot: any) => {
-      const initIndex = this.availableHours.indexOf(slot.initTime);
+      const initIndex = this.availableHours.indexOf(slot.startTime);
       const endIndex = this.availableHours.indexOf(slot.endTime);
       return initIndex > endIndex && endIndex != -1;
     });

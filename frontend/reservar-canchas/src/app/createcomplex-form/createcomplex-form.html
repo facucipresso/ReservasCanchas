@@ -132,15 +132,15 @@
         </div>
         <div>
           <p-select
-            formControlName="startIlumination"
+            formControlName="startIllumination"
             [options]="availableHours"
             placeholder="Horario inicio de iluminación"
             style="width: 100%"
           >
           </p-select>
-          @if(createComplexForm.get('startIlumination')?.touched &&
-          createComplexForm.get('startIlumination')?.invalid){
-          @if(createComplexForm.get('startIlumination')?.errors?.['required']){
+          @if(createComplexForm.get('startIllumination')?.touched &&
+          createComplexForm.get('startIllumination')?.invalid){
+          @if(createComplexForm.get('startIllumination')?.errors?.['required']){
           <small style="color: red; display: block"
             >El horario de inicio de iluminación es obligatorio</small
           >
@@ -148,12 +148,12 @@
         </div>
         <div>
           <p-inputNumber
-            formControlName="aditionalIlumination"
+            formControlName="aditionalIllumination"
             placeholder="Aumento por iluminación (%)"
           ></p-inputNumber>
-          @if(createComplexForm.get('aditionalIlumination')?.touched &&
-          createComplexForm.get('aditionalIlumination')?.invalid){
-          @if(createComplexForm.get('aditionalIlumination')?.errors?.['required']){
+          @if(createComplexForm.get('aditionalIllumination')?.touched &&
+          createComplexForm.get('aditionalIllumination')?.invalid){
+          @if(createComplexForm.get('aditionalIllumination')?.errors?.['required']){
           <small style="color: red; display: block"
             >El porcentaje de aumento por iluminación es obligatorio</small
           >
@@ -252,7 +252,7 @@
           }}</label>
 
           <p-select
-            formControlName="initTime"
+            formControlName="startTime"
             [options]="availableHours"
             placeholder="Apertura"
           >
@@ -263,7 +263,7 @@
             placeholder="Cierre"
           >
           </p-select>
-          @if((slot.get('initTime')?.touched && slot.get('initTime')?.invalid)
+          @if((slot.get('startTime')?.touched && slot.get('startTime')?.invalid)
           || (slot.get('endTime')?.touched && slot.get('endTime')?.invalid) ){
           <div class="time-error">El horario de apertura y cierre son requeridos</div>
           } 

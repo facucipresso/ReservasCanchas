@@ -9,10 +9,10 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { ActivatedRoute } from '@angular/router';
 import { Complex } from '../../services/complex';
-import { ComplexModel } from '../../models/complex.model';
-import { FieldModel } from '../../models/field.model';
+import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
+import { FieldDetailModel } from '../../models/field/field.model';
 import { Field } from '../../services/field';
-import { ComplexStats } from '../../models/complexstats.model';
+import { ComplexStats } from '../../models/complex/complexstats.model';
 
 @Component({
   selector: 'app-complex-reservations',
@@ -26,8 +26,8 @@ export class ComplexReservations implements OnInit {
     selectedReservationId!: number | null;
     selectedStatus: string = 'all';
     complexId!: number;
-    complex!: ComplexModel;
-    fields!: FieldModel[];
+    complex!: ComplexDetailModel;
+    fields!: FieldDetailModel[];
     complexStats!: ComplexStats;
     
     constructor(private reservationService: Reservation, private route:ActivatedRoute, 

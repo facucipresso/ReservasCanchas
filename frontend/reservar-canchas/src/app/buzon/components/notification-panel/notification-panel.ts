@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { PanelModule } from 'primeng/panel';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { Notification } from '../../../models/notification.model';
-import { ChangeStateReservation } from '../../../models/ChangeStateReservationRequest.model';
-import { ReservationState } from '../../../models/ReservationState.Enum';
+import { Notification } from '../../../models/notifications/notification.model';
+import { ChangeStateReservation } from '../../../models/reservation/ChangeStateReservationRequest.model';
+import { ReservationState } from '../../../models/reservation/reservationstate.enum';
 import { NOTIFICATION_TITLES } from '../../../constants/notification-titles';
 import { ButtonSeverity } from 'primeng/button';
 import { NotificationService } from '../../../services/notification';
 import { Router } from '@angular/router';
 import { Reservation } from '../../../services/reservation';
-import { NotificationContext } from '../../../models/NotificationContext.enum';
+import { NotificationContext } from '../../../models/notifications/NotificationContext.enum';
 
 @Component({
   selector: 'app-notification-panel',
@@ -46,13 +46,13 @@ export class NotificationPanelComponent {
     );
 
     switch (this.notification.context) {
-      case NotificationContext.ADMIN_COMPLEX_RESERVATION:
+      case NotificationContext.AdminComplexReservation:
         return ['VER RESERVAS'];
 
-      case NotificationContext.USER_RESERVATION:
+      case NotificationContext.UserReservation:
         return ['VER MIS RESERVAS'];
       
-      case NotificationContext.ADMIN_COMPLEX_ACCTION:
+      case NotificationContext.AdminComplexAction:
         return ['VER COMPLEJO'];
       
       default:

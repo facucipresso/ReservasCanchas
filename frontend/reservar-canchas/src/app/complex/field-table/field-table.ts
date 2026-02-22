@@ -1,15 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
-import { FieldModel } from '../../models/field.model';
+import { FieldDetailModel } from '../../models/field/field.model';
 import { CommonModule } from '@angular/common';
 import { ReservationsForField } from '../../models/reservation/reservationsforfield.model';
 import { TableModule } from 'primeng/table';
 import { Select, SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
-import { FieldType } from '../../models/fieldtype.enum';
-import { FloorType } from '../../models/floortype.enum';
+import { FieldType } from '../../models/field/fieldtype.enum';
+import { FloorType } from '../../models/field/floortype.enum';
 import { FormsModule } from '@angular/forms';
 import { Reservation } from '../../services/reservation';
-import { ComplexModel } from '../../models/complex.model';
+import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
 
 
 @Component({
@@ -19,14 +19,14 @@ import { ComplexModel } from '../../models/complex.model';
   styleUrl: './field-table.css',
 })
 export class FieldTable implements OnInit, OnChanges{
-  @Input() complex!: ComplexModel;
-  @Input() fields!: FieldModel[];
+  @Input() complex!: ComplexDetailModel;
+  @Input() fields!: FieldDetailModel[];
   @Input() isAdmin !: boolean;
   @Input() selectedDate !: Date;
-  @Output() editField = new EventEmitter<FieldModel>();
+  @Output() editField = new EventEmitter<FieldDetailModel>();
   @Output() deleteField = new EventEmitter<number>();
-  @Output() reserveField = new EventEmitter<{field:FieldModel, hour:string}>();
-  @Output() recurringBlockField = new EventEmitter<FieldModel>();
+  @Output() reserveField = new EventEmitter<{field:FieldDetailModel, hour:string}>();
+  @Output() recurringBlockField = new EventEmitter<FieldDetailModel>();
   dayIndex!: number;
   reservationsForField: ReservationsForField[] = [];
   selectedHours: {[fieldId:number]:any} = {};
@@ -123,7 +123,7 @@ export class FieldTable implements OnInit, OnChanges{
     return d === 0 ? 6 : d-1;
   }
 
-  getTimeSlotForField(field: FieldModel) {
+  getTimeSlotForField(field: FieldDetailModel) {
     if (!this.selectedDate || !field.timeSlotsField?.length) {
       return null;
     }
@@ -133,7 +133,7 @@ export class FieldTable implements OnInit, OnChanges{
     return field.timeSlotsField[idx] ?? null;
   }
 
-  onEdit(field:FieldModel){
+  onEdit(field:FieldDetailModel){
     console.log(field);
     this.editField.emit(field);
   }
@@ -142,11 +142,11 @@ export class FieldTable implements OnInit, OnChanges{
     this.deleteField.emit(fieldId);
   }
 
-  onReserve(field:FieldModel, hour:string){
+  onReserve(field:FieldDetailModel, hour:string){
     this.reserveField.emit({field, hour});
   }
 
-  onRecurringBlock(field: FieldModel) {
+  onRecurringBlock(field: FieldDetailModel) {
     console.log('Bloqueo recurrente para la cancha con ID:', field);
     this.recurringBlockField.emit(field);
   }
