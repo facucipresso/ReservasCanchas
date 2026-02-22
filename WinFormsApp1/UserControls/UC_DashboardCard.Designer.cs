@@ -58,7 +58,7 @@
             lblTitle.AutoSize = true;
             lblTitle.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblTitle.ForeColor = Color.Gray;
-            lblTitle.Location = new Point(72, 55);
+            lblTitle.Location = new Point(208, 33);
             lblTitle.Name = "lblTitle";
             lblTitle.Size = new Size(53, 23);
             lblTitle.TabIndex = 2;
@@ -69,14 +69,12 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            //BackColor = Color.FromArgb(245, 245, 245);
-            //BorderStyle = BorderStyle.FixedSingle;
             Controls.Add(lblTitle);
             Controls.Add(lbValue);
             Controls.Add(pictureIcon);
             Margin = new Padding(10);
             Name = "UC_DashboardCard";
-            Size = new Size(285, 88);
+            Size = new Size(537, 88);
             ((System.ComponentModel.ISupportInitialize)pictureIcon).EndInit();
             ResumeLayout(false);
             PerformLayout();

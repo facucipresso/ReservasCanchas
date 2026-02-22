@@ -277,7 +277,7 @@ namespace ReservasCanchas.BusinessLogic
                 await _complexRepo.SaveAsync();
             }
 
-            user.Status = UserStatus.Activo;
+            user.UserState = UserState.Activo;
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -315,7 +315,7 @@ namespace ReservasCanchas.BusinessLogic
         }
         public async Task ValidateUserState(User user)
         {
-            if (user.Status == UserStatus.Bloqueado)
+            if (user.UserState == UserState.Bloqueado)
                 throw new BadRequestException($"El usuario con id {user.Id} esta bloqueado");
         }
 

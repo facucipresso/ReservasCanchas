@@ -48,7 +48,7 @@ namespace WinFormsApp1
                     //formDashboard.Show(); // ShowDialog
 
                     //estas dos lineas son del nuevo formulario para la pagina principal
-                    FormPrincipal formPrincipal = new FormPrincipal();
+                    FormPrincipal formPrincipal = new FormPrincipal(response.UserName);
                     formPrincipal.Show();
 
                     //esto ya estaba
