@@ -224,7 +224,7 @@ namespace ReservasCanchas.BusinessLogic
             //var superUserId = await _userBusinessLogic.GetUserIdByUserRolOrThrow("SuperAdmin");
 
             // PONGO ESTO PARA PROBAR QUE LES LLEGUEN LAS NOTIFICACIONES
-            var superUserId = 7;
+            var superUserId = 1;
 
             var notification = new Notification
             {

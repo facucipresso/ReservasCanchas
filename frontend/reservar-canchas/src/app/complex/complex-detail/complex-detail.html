@@ -32,7 +32,7 @@
             <span pButtonLabel style="font-weight: 600;">Eliminar complejo</span>
           </button>
         }
-        @if(isAdmin){  
+        @if(isAdmin && complex.complexState != 'Pendiente'){  
          <button pButton (click)="changeComplexState()" changestate-complex-button>
             <span pButtonLabel style="font-weight: 600;">{{complex.complexState === 'Habilitado' ? 'Deshabilitar' : 'Habilitar'}}</span>
           </button>
