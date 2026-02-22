@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.Domain.Enums
 {
-    public enum UserStatus
+    public enum UserState
     {
         Activo = 0,
         Bloqueado = 1
