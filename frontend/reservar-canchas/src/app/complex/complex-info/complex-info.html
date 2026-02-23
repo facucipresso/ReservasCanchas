@@ -123,7 +123,7 @@
     (specificBlockField)="onSpecificBlockField($event)"
   >
   </app-field-table>
-  @if (reviews.length > 1) {
+  @if (reviews.length >= 1) {
     <div style="padding: 1rem">
       <h3 style="font-size: 25px; margin-bottom: 1rem">Últimas reseñas</h3>
       @if (reviews.length < 3) {
@@ -154,7 +154,7 @@
   }
 
   <div class="info-extra-container">
-    <p-panel header="Horarios del club" [toggleable]="true">
+    <p-panel header="Horarios del complejo" [toggleable]="true">
       <div class="days-container">
         @for (timeSlot of complex.timeSlots; track timeSlot.id) {
           <p style="font-weight: 600">{{ timeSlot.weekDay }}:</p>
@@ -170,7 +170,7 @@
         }
       </div>
     </p-panel>
-    <p-panel header="Servicios del club" [toggleable]="true">
+    <p-panel header="Servicios del complejo" [toggleable]="true">
       <div class="services-container">
         @for (service of complex.services; track service.id) {
           <p>{{ service.serviceDescription }}</p>
