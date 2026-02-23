@@ -41,7 +41,7 @@ namespace ReservasCanchas.DataAccess.Repositories
                                         .Include(r => r.Field)
                                             .ThenInclude(f => f.Complex)
                                         .Include(r => r.Review)
-                                        .Where(r => r.UserId == userId)
+                                        .Where(r => r.UserId == userId && r.ReservationType != ReservationType.Bloqueo)
                                         .ToListAsync();
             return reservations; 
         }
@@ -94,6 +94,15 @@ namespace ReservasCanchas.DataAccess.Repositories
             return reservations;
         }
 
+        public async Task<List<Reservation>> GetActiveReservationsByFieldId(int fieldId)
+        {
+            var reservations = await _context.Reservation
+                                        .Include(r => r.Field)
+                                        .Where(r => r.Field.Id == fieldId && (r.ReservationState == ReservationState.Pendiente || r.ReservationState == ReservationState.Aprobada))
+                                        .ToListAsync();
+            return reservations;
+        }
+
         public async Task<Reservation?> GetReservationWithReviewByIdAsync(int reservationId)
         {
             var reservation = await _context.Reservation
@@ -101,6 +110,8 @@ namespace ReservasCanchas.DataAccess.Repositories
                             .FirstOrDefaultAsync(r => r.Id == reservationId);
             return reservation;
         }
+
+
 
         public async Task<bool> ExistsApprovedReservationAsync(int fieldId, DateOnly date, TimeOnly initTime)
         {

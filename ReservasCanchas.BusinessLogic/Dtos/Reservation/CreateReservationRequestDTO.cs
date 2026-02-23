@@ -18,7 +18,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public DateOnly Date { get; set; }
         [Required(ErrorMessage = "El horario de inicio de la reserva es obligatorio")]
         public TimeOnly StartTime { get; set; }
-        public decimal AmountPaid { get; set; }
+        public decimal? AmountPaid { get; set; }
         [Required(ErrorMessage = "El tipo de reserva es obligatorio")]
         public ReservationType ReservationType { get; set; }
         public PaymentType? PaymentType { get; set; }

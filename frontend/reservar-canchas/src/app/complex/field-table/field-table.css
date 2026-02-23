@@ -75,3 +75,9 @@ td{
 .disabled{
   background-color: #ffedd5!important;
 }
+
+.textarea {
+  width: 100%;
+  resize: none; /* Evita que el usuario rompa el diseño redimensionando */
+  min-height: 100px;
+}

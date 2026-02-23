@@ -8,8 +8,8 @@ export interface FieldDetailModel{
   id:number;
   complexId:number;
   name:string;
-  fieldType: keyof typeof FieldType; 
-  floorType: keyof typeof FloorType; 
+  fieldType: FieldType; 
+  floorType: FloorType; 
   fieldState:FieldState;
   hourPrice:number;
   illumination:boolean;

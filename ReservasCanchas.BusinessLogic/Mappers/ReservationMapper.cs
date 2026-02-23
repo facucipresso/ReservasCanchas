@@ -47,6 +47,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                     Date = r.Date,
                     StartTime = r.StartTime,
                     ReservationState = r.ReservationState,
+                    ReservationType = r.ReservationType,
                     ComplexName = r.Field.Complex.Name,
                     FieldName = r.Field.Name,
                     TotalAmount = r.TotalAmount,

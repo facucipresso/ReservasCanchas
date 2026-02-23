@@ -32,6 +32,7 @@ export class ComplexInfo {
   @Output() deleteField = new EventEmitter<number>();
   @Output() reserveField = new EventEmitter<{field:FieldDetailModel, hour:string}>();
   @Output() recurringBlockField = new EventEmitter<FieldDetailModel>();
+  @Output() specificBlockField = new EventEmitter<{field:FieldDetailModel, hour:string, reason:string}>();
   @Output() stateChanged = new EventEmitter<any>();
 
   responsiveOptions = [
@@ -70,6 +71,10 @@ export class ComplexInfo {
 
   onRecurringBlockField(field: FieldDetailModel){
     this.recurringBlockField.emit(field);
+  }
+
+  onSpecificBlockField(event:{field:FieldDetailModel,hour:string,reason:string}){
+    this.specificBlockField.emit(event);
   }
 
   onStateChange(){

@@ -17,13 +17,15 @@ namespace ReservasCanchas.BusinessLogic
     public class FieldBusinessLogic
     {
         private readonly FieldRepository _fieldRepository;
+        private readonly ReservationRepository _reservationRepository;
         private readonly ComplexBusinessLogic _complexBusinessLogic;
         private readonly AuthService _authService;
-        public FieldBusinessLogic(FieldRepository fieldRepository, ComplexBusinessLogic complexBusinessLogic, AuthService authService)
+        public FieldBusinessLogic(FieldRepository fieldRepository, ComplexBusinessLogic complexBusinessLogic, AuthService authService, ReservationRepository reservationRepository )
         {
             _fieldRepository = fieldRepository;
             _complexBusinessLogic = complexBusinessLogic;
             _authService = authService;
+            _reservationRepository = reservationRepository;
         }
         public async Task<FieldDetailResponseDTO> GetFieldByIdAsync(int fieldId)
         {
@@ -314,19 +316,49 @@ namespace ReservasCanchas.BusinessLogic
             _complexBusinessLogic.ValidateOwnerShip(complex, userId);
             _complexBusinessLogic.ValidateFieldOperationsAllowed(complex);
 
-            if (recurringBlockDTO.StartTime >= recurringBlockDTO.EndTime) 
-                throw new BadRequestException("La hora inicial debe ser menor que la hora final");
+            int newStart = recurringBlockDTO.StartTime.Hour * 60 + recurringBlockDTO.StartTime.Minute;
+            int newEnd = recurringBlockDTO.EndTime.Hour * 60 + recurringBlockDTO.EndTime.Minute;
 
-            var recurringBlockExisting = field.RecurringCourtBlocks;
-            foreach (var rbe in recurringBlockExisting)
+            if (newEnd <= newStart) newEnd += 1440;
+            foreach (var rbe in field.RecurringCourtBlocks.Where(b => b.WeekDay == recurringBlockDTO.WeekDay))
             {
-                bool solapamiento = rbe.WeekDay == recurringBlockDTO.WeekDay && rbe.StartTime < recurringBlockDTO.EndTime && rbe.EndTime > recurringBlockDTO.StartTime;
+                int existStart = rbe.StartTime.Hour * 60 + rbe.StartTime.Minute;
+                int existEnd = rbe.EndTime.Hour * 60 + rbe.EndTime.Minute;
+
+                if (existEnd <= existStart) existEnd += 1440;
+
+                bool solapamiento = newStart < existEnd && newEnd > existStart;
+
                 if(solapamiento)
                 {
                     throw new BadRequestException("No se puede crear el bloqueo porque se superpone con otro existente");
                 }
             }
 
+            var futureReservations = await _reservationRepository.GetActiveReservationsByFieldId(fieldId);
+
+            var conflictingReservations = futureReservations.Where(r => {
+                // Validar mismo día de la semana
+                if (_complexBusinessLogic.ConvertToWeekDay(r.Date) != recurringBlockDTO.WeekDay)
+                    return false;
+
+                int resStart = r.StartTime.Hour * 60 + r.StartTime.Minute;
+                int resEnd = resStart + 60; 
+
+
+                bool conflictToday = resStart < newEnd && resEnd > newStart;
+
+                int resStartNextDay = resStart + 1440;
+                int resEndNextDay = resEnd + 1440;
+                bool conflictNextDay = resStartNextDay < newEnd && resEndNextDay > newStart;
+
+                return conflictToday || conflictNextDay;
+            }).ToList();
+
+            if (conflictingReservations.Any())
+            {
+                throw new BadRequestException("No se puede crear el bloqueo ya que existen reservas pendientes, aprobadas o bloqueos específicos que se superponen.");
+            }
             RecurringFieldBlock recurringFieldBlock = FieldMapper.ToRecurringFieldBlock(recurringBlockDTO);
             field.RecurringCourtBlocks.Add(recurringFieldBlock);
             await _fieldRepository.SaveAsync();

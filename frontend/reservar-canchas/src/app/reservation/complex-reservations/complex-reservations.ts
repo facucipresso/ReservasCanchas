@@ -83,7 +83,6 @@ export class ComplexReservations implements OnInit {
 
     searchReservations(filters: { date: Date, fieldId: number | null }) {
       const dateOnly = filters.date.toISOString().substring(0, 10);
-
       if(filters.fieldId == null){
         this.reservationService.getReservationsByComplexAndDate(this.complexId,dateOnly).subscribe((res) => {
           this.allReservations = res;

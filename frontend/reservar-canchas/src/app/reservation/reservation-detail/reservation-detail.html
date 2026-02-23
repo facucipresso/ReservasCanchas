@@ -10,7 +10,7 @@
           <!-- HEADER -->
           <div class="card-header">
             <i class="pi pi-receipt" style="color: white"></i>
-            <h2>Detalles de la Reserva</h2>
+            <h2>{{reservationDetail.reservationType === ReservationType.Bloqueo ? 'Detalles del bloqueo' : 'Detalles de la reserva'}}</h2>
           </div>
 
           <div class="card-body">
@@ -38,9 +38,9 @@
                 <span>{{ reservationDetail.phone }}</span>
               </div>
             </div>
-
+          @if(reservationDetail.reservationType === ReservationType.Partido){
             <hr class="divider" />
-
+          
             <!-- USUARIO -->
             <div class="info-group compact">
               <h3 class="section-title">Usuario</h3>
@@ -58,6 +58,7 @@
                 >
               </div>
             </div>
+          }
 
             <hr class="divider" />
 
@@ -102,15 +103,15 @@
                   <div class="field-meta-row">
                     <span class="meta-item">
                       <i class="pi pi-th-large"></i>
-                      {{ reservationDetail.fieldType }}
+                      {{ reservationDetail.fieldType | fieldTypeText }}
                     </span>
                     <span class="meta-item">
                       <i class="pi pi-align-justify"></i>
-                      {{ reservationDetail.floorType }}
+                      {{ reservationDetail.floorType | floorTypeText }}
                     </span>
                   </div>
                 </div>
-
+                @if(reservationDetail.reservationType === ReservationType.Partido){
                 <div class="price-breakdown-container compact">
                   <div class="breakdown-row">
                     <span>Alquiler Cancha</span>
@@ -143,6 +144,12 @@
 
                   <div class="breakdown-divider"></div>
                 </div>
+                }@else{
+                  <div class="block-reason compact">
+                    <h3 class="section-title">Razón del bloqueo</h3>
+                    <p>{{reservationDetail.blockReason}}</p>
+                  </div>
+                }
               </div>
             </div>
 
@@ -158,6 +165,7 @@
             <div class="breakdown-divider"></div>
 
             <!-- COMPROBANTE -->
+            @if(reservationDetail.reservationType === ReservationType.Partido){
             <div class="info-group">
               <button
                 pButton
@@ -167,7 +175,7 @@
                 Ver comprobante
               </button>
             </div>
-
+            }
             <!-- ACCIONES -->
             <div class="actions-box">
               @if (
@@ -205,7 +213,9 @@
               }
 
               @if (
-                reservationDetail.reservationState == ReservationState.Completada && reservationDetail.hasReservation
+                reservationDetail.reservationState == ReservationState.Completada && 
+                reservationDetail.hasReservation &&
+                reservationDetail.reservationType === ReservationType.Partido
               ) {
                 <button pButton severity="info" class="btn" (click)="openViewReviewDialog()">
                   VER RESEÑA
@@ -240,7 +250,7 @@
                   (click)="openReasonDialog(ReservationState.CanceladoPorAdmin)"
                   class="btn danger"
                 >
-                  CANCELAR RESERVA
+                  {{reservationDetail.reservationType === ReservationType.Partido ? 'CANCELAR RESERVA' : 'CANCELAR BLOQUEO'}}
                 </button>
               }
             </div>
@@ -265,14 +275,14 @@
 </p-dialog>
 
 <p-dialog
-  [header]="pendingState == ReservationState.Rechazada ? 'Rechazar reserva' : 'Cancelar reserva'"
+  [header]="pendingState == ReservationState.Rechazada ? 'Rechazar reserva' : reservationDetail.reservationType === ReservationType.Partido ? 'Cancelar reserva' : 'Cancelar bloqueo'"
   [modal]="true"
   [(visible)]="visible"
   [draggable]="false"
   [resizable]="false"
   [style]="{ 'min-width': '25rem' }"
 >
-  @if (pendingState == ReservationState.CanceladoPorAdmin) {
+  @if (pendingState == ReservationState.CanceladoPorAdmin && reservationDetail.reservationType === ReservationType.Partido) {
     <div class="info-cancel">
       <div class="info-icon">
         <i class="pi pi-exclamation-triangle"></i>
@@ -290,7 +300,7 @@
     [(ngModel)]="reason"
     id="reason"
     rows="3"
-    [placeholder]="pendingState == ReservationState.Rechazada ? 'Describe la razón del rechazo' : 'Describe la razón de la cancelación'"
+    [placeholder]="pendingState == ReservationState.Rechazada ? 'Describe la razón del rechazo' :  'Describe la razón de la cancelación'"
     class="full-width textarea"
     
   ></textarea>

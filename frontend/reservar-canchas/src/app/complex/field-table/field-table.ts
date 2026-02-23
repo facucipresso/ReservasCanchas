@@ -10,11 +10,15 @@ import { FloorType } from '../../models/field/floortype.enum';
 import { FormsModule } from '@angular/forms';
 import { Reservation } from '../../services/reservation';
 import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
+import { Dialog } from 'primeng/dialog';
+import { TextareaModule } from 'primeng/textarea';
+import { FieldTypePipe } from '../../pipes/field-type-pipe';
+import { FloorTypePipe } from '../../pipes/floor-type-pipe';
 
 
 @Component({
   selector: 'app-field-table',
-  imports: [CommonModule,TableModule,SelectModule,Select, ButtonModule, FormsModule],
+  imports: [CommonModule,TableModule,SelectModule,Select, ButtonModule, FormsModule, Dialog, TextareaModule, FieldTypePipe, FloorTypePipe],
   templateUrl: './field-table.html',
   styleUrl: './field-table.css',
 })
@@ -27,10 +31,13 @@ export class FieldTable implements OnInit, OnChanges{
   @Output() deleteField = new EventEmitter<number>();
   @Output() reserveField = new EventEmitter<{field:FieldDetailModel, hour:string}>();
   @Output() recurringBlockField = new EventEmitter<FieldDetailModel>();
+  @Output() specificBlockField = new EventEmitter<{field:FieldDetailModel, hour:string, reason:string}>
   dayIndex!: number;
   reservationsForField: ReservationsForField[] = [];
-  selectedHours: {[fieldId:number]:any} = {};
-
+  selectedHours: {[fieldId:number]:string} = {};
+  visible = false;
+  reasonBlock !:string;
+  selectedFieldForSpecificBlock: FieldDetailModel | null = null;
   constructor(private reservationService: Reservation) {}
 
   ngOnInit(){
@@ -150,4 +157,31 @@ export class FieldTable implements OnInit, OnChanges{
     console.log('Bloqueo recurrente para la cancha con ID:', field);
     this.recurringBlockField.emit(field);
   }
+
+  openSpecificBlockDialog(field:FieldDetailModel){
+    this.visible = true;
+    this.selectedFieldForSpecificBlock = field;
+  }
+
+  closeSpecificBlockDialog(){
+    this.visible = false;
+    this.reasonBlock = '';
+    this.selectedFieldForSpecificBlock = null;
+  }
+
+  onConfirmSpecificBlock(){
+    if (this.selectedFieldForSpecificBlock && this.selectedHours[this.selectedFieldForSpecificBlock.id]){
+      const hour = this.selectedHours[this.selectedFieldForSpecificBlock?.id];
+      console.log(hour,this.selectedFieldForSpecificBlock,this.reasonBlock);
+      this.specificBlockField.emit({
+        field: this.selectedFieldForSpecificBlock,
+        hour,
+        reason: this.reasonBlock
+      })
+    }
+
+    this.closeSpecificBlockDialog();
+    
+  }
+
 }

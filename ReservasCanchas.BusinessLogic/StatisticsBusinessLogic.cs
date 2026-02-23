@@ -31,6 +31,8 @@ namespace ReservasCanchas.BusinessLogic
 
             int totalSlots = 0;
             int ocuppiedSlots = 0;
+            int matches = 0;
+            int specificBlocks = 0;
             decimal totalRevenue = 0;
 
             DailyReservationsForComplexResponseDTO reservationsForComplex = await _reservationBusinessLogic.GetReservationsByDateForComplexAsync(complexId, date, false);
@@ -41,6 +43,10 @@ namespace ReservasCanchas.BusinessLogic
                 var fieldStats = reservationsForComplex.FieldsWithReservedHours.FirstOrDefault(f => f.FieldId == fieldId);
                 ocuppiedSlots = fieldStats.ReservedHours.Count();
                 List<ReservationForUserResponseDTO> reservationsField = await _reservationBusinessLogic.GetReservationsByFieldAndDateAsync(fieldId ?? 0, date);
+                matches = reservationsField.Where(r => (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada) && r.ReservationType == ReservationType.Partido).
+                    Count();
+                specificBlocks = reservationsField.Where(r => (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada) && r.ReservationType == ReservationType.Bloqueo).
+                    Count();
                 totalRevenue = reservationsField.Where(r => r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada).Sum(r => r.TotalAmount ?? 0);
 
             }
@@ -48,6 +54,10 @@ namespace ReservasCanchas.BusinessLogic
             {
                 ocuppiedSlots = reservationsForComplex.FieldsWithReservedHours.Sum(f => f.ReservedHours.Count());
                 List<ReservationForUserResponseDTO> reservationsComplex = await _reservationBusinessLogic.GetReservationsByComplexAndDateAsync(complexId, date);
+                matches = reservationsComplex.Where(r => (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada) && r.ReservationType == ReservationType.Partido).
+                    Count();
+                specificBlocks = reservationsComplex.Where(r => (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada) && r.ReservationType == ReservationType.Bloqueo).
+                    Count();
                 totalRevenue = reservationsComplex.Where(r => r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada).Sum(r => r.TotalAmount ?? 0);
             }
 
@@ -78,6 +88,8 @@ namespace ReservasCanchas.BusinessLogic
             {
                 totalPossibleSlots = totalSlots,
                 occupiedSlots = ocuppiedSlots,
+                matches = matches,
+                specificBlocks = specificBlocks,
                 totalRevenue = totalRevenue
             };
 

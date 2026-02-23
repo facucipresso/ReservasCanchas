@@ -74,3 +74,12 @@ button .pi {
 .danger{
   background-color: #ef4444 !important;
 }
+
+::ng-deep .custom-dialog-no-scroll .p-dialog-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+::ng-deep .custom-dialog-no-scroll .p-dialog-content::-webkit-scrollbar {
+    display: none;
+}

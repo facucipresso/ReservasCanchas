@@ -47,12 +47,20 @@
       <div>
         <p-select
           formControlName="fieldType"
-          [options]="fieldTypes"
+          [options]="fieldTypeOptions"
           optionLabel="label"
           optionValue="value"
           placeholder="Tipo de cancha"
           style="color: black"
-        ></p-select>
+        >
+          <ng-template pTemplate="selectedItem" let-selectedOption>
+            {{ selectedOption.value | fieldTypeText }}
+          </ng-template>
+
+          <ng-template pTemplate="item" let-option>
+            {{ option.value | fieldTypeText }}
+          </ng-template>
+      </p-select>
         @if(fieldForm.get('fieldType')?.touched &&
         fieldForm.get('fieldType')?.invalid){
         @if(fieldForm.get('fieldType')?.errors?.['required']){
@@ -62,12 +70,20 @@
       <div>
         <p-select
           formControlName="floorType"
-          [options]="floorTypes"
+          [options]="floorTypeOptions"
           optionLabel="label"
           optionValue="value"
           placeholder="Tipo de suelo"
           style="color: black"
-        ></p-select>
+        >
+          <ng-template pTemplate="selectedItem" let-selectedOption>
+            {{ selectedOption.value | floorTypeText }}
+          </ng-template>
+
+          <ng-template pTemplate="item" let-option>
+            {{ option.value | floorTypeText }}
+          </ng-template>
+        </p-select>
         @if(fieldForm.get('floorType')?.touched &&
         fieldForm.get('floorType')?.invalid){
         @if(fieldForm.get('floorType')?.errors?.['required']){

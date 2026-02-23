@@ -18,7 +18,7 @@
         <tr [class.disabled]="field.fieldState === 'Deshabilitada'">
           <td style="font-weight: bold">
             {{ field.name }} <br /><small style="color: #555; font-weight: 400"
-              >{{ field.fieldType }} - {{ field.floorType }}
+              >{{ field.fieldType | fieldTypeText }} - {{ field.floorType | floorTypeText }}
             </small>
           </td>
           <td>$ {{ field.hourPrice }}</td>
@@ -52,15 +52,27 @@
           }
           </td>
           <td>
-            <button 
-              pButton 
-              style="margin-right: 15px;" 
-              [disabled]="!selectedHours[field.id] || isAdmin" 
-              (click)="onReserve(field, selectedHours[field.id])"
-            >
-              <i class="pi pi-check" pButtonIcon></i>
-              <span pButtonLabel style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500;" >Reservar</span>
-            </button>
+            @if(isAdmin){
+              <button 
+                pButton 
+                style="margin-right: 15px;" 
+                [disabled]="!selectedHours[field.id] || field.fieldState === 'Deshabilitada'" 
+                (click)="openSpecificBlockDialog(field)"
+              >
+                <i class="pi pi-ban" pButtonIcon></i>
+                <span pButtonLabel style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500;" >Bloqueo puntual</span>
+              </button>
+            }@else{
+              <button 
+                pButton 
+                style="margin-right: 15px;" 
+                [disabled]="!selectedHours[field.id]" 
+                (click)="onReserve(field, selectedHours[field.id])"
+              >
+                <i class="pi pi-check" pButtonIcon></i>
+                <span pButtonLabel style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500;" >Reservar</span>
+              </button>
+            }
             @if(isAdmin){
               <button pButton style="margin-right: 15px;" (click)="onEdit(field)">
                 <i class="pi pi-pencil" pButtonIcon></i>
@@ -72,7 +84,7 @@
               </button>
               <button pButton (click)="onRecurringBlock(field)">
                 <i class="pi pi-ban" pButtonIcon></i>
-                <span pButtonLabel style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500;" >Bloqueo</span>
+                <span pButtonLabel style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500;" >Bloqueo rec.</span>
               </button>
             }
           </td>
@@ -80,3 +92,37 @@
       </ng-template>
     </p-table>
 </div>
+
+<p-dialog
+  header="Nuevo bloqueo puntual"
+  [modal]="true"
+  [(visible)]="visible"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="false"
+  [style]="{ 'min-width': '25rem' }"
+>
+  <textarea
+    pInputTextarea
+    [(ngModel)]="reasonBlock"
+    id="reason"
+    rows="3"
+    placeholder="Indica la razón del bloqueo"
+    class="full-width textarea"
+    
+  ></textarea>
+  <ng-template pTemplate="footer">
+    <div style="display: flex; gap: 15px;">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        (click)="closeSpecificBlockDialog()";
+      />
+      <p-button
+        label="Confirmar"
+        (click)="onConfirmSpecificBlock()"
+        [disabled]="!reasonBlock"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

@@ -1,5 +1,5 @@
 export enum FieldType{
-  Futbol5 = 0,
-  Futbol7 = 1,
-  Futbol11 = 2
+  Futbol5 = 'Futbol5',
+  Futbol7 = 'Futbol7',
+  Futbol11 = 'Futbol11'
 }

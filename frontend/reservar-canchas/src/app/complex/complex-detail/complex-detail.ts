@@ -24,6 +24,7 @@ import { Recblock } from '../../recblock/recblock';
 import { Review } from '../../services/review';
 import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
 import { ComplexState } from '../../models/complex/complexstate.enum';
+import { ReservationType } from '../../models/reservation/reservationtype.enum';
 type Mode = 'create' | 'edit';
 @Component({
   selector: 'app-complex-detail',
@@ -584,4 +585,37 @@ this.complexService.updateComplexImage(
     console.log('Solicitud de bloqueo recurrente para la cancha: ', field);
   }
 
+  onSpecificBlockField(event:{field:FieldDetailModel,hour:string,reason:string}){
+    console.log('Reserva solicitada: ', event);
+    console.log(this.selectedDate.toISOString().substring(0,10));
+
+    const formData = new FormData();
+    formData.append('fieldId', event.field.id.toString());
+    formData.append('date', this.selectedDate.toISOString().substring(0,10));
+    formData.append('startTime', event.hour);
+    formData.append('reservationType',  ReservationType.Bloqueo.toString());
+    formData.append('blockReason', event.reason);
+    this.reservationService.createReservation(formData).subscribe({
+      next: (data)=>{
+        console.log(data);
+        this.messageService.add({
+          severity:'success',
+          summary:'Bloqueo creado con éxito.',
+          life: 3000
+        })
+        this.router.navigate([`/admin/complexes/${this.complexId}/reservations`]);
+      },
+      error: (error)=>{
+        const backendError = error?.error;
+        const message = backendError?.detail || 'Error desconocido';
+        this.messageService.add({
+          severity:'error',
+          summary:backendError?.title || 'Error',
+          detail: message,
+          life: 3000
+        })
+        this.router.navigate(['/']);
+      }
+    })
+  }
 }

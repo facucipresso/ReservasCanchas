@@ -18,12 +18,15 @@ import { RatingModule } from 'primeng/rating';
 import { Review } from '../../services/review';
 import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
 import { ReviewCard } from '../../review-card/review-card';
+import { ReservationType } from '../../models/reservation/reservationtype.enum';
+import { FloorTypePipe } from '../../pipes/floor-type-pipe';
+import { FieldTypePipe } from '../../pipes/field-type-pipe';
 
 @Component({
   selector: 'app-reservation-detail',
   standalone: true,
   imports: [CommonModule, DialogModule, ProgressSpinnerModule, FormsModule,
-    ReservationStatePipe, ConfirmDialog, ButtonModule, TextareaModule, RatingModule, ReviewCard],
+    ReservationStatePipe, ConfirmDialog, ButtonModule, TextareaModule, RatingModule, ReviewCard, FloorTypePipe, FieldTypePipe],
   templateUrl: './reservation-detail.html',
   styleUrl: './reservation-detail.css',
   providers: [ConfirmationService]
@@ -45,7 +48,7 @@ export class ReservationDetail implements OnInit, OnChanges {
   visibleReviewCreateModal = false;
   visibleReviewModal = false;
   review!: ReviewResponse;
-
+  public readonly ReservationType = ReservationType;
   constructor(
     private reservationService: Reservation, 
     private reviewService: Review,
