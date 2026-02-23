@@ -23,6 +23,9 @@ namespace WinFormsApp1.UserControls
             //para datos reales
             this.Load += UC_Dashboard_Load;
 
+            this.Resize += UC_Dashboard_Resize;
+            flpCards.Resize += UC_Dashboard_Resize;
+
 
             var cardNotificaciones = new UC_DashboardCard
             {
@@ -242,7 +245,42 @@ namespace WinFormsApp1.UserControls
                 CreateComplexReview("Barracas Indoor", "lauti.gomez", 4));
         }
 
+        private void UC_Dashboard_Resize(object sender, EventArgs e)
+        {
+            AdjustDashboardCardsWidth();
+        }
 
+        private void AdjustDashboardCardsWidth()
+        {
+            int cardsCount = flpCards.Controls.Count;
+            if (cardsCount == 0) return;
+
+            int totalHorizontalPadding =
+                flpCards.Padding.Left +
+                flpCards.Padding.Right;
+
+            int totalHorizontalMargin = 0;
+
+            foreach (Control card in flpCards.Controls)
+            {
+                totalHorizontalMargin += card.Margin.Left + card.Margin.Right;
+            }
+
+            int availableWidth =
+                flpCards.ClientSize.Width
+                - totalHorizontalPadding
+                - totalHorizontalMargin;
+
+            int cardWidth = availableWidth / cardsCount;
+
+            foreach (Control card in flpCards.Controls)
+            {
+                card.Width = cardWidth;
+                card.Height = flpCards.ClientSize.Height - 20;
+            }
+        }
+
+        /*
         private void AdjustDashboardCardsWidth()
         {
             int cardsCount = flpCards.Controls.Count;
@@ -263,6 +301,7 @@ namespace WinFormsApp1.UserControls
                 card.Height = flpCards.ClientSize.Height - 10;
             }
         }
+        */
 
         private async void UC_Dashboard_Load(object sender, EventArgs e)
         {

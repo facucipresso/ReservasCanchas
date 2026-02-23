@@ -65,6 +65,8 @@ export class ComplexDetail implements OnInit{
     this.complexId=Number(this.route.snapshot.paramMap.get('id'));
     this.maxDateValid.setDate(this.maxDateValid.getDate() + 7);
     this.dateNow.setHours(0, 0, 0, 0);
+    //this.selectedDate = this.dateNow;
+
     this.loadComplex(this.complexId);
 
     this.route.queryParams.subscribe(params => {
@@ -149,14 +151,17 @@ export class ComplexDetail implements OnInit{
   showDialogComplex() {
     this.visibleEditComplexModal = true;
   }
-
-  onDateChange(date:Date){
+// reemplaze el metodo para que no recargue todo como antes
+/*   onDateChange(date:Date){
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { date: date.toISOString().substring(0, 10) },
       queryParamsHandling: 'merge'
     });
-  }
+  } */
+    onDateChange(date: Date){
+      this.selectedDate = date;
+    }
 
   onEditField(field:FieldDetailModel){
     this.fieldFormMode = 'edit';

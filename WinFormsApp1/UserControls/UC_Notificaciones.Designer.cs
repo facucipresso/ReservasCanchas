@@ -55,10 +55,12 @@
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dgvNotificaciones.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvNotificaciones.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvNotificaciones.ColumnHeadersHeight = 45;
+            dgvNotificaciones.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvNotificaciones.Columns.AddRange(new DataGridViewColumn[] { ColumnButtonMarkAsReaded, ColumnIngresarNotificacion });
+            dgvNotificaciones.Dock = DockStyle.Fill;
             dgvNotificaciones.EnableHeadersVisualStyles = false;
-            dgvNotificaciones.Location = new Point(3, 3);
+            dgvNotificaciones.Location = new Point(0, 0);
             dgvNotificaciones.Name = "dgvNotificaciones";
             dgvNotificaciones.ReadOnly = true;
             dgvNotificaciones.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
@@ -74,8 +76,9 @@
             dataGridViewCellStyle3.BackColor = SystemColors.Control;
             dataGridViewCellStyle3.SelectionBackColor = Color.LightSteelBlue;
             dgvNotificaciones.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dgvNotificaciones.RowTemplate.Height = 40;
             dgvNotificaciones.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvNotificaciones.Size = new Size(1238, 379);
+            dgvNotificaciones.Size = new Size(1244, 385);
             dgvNotificaciones.TabIndex = 0;
             dgvNotificaciones.CellContentClick += dgvNotificaciones_CellContentClick;
             // 

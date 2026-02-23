@@ -19,12 +19,14 @@ namespace WinFormsApp1.Forms
 
         private readonly ComplexService _complexService;
         private UC_Notificaciones? uc_Notificaciones;
-        public FormPrincipal()
+        public FormPrincipal(string userName)
         {
             InitializeComponent();
             _complexService = new ComplexService();
             UC_Dashboard uc = new UC_Dashboard();
             addUserControl(uc);
+
+            labelBienvenido.Text = $"Bienvenido {userName}";
         }
 
         private void addUserControl(UserControl userControl)
@@ -50,6 +52,9 @@ namespace WinFormsApp1.Forms
         private void buttomServisios1_Click(object sender, EventArgs e)
         {
             UC_Servisios uc = new UC_Servisios();
+
+            //ESTO LO AGREGO EN LA MAXIMIZACION
+            uc.Dock = DockStyle.Fill;
             addUserControl(uc);
         }
 
