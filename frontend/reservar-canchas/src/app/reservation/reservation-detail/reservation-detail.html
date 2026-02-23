@@ -150,9 +150,9 @@
               <h3 class="section-title">Estado</h3>
               <p
                 class="status-badge"
-                [attr.data-status]="reservationDetail.state"
+                [attr.data-status]="reservationDetail.reservationState"
               >
-                {{ reservationDetail.state | reservationStateText }}
+                {{ reservationDetail.reservationState | reservationStateText }}
               </p>
             </div>
             <div class="breakdown-divider"></div>
@@ -172,7 +172,7 @@
             <div class="actions-box">
               @if (
                 !isAdminRoute &&
-                reservationDetail.state == ReservationState.Pendiente
+                reservationDetail.reservationState == ReservationState.Pendiente
               ) {
                 <button
                   class="btn danger"
@@ -187,7 +187,7 @@
               }
               @if (
                 !isAdminRoute &&
-                reservationDetail.state == ReservationState.Aprobada
+                reservationDetail.reservationState == ReservationState.Aprobada
               ) {
                 <button class="btn danger" (click)="onClientCancelAprobada()">
                   CANCELAR RESERVA
@@ -196,7 +196,7 @@
 
               @if (
                 !isAdminRoute &&
-                reservationDetail.state == ReservationState.Completada && 
+                reservationDetail.reservationState == ReservationState.Completada && 
                 !reservationDetail.hasReservation
               ) {
                 <button class="btn success" (click)="openReviewDialog()">
@@ -205,7 +205,7 @@
               }
 
               @if (
-                reservationDetail.state == ReservationState.Completada && reservationDetail.hasReservation
+                reservationDetail.reservationState == ReservationState.Completada && reservationDetail.hasReservation
               ) {
                 <button pButton severity="info" class="btn" (click)="openViewReviewDialog()">
                   VER RESEÑA
@@ -215,7 +215,7 @@
               @if (
                 isAdmin &&
                 isAdminRoute &&
-                reservationDetail.state == ReservationState.Pendiente
+                reservationDetail.reservationState == ReservationState.Pendiente
               ) {
                 <button
                   (click)="changeState(ReservationState.Aprobada)"
@@ -234,7 +234,7 @@
               @if (
                 isAdmin &&
                 isAdminRoute &&
-                reservationDetail.state == ReservationState.Aprobada
+                reservationDetail.reservationState == ReservationState.Aprobada
               ) {
                 <button
                   (click)="openReasonDialog(ReservationState.CanceladoPorAdmin)"

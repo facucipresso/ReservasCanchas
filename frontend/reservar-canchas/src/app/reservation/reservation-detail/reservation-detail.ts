@@ -72,7 +72,7 @@ export class ReservationDetail implements OnInit, OnChanges {
       next: (response) => {
         //this.reservationDetail = response;
         this.reservationDetail = response;
-        console.log(response);
+        console.log('RESPUESTA DETALLE: ', response);
         this.isLoading = false;
         
       },
@@ -124,7 +124,7 @@ export class ReservationDetail implements OnInit, OnChanges {
           });
   
           // refrescamos detalle
-          this.reservationDetail.state = newState;
+          this.reservationDetail.reservationState = newState;
           this.stateChanged.emit(newState);
         },
         error: (err) => {
@@ -161,7 +161,7 @@ export class ReservationDetail implements OnInit, OnChanges {
             life: 2500
           });
   
-          this.reservationDetail.state = this.pendingState!;
+          this.reservationDetail.reservationState = this.pendingState!;
           this.stateChanged.emit(this.pendingState!);
           this.pendingState = null;
           this.visible = false;

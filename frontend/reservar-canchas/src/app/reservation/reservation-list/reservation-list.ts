@@ -55,11 +55,11 @@ export class ReservationList implements OnChanges, OnInit {
       this.filteredReservations = this.allReservations;
     }else if(this.selectedStatus === 'Cancelada'){
       this.filteredReservations = this.allReservations.filter(reservation =>{ 
-        return reservation.state === ReservationState.CanceladoConDevolucion || 
-               reservation.state === ReservationState.CanceladoSinDevolucion ||
-               reservation.state === ReservationState.CanceladoPorAdmin;});
+        return reservation.reservationState === ReservationState.CanceladoConDevolucion || 
+               reservation.reservationState === ReservationState.CanceladoSinDevolucion ||
+               reservation.reservationState === ReservationState.CanceladoPorAdmin;});
     } else {
-      this.filteredReservations = this.allReservations.filter(reservation => reservation.state === this.selectedStatus);
+      this.filteredReservations = this.allReservations.filter(reservation => reservation.reservationState === this.selectedStatus);
     }
   }
 
