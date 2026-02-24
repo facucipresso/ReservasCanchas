@@ -23,6 +23,7 @@ namespace WinFormsApp1.UserControls
         public UC_Servisios()
         {
             InitializeComponent();
+            flowLayoutPanel1.SizeChanged += flowLayoutPanel1_SizeChanged;
             _serService = new ServicesService();
             this.Load += UC_Servisios_Load;
         }
@@ -168,6 +169,16 @@ namespace WinFormsApp1.UserControls
         private void buttonCancelar_Click(object sender, EventArgs e)
         {
             CancelarEdicion();
+        }
+
+        private void flowLayoutPanel1_SizeChanged(object sender, EventArgs e)
+        {
+            int ancho = flowLayoutPanel1.ClientSize.Width - flowLayoutPanel1.Padding.Horizontal;
+
+            labelAgregarEditarServicio.Width = ancho;
+            textServiceDescription.Width = ancho;
+            buttonAgregar.Width = ancho;
+            buttonCancelar.Width = ancho;
         }
     }
 }

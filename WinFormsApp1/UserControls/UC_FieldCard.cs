@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Drawing2D;
 using WinFormsApp1.Models.Field;
 
 namespace WinFormsApp1.UserControls
@@ -26,6 +27,13 @@ namespace WinFormsApp1.UserControls
             _field = field;
             _fieldId = field.Id;
             LoadData();
+
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint |
+              ControlStyles.UserPaint |
+              ControlStyles.OptimizedDoubleBuffer, true);
+
+            this.UpdateStyles();
+
         }
 
         private void LoadData()
@@ -56,7 +64,30 @@ namespace WinFormsApp1.UserControls
         {
             VerReservasCanchaClicked?.Invoke(this, _fieldId);
         }
-    
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            AplicarBordesRedondeados();
+        }
+
+        private void AplicarBordesRedondeados()
+        {
+            int radio = 20; // podés probar 15, 20 o 25
+
+            Rectangle rect = new Rectangle(0, 0, this.Width, this.Height);
+
+            GraphicsPath path = new GraphicsPath();
+            path.StartFigure();
+            path.AddArc(rect.X, rect.Y, radio, radio, 180, 90);
+            path.AddArc(rect.Right - radio, rect.Y, radio, radio, 270, 90);
+            path.AddArc(rect.Right - radio, rect.Bottom - radio, radio, radio, 0, 90);
+            path.AddArc(rect.X, rect.Bottom - radio, radio, radio, 90, 90);
+            path.CloseFigure();
+
+            this.Region = new Region(path);
+        }
+
 
     }
 }

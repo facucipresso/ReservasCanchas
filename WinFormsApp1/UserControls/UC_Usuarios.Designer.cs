@@ -70,6 +70,7 @@
             dgvUsuarios.Dock = DockStyle.Fill;
             dgvUsuarios.EnableHeadersVisualStyles = false;
             dgvUsuarios.Location = new Point(0, 0);
+            dgvUsuarios.MultiSelect = false;
             dgvUsuarios.Name = "dgvUsuarios";
             dgvUsuarios.ReadOnly = true;
             dgvUsuarios.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;

@@ -30,6 +30,14 @@ namespace WinFormsApp1.UserControls
 
             btnVolver.Click += (s, e) => VolverClicked?.Invoke();
             btnCerrar.Click += (s, e) => CerrarClicked?.Invoke();
+
+            flowLayoutPanelFields.WrapContents = true;
+            flowLayoutPanelFields.AutoScroll = true;
+            flowLayoutPanelFields.FlowDirection = FlowDirection.LeftToRight;
+            flowLayoutPanelFields.Padding = new Padding(0);
+
+            flowLayoutPanelFields.SizeChanged += FlowLayoutPanelFields_SizeChanged;
+
         }
 
         private async void UC_FieldList_Load(object sender, EventArgs e)
@@ -64,6 +72,37 @@ namespace WinFormsApp1.UserControls
                 var card = new UC_FieldCard(field);
                 card.VerReservasCanchaClicked += Card_VerReservasCanchaClicked;
                 flowLayoutPanelFields.Controls.Add(card);
+            }
+            AjustarDistribucionCards();
+        }
+
+        private void FlowLayoutPanelFields_SizeChanged(object sender, EventArgs e)
+        {
+            AjustarDistribucionCards();
+        }
+
+        private void AjustarDistribucionCards()
+        {
+            if (flowLayoutPanelFields.Controls.Count == 0)
+                return;
+
+            int cardWidth = 354; // ancho fijo actual de tu UC_FieldCard
+            int availableWidth = flowLayoutPanelFields.ClientSize.Width;
+
+            // Cuántas cards entran por fila
+            int cardsPerRow = Math.Max(1, availableWidth / cardWidth);
+
+            // Espacio total sobrante
+            int espacioRestante = availableWidth - (cardsPerRow * cardWidth);
+
+            // Cantidad de espacios = cards + 1
+            int cantidadEspacios = cardsPerRow + 1;
+
+            int margenHorizontal = espacioRestante / cantidadEspacios;
+
+            foreach (Control control in flowLayoutPanelFields.Controls)
+            {
+                control.Margin = new Padding(margenHorizontal, 20, 0, 20);
             }
         }
 

@@ -79,6 +79,12 @@ namespace WinFormsApp1.UserControls
             {
                 var idUser = Convert.ToInt32(dgvUsuarios.Rows[e.RowIndex].Cells["Id"].Value);
 
+                if(idUser == 1)
+                {
+                    Notifier.Show(this.FindForm(), "No se le pueden realizar acciones al super admin", NotificationType.Error);
+                    return;
+                }
+
                 var user = dgvUsuarios.Rows[e.RowIndex].DataBoundItem as UserResponseWithRoleDTO;
                 if (user == null) return;
 
@@ -149,6 +155,7 @@ namespace WinFormsApp1.UserControls
             }
 
         }
+
 
 
     }

@@ -61,6 +61,7 @@
             dgvNotificaciones.Dock = DockStyle.Fill;
             dgvNotificaciones.EnableHeadersVisualStyles = false;
             dgvNotificaciones.Location = new Point(0, 0);
+            dgvNotificaciones.MultiSelect = false;
             dgvNotificaciones.Name = "dgvNotificaciones";
             dgvNotificaciones.ReadOnly = true;
             dgvNotificaciones.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
