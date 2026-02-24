@@ -87,6 +87,7 @@
         <app-reservation-detail
           [selectedReservationId]="selectedReservationId"
           (stateChanged)="onReservationStateUpdated($event)"
+          (accessDenied)="onAccessDenied()"
         >
         </app-reservation-detail>
       }

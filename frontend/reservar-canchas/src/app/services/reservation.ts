@@ -22,6 +22,15 @@ export class Reservation {
     return this.http.get<ReservationForUserResponse[]>(`${this.apiBaseUrl}/my`);
   }
 
+  
+  getUserReservationDetail(reservationId: number): Observable<ReservationDetailResponse>{
+    return this.http.get<ReservationDetailResponse>(`${this.apiBaseUrl}/my/${reservationId}`);
+  }
+  
+  getAdminReservationDetail(complexId:number, reservationId: number): Observable<ReservationDetailResponse>{
+    return this.http.get<ReservationDetailResponse>(`${this.apiBaseUrl}/${reservationId}/complex/${complexId}`);
+  }
+
   getReservationsByDateForComplex(complexId: number, date: string):Observable<DailyReservationsComplex>{
     return this.http.get<DailyReservationsComplex>(`${this.apiBaseUrl}/complex/${complexId}/by-date/`,{params: { date }});
   }
@@ -44,10 +53,6 @@ export class Reservation {
 
   changeStateReservation(reservationId: number, request: ChangeStateReservation): Observable<void>{
     return this.http.patch<void>(`${this.apiBaseUrl}/${reservationId}/state`, request);
-  }
-
-  getReservationDetail(reservationId: number): Observable<ReservationDetailResponse>{
-    return this.http.get<ReservationDetailResponse>(`${this.apiBaseUrl}/${reservationId}/detail`);
   }
 
   getReservationsByComplexAndDate(complexId:number, date:string): Observable<ReservationForUserResponse[]>{

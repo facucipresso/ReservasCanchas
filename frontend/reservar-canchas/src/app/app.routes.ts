@@ -10,6 +10,7 @@ import { Buzon } from './buzon/buzon';
 import { ReservationDetail } from './reservation/reservation-detail/reservation-detail';
 import { MyReservations } from './reservation/my-reservations/my-reservations';
 import { ComplexReservations } from './reservation/complex-reservations/complex-reservations';
+import { adminGuard } from './guards/admin-guard';
 
 export const routes: Routes = [
   {
@@ -26,11 +27,13 @@ export const routes: Routes = [
   },
   {
     path: 'admin/complexes',
+    canActivate: [adminGuard],
     component: ComplexList,
     data: {mode:'admin'}
   },
   {
     path: 'admin/complexes/:id/reservations',
+    canActivate: [adminGuard],
     component: ComplexReservations
   },
   {

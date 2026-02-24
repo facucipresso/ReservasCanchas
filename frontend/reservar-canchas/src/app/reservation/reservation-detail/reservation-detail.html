@@ -180,7 +180,8 @@
             <div class="actions-box">
               @if (
                 !isAdminRoute &&
-                reservationDetail.reservationState == ReservationState.Pendiente
+                reservationDetail.reservationState == ReservationState.Pendiente &&
+                canCancel()
               ) {
                 <button
                   class="btn danger"
@@ -195,7 +196,8 @@
               }
               @if (
                 !isAdminRoute &&
-                reservationDetail.reservationState == ReservationState.Aprobada
+                reservationDetail.reservationState == ReservationState.Aprobada &&
+                canCancel()
               ) {
                 <button class="btn danger" (click)="onClientCancelAprobada()">
                   CANCELAR RESERVA
@@ -205,7 +207,8 @@
               @if (
                 !isAdminRoute &&
                 reservationDetail.reservationState == ReservationState.Completada && 
-                !reservationDetail.hasReservation
+                !reservationDetail.hasReservation &&
+                reservationDetail.reservationType === ReservationType.Partido
               ) {
                 <button class="btn success" (click)="openReviewDialog()">
                   DEJAR RESEÑA
@@ -244,7 +247,8 @@
               @if (
                 isAdmin &&
                 isAdminRoute &&
-                reservationDetail.reservationState == ReservationState.Aprobada
+                reservationDetail.reservationState === ReservationState.Aprobada &&
+                canCancel()
               ) {
                 <button
                   (click)="openReasonDialog(ReservationState.CanceladoPorAdmin)"

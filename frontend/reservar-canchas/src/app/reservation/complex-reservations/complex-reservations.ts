@@ -7,12 +7,13 @@ import { ReservationDetail } from '../reservation-detail/reservation-detail';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Complex } from '../../services/complex';
 import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
 import { FieldDetailModel } from '../../models/field/field.model';
 import { Field } from '../../services/field';
 import { ComplexStats } from '../../models/complex/complexstats.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-complex-reservations',
@@ -35,7 +36,7 @@ export class ComplexReservations implements OnInit {
     };
 
     constructor(private reservationService: Reservation, private route:ActivatedRoute, 
-      private complexService:Complex, private fieldService: Field){}
+      private complexService:Complex, private fieldService: Field, private router:Router, private messageService:MessageService){}
   
     ngOnInit(){
       this.route.paramMap.subscribe(params => {
@@ -53,10 +54,25 @@ export class ComplexReservations implements OnInit {
 
           const dateNow = new Date().toLocaleDateString('en-CA');
           console.log(dateNow);
-          this.reservationService.getReservationsByComplexAndDate(this.complexId,dateNow).subscribe((res) => {
-            this.allReservations = this.sortReservations(res);
+          this.reservationService.getReservationsByComplexAndDate(this.complexId,dateNow).subscribe({
+            next: (reservations) => {
+              this.allReservations = this.sortReservations(reservations);
+              this.refreshStats();
+            },
+            error: (err) => {
+              console.log('ERROR DEL BACKEND:', err);
+              const backendError = err?.error;
+              const message = backendError?.detail || 'Error desconocido';
+              this.messageService.add({
+                severity:'error',
+                summary: backendError.title || 'Error',
+                detail: message,
+                life: 2000
+              })
+              this.router.navigate(['/']);
+            }
+
           })
-          this.refreshStats();
         }
       });
 
@@ -118,6 +134,13 @@ export class ComplexReservations implements OnInit {
         if (a.startTime > b.startTime) return -1;
 
         return 0;
+      });
+    }
+
+    onAccessDenied(){
+      this.selectedReservationId = null;
+      this.router.navigate([`admin/complexes/${this.complexId}/reservations`], {
+        replaceUrl: true
       });
     }
 }
