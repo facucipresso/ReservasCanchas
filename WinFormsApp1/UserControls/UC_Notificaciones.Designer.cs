@@ -76,7 +76,7 @@
             dataGridViewCellStyle3.BackColor = SystemColors.Control;
             dataGridViewCellStyle3.SelectionBackColor = Color.LightSteelBlue;
             dgvNotificaciones.RowsDefaultCellStyle = dataGridViewCellStyle3;
-            dgvNotificaciones.RowTemplate.Height = 40;
+            dgvNotificaciones.RowTemplate.Height = 33;
             dgvNotificaciones.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvNotificaciones.Size = new Size(1244, 385);
             dgvNotificaciones.TabIndex = 0;

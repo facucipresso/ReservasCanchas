@@ -22,28 +22,25 @@
             buttonConfirmar = new Button();
             buttonCancelar = new Button();
             SuspendLayout();
-
             // 
             // lblReasonModal
             // 
-            lblReasonModal.AutoSize = false;
             lblReasonModal.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold | FontStyle.Italic);
             lblReasonModal.Location = new Point(0, 15);
             lblReasonModal.Name = "lblReasonModal";
-            lblReasonModal.Size = new Size(492, 35); // mismo ancho que el form
+            lblReasonModal.Size = new Size(492, 35);
             lblReasonModal.TabIndex = 0;
-            lblReasonModal.TextAlign = ContentAlignment.MiddleCenter;
             lblReasonModal.Text = "Ingrese la razón";
-
+            lblReasonModal.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // textBoxReasonModal
             // 
+            textBoxReasonModal.BackColor = SystemColors.Control;
             textBoxReasonModal.Location = new Point(47, 70);
             textBoxReasonModal.Multiline = true;
             textBoxReasonModal.Name = "textBoxReasonModal";
             textBoxReasonModal.Size = new Size(405, 70);
             textBoxReasonModal.TabIndex = 1;
-
             // 
             // buttonConfirmar
             // 
@@ -54,7 +51,6 @@
             buttonConfirmar.Text = "CONFIRMAR";
             buttonConfirmar.UseVisualStyleBackColor = true;
             buttonConfirmar.Click += buttonConfirmar_Click;
-
             // 
             // buttonCancelar
             // 
@@ -65,21 +61,20 @@
             buttonCancelar.Text = "CANCELAR";
             buttonCancelar.UseVisualStyleBackColor = true;
             buttonCancelar.Click += buttonCancelar_Click;
-
             // 
             // FormReasonModal
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.White;
+            BackColor = SystemColors.Control;
             ClientSize = new Size(492, 215);
             Controls.Add(buttonCancelar);
             Controls.Add(buttonConfirmar);
             Controls.Add(textBoxReasonModal);
             Controls.Add(lblReasonModal);
             FormBorderStyle = FormBorderStyle.None;
-            StartPosition = FormStartPosition.CenterParent;
             Name = "FormReasonModal";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "FormReasonModal";
             ResumeLayout(false);
             PerformLayout();

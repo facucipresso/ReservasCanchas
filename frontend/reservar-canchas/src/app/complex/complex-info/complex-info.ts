@@ -19,7 +19,7 @@ import { DialogModule } from 'primeng/dialog';
   selector: 'app-complex-info',
   imports: [CommonModule,Message,Panel, FieldTable, ReviewCard, CarouselModule, RatingModule, FormsModule, PopoverModule, ButtonModule, DialogModule],
   templateUrl: './complex-info.html',
-  styleUrl: './complex-info.css',
+  styleUrl: './complex-info.css', 
 })
 export class ComplexInfo {
   @Input() complex!: ComplexDetailModel;

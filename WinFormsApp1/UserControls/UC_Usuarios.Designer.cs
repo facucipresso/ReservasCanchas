@@ -85,7 +85,7 @@
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle4.SelectionBackColor = Color.LightSteelBlue;
             dgvUsuarios.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            dgvUsuarios.RowTemplate.Height = 40;
+            dgvUsuarios.RowTemplate.Height = 33;
             dgvUsuarios.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvUsuarios.Size = new Size(1244, 385);
             dgvUsuarios.TabIndex = 0;
