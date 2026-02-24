@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Reservation } from '../../services/reservation';
 import { ReservationDetailResponse } from '../../models/reservation/ReservationDetailResponse.model';
 import { ReservationState } from '../../models/reservation/reservationstate.enum';
@@ -39,6 +39,7 @@ export class ReservationDetail implements OnInit, OnChanges {
   isLoading = true;
   @Input() selectedReservationId!: number;
   @Output() stateChanged = new EventEmitter<ReservationState>();
+  @Output() accessDenied = new EventEmitter<void>();
   isAdminRoute = false;
   pendingState: ReservationState | null = null;
   reason!: string;
@@ -54,11 +55,11 @@ export class ReservationDetail implements OnInit, OnChanges {
     private reviewService: Review,
     private messageService : MessageService,
     private confirmationService : ConfirmationService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.loadReservation();
     this.isAdminRoute = this.router.url.includes("/admin");
   }
 
@@ -70,21 +71,64 @@ export class ReservationDetail implements OnInit, OnChanges {
 
   private loadReservation(){
     if (!this.selectedReservationId) return; 
+    console.log("holaaaaaaa")
 
-    this.reservationService.getReservationDetail(this.selectedReservationId).subscribe({
-      next: (response) => {
-        //this.reservationDetail = response;
-        this.reservationDetail = response;
-        console.log('RESPUESTA DETALLE: ', response);
+    const complexIdParam = this.route.snapshot.paramMap.get('id');
+    const complexId = complexIdParam ? Number(complexIdParam) : null;
+
+    if(complexId){
+      this.loadAdminReservation(complexId)
+    }else{
+      this.loadUserReservation();
+    }
+  }
+
+  private loadUserReservation() {
+    this.reservationService.getUserReservationDetail(this.selectedReservationId).subscribe({
+      next: (resDetail) => {
+        this.reservationDetail = resDetail;
+        console.log('RESPUESTA DETALLE: ', resDetail);
         this.isLoading = false;
         
       },
       error: (err) => {
-        console.error('Error loading reservation detail', err);
+        console.log('ERROR DEL BACKEND:', err);
+        const backendError = err?.error;
+        const message = backendError?.detail || 'Error desconocido';
+        this.messageService.add({
+          severity:'error',
+          summary: backendError.title || 'Error',
+          detail: message,
+          life: 2000
+        })
         this.isLoading = false;
+        this.accessDenied.emit();
       }
     });
   }
+
+  private loadAdminReservation(complexId: number) {
+    this.reservationService.getAdminReservationDetail(complexId, this.selectedReservationId).subscribe({
+      next: (resDetail) => {
+        this.reservationDetail = resDetail;
+        console.log('RESPUESTA DETALLE: ', resDetail);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.log('ERROR DEL BACKEND:', err);
+        const backendError = err?.error;
+        const message = backendError?.detail || 'Error desconocido';
+        this.messageService.add({
+          severity:'error',
+          summary: backendError.title || 'Error',
+          detail: message,
+          life: 2000
+        })
+        this.isLoading = false;
+        this.accessDenied.emit();
+      }
+    });
+}
 
   get isAdmin(): boolean {
     return this.reservationDetail?.isAdmin;
@@ -282,6 +326,22 @@ export class ReservationDetail implements OnInit, OnChanges {
       this.reviewService.getReviewByReservationId(this.reservationDetail.reservationId).subscribe((review) => {
         this.review = review;
       })
+    }
+
+    canCancel(): boolean {
+      if (!this.reservationDetail) return false;
+
+      const dateStr = this.reservationDetail.date.toString();
+      const timeStr = this.reservationDetail.startTime.toString();
+
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const [hours, minutes] = timeStr.split(':').map(Number);
+
+      const reservationStart = new Date(year, month - 1, day, hours, minutes);
+
+      const now = new Date();
+
+      return now < reservationStart;
     }
 }
   

@@ -113,6 +113,183 @@ namespace ReservasCanchas.BusinessLogic
             return reservations.Select(ReservationMapper.ToReservationResponseDTO).ToList();
         }
 
+        public async Task<ReservationDetailResponseDTO> GetUserReservationDetailAsync(int reservationId)
+        {
+            var userId = _authService.GetUserId();
+
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            await _userBusinessLogic.ValidateUserState(user);
+
+            var reservation = await GetReservationWithRelationsOrThrow(reservationId);
+
+            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(reservation.FieldId);
+            _fieldBusinessLogic.ValidateStatusField(field);
+
+            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
+            _complexBusinessLogic.ValidateAccessForBasicUser(complex);
+
+            var isReservationOwner = reservation.UserId == userId;
+
+            if(reservation.ReservationType == ReservationType.Bloqueo)
+            {
+                throw new BadRequestException("Los bloqueos solo pueden ser accedidos desde las reservas del complejo");
+            }
+
+            if (!isReservationOwner )
+            {
+                    throw new ForbiddenException("No puedes ver una reserva de otro usuario.");
+            }
+
+            // LA PROPIEDAD TOTALPRICE DE LA RESERVA YA VIENE CON EL ADICIONAL DE LA ILUMINACION(SI ES QUE LO HAY)
+
+            //
+            decimal illuminationAmount = CalculateIlluminationAmount(field, complex, reservation.StartTime);
+            decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalAmount.Value, field.HourPrice);
+
+
+            var response = new ReservationDetailResponseDTO
+            {
+                ReservationId = reservation.Id,
+
+                // contexto
+                IsAdmin = userId == complex.UserId,
+                ReservationState = reservation.ReservationState,
+                ReservationType = reservation.ReservationType,
+
+                // fecha y hora
+                Date = reservation.Date,
+                StartTime = reservation.StartTime,
+
+                // pago
+                PaymentType = reservation.PaymentType,
+                TotalAmount = reservation.TotalAmount ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
+                AmountPaid = reservation.AmountPaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
+
+                // iluminación
+                HasFieldIllumination = field.Illumination,
+                PaidIllumination = illuminationAmount > 0,
+                IlluminationAmount = illuminationAmountT,
+
+                // comprobante
+                VoucherUrl = reservation.VoucherPath,
+
+                // usuario
+                UserId = reservation.UserId,
+                UserFullName = $"{reservation.User.Name} {reservation.User.LastName}",
+                UserEmail = reservation.User.Email,
+                UserPhone = reservation.User.PhoneNumber,
+
+                // cancha
+                FieldId = field.Id,
+                FieldName = field.Name,
+                FieldType = field.FieldType.ToString(),
+                FloorType = field.FloorType.ToString(),
+                HourPrice = field.HourPrice,
+
+                // complejo
+                ComplexId = complex.Id,
+                ComplexName = complex.Name,
+                Street = complex.Street,
+                Number = complex.Number,
+                Locality = complex.Locality,
+                Phone = complex.Phone,
+
+                //bloqueo 
+                BlockReason = reservation.BlockReason,
+                //review
+                hasReservation = reservation.Review != null ? true : false
+
+            };
+
+            return response;
+        }
+
+        public async Task<ReservationDetailResponseDTO> GetAdminReservationDetailAsync(int complexId, int reservationId)
+        {
+            var userId = _authService.GetUserId();
+
+            var user = await _userBusinessLogic.GetUserOrThrow(userId);
+            await _userBusinessLogic.ValidateUserState(user);
+
+            var reservation = await GetReservationWithRelationsOrThrow(reservationId);
+
+            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(reservation.FieldId);
+            _fieldBusinessLogic.ValidateStatusField(field);
+
+            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
+            _complexBusinessLogic.ValidateAccessForBasicUser(complex);
+
+            var isComplexAdmin = complex.UserId == userId;
+
+            if (!isComplexAdmin)
+            {
+                throw new ForbiddenException("No puedes ver una reserva de un complejo que no administras.");
+            }
+
+            // LA PROPIEDAD TOTALPRICE DE LA RESERVA YA VIENE CON EL ADICIONAL DE LA ILUMINACION(SI ES QUE LO HAY)
+
+            //
+            decimal illuminationAmount = CalculateIlluminationAmount(field, complex, reservation.StartTime);
+            decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalAmount.Value, field.HourPrice);
+
+
+            var response = new ReservationDetailResponseDTO
+            {
+                ReservationId = reservation.Id,
+
+                // contexto
+                IsAdmin = userId == complex.UserId,
+                ReservationState = reservation.ReservationState,
+                ReservationType = reservation.ReservationType,
+
+                // fecha y hora
+                Date = reservation.Date,
+                StartTime = reservation.StartTime,
+
+                // pago
+                PaymentType = reservation.PaymentType,
+                TotalAmount = reservation.TotalAmount ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
+                AmountPaid = reservation.AmountPaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
+
+                // iluminación
+                HasFieldIllumination = field.Illumination,
+                PaidIllumination = illuminationAmount > 0,
+                IlluminationAmount = illuminationAmountT,
+
+                // comprobante
+                VoucherUrl = reservation.VoucherPath,
+
+                // usuario
+                UserId = reservation.UserId,
+                UserFullName = $"{reservation.User.Name} {reservation.User.LastName}",
+                UserEmail = reservation.User.Email,
+                UserPhone = reservation.User.PhoneNumber,
+
+                // cancha
+                FieldId = field.Id,
+                FieldName = field.Name,
+                FieldType = field.FieldType.ToString(),
+                FloorType = field.FloorType.ToString(),
+                HourPrice = field.HourPrice,
+
+                // complejo
+                ComplexId = complex.Id,
+                ComplexName = complex.Name,
+                Street = complex.Street,
+                Number = complex.Number,
+                Locality = complex.Locality,
+                Phone = complex.Phone,
+
+                //bloqueo 
+                BlockReason = reservation.BlockReason,
+                //review
+                hasReservation = reservation.Review != null ? true : false
+
+            };
+
+            return response;
+        }
+
         public async Task<DailyReservationsForComplexResponseDTO> GetReservationsByDateForComplexAsync(int complexId, DateOnly date, bool withBlocks)
         {
 
@@ -192,7 +369,7 @@ namespace ReservasCanchas.BusinessLogic
 
             if(userId != complex.UserId)
             {
-                throw new ForbiddenException("No tienes permisos para ver las reservas del complejo");
+                throw new ForbiddenException("No tienes permisos para ver las reservas de un complejo que no administras");
             }
 
             var reservations = await _reservationRepository.GetReservationsByComplexAndDate(complexId, date);
@@ -1052,6 +1229,20 @@ namespace ReservasCanchas.BusinessLogic
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
             _complexBusinessLogic.ValidateAccessForBasicUser(complex);
+
+            var isReservationOwner = reservation.UserId == userId;
+            var isComplexAdmin = complex.UserId == userId;
+
+            if (!isReservationOwner && !isComplexAdmin)
+            {
+                
+                if (!isComplexAdmin)
+                {
+                    throw new ForbiddenException("No puedes ver una reserva de otro usuario.");
+                }
+
+                throw new ForbiddenException("No puedes ver una reserva de un complejo que no administras.");
+            }
 
             // LA PROPIEDAD TOTALPRICE DE LA RESERVA YA VIENE CON EL ADICIONAL DE LA ILUMINACION(SI ES QUE LO HAY)
 

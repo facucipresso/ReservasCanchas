@@ -51,6 +51,23 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(result);
         }
 
+        [HttpGet("my/{reservationId}")]
+        public async Task<ActionResult<ReservationDetailResponseDTO>> GetUserReservationDetail([FromRoute] int reservationId)
+        {
+            var result = await _reservationBusinessLogic.GetUserReservationDetailAsync(reservationId);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{reservationId}/complex/{complexId}")]
+        public async Task<ActionResult<ReservationDetailResponseDTO>> GetAdminReservationDetail([FromRoute] int complexId, [FromRoute] int reservationId)
+        {
+            var result = await _reservationBusinessLogic.GetAdminReservationDetailAsync(complexId,reservationId);
+
+            return Ok(result);
+        }
+
+
         [HttpGet("complex/{complexId}/by-date")]
         public async Task<ActionResult<DailyReservationsForComplexResponseDTO>> GetReservationsByDateForComplex([FromRoute] int complexId, [FromQuery] DateOnly date)
         {
@@ -124,17 +141,5 @@ namespace ReservasCanchas.Controller.Controllers
             await _reservationBusinessLogic.RejectReservationAsync(request);
             return NoContent();
         }
-
-        [HttpGet("{reservationId}/detail")]
-        public async Task<ActionResult<ReservationDetailResponseDTO>> GetReservationDetail([FromRoute] int reservationId)
-        {
-            var result = await _reservationBusinessLogic.GetReservationDetailAsync(reservationId);
-
-            return Ok(result);
-        }
-
-
-
-
     }
 }

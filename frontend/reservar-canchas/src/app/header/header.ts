@@ -167,7 +167,7 @@ export class Header implements OnInit {
   }
 
   goToBuzon() {
-    this.router.navigate(['/buzon']);
+    this.router.navigate(['/notifications']);
   }
 
   logout(){

@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { ReservationState } from '../../models/reservation/reservationstate.enum';
 import { ReservationDetail } from '../reservation-detail/reservation-detail';
 import { ReservationList } from '../reservation-list/reservation-list';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-my-reservations',
@@ -21,7 +21,7 @@ export class MyReservations implements OnInit {
   selectedReservationId!: number | null;
   selectedStatus: string = 'all';
   
-  constructor(private reservationService: Reservation, private route : ActivatedRoute){}
+  constructor(private reservationService: Reservation, private route : ActivatedRoute, private router:Router){}
 
   ngOnInit(){
     this.reservationService.getMyReservations().subscribe( (data) =>{
@@ -61,5 +61,12 @@ export class MyReservations implements OnInit {
       updatedReservations[index].reservationState = newState;
       this.allReservations = updatedReservations;
     }
+  }
+
+  onAccessDenied(){
+    this.selectedReservationId = null;
+    this.router.navigate(['reservations'], {
+      replaceUrl: true
+    });
   }
 }
