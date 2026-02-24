@@ -99,7 +99,7 @@ export class Recblock implements OnInit{
       hours.push(h.toString().padStart(2, '0') + ':00');
     }
 
-    for (let h = 0; h < endH; h++) {
+    for (let h = 0; h <= endH; h++) {
       hours.push(h.toString().padStart(2, '0') + ':00');
     }
 
@@ -107,11 +107,19 @@ export class Recblock implements OnInit{
   }
 
   onAddBlock() {
-    const startTime = parseInt(this.blockForm.value.startTime.split(':')[0]);
-    const endTime = parseInt(this.blockForm.value.endTime.split(':')[0]);
+    const startH = parseInt(this.blockForm.value.startTime.split(':')[0]);
+    const endH = parseInt(this.blockForm.value.endTime.split(':')[0]);
 
-    if(endTime <= startTime || (startTime === 23 && endTime === 0) || (startTime === 1 && endTime === 0)) {
-      this.invalidHoursError = "La hora de fin debe ser mayor que la hora de inicio";
+    const duration = (endH - startH + 24) % 24;
+    console.log(startH, endH, duration);
+    if (duration === 0) {
+      this.invalidHoursError = "La hora de inicio y fin no pueden ser iguales";
+      return;
+    }
+
+    //Validar que el rango sea coherente (máximo 19 horas si abres de 07 a 02)
+    if (duration > 19) { 
+      this.invalidHoursError = "El rango seleccionado es demasiado extenso";
       return;
     }
     this.invalidHoursError = null;

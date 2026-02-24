@@ -14,6 +14,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public DateOnly Date { get; set; }
         public TimeOnly StartTime { get; set; }
         public ReservationState ReservationState { get; set; }
+        public ReservationType ReservationType { get; set; }
 
         public string ComplexName { get; set; } = string.Empty;
         public string FieldName { get; set; } = string.Empty;

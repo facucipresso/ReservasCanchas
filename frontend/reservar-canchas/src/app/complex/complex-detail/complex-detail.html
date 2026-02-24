@@ -18,6 +18,7 @@
     (deleteField)="confirmDeleteField($event)"
     (reserveField)="onReserveField($event)"
     (recurringBlockField)="onRecurringBlockField($event)"
+    (specificBlockField)="onSpecificBlockField($event)"
     (stateChanged)="changeComplexState()"
     >
         @if(isAdmin){
@@ -80,7 +81,8 @@
   [style]="{ width: '25rem' }"
   [draggable]="false"
   [resizable]="false"
-  [style]="{ width: '60%', minHeight: '90%', color: '#111' }"
+  [style]="{ width: '65%', minHeight: '90%', color: '#111' }"
+  styleClass="custom-dialog-no-scroll"
 >
   <app-editcomplex-form
   *ngIf="visibleEditComplexModal" 

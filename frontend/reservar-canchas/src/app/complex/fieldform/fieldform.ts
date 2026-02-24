@@ -12,11 +12,13 @@ import { InputNumber } from 'primeng/inputnumber';
 import { ComplexDetailModel } from '../../models/complex/complexdetail.model';
 import { FieldDetailModel } from '../../models/field/field.model';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { FieldTypePipe } from '../../pipes/field-type-pipe';
+import { FloorTypePipe } from '../../pipes/floor-type-pipe';
 
 
 @Component({
   selector: 'app-fieldform',
-  imports: [ReactiveFormsModule, SelectModule,InputTextModule,Checkbox,ButtonModule, CommonModule, InputNumber, RadioButtonModule],
+  imports: [ReactiveFormsModule, SelectModule,InputTextModule,Checkbox,ButtonModule, CommonModule, InputNumber, RadioButtonModule,FieldTypePipe, FloorTypePipe],
   templateUrl: './fieldform.html',
   styleUrl: './fieldform.css',
 })
@@ -27,17 +29,8 @@ export class Fieldform implements OnInit {
     '14:00','15:00','16:00','17:00','18:00','19:00',
     '20:00','21:00','22:00','23:00','00:00','01:00','02:00'
   ]
-  fieldTypes = [
-      { label: 'Fútbol 5', value: FieldType.Futbol5 },
-      { label: 'Fútbol 7', value: FieldType.Futbol7 },
-      { label: 'Fútbol 11', value: FieldType.Futbol11 }
-    ]
-  floorTypes = [
-      {label:'Cesped Natural', value: FloorType.CespedNatural},
-      {label:'Cesped Sintetico', value: FloorType.CespedSintetico},
-      {label:'Parquet', value:FloorType.Parquet},
-      {label:'Cemento', value:FloorType.Cemento}
-    ]
+  fieldTypeOptions: any[] = [];
+  floorTypeOptions: any[] = [];
   invalidSchedulesError: string | null = null;
   fieldForm!: FormGroup;
   @Input() formMode !:string;
@@ -81,6 +74,16 @@ export class Fieldform implements OnInit {
     if(this.formMode === 'edit'){
       this.loadField();
     }
+
+    this.fieldTypeOptions = Object.values(FieldType).map(val => ({
+      label: val, 
+      value: val  
+    }));
+
+    this.floorTypeOptions = Object.values(FloorType).map(val => ({
+      label: val, 
+      value: val  
+    }));
   }
 
   get basicForm(): FormGroup {

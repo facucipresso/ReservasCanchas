@@ -34,6 +34,8 @@ namespace ReservasCanchas.DataAccess.Repositories
             var complexWithRelations = await _context.Complex
                                         .Include(c => c.Fields.Where(f => f.Active))
                                             .ThenInclude(f => f.RecurringCourtBlocks)
+                                        .Include(c => c.Fields.Where(f => f.Active))
+                                            .ThenInclude(f => f.TimeSlotsField)
                                         .Include(c => c.Services)
                                         .Include(c => c.TimeSlots)
                                         .FirstOrDefaultAsync(c => c.Id == id && c.Active);

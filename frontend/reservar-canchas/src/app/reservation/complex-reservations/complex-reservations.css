@@ -125,7 +125,7 @@ app-reservation-list {
 .occupancy-bg { background-color: #e0f2fe; color: #0284c7; }
 .revenue-bg { background-color: #dcfce7; color: #16a34a; }
 .reservations-bg { background-color: #fef3c7; color: #d97706; }
-
+.blocks-bg { background-color: #FCC6BB; color: #F87C63; }
 .stat-content {
   display: flex;
   flex-direction: column;

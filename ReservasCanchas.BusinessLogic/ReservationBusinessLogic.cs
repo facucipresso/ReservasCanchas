@@ -145,7 +145,7 @@ namespace ReservasCanchas.BusinessLogic
                 }
                 else
                 {
-                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date || (r.Date == nextDate && r.StartTime.Hour < 2)) && (r.ReservationState == ReservationState.Completada || r.ReservationState == ReservationState.Aprobada)).ToList();
+                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date) && (r.ReservationState == ReservationState.Completada || r.ReservationState == ReservationState.Aprobada)).ToList();
                 }
 
                 var reservationsForFieldDTO = new ReservationsForFieldDTO
@@ -156,19 +156,26 @@ namespace ReservasCanchas.BusinessLogic
                 var reservationsHoursForField = reservationsForFieldFiltered.Select(r => r.StartTime).ToList();
                 reservationsForFieldDTO.ReservedHours.AddRange(reservationsHoursForField);
 
-                if (withBlocks)
-                {
+                //if (withBlocks)
+                //{
                     var recurringBlocksForField = field.RecurringCourtBlocks.Where(b => b.WeekDay == requestWeekDay).ToList();
                     foreach (var block in recurringBlocksForField)
                     {
                         var current = block.StartTime;
-                        while (current < block.EndTime)
+                        while (current != block.EndTime)
                         {
+                            if (!withBlocks)
+                            {
+                                if (current.Hour >= 0 && current.Hour < 6 && block.StartTime.Hour > block.EndTime.Hour)
+                                {
+                                    break; 
+                                }
+                            }
                             reservationsForFieldDTO.ReservedHours.Add(current);
                             current = current.AddHours(1);
                         }
                     }
-                }
+                //}
 
                 reservationsForFieldDTO.ReservedHours = reservationsForFieldDTO.ReservedHours.OrderBy(h => h).ToList();
                 dailyReservationForComplexResponse.FieldsWithReservedHours.Add(reservationsForFieldDTO);
@@ -481,9 +488,14 @@ namespace ReservasCanchas.BusinessLogic
 
             if (!isBlock)
             {
-                
+
+                if (!request.AmountPaid.HasValue)
+                {
+                    throw new BadRequestException("El monto pagado es obligatorio para reservas.");
+                }
+
                 decimal backendPrice = Math.Round(expectedPrice, 2);
-                decimal frontendPrice = Math.Round(request.AmountPaid, 2);
+                decimal frontendPrice = Math.Round(request.AmountPaid.Value, 2);
 
                 if (backendPrice != frontendPrice)
                 {
@@ -501,7 +513,7 @@ namespace ReservasCanchas.BusinessLogic
                 StartTime = request.StartTime,
                 CreatedAt = DateTime.UtcNow,
                 PaymentType = isBlock ? null : request.PaymentType,
-                TotalAmount = finalTotalPrice,
+                TotalAmount = isBlock ? 0 : finalTotalPrice,
                 AmountPaid = isBlock ? 0 : expectedPrice,
                 BlockReason = isBlock ? request.BlockReason : null,
                 ReservationType = isBlock ? ReservationType.Bloqueo : ReservationType.Partido,
@@ -1055,6 +1067,7 @@ namespace ReservasCanchas.BusinessLogic
                 // contexto
                 IsAdmin = userId == complex.UserId,
                 ReservationState = reservation.ReservationState,
+                ReservationType = reservation.ReservationType,
 
                 // fecha y hora
                 Date = reservation.Date,
@@ -1074,7 +1087,7 @@ namespace ReservasCanchas.BusinessLogic
                 VoucherUrl = reservation.VoucherPath,
 
                 // usuario
-                UserId = reservation.UserId,
+                UserId = reservation.UserId,    
                 UserFullName = $"{reservation.User.Name} {reservation.User.LastName}",
                 UserEmail = reservation.User.Email,
                 UserPhone = reservation.User.PhoneNumber,
@@ -1094,6 +1107,8 @@ namespace ReservasCanchas.BusinessLogic
                 Locality = complex.Locality,
                 Phone = complex.Phone,
 
+                //bloqueo 
+                BlockReason = reservation.BlockReason,
                 //review
                 hasReservation = reservation.Review != null ? true : false
 

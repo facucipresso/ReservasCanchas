@@ -29,7 +29,11 @@ export class ComplexReservations implements OnInit {
     complex!: ComplexDetailModel;
     fields!: FieldDetailModel[];
     complexStats!: ComplexStats;
-    
+    private currentFilters: { date: string, fieldId: number | null } = {
+      date: new Date().toLocaleDateString('en-CA'),
+      fieldId: null
+    };
+
     constructor(private reservationService: Reservation, private route:ActivatedRoute, 
       private complexService:Complex, private fieldService: Field){}
   
@@ -50,12 +54,9 @@ export class ComplexReservations implements OnInit {
           const dateNow = new Date().toLocaleDateString('en-CA');
           console.log(dateNow);
           this.reservationService.getReservationsByComplexAndDate(this.complexId,dateNow).subscribe((res) => {
-            this.allReservations = res;
+            this.allReservations = this.sortReservations(res);
           })
-          this.complexService.getComplexStats(this.complexId, dateNow, null).subscribe((stats) => {
-            this.complexStats = stats;
-            console.log('STATS: ', this.complexStats);
-          })
+          this.refreshStats();
         }
       });
 
@@ -65,6 +66,14 @@ export class ComplexReservations implements OnInit {
         if (reservationId) {
           this.selectedReservationId = +reservationId;
         }
+      });
+    }
+
+    private refreshStats() {
+      console.log(this.complexId, this.currentFilters.date, this. currentFilters.fieldId);
+      this.complexService.getComplexStats(this.complexId, this.currentFilters.date, this.currentFilters.fieldId).subscribe((stats) => {
+        this.complexStats = stats;
+        console.log('STATS ACTUALIZADAS: ', this.complexStats);
       });
     }
   
@@ -79,23 +88,36 @@ export class ComplexReservations implements OnInit {
         updatedReservations[index].reservationState = newState;
         this.allReservations = updatedReservations;
       }
+
+      this.refreshStats();
     }
 
     searchReservations(filters: { date: Date, fieldId: number | null }) {
       const dateOnly = filters.date.toISOString().substring(0, 10);
-
+      this.currentFilters = { date: dateOnly, fieldId: filters.fieldId };
       if(filters.fieldId == null){
         this.reservationService.getReservationsByComplexAndDate(this.complexId,dateOnly).subscribe((res) => {
-          this.allReservations = res;
+          this.allReservations = this.sortReservations(res);
         })
       }else{
         this.reservationService.getReservationsByFieldAndDate(filters.fieldId,dateOnly).subscribe((res) => {
-          this.allReservations = res;
+          this.allReservations = this.sortReservations(res);
         })
       }
+      this.refreshStats();
+    }
 
-      this.complexService.getComplexStats(this.complexId, dateOnly, filters.fieldId).subscribe((res) => {
-          this.complexStats = res;
-      })
+    private sortReservations(data: ReservationForUserResponse[]): ReservationForUserResponse[] {
+      return data.sort((a, b) => {
+    // Primero comparamos la fecha (Descendente)
+        if (a.date < b.date) return 1;
+        if (a.date > b.date) return -1;
+
+    // Si la fecha es igual, comparamos la hora (Descendente)
+        if (a.startTime < b.startTime) return 1;
+        if (a.startTime > b.startTime) return -1;
+
+        return 0;
+      });
     }
 }

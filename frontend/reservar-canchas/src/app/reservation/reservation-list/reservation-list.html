@@ -37,10 +37,13 @@
             <th>Fecha</th> 
             <th>Hora inicio</th>
             @if(isAdminView && selectedFieldId == null){
-            <th>Cancha</th>
+              <th>Cancha</th>
             }
             @if(selectedStatus == 'all'){
               <th>Estado</th>
+            }
+            @if(isAdminView){
+              <th>Tipo</th>
             }
             <th>Detalle</th> 
           </tr>
@@ -59,6 +62,9 @@
                   {{ reservation.reservationState | reservationStateText}}
                 </span>
               </td>
+            }
+            @if(isAdminView){
+              <td>{{reservation.reservationType}}</td>
             }
             <td>
               <button 

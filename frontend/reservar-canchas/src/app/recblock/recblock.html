@@ -17,8 +17,8 @@
       <ng-template #body let-block>
         <tr>
           <td>{{ block.weekDay }}</td>
-          <td>{{ block.initHour | slice:0:5 }}</td>
-          <td>{{ block.endHour | slice:0:5 }}</td>
+          <td>{{ block.startTime | slice:0:5 }}</td>
+          <td>{{ block.endTime | slice:0:5 }}</td>
           <td>{{ block.reason }}</td>
           <td>
             <button pButton icon="pi pi-trash" severity="danger" (click)="confirmDeleteBlock(block.id)"> Eliminar </button>

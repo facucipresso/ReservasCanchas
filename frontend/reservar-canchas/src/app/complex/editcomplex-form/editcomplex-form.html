@@ -203,12 +203,14 @@
           formControlName="startTime"
           [options]="availableHours"
           placeholder="Apertura"
+          appendTo="body"
         >
         </p-select>
         <p-select
           formControlName="endTime"
           [options]="availableHours"
           placeholder="Cierre"
+          appendTo="body"
         >
         </p-select>
         @if((slot.get('startTime')?.touched && slot.get('startTime')?.invalid) ||

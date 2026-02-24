@@ -25,12 +25,19 @@
 
   <p-select
     formControlName="fieldType"
-    [options]="fieldTypes"
+    [options]="fieldTypeOptions"
     optionLabel="label"
     optionValue="value"
     placeholder="Tipo de cancha"
     style="color: black"
   >
+    <ng-template pTemplate="selectedItem" let-selectedOption>
+      {{ selectedOption.value | fieldTypeText }}
+    </ng-template>
+
+    <ng-template pTemplate="item" let-option>
+      {{ option.value | fieldTypeText }}
+    </ng-template>
     <ng-template #dropdownicon>
       <i class="pi pi-circle-off" style="color: black"></i>
     </ng-template>

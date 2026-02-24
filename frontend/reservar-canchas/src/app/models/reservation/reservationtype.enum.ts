@@ -1,4 +1,4 @@
 export enum ReservationType {
-  Bloqueo = 0,
-  Partido = 1
+  Bloqueo = 'Bloqueo',
+  Partido = 'Partido'
 }

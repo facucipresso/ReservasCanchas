@@ -31,6 +31,8 @@ namespace ReservasCanchas.BusinessLogic
 
             int totalSlots = 0;
             int ocuppiedSlots = 0;
+            int matches = 0;
+            int specificBlocks = 0;
             decimal totalRevenue = 0;
 
             DailyReservationsForComplexResponseDTO reservationsForComplex = await _reservationBusinessLogic.GetReservationsByDateForComplexAsync(complexId, date, false);
@@ -41,6 +43,10 @@ namespace ReservasCanchas.BusinessLogic
                 var fieldStats = reservationsForComplex.FieldsWithReservedHours.FirstOrDefault(f => f.FieldId == fieldId);
                 ocuppiedSlots = fieldStats.ReservedHours.Count();
                 List<ReservationForUserResponseDTO> reservationsField = await _reservationBusinessLogic.GetReservationsByFieldAndDateAsync(fieldId ?? 0, date);
+                matches = reservationsField.Where(r => (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada) && r.ReservationType == ReservationType.Partido).
+                    Count();
+                specificBlocks = reservationsField.Where(r => (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada) && r.ReservationType == ReservationType.Bloqueo).
+                    Count();
                 totalRevenue = reservationsField.Where(r => r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada).Sum(r => r.TotalAmount ?? 0);
 
             }
@@ -48,36 +54,63 @@ namespace ReservasCanchas.BusinessLogic
             {
                 ocuppiedSlots = reservationsForComplex.FieldsWithReservedHours.Sum(f => f.ReservedHours.Count());
                 List<ReservationForUserResponseDTO> reservationsComplex = await _reservationBusinessLogic.GetReservationsByComplexAndDateAsync(complexId, date);
+                matches = reservationsComplex.Where(r => (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada) && r.ReservationType == ReservationType.Partido).
+                    Count();
+                specificBlocks = reservationsComplex.Where(r => (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada) && r.ReservationType == ReservationType.Bloqueo).
+                    Count();
                 totalRevenue = reservationsComplex.Where(r => r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada).Sum(r => r.TotalAmount ?? 0);
             }
 
+            var fieldsToProcess = fieldId.HasValue
+                ? complex.Fields.Where(f => f.Id == fieldId.Value).ToList()
+                : complex.Fields.ToList();
             var dayOfWeek = _complexBusinessLogic.ConvertToWeekDay(date);
-            var timeSlotComplex = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == dayOfWeek);
-
-            if (timeSlotComplex.StartTime != timeSlotComplex.EndTime)
+            var yesterday = date.AddDays(-1);
+            var yesterdayDayOfWeek = _complexBusinessLogic.ConvertToWeekDay(yesterday);
+            foreach (var field in fieldsToProcess)
             {
-                var start = timeSlotComplex.StartTime.Hour;
-                var end = timeSlotComplex.EndTime.Hour;
+                var timeSlotToday = field.TimeSlotsField.FirstOrDefault(ts => ts.WeekDay == dayOfWeek);
+                var timeSlotYesterday = field.TimeSlotsField.FirstOrDefault(ts => ts.WeekDay == yesterdayDayOfWeek);
 
-                int hoursOpen = 0;
+                int fieldHoursOpen = 0;
 
-                if (end > start)
+                // 1. Horas que la cancha abre HOY
+                if (timeSlotToday != null && timeSlotToday.StartTime != timeSlotToday.EndTime)
                 {
-                    hoursOpen = end - start;
-                }
-                else
-                {
-                    hoursOpen = (24 - start) + end;
+                    var start = timeSlotToday.StartTime.Hour;
+                    var end = timeSlotToday.EndTime.Hour;
+
+                    if (end > start)
+                    {
+                        fieldHoursOpen += (end - start);
+                    }
+                    else
+                    {
+                        fieldHoursOpen += (24 - start);
+                    }
                 }
 
-                int fieldCount = fieldId.HasValue ? 1 : complex.Fields.Count();
-                totalSlots = hoursOpen * fieldCount;
+                // 2. Horas que la cancha trae desde AYER (madrugada de hoy)
+                if (timeSlotYesterday != null && timeSlotYesterday.StartTime != timeSlotYesterday.EndTime)
+                {
+                    var yStart = timeSlotYesterday.StartTime.Hour;
+                    var yEnd = timeSlotYesterday.EndTime.Hour;
+
+                    if (yEnd < yStart)
+                    {
+                        fieldHoursOpen += yEnd;
+                    }
+                }
+
+                totalSlots += fieldHoursOpen;
             }
 
             ComplexStatsDTO stats = new ComplexStatsDTO
             {
                 totalPossibleSlots = totalSlots,
                 occupiedSlots = ocuppiedSlots,
+                matches = matches,
+                specificBlocks = specificBlocks,
                 totalRevenue = totalRevenue
             };
 

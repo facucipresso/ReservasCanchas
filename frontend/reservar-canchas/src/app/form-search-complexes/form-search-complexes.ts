@@ -8,6 +8,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import {  Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FieldTypePipe } from '../pipes/field-type-pipe';
 
 @Component({
   selector: 'app-form-search-complexes',
@@ -18,6 +19,7 @@ import { CommonModule } from '@angular/common';
     DatePickerModule,
     ButtonModule,
     CommonModule,
+    FieldTypePipe
   ],
   templateUrl: './form-search-complexes.html',
   styleUrl: './form-search-complexes.css',
@@ -29,11 +31,7 @@ export class FormSearchComplexes implements OnInit {
   dateNow = new Date();
   maxDateValid = new Date();
   form!: FormGroup;
-  fieldTypes = [
-    { label: 'Fútbol 5', value: FieldType.Futbol5 },
-    { label: 'Fútbol 7', value: FieldType.Futbol7 },
-    { label: 'Fútbol 11', value: FieldType.Futbol11 }
-  ]
+  fieldTypeOptions: any[] = [];
   
   allHours = [
     '08:00',
@@ -73,6 +71,11 @@ export class FormSearchComplexes implements OnInit {
       date: [this.dateNow, Validators.required],
       hour: ['', Validators.required],
     });
+
+    this.fieldTypeOptions = Object.values(FieldType).map(val => ({
+      label: val, 
+      value: val  
+    }));
 
     // Inicializar horas con la fecha actual
     this.updateSelectableHours(this.dateNow);
@@ -161,7 +164,6 @@ export class FormSearchComplexes implements OnInit {
     if (this.form.invalid) return;
 
     const { province, locality, fieldType, date, hour } = this.form.value;
-    console.log(this.form.value);
     const dateOnly = date.toISOString().substring(0, 10);
     console.log(dateOnly);
     const queryParams = {
@@ -171,9 +173,6 @@ export class FormSearchComplexes implements OnInit {
       date: dateOnly,
       hour,
     };
-
-    console.log('QUERYPARAMS',queryParams);
-
     this.router.navigate(['search/complexes'], { queryParams });
   }
 }

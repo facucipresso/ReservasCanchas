@@ -14,6 +14,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         // Contexto
         public bool IsAdmin { get; set; }
         public ReservationState ReservationState { get; set; }
+        public ReservationType ReservationType { get; set; }
 
         // Fecha y hora
         public DateOnly Date { get; set; }
@@ -53,8 +54,12 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public string Locality { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
 
+        //Bloqueo
+
+        public string BlockReason { get; set; } = string.Empty;
+
         // Review
 
-        public Boolean hasReservation { get; set; }
+        public bool hasReservation { get; set; }
     }
 }

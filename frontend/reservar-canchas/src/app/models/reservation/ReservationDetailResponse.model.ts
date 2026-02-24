@@ -1,5 +1,6 @@
 import { ReservationState } from "./reservationstate.enum";
 import { PaymentType } from "./paymenttype.enum";
+import { ReservationType } from "./reservationtype.enum";
 
 export interface ReservationDetailResponse{
 
@@ -8,6 +9,7 @@ export interface ReservationDetailResponse{
     // contexto
     isAdmin: boolean;
     reservationState: ReservationState;
+    reservationType: ReservationType;
   
     // fecha y hora
     date: string;
@@ -46,6 +48,9 @@ export interface ReservationDetailResponse{
     number: string;
     locality: string;
     phone: string;
+    
+    // bloqueo
+    blockReason: string;
 
     // review
     hasReservation: boolean;
