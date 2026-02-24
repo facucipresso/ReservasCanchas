@@ -145,7 +145,7 @@ namespace ReservasCanchas.BusinessLogic
                 }
                 else
                 {
-                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date || (r.Date == nextDate && r.StartTime.Hour < 2)) && (r.ReservationState == ReservationState.Completada || r.ReservationState == ReservationState.Aprobada)).ToList();
+                    reservationsForFieldFiltered = reservationsForField.Where(r => (r.Date == date) && (r.ReservationState == ReservationState.Completada || r.ReservationState == ReservationState.Aprobada)).ToList();
                 }
 
                 var reservationsForFieldDTO = new ReservationsForFieldDTO
@@ -164,6 +164,13 @@ namespace ReservasCanchas.BusinessLogic
                         var current = block.StartTime;
                         while (current != block.EndTime)
                         {
+                            if (!withBlocks)
+                            {
+                                if (current.Hour >= 0 && current.Hour < 6 && block.StartTime.Hour > block.EndTime.Hour)
+                                {
+                                    break; 
+                                }
+                            }
                             reservationsForFieldDTO.ReservedHours.Add(current);
                             current = current.AddHours(1);
                         }

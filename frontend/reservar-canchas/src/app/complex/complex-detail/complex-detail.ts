@@ -11,7 +11,7 @@ import { FieldDetailModel } from '../../models/field/field.model';
 import { Field } from '../../services/field';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, ViewportScroller } from '@angular/common';
 import { Complexservices } from '../../services/complexservices';
 import { ComplexServiceModel } from '../../models/complex/complexservice.model';
 import { Dialog } from 'primeng/dialog';
@@ -25,6 +25,9 @@ import { Review } from '../../services/review';
 import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
 import { ComplexState } from '../../models/complex/complexstate.enum';
 import { ReservationType } from '../../models/reservation/reservationtype.enum';
+import { Location } from '@angular/common';
+
+
 type Mode = 'create' | 'edit';
 @Component({
   selector: 'app-complex-detail',
@@ -58,7 +61,7 @@ export class ComplexDetail implements OnInit{
   constructor(private complexService:Complex, private route:ActivatedRoute, private messageService:MessageService,
      private authService: Auth, private router:Router, private fieldService:Field, 
      private servicesComplex:Complexservices, private confirmationService: ConfirmationService,
-     private reservationService:Reservation, private reviewService:Review){}
+     private reservationService:Reservation, private reviewService:Review, private location: Location){}
 
   ngOnInit(){
     this.isLoading = true;
@@ -151,17 +154,16 @@ export class ComplexDetail implements OnInit{
   showDialogComplex() {
     this.visibleEditComplexModal = true;
   }
-// reemplaze el metodo para que no recargue todo como antes
-/*   onDateChange(date:Date){
-    this.router.navigate([], {
+
+  onDateChange(date: Date){
+    this.selectedDate = date;
+    const newUrl = this.router.createUrlTree([], {
       relativeTo: this.route,
       queryParams: { date: date.toISOString().substring(0, 10) },
       queryParamsHandling: 'merge'
-    });
-  } */
-    onDateChange(date: Date){
-      this.selectedDate = date;
-    }
+    }).toString();
+    this.location.replaceState(newUrl);
+  }
 
   onEditField(field:FieldDetailModel){
     this.fieldFormMode = 'edit';

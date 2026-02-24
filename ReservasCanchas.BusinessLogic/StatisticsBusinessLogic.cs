@@ -61,27 +61,48 @@ namespace ReservasCanchas.BusinessLogic
                 totalRevenue = reservationsComplex.Where(r => r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Completada).Sum(r => r.TotalAmount ?? 0);
             }
 
+            var fieldsToProcess = fieldId.HasValue
+                ? complex.Fields.Where(f => f.Id == fieldId.Value).ToList()
+                : complex.Fields.ToList();
             var dayOfWeek = _complexBusinessLogic.ConvertToWeekDay(date);
-            var timeSlotComplex = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == dayOfWeek);
-
-            if (timeSlotComplex.StartTime != timeSlotComplex.EndTime)
+            var yesterday = date.AddDays(-1);
+            var yesterdayDayOfWeek = _complexBusinessLogic.ConvertToWeekDay(yesterday);
+            foreach (var field in fieldsToProcess)
             {
-                var start = timeSlotComplex.StartTime.Hour;
-                var end = timeSlotComplex.EndTime.Hour;
+                var timeSlotToday = field.TimeSlotsField.FirstOrDefault(ts => ts.WeekDay == dayOfWeek);
+                var timeSlotYesterday = field.TimeSlotsField.FirstOrDefault(ts => ts.WeekDay == yesterdayDayOfWeek);
 
-                int hoursOpen = 0;
+                int fieldHoursOpen = 0;
 
-                if (end > start)
+                // 1. Horas que la cancha abre HOY
+                if (timeSlotToday != null && timeSlotToday.StartTime != timeSlotToday.EndTime)
                 {
-                    hoursOpen = end - start;
-                }
-                else
-                {
-                    hoursOpen = (24 - start) + end;
+                    var start = timeSlotToday.StartTime.Hour;
+                    var end = timeSlotToday.EndTime.Hour;
+
+                    if (end > start)
+                    {
+                        fieldHoursOpen += (end - start);
+                    }
+                    else
+                    {
+                        fieldHoursOpen += (24 - start);
+                    }
                 }
 
-                int fieldCount = fieldId.HasValue ? 1 : complex.Fields.Count();
-                totalSlots = hoursOpen * fieldCount;
+                // 2. Horas que la cancha trae desde AYER (madrugada de hoy)
+                if (timeSlotYesterday != null && timeSlotYesterday.StartTime != timeSlotYesterday.EndTime)
+                {
+                    var yStart = timeSlotYesterday.StartTime.Hour;
+                    var yEnd = timeSlotYesterday.EndTime.Hour;
+
+                    if (yEnd < yStart)
+                    {
+                        fieldHoursOpen += yEnd;
+                    }
+                }
+
+                totalSlots += fieldHoursOpen;
             }
 
             ComplexStatsDTO stats = new ComplexStatsDTO

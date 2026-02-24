@@ -54,7 +54,7 @@ export class ComplexReservations implements OnInit {
           const dateNow = new Date().toLocaleDateString('en-CA');
           console.log(dateNow);
           this.reservationService.getReservationsByComplexAndDate(this.complexId,dateNow).subscribe((res) => {
-            this.allReservations = res;
+            this.allReservations = this.sortReservations(res);
           })
           this.refreshStats();
         }
@@ -97,13 +97,27 @@ export class ComplexReservations implements OnInit {
       this.currentFilters = { date: dateOnly, fieldId: filters.fieldId };
       if(filters.fieldId == null){
         this.reservationService.getReservationsByComplexAndDate(this.complexId,dateOnly).subscribe((res) => {
-          this.allReservations = res;
+          this.allReservations = this.sortReservations(res);
         })
       }else{
         this.reservationService.getReservationsByFieldAndDate(filters.fieldId,dateOnly).subscribe((res) => {
-          this.allReservations = res;
+          this.allReservations = this.sortReservations(res);
         })
       }
       this.refreshStats();
+    }
+
+    private sortReservations(data: ReservationForUserResponse[]): ReservationForUserResponse[] {
+      return data.sort((a, b) => {
+    // Primero comparamos la fecha (Descendente)
+        if (a.date < b.date) return 1;
+        if (a.date > b.date) return -1;
+
+    // Si la fecha es igual, comparamos la hora (Descendente)
+        if (a.startTime < b.startTime) return 1;
+        if (a.startTime > b.startTime) return -1;
+
+        return 0;
+      });
     }
 }
