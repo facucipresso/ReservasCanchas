@@ -1,21 +1,23 @@
-import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Auth } from '../services/auth';
 import { MessageService } from 'primeng/api';
+import { inject } from '@angular/core';
 
-export const adminGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(Auth);
   const router = inject(Router);                
   const messageService = inject(MessageService);    
-  if(authService.isLoggedIn() && authService.getUserRole() === 'AdminComplejo'){
+  if(authService.isLoggedIn()){
     return true;
   }
   messageService.add({
     severity: 'error',
     summary: 'Acceso denegado',
-    detail: 'No tenés permisos para acceder a esta funcionalidad',
+    detail: 'Debes iniciar sesión para acceder a esta funcionalidad',
     life: 3000
   });
 
-  return router.navigate(["/"]);
+  router.navigate(["/"]);
+  return false;
+  
 };

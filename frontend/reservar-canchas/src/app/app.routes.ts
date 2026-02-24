@@ -11,6 +11,8 @@ import { ReservationDetail } from './reservation/reservation-detail/reservation-
 import { MyReservations } from './reservation/my-reservations/my-reservations';
 import { ComplexReservations } from './reservation/complex-reservations/complex-reservations';
 import { adminGuard } from './guards/admin-guard';
+import { authGuard } from './guards/auth-guard';
+import { Notfound } from './not-found/notfound/notfound';
 
 export const routes: Routes = [
   {
@@ -43,26 +45,31 @@ export const routes: Routes = [
   },
   {
     path: 'register-complex',
+    canActivate: [authGuard],
     component:CreatecomplexForm
   },
   {
     path: 'reservation/checkout/:id',
+    canActivate: [authGuard],
     component: ReservationCheckout
   },
   {
     path: 'reservations',
+    canActivate: [authGuard],
     component: MyReservations
   },
   {
     path: 'profile',
+    canActivate: [authGuard],
     component: Profile
   },
   {
-    path: 'buzon',
+    path: 'notifications',
+    canActivate: [authGuard],
     component: Buzon
   },
   {
     path: '**',
-    redirectTo: ''
+    component: Notfound
   }
 ];
