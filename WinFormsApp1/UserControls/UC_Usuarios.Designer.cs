@@ -56,7 +56,7 @@
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dgvUsuarios.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvUsuarios.ColumnHeadersHeight = 45;
+            dgvUsuarios.ColumnHeadersHeight = 40;
             dgvUsuarios.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvUsuarios.Columns.AddRange(new DataGridViewColumn[] { ColumnAcciones });
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;

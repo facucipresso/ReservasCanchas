@@ -41,6 +41,8 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges11 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges12 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             panel1 = new Panel();
+            panelBienvenido = new Panel();
+            labelBienvenido = new Label();
             pictureBox1 = new PictureBox();
             panel2 = new Panel();
             buttomCerrarSesion1 = new Guna.UI2.WinForms.Guna2Button();
@@ -50,17 +52,15 @@
             buttomComplejos1 = new Guna.UI2.WinForms.Guna2Button();
             buttomDasboard1 = new Guna.UI2.WinForms.Guna2Button();
             panelContainer = new Panel();
-            panelBienvenido = new Panel();
-            labelBienvenido = new Label();
             panel1.SuspendLayout();
+            panelBienvenido.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel2.SuspendLayout();
-            panelBienvenido.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
             // 
-            panel1.BackColor = Color.MediumBlue;
+            panel1.BackColor = Color.RoyalBlue;
             panel1.Controls.Add(panelBienvenido);
             panel1.Controls.Add(pictureBox1);
             panel1.Dock = DockStyle.Top;
@@ -68,6 +68,26 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(1163, 63);
             panel1.TabIndex = 0;
+            // 
+            // panelBienvenido
+            // 
+            panelBienvenido.Controls.Add(labelBienvenido);
+            panelBienvenido.Dock = DockStyle.Right;
+            panelBienvenido.Location = new Point(877, 0);
+            panelBienvenido.Name = "panelBienvenido";
+            panelBienvenido.Size = new Size(286, 63);
+            panelBienvenido.TabIndex = 1;
+            // 
+            // labelBienvenido
+            // 
+            labelBienvenido.AutoSize = true;
+            labelBienvenido.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelBienvenido.Location = new Point(4, 9);
+            labelBienvenido.Name = "labelBienvenido";
+            labelBienvenido.Size = new Size(282, 38);
+            labelBienvenido.TabIndex = 0;
+            labelBienvenido.Text = "Bienvenido Facundo";
+            labelBienvenido.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // pictureBox1
             // 
@@ -253,26 +273,6 @@
             panelContainer.Size = new Size(1163, 594);
             panelContainer.TabIndex = 2;
             // 
-            // panelBienvenido
-            // 
-            panelBienvenido.Controls.Add(labelBienvenido);
-            panelBienvenido.Dock = DockStyle.Right;
-            panelBienvenido.Location = new Point(877, 0);
-            panelBienvenido.Name = "panelBienvenido";
-            panelBienvenido.Size = new Size(286, 63);
-            panelBienvenido.TabIndex = 1;
-            // 
-            // labelBienvenido
-            // 
-            labelBienvenido.AutoSize = true;
-            labelBienvenido.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            labelBienvenido.Location = new Point(4, 9);
-            labelBienvenido.Name = "labelBienvenido";
-            labelBienvenido.Size = new Size(282, 38);
-            labelBienvenido.TabIndex = 0;
-            labelBienvenido.Text = "Bienvenido Facundo";
-            labelBienvenido.TextAlign = ContentAlignment.MiddleLeft;
-            // 
             // FormPrincipal
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -285,10 +285,10 @@
             Text = "FormPrincipal";
             WindowState = FormWindowState.Maximized;
             panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            panel2.ResumeLayout(false);
             panelBienvenido.ResumeLayout(false);
             panelBienvenido.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            panel2.ResumeLayout(false);
             ResumeLayout(false);
         }
 

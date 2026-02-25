@@ -20,6 +20,6 @@ namespace WinFormsApp1.Models.Complex
         public string Number { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
         public string ComplexState { get; set; } = string.Empty;
-        //public ComplexState State { get; set; }
+        
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -280,29 +281,6 @@ namespace WinFormsApp1.UserControls
             }
         }
 
-        /*
-        private void AdjustDashboardCardsWidth()
-        {
-            int cardsCount = flpCards.Controls.Count;
-            if (cardsCount == 0) return;
-
-            int totalPadding =
-                flpCards.Padding.Left +
-                flpCards.Padding.Right +
-                (flpCards.Margin.Left + flpCards.Margin.Right);
-
-            int availableWidth = flpCards.ClientSize.Width - totalPadding;
-
-            int cardWidth = (availableWidth / cardsCount) - 10; // margen entre cards
-
-            foreach (Control card in flpCards.Controls)
-            {
-                card.Width = cardWidth;
-                card.Height = flpCards.ClientSize.Height - 10;
-            }
-        }
-        */
-
         private async void UC_Dashboard_Load(object sender, EventArgs e)
         {
             try
@@ -380,3 +358,4 @@ namespace WinFormsApp1.UserControls
 
     }
 }
+

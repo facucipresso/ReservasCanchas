@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinFormsApp1.Forms.Complex;
@@ -15,17 +11,23 @@ namespace WinFormsApp1.UserControls
 {
     public partial class UC_Complejos : UserControl
     {
-
         private readonly ComplexService _complexService;
+        private List<ComplexSuperAdminResponseDTO> _allComplexes = new();
+
         public UC_Complejos()
         {
             InitializeComponent();
+
             _complexService = new ComplexService();
 
             this.Load += UC_Complejos_Load;
 
-            //LINEA AGREGADA RECIEN 19/1
+            comboEstado.SelectedIndexChanged += FiltrosChanged;
+            comboProvincia.SelectedIndexChanged += FiltrosChanged;
+
             flowLayoutPanelComplexes.SizeChanged += FlowLayoutPanelComplexes_SizeChanged;
+
+            CargarFiltros();
         }
 
         private async void UC_Complejos_Load(object sender, EventArgs e)
@@ -37,30 +39,110 @@ namespace WinFormsApp1.UserControls
             catch (Exception ex)
             {
                 DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
-                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void CargarFiltros()
+        {
+            // Estados
+            comboEstado.Items.Add("Todos");
+            comboEstado.Items.Add("Pendiente");
+            comboEstado.Items.Add("Habilitado");
+            comboEstado.Items.Add("Deshabilitado");
+            comboEstado.Items.Add("Bloqueado");
+            comboEstado.Items.Add("Rechazado");
+            comboEstado.SelectedIndex = 0;
+
+            // Provincias (lista fija Argentina)
+            comboProvincia.Items.Add("Todas");
+
+            string[] provincias =
+            {
+                "Buenos Aires","Ciudad Autónoma de Buenos Aires","Catamarca","Chaco","Chubut","Córdoba",
+                "Corrientes","Entre Ríos","Formosa","Jujuy","La Pampa",
+                "La Rioja","Mendoza","Misiones","Neuquén","Río Negro",
+                "Salta","San Juan","San Luis","Santa Cruz","Santa Fe",
+                "Santiago del Estero","Tierra del Fuego, Antártida e Islas del Atlántico Sur","Tucumán"
+            };
+
+            comboProvincia.Items.AddRange(provincias);
+            comboProvincia.SelectedIndex = 0;
         }
 
         private async Task LoadComplexesAsync()
         {
-            //no entiendo que hace aca
             flowLayoutPanelComplexes.Controls.Clear();
 
-            var complexes = await _complexService.GetAllComplexesAsync(); // tu servicio
+            var complexes = await _complexService.GetAllComplexesAsync();
 
             if (complexes == null || complexes.Count == 0)
             {
-                // no me parece profesional poner un label, capaz un menssage box o algo mas profesional
-                var lbl = new Label { Text = "No hay complejos para mostrar.", AutoSize = true, Padding = new Padding(10) };
+                var lbl = new Label
+                {
+                    Text = "No hay complejos para mostrar.",
+                    AutoSize = true,
+                    Padding = new Padding(10)
+                };
+
                 flowLayoutPanelComplexes.Controls.Add(lbl);
                 return;
             }
 
-            foreach (var dto in complexes)
+            _allComplexes = complexes;
+
+            MostrarCards(_allComplexes);
+        }
+
+        private void FiltrosChanged(object? sender, EventArgs e)
+        {
+            AplicarFiltros();
+        }
+
+        private void AplicarFiltros()
+        {
+            if (_allComplexes == null || !_allComplexes.Any())
+                return;
+
+            var filtrados = _allComplexes.AsEnumerable();
+
+            string estadoSeleccionado = comboEstado.SelectedItem?.ToString() ?? "Todos";
+            string provinciaSeleccionada = comboProvincia.SelectedItem?.ToString() ?? "Todas";
+
+            if (estadoSeleccionado != "Todos")
+            {
+                filtrados = filtrados.Where(c => c.ComplexState == estadoSeleccionado);
+            }
+
+            if (provinciaSeleccionada != "Todas")
+            {
+                filtrados = filtrados.Where(c => c.Province == provinciaSeleccionada);
+            }
+
+            MostrarCards(filtrados.ToList());
+        }
+
+        private void MostrarCards(List<ComplexSuperAdminResponseDTO> lista)
+        {
+            flowLayoutPanelComplexes.Controls.Clear();
+
+            if (!lista.Any())
+            {
+                var lbl = new Label
+                {
+                    Text = "No hay complejos con los filtros seleccionados.",
+                    AutoSize = true,
+                    Padding = new Padding(10)
+                };
+
+                flowLayoutPanelComplexes.Controls.Add(lbl);
+                return;
+            }
+
+            foreach (var dto in lista)
             {
                 var card = new ComplexCard();
-                card.SetData(dto); // tu método para llenar los labels
-                card.EnterClicked += ComplexCard_EnterClicked; // se dispara cuando hacen click en "Entrar"
+                card.SetData(dto);
+                card.EnterClicked += ComplexCard_EnterClicked;
                 flowLayoutPanelComplexes.Controls.Add(card);
             }
 
@@ -69,9 +151,10 @@ namespace WinFormsApp1.UserControls
 
         private async void ComplexCard_EnterClicked(int? complexId, string? nameOwner, string? lastNameOwner)
         {
-            if (complexId == null || nameOwner == null || lastNameOwner == null) return;
+            if (complexId == null || nameOwner == null || lastNameOwner == null)
+                return;
 
-            using (var formComplexWorkspace = new FormComplexWorkspace(complexId.Value, nameOwner, lastNameOwner))//aca tambien nombre y apellido
+            using (var formComplexWorkspace = new FormComplexWorkspace(complexId.Value, nameOwner, lastNameOwner))
             {
                 formComplexWorkspace.ShowDialog();
 
@@ -80,7 +163,6 @@ namespace WinFormsApp1.UserControls
                     await LoadComplexesAsync();
                 }
             }
-            
         }
 
         private void FlowLayoutPanelComplexes_SizeChanged(object? sender, EventArgs e)
@@ -93,15 +175,13 @@ namespace WinFormsApp1.UserControls
             if (flowLayoutPanelComplexes.Controls.Count == 0)
                 return;
 
-            int cardMinWidth = 350; // el ancho base
-            int spacing = 20;       // margen entre cards
+            int cardMinWidth = 350;
+            int spacing = 20;
 
             int panelWidth = flowLayoutPanelComplexes.ClientSize.Width;
 
-            // cuantas cards entran por fila
             int cardsPerRow = Math.Max(1, panelWidth / (cardMinWidth + spacing));
 
-            // nuevo ancho para que ocupen todo el espacio
             int newWidth = (panelWidth / cardsPerRow) - spacing;
 
             foreach (Control ctrl in flowLayoutPanelComplexes.Controls)
@@ -112,6 +192,5 @@ namespace WinFormsApp1.UserControls
                 }
             }
         }
-
     }
 }

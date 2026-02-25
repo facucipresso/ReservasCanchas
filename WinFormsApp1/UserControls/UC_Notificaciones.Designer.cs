@@ -55,7 +55,7 @@
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dgvNotificaciones.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvNotificaciones.ColumnHeadersHeight = 45;
+            dgvNotificaciones.ColumnHeadersHeight = 40;
             dgvNotificaciones.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvNotificaciones.Columns.AddRange(new DataGridViewColumn[] { ColumnButtonMarkAsReaded, ColumnIngresarNotificacion });
             dgvNotificaciones.Dock = DockStyle.Fill;
