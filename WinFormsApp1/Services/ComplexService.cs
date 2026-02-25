@@ -31,8 +31,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo complejos: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -60,25 +58,9 @@ namespace WinFormsApp1.Services
 
                 if((int)response.StatusCode == 400)
                 {
-                    /*
-                    MessageBox.Show(
-                        $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                        "ERROR DEBUG",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                    );
-                    */
                 }
                 else
                 {
-                    /*
-                    MessageBox.Show(
-                        $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                        "ERROR DEBUG",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                    );
-                    */
                     throw new Exception($"Error cambiando el estado del complejo: {body}");
                 }
 
@@ -103,8 +85,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo el detalle del complejo: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -129,8 +109,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo canchas: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -154,8 +132,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo las reservas de la cancha: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -179,8 +155,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo las reservas del complejo: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -205,8 +179,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo las reseñas del complejo: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -230,21 +202,11 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error eliminando la reseña: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
                 throw new Exception(message);
             }
-
-            /* ESTO CREO QUE NO VA, PORQUE SI SALE TODO BIEN RETORNA 'NO CONTENT'
-            var respuesta = await response.Content.ReadFromJsonAsync<List<ReviewResponseDTO>>();
-            if (respuesta == null)
-            {
-                throw new Exception("Respuesta invalida de la api al eliminar la reseña");
-            }
-            */
 
         }
 

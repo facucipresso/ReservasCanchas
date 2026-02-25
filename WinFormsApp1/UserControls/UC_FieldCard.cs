@@ -73,7 +73,7 @@ namespace WinFormsApp1.UserControls
 
         private void AplicarBordesRedondeados()
         {
-            int radio = 20; // podés probar 15, 20 o 25
+            int radio = 20; 
 
             Rectangle rect = new Rectangle(0, 0, this.Width, this.Height);
 

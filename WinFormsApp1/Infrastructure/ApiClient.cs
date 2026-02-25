@@ -8,7 +8,7 @@ namespace WinFormsApp1.Infrastructure
 {
     public class ApiClient
     {
-        // HttpClient estático para reusar conexiones (mejor performance)
+        // HttpClient estático para reusar conexion
         public static readonly HttpClient Http;
 
         static ApiClient()
@@ -20,7 +20,7 @@ namespace WinFormsApp1.Infrastructure
             };
         }
 
-        // Método helper para (re)configurar el bearer token VER ESTO
+        // Método helper para reconfigurar el bearer token VER ESTO
         public static void SetBearerToken(string token)
         {
             
@@ -28,22 +28,7 @@ namespace WinFormsApp1.Infrastructure
                 string.IsNullOrWhiteSpace(token)
                     ? null
                     : new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            
 
-
-            //La opcion de arriba antepone 'Bearer' al token y esta version no, ver cual es la que anda
-            /*
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                Http.DefaultRequestHeaders.Authorization = null;
-            }
-            else
-            {
-                // Envía SOLO el token, sin "Bearer"
-                Http.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue(token);
-            }
-            */
         }
     }
 }

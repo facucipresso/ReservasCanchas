@@ -35,28 +35,14 @@ namespace WinFormsApp1.Forms
             {
                 using (var form = new FormComplex())
                 {
-                    form.ShowDialog(); // o Show() según prefieras
+                    form.ShowDialog(); 
                 }
             }
             catch (Exception ex)
             {
                 DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
-                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            /*
-            try
-            {
-                var complexes = await _complexService.GetAllComplexesAsync();
 
-                MessageBox.Show("Los complejos llegaron bien!!!");
-                // Ver como hago para mostrarlo en un data grid view
-                // dgvComplejos.DataSource = complejos;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            */
         }
 
         private async  void button1_Click(object sender, EventArgs e)
@@ -70,16 +56,10 @@ namespace WinFormsApp1.Forms
 
                 FormService2 formService2 = new FormService2(services);
                 formService2.ShowDialog();
-                //FormServices formServices = new FormServices(services);
-                //formServices.ShowDialog();
-
-                // Ver como hago para mostrarlo en un data grid view
-                // dgvComplejos.DataSource = complejos;
             }
             catch (Exception ex)
             {
                 DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
-                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

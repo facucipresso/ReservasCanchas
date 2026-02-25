@@ -27,7 +27,6 @@ namespace WinFormsApp1.Forms.Service
 
         private async void buttonGuardarCambios_Click(object sender, EventArgs e)
         {
-            //var newDescription = textBoxUpdateDescriptionService.Text;
             var nDescription = new ServiceUpdateDTO
             {
                 ServiceDescription = textBoxUpdateDescriptionService.Text,

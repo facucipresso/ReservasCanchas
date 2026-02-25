@@ -53,7 +53,7 @@ namespace WinFormsApp1.UserControls
             comboEstado.Items.Add("Rechazado");
             comboEstado.SelectedIndex = 0;
 
-            // Provincias (lista fija Argentina)
+            // Provin
             comboProvincia.Items.Add("Todas");
 
             string[] provincias =

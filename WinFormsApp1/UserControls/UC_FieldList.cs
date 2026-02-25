@@ -49,7 +49,6 @@ namespace WinFormsApp1.UserControls
             catch (Exception ex)
             {
                 DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
-                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -86,7 +85,7 @@ namespace WinFormsApp1.UserControls
             if (flowLayoutPanelFields.Controls.Count == 0)
                 return;
 
-            int cardWidth = 354; // ancho fijo actual de tu UC_FieldCard
+            int cardWidth = 354; 
             int availableWidth = flowLayoutPanelFields.ClientSize.Width;
 
             // Cuántas cards entran por fila
@@ -113,13 +112,11 @@ namespace WinFormsApp1.UserControls
             VerReservasCanchaClicked?.Invoke(this, fieldId);
         }
 
-        //esto se agrega para el label
         private void ShowEmptyState()
         {
             flowLayoutPanelFields.Visible = false;
             labelFieldsComplexEmpty.Visible = true;
         }
-        //esto se agrega para el label
         private void ShowGrid()
         {
             flowLayoutPanelFields.Visible = true;

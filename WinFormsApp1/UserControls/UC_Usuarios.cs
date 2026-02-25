@@ -65,7 +65,6 @@ namespace WinFormsApp1.UserControls
             catch (Exception ex)
             {
                 DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
-                //MessageBox.Show("Error ocurrido cargando los usuarios por: " + ex.Message);
             }
         }
 
@@ -91,8 +90,6 @@ namespace WinFormsApp1.UserControls
 
                 if (user.UserState == UserState.Bloqueado)
                 {
-                    // opcional: tooltip o mensaje suave
-                    // MessageBox.Show("El usuario ya se encuentra bloqueado");
 
                     DialogResult result1 = MessageBox.Show($"¿Esta seguro que quiere desbloquear al usuario?",
                                     "Confirmar", MessageBoxButtons.YesNo);
@@ -123,7 +120,6 @@ namespace WinFormsApp1.UserControls
                 }
             }
 
-            // VER COMO HACER PARA QUE UNA VEZ BLOQUEADO EL USUARIO NO PUEDA BLOQUEARLO DE NUEVO YA ESTANDO BLOQUEADO
         }
 
         private void dgvUsuarios_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)

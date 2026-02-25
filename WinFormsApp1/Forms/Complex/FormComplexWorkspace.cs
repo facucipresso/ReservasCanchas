@@ -27,8 +27,6 @@ namespace WinFormsApp1.Forms.Complex
             _nameOwner = nameOwnwer;
             _lastNameOwner = lastNameOwnwer;
 
-            //funcion que tengo que hacer yo, pero ya lo configure desde el diseñador
-            //ConfigureForm();
             LoadInitialView();
         }
 
@@ -46,7 +44,6 @@ namespace WinFormsApp1.Forms.Complex
             ucDetail.CerrarClicked += OnCerrarUC_Detail;
             
 
-            // después vamos a enganchar eventos acá
             LoadUserControl(ucDetail);
         }
 
@@ -63,7 +60,6 @@ namespace WinFormsApp1.Forms.Complex
         {
             var ucCanchas = new UC_FieldList(_complexId);
 
-            //ucCanchas.VerReservasCanchaClicked += OnVerReservasCancha;
             ucCanchas.VerReservasCanchaClicked += UcCanchas_VerReservasCanchaClicked;
             ucCanchas.CerrarClicked += UcCanchas_CerrarClicked;
             ucCanchas.VolverClicked += UcCanchas_VolverClicked;
@@ -72,7 +68,6 @@ namespace WinFormsApp1.Forms.Complex
 
         private void UcCanchas_VolverClicked()
         {
-            // aca tengo que abrir el complex detail
             LoadInitialView();
         }
 
@@ -115,13 +110,6 @@ namespace WinFormsApp1.Forms.Complex
         {
             this.Close();
         }
-        /*
-        //esto para cuando tenga creado el uc de canchas
-        private void OnVerReservasCancha(int canchaId)
-        {
-            var ucReservas = new UC_ReservasCancha(canchaId);
-            LoadUserControl(ucReservas);
-        }
-        */
+
     }
 }

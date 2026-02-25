@@ -26,7 +26,6 @@ namespace WinFormsApp1.Forms
             BackColor = Color.White;
 
             ApplyRoundedCorners();
-            //MakeIconCircular();
         }
 
         private void btnAccept_Click(object sender, EventArgs e)

@@ -29,7 +29,6 @@ namespace WinFormsApp1.UserControls
             _userService = new UserService();
             this.Load += UC_Notifications_Load;
 
-            // dgvUsuarios.CellFormatting += dgvUsuarios_CellFormatting;
             dgvNotificaciones.CellFormatting += dgvNotificaciones_CellFormatting;
         }
 
@@ -72,18 +71,17 @@ namespace WinFormsApp1.UserControls
             catch (Exception ex)
             {
                 DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
-                //MessageBox.Show("Error ocurrido cargando las notificaciones por: " + ex.Message);
             }
         }
 
         private async void dgvNotificaciones_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // 1. Verificar que el clic no sea en el encabezado (fila -1)
+            // Verificar que el clic no sea en el encabezado (fila -1)
             if (e.RowIndex < 0) return;
 
 
 
-            // 2. Verificar si el clic fue en la columna de la imagen por su Nombre o Índice
+            // Verificar si el clic fue en la columna de la imagen por su Nombre o Índice
             if (dgvNotificaciones.Columns[e.ColumnIndex].Name == "ColumnButtonMarkAsReaded")
             {
                 var idNotification = Convert.ToInt32(dgvNotificaciones.Rows[e.RowIndex].Cells["Id"].Value);
@@ -92,9 +90,7 @@ namespace WinFormsApp1.UserControls
                 var notificacion = dgvNotificaciones.Rows[e.RowIndex].DataBoundItem as NotificacionResponseDTO;
                 if (notificacion.IsRead == true)
                 {
-                    // opcional: tooltip o mensaje suave
                     Notifier.Show(this.FindForm(), "La notificacion ya esta marcada como leida", NotificationType.Warning);
-                    // MessageBox.Show("La notificacion ya esta marcada como leida");
                     return;
                 }
                 
@@ -105,16 +101,13 @@ namespace WinFormsApp1.UserControls
                 if (result == DialogResult.Yes)
                 {
                     // Ejecuto eliminación
-                    // ME DA ERROR NO SE PORQUE
                     await _notificationService.MarkAsReadAsync(idNotification);
 
-                    // refresco el dgv
-                    //await LoadNotificationsAsync();
 
                     // ACTUALIZO EL OBJETO EN MEMORIA
                     notificacion.IsRead = true;
 
-                    // FUERZO REDIBUJADO
+                    // FUERZO RECARGA  
                     dgvNotificaciones.Refresh();
                 }
             }
@@ -128,7 +121,7 @@ namespace WinFormsApp1.UserControls
 
                 var ownerComplex = await _userService.GetComplxOwnerByIdAsync(complexId);
 
-                IngresarComplejoClicked?.Invoke(complexId, ownerComplex.Name, ownerComplex.LastName); //aca le tengo que agregar nombre y apellido
+                IngresarComplejoClicked?.Invoke(complexId, ownerComplex.Name, ownerComplex.LastName);
 
                 // si todavía no está leída la marco como leída REAL
                 if (!notificacion.IsRead)
@@ -172,7 +165,6 @@ namespace WinFormsApp1.UserControls
                 }
                 else
                 {
-                    //ACA VA LA IMAGEN QUE TENGO QUE DESCARGAR MAÑANA 19/1 DEL MENSAJE https://es.pngtree.com/freepng/green-message-bubble-with-ellipsis-illustration-vector_23695158.html
                     e.Value = Properties.Resources.icono_mensaje_noLeido;
                 }
             }

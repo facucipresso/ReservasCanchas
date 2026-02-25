@@ -53,7 +53,6 @@ namespace WinFormsApp1.Forms
         {
             UC_Servisios uc = new UC_Servisios();
 
-            //ESTO LO AGREGO EN LA MAXIMIZACION
             uc.Dock = DockStyle.Fill;
             addUserControl(uc);
         }
@@ -65,9 +64,9 @@ namespace WinFormsApp1.Forms
             addUserControl(uc_Notificaciones);
         }
 
-        private void AbrirComplejoDesdeNotificacion(int complexId, string nameOwner, string lastNameOwner) //aca que tome tambien nombre y apellido del dueño
+        private void AbrirComplejoDesdeNotificacion(int complexId, string nameOwner, string lastNameOwner) 
         {
-            var form = new FormComplexWorkspace(complexId, nameOwner, lastNameOwner); //que tome nombre y apellido del dueño
+            var form = new FormComplexWorkspace(complexId, nameOwner, lastNameOwner); 
 
             form.StartPosition = FormStartPosition.Manual;
             form.Location = new Point(
@@ -110,7 +109,7 @@ namespace WinFormsApp1.Forms
             FormLogin login = new FormLogin();
             login.Show();
 
-            // cierro este formulario
+            // cierro  
             this.Close();
 
         }

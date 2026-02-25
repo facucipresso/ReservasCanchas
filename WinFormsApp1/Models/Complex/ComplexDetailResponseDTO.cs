@@ -24,7 +24,6 @@ namespace WinFormsApp1.Models.Complex
         public int AditionalIllumination { get; set; }
         public double? AverageRating { get; set; }
         public string CBU { get; set; }
-        //toma el estado como un string, no como un enum
         public string ComplexState { get; set; }
         public ICollection<ServiceResponseDTO> Services { get; set; } = new List<ServiceResponseDTO>();
         public ICollection<TimeSlotComplexResponseDTO> TimeSlots { get; set; } = new List<TimeSlotComplexResponseDTO>();

@@ -12,7 +12,6 @@ namespace WinFormsApp1
         public FormLogin()
         {
             InitializeComponent();
-            //this.WindowState = FormWindowState.Maximized;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -27,33 +26,20 @@ namespace WinFormsApp1
         {
             try
             {
-                /*
-                var user = new LoginRequest
-                {
-                    UserName = labelUserName.Text,
-                    Password = labelPassword.Text,
-                };*/
 
                 var response = await _authService.LoginAsync(textBoxUserName.Text, textBoxPassword.Text);
 
                 if (response != null)
                 {
-                    // Guardamos token en Session
+                    // Guardo token en Session
                     Session.SetSession(response);
 
                     labelMsjBienvenida.Text = "Hola " + response.UserName + " Bienvenido!!";
 
-                    // Comento estas dos lineas para probar la otra pagina principal
-                    //FormDashboard formDashboard = new FormDashboard(response.UserName);
-                    //formDashboard.Show(); // ShowDialog
-
-                    //estas dos lineas son del nuevo formulario para la pagina principal
                     FormPrincipal formPrincipal = new FormPrincipal(response.UserName);
                     formPrincipal.Show();
 
-                    //esto ya estaba
                     this.Hide();
-                    //this.Close();
 
                 }
                 else

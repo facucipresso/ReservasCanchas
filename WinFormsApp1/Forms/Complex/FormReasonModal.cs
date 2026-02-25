@@ -31,7 +31,6 @@ namespace WinFormsApp1.Forms.Complex
             if (string.IsNullOrWhiteSpace(textBoxReasonModal.Text))
             {
                 Notifier.Show(this.FindForm(), "Debe ingresar una razon", NotificationType.Warning);
-                //MessageBox.Show("Debe ingresar una razón.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

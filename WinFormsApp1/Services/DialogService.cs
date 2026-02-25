@@ -16,7 +16,6 @@ namespace WinFormsApp1.Services
             }
             else
             {
-                // Fallback inteligente
                 modal.StartPosition = FormStartPosition.Manual;
 
                 var screen = Screen.FromPoint(Cursor.Position);

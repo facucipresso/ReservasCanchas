@@ -8,7 +8,6 @@ namespace WinFormsApp1.Infrastructure
 {
     public class AppConfig
     {
-        // Ajustarlo a la url de mi api
         public const string ApiBaseUrl = "https://localhost:7004";
 
     }

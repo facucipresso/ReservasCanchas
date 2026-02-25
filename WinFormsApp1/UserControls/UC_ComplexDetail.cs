@@ -26,12 +26,10 @@ namespace WinFormsApp1.UserControls
         private string _lastNameOwnwer;
         private BindingList<ServiceResponseDTO> _services;
 
-        // PARA AGREGAR LOS EVENTOS
         public event Action VerCanchasClicked;
         public event Action VerReservasClicked;
         public event Action VerReseniasClicked;
 
-        //public event Action VolverClicked;
         public event Action CerrarClicked;
 
         public event Action? ComplexUpdated;
@@ -51,7 +49,6 @@ namespace WinFormsApp1.UserControls
 
             this.Load += UC_ComplexDetail_Load;
 
-            // PARA AGREGAR LOS EVENTOS
             buttonVerCanchas.Click += (s, e) => VerCanchasClicked?.Invoke();
             buttonVerReservas.Click += (s, e) => VerReservasClicked?.Invoke();
             buttonVerResenias.Click += (s, e) => VerReseniasClicked?.Invoke();
@@ -68,7 +65,6 @@ namespace WinFormsApp1.UserControls
             catch (Exception ex)
             {
                 DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
-                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -79,7 +75,6 @@ namespace WinFormsApp1.UserControls
             if (complex == null)
             {
                 Notifier.Show(this.FindForm(), "No se pudo mostrar el complejo", NotificationType.Error);
-                //MessageBox.Show("No se pudo mostrar el complejo");
                 return;
             }
 
@@ -92,12 +87,7 @@ namespace WinFormsApp1.UserControls
 
         private void LoadTextData(ComplexDetailResponseDTO complex)
         {
-            /*
-            MessageBox.Show(
-                $"LoadTextData ejecutado\nOwner: '{_nameOwnwer}' '{_lastNameOwnwer}'",
-                "DEBUG"
-            );
-            */
+
 
             labelNombreComplejoDetail.Text = complex.Name;
             labelDescripcionComplejoDetail.Text = complex.Description;
@@ -177,8 +167,6 @@ namespace WinFormsApp1.UserControls
                 case "Rechazado":
                     buttonCambioDeEstado1.Hide();
                     buttonCambioDeEstado2.Hide();
-                    //buttonCambioDeEstado2.Text = "Bloquear";
-                    //buttonCambioDeEstado2.BackColor = Color.Red;
                     break;
 
                 case "Deshabilitado":
@@ -194,13 +182,6 @@ namespace WinFormsApp1.UserControls
                     buttonCambioDeEstado2.Text = "Habilitar";
                     buttonCambioDeEstado2.BackColor = Color.Green;
                     break;
-                 /* SI FUE RECHAZADO EL ADMIN DEL COMPLEJO HACE LAS REFORMAS Y LO VUELVE A PONER EN PENDIENTE
-                 case "Rechazado":
-                    buttonCambioDeEstado1.Hide();
-                    buttonCambioDeEstado2.Show();
-                    buttonCambioDeEstado2.Text = "Habilitar";
-                    break;
-                 */
             }
 
             labelEstadoComplejoDetail.ForeColor = state switch
@@ -226,12 +207,9 @@ namespace WinFormsApp1.UserControls
                 case "Deshabilitar":
                     newState.ComplexState = ComplexState.Deshabilitado;
                     break;
-                default:
-                    //newState.State = ComplexState.Deshabilitado;
+                default:                    
                     break;
-            }
-            // UNA VEZ SALIDO DEL SWICH SE LLAMA AL SERVICIO CON EL NUEVO ESTADO
-            
+            }            
             
             await _complexService.ChangeStateComplexAsync(_complexId, newState);
             
@@ -253,7 +231,6 @@ namespace WinFormsApp1.UserControls
                     successMessage = "Complejo habilitado correctamente";
                     break;
                 case "Rechazar":
-                    //newState.State = ComplexState.Rechazado;
                     action = buttonCambioDeEstado2.Text;
 
                     using (var modal = new FormReasonModal(action))
@@ -264,14 +241,13 @@ namespace WinFormsApp1.UserControls
                         }
                         else
                         {
-                            return; // Si cancela, no hacemos nada
+                            return; 
                         }
                     }
                     newState.ComplexState = ComplexState.Rechazado;
                     successMessage = "Complejo rechazado correctamente";
                     break;
                 case "Bloquear":
-                    //newState.State = ComplexState.Bloqueado;
                     action = buttonCambioDeEstado2.Text;
 
                     using (var modal = new FormReasonModal(action))
@@ -282,14 +258,13 @@ namespace WinFormsApp1.UserControls
                         }
                         else
                         {
-                            return; // Si cancela, no hacemos nada
+                            return; 
                         }
                     }
                     newState.ComplexState = ComplexState.Bloqueado;
                     successMessage = "Complejo bloqueado correctamente";
                     break;
                 default:
-                    //newState.State = ComplexState.Rechazado;
                     break;
             }
 
@@ -301,7 +276,6 @@ namespace WinFormsApp1.UserControls
             ComplexUpdated?.Invoke();
 
             Notifier.Show(this.FindForm(), successMessage, NotificationType.Success);
-            //DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, "Ocurrió un error inesperado.");
 
         }
     }

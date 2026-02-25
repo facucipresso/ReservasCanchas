@@ -35,8 +35,6 @@ namespace WinFormsApp1.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    //var error = await response.Content.ReadAsStringAsync();
-                    //throw new InvalidOperationException($"Error en login: {response.StatusCode} - {error}");
 
                     var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                     var message = problem?.Detail ?? "Error desconocido";

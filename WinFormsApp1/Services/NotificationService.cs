@@ -28,8 +28,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo notificaciones: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -53,8 +51,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error marcando como leida la notificacion: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";

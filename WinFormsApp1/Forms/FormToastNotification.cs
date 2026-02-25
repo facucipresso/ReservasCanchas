@@ -46,7 +46,6 @@ namespace WinFormsApp1.Forms
 
         private void PositionForm()
         {
-            //var screen = Screen.PrimaryScreen.WorkingArea;
             var screen = Screen.FromControl(_owner);
             var workingArea = screen.WorkingArea;
 

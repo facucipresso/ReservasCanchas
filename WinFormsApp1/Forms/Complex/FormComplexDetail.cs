@@ -34,7 +34,6 @@ namespace WinFormsApp1.Forms.Complex
 
             this.Load += ComplejosDetail_Load;
 
-            //toda la vaina de la imagen
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
 
         }
@@ -48,34 +47,20 @@ namespace WinFormsApp1.Forms.Complex
             catch (Exception ex)
             {
                 DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
-                //MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private async Task LoadComplexDetailAsync(int id)
         {
-            //no entiendo que hace aca
-            //flowLayoutPanelComplexes.Controls.Clear();
 
-            var complexDetail = await _complexService.GetComplexDetailByIdAsync(id); // tu servicio
-
+            var complexDetail = await _complexService.GetComplexDetailByIdAsync(id); 
             if (complexDetail == null)
             {
-                // no me parece profesional poner un label, capaz un menssage box o algo mas profesional
                 var lbl = new Label { Text = "Devolvio null la busqueda del detalle del complejo.", AutoSize = true, Padding = new Padding(10) };
-                //flowLayoutPanelComplexes.Controls.Add(lbl);
                 return;
             }
 
-            //metodo para cargar la imagen
             await LoadComplexImageAsync(complexDetail.ImagePath);
-
-
-            //card.SetData(complexDetail); // tu método para llenar los labels
-            //card.EnterClicked += ComplexCard_EnterClicked; // se dispara cuando hacen click en "Entrar"
-            //flowLayoutPanelComplexes.Controls.Add(card);
-
-            //como hago para darle forma a la card con los datso que recibi
 
 
 
@@ -145,7 +130,7 @@ namespace WinFormsApp1.Forms.Complex
                     buttonCambioEstado2.Hide();
 
                     break;
-                default: // Si ningún caso coincide
+                default: 
                     labelEstadoComplejoDetail.ForeColor = Color.Brown;
 
                     buttonCambioEstado1.Show();
@@ -155,10 +140,6 @@ namespace WinFormsApp1.Forms.Complex
 
                     break;
             }
-
-
-            //TODAVIA NO TENGO EL EVENTO DE LOS BOTONES DE VER CANCHAS, VER RESERVAS Y DE LAS ACCIONES EN CUANTO AL ESTADO
-
 
 
         }
@@ -173,7 +154,7 @@ namespace WinFormsApp1.Forms.Complex
 
             try
             {
-                //libero memoria no administrada(imagenes, streams, archivos, conexiones no las limpia en garbage collector)
+                //libero memoria no administrada(imagenes, streams, archivos, etc)
                 pictureBox1.Image?.Dispose();
 
                 using var stream = await _httpClient.GetStreamAsync(imagePath);
@@ -182,7 +163,6 @@ namespace WinFormsApp1.Forms.Complex
             catch
             {
                 pictureBox1.Image = null;
-                // opcional: imagen por defecto, esto me gustaria verlo de hacer despues
             }
         }
 

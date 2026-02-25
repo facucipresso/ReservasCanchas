@@ -21,7 +21,7 @@ namespace WinFormsApp1.UserControls
         public void SetData(ReservationResponseDTO dto)
         {
             labelFechaReserva.Text = dto.Date.ToString("dd/MM/yyyy");
-            labelHoraReserva.Text = $"{dto.StartTime.ToString(@"hh\:mm")} hs    "; //agrego ToString();
+            labelHoraReserva.Text = $"{dto.StartTime.ToString(@"hh\:mm")} hs    "; 
             labelNombreQuienReserva.Text = $"{dto.UserName} {dto.UserLastName}";
             labelCanchaReserva.Text = dto.FieldName;
 

@@ -32,8 +32,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo la data del dashboard: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -55,8 +53,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo los datos de complejo para el dashboard: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -89,17 +85,13 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo los datos de ususarios para el dashboard: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
                 throw new Exception(message);
             }
 
-            
-            //var respuesta = await response.Content.ReadFromJsonAsync<List<UserResponseWithRoleDTO>>();
-
+           
             var json = await response.Content.ReadAsStringAsync();
 
             var options = new JsonSerializerOptions
@@ -126,15 +118,12 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo los datos de reviews para el dashboard: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
                 throw new Exception(message);
             }
 
-            //var respuesta = await response.Content.ReadFromJsonAsync<List<ReviewResponseDTO>>();
             var json = await response.Content.ReadAsStringAsync();
 
             var options = new JsonSerializerOptions

@@ -71,7 +71,6 @@ namespace WinFormsApp1.UserControls
                 catch (Exception ex)
                 {
                     DialogService.ShowError(this.FindForm(), ex.Message);
-                    //MessageBox.Show("No se pudo insertar correctamente el nuevo servicio por: " + ex);
                 }
             }
             // CUANDO EDITO UN SERVICIO
@@ -83,14 +82,12 @@ namespace WinFormsApp1.UserControls
                     serviceUpdateDTO.ServiceDescription = textServiceDescription.Text;
                     await _serService.UpdateServiceByIdAsync(Convert.ToInt32(idSeleccionado), serviceUpdateDTO);
                     Notifier.Show(this.FindForm(), "Se edito correctamente el servicio", NotificationType.Success);
-                    //MessageBox.Show("Se edito correctamente el servicio");
                     await LoadServicesAsync();
                     CancelarEdicion();
                 }
                 catch (Exception ex)
                 {
                     DialogService.ShowError(this.FindForm(), ex.Message);
-                    //MessageBox.Show("No se pudo editar correctamente el servicio por: " + ex);
                 }
 
             }
@@ -116,7 +113,6 @@ namespace WinFormsApp1.UserControls
             else
             {
                 Notifier.Show(this.FindForm(), "Por favor seleccione una fila para editar", NotificationType.Info);
-                //MessageBox.Show("Por favor seleccione una fila para editar");
             }
         }
 
@@ -136,22 +132,17 @@ namespace WinFormsApp1.UserControls
                 if (deleted == false)
                 {
                     Notifier.Show(this.FindForm(), "No se pudo borrar el servicio", NotificationType.Error);
-                    /*
-                    MessageBox.Show("No se pudo borrar el servicio.",
-                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);*/
+
                     return;
                 }
 
                 Notifier.Show(this.FindForm(), "Se elimino correctamente el servicio", NotificationType.Success);
-                //MessageBox.Show("Se elimino correctamente el servicio");
 
                 await LoadServicesAsync();
-                //bindingSource1.Remove(servicio);  Esto actualiza el grid inmediatamente
             }
             else
             {
                 Notifier.Show(this.FindForm(), "Por favor seleccione una fila para eliminar", NotificationType.Info);
-                //MessageBox.Show("Por favor seleccione una fila para eliminar");
             }
         }
 

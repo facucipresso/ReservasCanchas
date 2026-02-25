@@ -24,36 +24,15 @@ namespace WinFormsApp1.Services
         public async Task<List<ServiceResponseDTO>> GetAllServicesAsync()
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /*
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
+        
 
             var response = await _httpClient.GetAsync("api/services");
 
             if (!response.IsSuccessStatusCode)
             {
-                // ESTO ERA EL MANEJO DE ERRORES DE ANTES
-                //var body = await response.Content.ReadAsStringAsync();
-                //throw new Exception($"Error obteniendo servicios: {body}");
-
-                //MANEJO DE ERRORES DE AHORA
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
                 throw new Exception(message);
-
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
                 
             }
 
@@ -69,28 +48,10 @@ namespace WinFormsApp1.Services
         public async Task<ServiceResponseDTO> UpdateServiceByIdAsync(int id, ServiceUpdateDTO serviceDto)
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /*
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
             var response = await _httpClient.PutAsJsonAsync("api/services/"+id, serviceDto);
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                 );
-                */
-                //throw new Exception($"Error obteniendo servicios: {body}");
 
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
@@ -112,16 +73,6 @@ namespace WinFormsApp1.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                //var body = await response.Content.ReadAsStringAsync();
-                /*
-                MessageBox.Show(
-                    $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                    "ERROR DEBUG",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-                */
-                //throw new Exception($"Error creando servicio: {body}");
                 var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
                 var message = problem?.Detail ?? "Error desconocido";
                 throw new Exception(message);
@@ -140,14 +91,7 @@ namespace WinFormsApp1.Services
         public async Task<bool> DeleteServiceByIdAsync(int id) 
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
-            /*
-            MessageBox.Show(
-                $"HEADER AUTH = {authHeader?.Scheme} {authHeader?.Parameter}",
-                "DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-            */
+            
             var response = await _httpClient.DeleteAsync("api/services/" + id);//aca tambien toma el id solo
 
             if (response.IsSuccessStatusCode) return true;
@@ -155,14 +99,6 @@ namespace WinFormsApp1.Services
 
 
            var body = await response.Content.ReadAsStringAsync();
-            /*
-           MessageBox.Show(
-                $"StatusCode: {(int)response.StatusCode}\n\nBody:\n{body}",
-                "ERROR DEBUG",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error
-            );
-            */
             return false;
         }
     }

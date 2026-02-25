@@ -15,7 +15,6 @@ namespace WinFormsApp1.Forms
 {
     public partial class FormService2 : Form
     {
-        //private BindingSource _bs = new BindingSource();
         private readonly ServicesService _serService;
 
         public FormService2(List<ServiceResponseDTO> services)
@@ -37,7 +36,7 @@ namespace WinFormsApp1.Forms
 
         private async void dataGridViewServicios_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) return; // ignorar encabezado
+            if (e.RowIndex < 0) return; 
 
             // Si clic en columna Editar
             if (dataGridViewServicios.Columns[e.ColumnIndex].Name == "ColEditar")
@@ -47,10 +46,8 @@ namespace WinFormsApp1.Forms
                 var resp = MessageBox.Show($"¿Editar servicio '{servicio.ServiceDescription}'?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 var id = servicio.Id;
-                var serviceDescription = servicio.ServiceDescription; // de aca tengo que sacar la descripcion del servicio y en otra variable necesito sacar el id del servicio
+                var serviceDescription = servicio.ServiceDescription; 
 
-                //FormUpdateService formUpdateService = new FormUpdateService(id, serviceDescription);
-                //formUpdateService.ShowDialog();
 
                 if (resp != DialogResult.Yes) return;
 
@@ -58,7 +55,7 @@ namespace WinFormsApp1.Forms
                 {
                     if (formUpdateService.ShowDialog() == DialogResult.OK)
                     {
-                        // Volvemos a pedir los datos al backend para mostrar los cambios
+                        // pido los datos de nuev los datos al backend para mostrar los cambios
                         await LoadServicesAsync();
                     }
                 }
@@ -71,7 +68,7 @@ namespace WinFormsApp1.Forms
                 var servicio = (ServiceResponseDTO)dataGridViewServicios.Rows[e.RowIndex].DataBoundItem;
                 var resp = MessageBox.Show($"¿Borrar servicio '{servicio.ServiceDescription}'?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                var id = servicio.Id; // lo voy a usar para llamar al servicio y pegarle a la api 
+                var id = servicio.Id; 
 
                 if (resp != DialogResult.Yes) return;
 
@@ -84,7 +81,7 @@ namespace WinFormsApp1.Forms
                     return;
                 }
 
-                bindingSource1.Remove(servicio); // Esto actualiza el grid inmediatamente
+                bindingSource1.Remove(servicio);
 
             }
 
@@ -103,7 +100,7 @@ namespace WinFormsApp1.Forms
             {
                 if (formCreateService.ShowDialog() == DialogResult.OK)
                 {
-                    // Volvemos a pedir los datos al backend para mostrar los cambios
+                
                     await LoadServicesAsync();
                 }
             }

@@ -19,9 +19,7 @@ namespace WinFormsApp1.UserControls
         {
             InitializeComponent();
 
-            //para datos reales
             _dashboardService = new DashboardService();
-            //para datos reales
             this.Load += UC_Dashboard_Load;
 
             this.Resize += UC_Dashboard_Resize;
@@ -63,9 +61,6 @@ namespace WinFormsApp1.UserControls
 
             AdjustDashboardCardsWidth();
 
-            //LoadFakeComplexes();
-            //LoadFakeUsers();
-            //LoadFakeReviews();
 
         }
 
@@ -75,12 +70,10 @@ namespace WinFormsApp1.UserControls
             var panel = new Panel
             {
                 Height = 50,
-                //Dock = DockStyle.Top,
-                //BackColor = Color.FromArgb(245, 245, 245),
                 BackColor = Color.White,
                 Margin = new Padding(0, 0, 0, 8),
                 Padding = new Padding(12, 8, 12, 8),
-                Width = flpUltimosComplejos.ClientSize.Width - 25 // ocupa casi todo
+                Width = flpUltimosComplejos.ClientSize.Width - 25 
             };
 
             var lblName = new Label
@@ -106,33 +99,11 @@ namespace WinFormsApp1.UserControls
             return panel;
         }
 
-        private void LoadFakeComplexes()
-        {
-            flpUltimosComplejos.Controls.Clear();
-
-            flpUltimosComplejos.Controls.Add(
-                CreateFakeComplexItem("Complejo Norte", "Habilitado"));
-
-            flpUltimosComplejos.Controls.Add(
-                CreateFakeComplexItem("Arena Fútbol", "Pendiente"));
-
-            flpUltimosComplejos.Controls.Add(
-                CreateFakeComplexItem("Club Central", "Bloqueado"));
-
-            flpUltimosComplejos.Controls.Add(
-                CreateFakeComplexItem("Santiago Bernabeu", "Pendiente"));
-
-            flpUltimosComplejos.Controls.Add(
-                CreateFakeComplexItem("Club Barracas", "Pendiente"));
-        }
-
         private Control CreateFakeUserItem(string userName, string role)
         {
             var panel = new Panel
             {
                 Height = 50,
-                //Dock = DockStyle.Top,
-                //BackColor = Color.FromArgb(245, 245, 245),
                 BackColor = Color.White,
                 Margin = new Padding(0, 0, 0, 8),
                 Padding = new Padding(12, 8, 12, 8),
@@ -162,31 +133,6 @@ namespace WinFormsApp1.UserControls
             return panel;
         }
 
-
-
-        private void LoadFakeUsers()
-        {
-            flpUltimosUsuarios.Controls.Clear();
-
-            flpUltimosUsuarios.Controls.Add(
-                CreateFakeUserItem("juanperez", "Admin Complejo"));
-
-            flpUltimosUsuarios.Controls.Add(
-                CreateFakeUserItem("maria.gomez", "Usuario"));
-
-            flpUltimosUsuarios.Controls.Add(
-                CreateFakeUserItem("superadmin", "SuperAdmin"));
-
-            flpUltimosUsuarios.Controls.Add(
-                CreateFakeUserItem("nahucipre", "Usuario"));
-
-            flpUltimosUsuarios.Controls.Add(
-                CreateFakeUserItem("lauti.gomez", "Usuario"));
-
-            flpUltimosUsuarios.Controls.Add(
-                CreateFakeUserItem("marceBustos", "Usuario"));
-        }
-
         private Control CreateComplexReview(
             string complexName,
             string userName,
@@ -202,7 +148,6 @@ namespace WinFormsApp1.UserControls
                 Width = flpUltimasReseñas.ClientSize.Width - 25
             };
 
-            // Nombre del complejo (arriba, solo)
             var lblComplex = new Label
             {
                 Text = complexName,
@@ -212,7 +157,6 @@ namespace WinFormsApp1.UserControls
                 Height = 20
             };
 
-            // Usuario + estrellas (abajo)
             var lblUserAndRating = new Label
             {
                 Text = $"{userName}   {new string('★', rating)}{new string('☆', 5 - rating)}",
@@ -226,24 +170,6 @@ namespace WinFormsApp1.UserControls
             panel.Controls.Add(lblComplex);
 
             return panel;
-        }
-
-
-        private void LoadFakeReviews()
-        {
-            flpUltimasReseñas.Controls.Clear();
-
-            flpUltimasReseñas.Controls.Add(
-                CreateComplexReview("Complejo Norte", "juanperez", 4));
-
-            flpUltimasReseñas.Controls.Add(
-                CreateComplexReview("Arena Fútbol 5", "maria.gomez", 5));
-
-            flpUltimasReseñas.Controls.Add(
-                CreateComplexReview("Club Central Deportivo", "nahucipre", 3));
-
-            flpUltimasReseñas.Controls.Add(
-                CreateComplexReview("Barracas Indoor", "lauti.gomez", 4));
         }
 
         private void UC_Dashboard_Resize(object sender, EventArgs e)
@@ -290,7 +216,6 @@ namespace WinFormsApp1.UserControls
             catch (Exception ex)
             {
                 DialogService.ShowError(Form.ActiveForm ?? this.TopLevelControl as Form, ex.Message);
-                //MessageBox.Show(ex.Message);
             }
         }
 
@@ -348,7 +273,7 @@ namespace WinFormsApp1.UserControls
                 flpUltimasReseñas.Controls.Add(
                     CreateComplexReview(
                         r.ComplexName,
-                        $"{r.Name} {r.LastName}", //ver si esto esta bien concatenado
+                        $"{r.Name} {r.LastName}",
                         r.Score
                     ));
             }
