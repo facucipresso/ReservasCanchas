@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
+import { AVAILABLE_HOURS } from '../../constants/available-hours';
 type EditSection = 'basic' | 'timeslots' | 'services' | 'image';
 
 @Component({
@@ -26,20 +27,18 @@ export class EditcomplexForm implements OnInit {
 
   @Input() complex!: ComplexDetailModel;
   @Input() allServices!: ComplexServiceModel[];
+
   @Output() saveBasic = new EventEmitter<any>();
   @Output() saveTimeSlots = new EventEmitter<any>();
   @Output() saveServices = new EventEmitter<number[]>();
   @Output() saveImage = new EventEmitter<any>();
+
   editBasicInfoForm!:FormGroup;
   editTimeSlotsForm!:FormGroup;
   editServicesForm!:FormGroup;
   activeSection:EditSection = 'basic';
   weekDays : WeekDay[] = Object.values(WeekDay);
-  availableHours = [
-    '08:00','09:00','10:00','11:00','12:00','13:00',
-    '14:00','15:00','16:00','17:00','18:00','19:00',
-    '20:00','21:00','22:00','23:00','00:00','01:00','02:00'
-  ]
+  availableHours = AVAILABLE_HOURS;
   invalidSchedulesError: string | null = null;
   selectedImage :File | null = null;
   imageErrorMessage:string | null = null;
@@ -167,7 +166,6 @@ export class EditcomplexForm implements OnInit {
   }
 
   onSubmitBasicInfo() {
-    console.log('InfoBasic: ',this.editBasicInfoForm.value);
     if (this.editBasicInfoForm.valid) {
       this.saveBasic.emit(this.editBasicInfoForm.value);
       this.editBasicInfoForm.markAsPristine();
@@ -181,8 +179,6 @@ export class EditcomplexForm implements OnInit {
     if (this.invalidSchedulesError) {
       return;
     }
-    console.log('TimeSlots: ',this.editTimeSlotsForm.value);
-
     this.saveTimeSlots.emit(this.editTimeSlotsForm.value);
     this.editTimeSlotsForm.markAsPristine();
     
@@ -193,7 +189,6 @@ export class EditcomplexForm implements OnInit {
     const ids = values
       .map((v: boolean, i: number) => v ? this.allServices[i].id : null)
       .filter(Boolean);
-    console.log('ServicesIds:', ids);
     this.saveServices.emit(ids);
     this.editServicesForm.markAsPristine();
   }
@@ -201,7 +196,6 @@ export class EditcomplexForm implements OnInit {
   onFileSelect(event: FileUploadHandlerEvent){
     const file = event.files[0];
     this.selectedImage = file;
-    console.log(this.selectedImage);
 
     this.imageErrorMessage = null;
 

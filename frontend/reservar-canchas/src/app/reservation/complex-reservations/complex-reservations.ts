@@ -71,13 +71,10 @@ export class ComplexReservations implements OnInit {
     })
   }
 
-
-
   private refreshStats() {
     console.log(this.complexId, this.currentFilters.date, this. currentFilters.fieldId);
     this.complexService.getComplexStats(this.complexId, this.currentFilters.date, this.currentFilters.fieldId).subscribe((stats) => {
       this.complexStats = stats;
-      console.log('STATS ACTUALIZADAS: ', this.complexStats);
     });
   }
 
@@ -87,15 +84,8 @@ export class ComplexReservations implements OnInit {
         this.allReservations = this.sortReservations(reservations);
       },
       error: (err) => {
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.messageService.add({
-          severity:'error',
-          summary: backendError.title || 'Error',
-          detail: message,
-          life: 2000
-        })
-        this.router.navigate(['/']);
+        this.showBackendError(err);
+        this.allReservations = [];
       }
     }) 
   }
@@ -106,15 +96,8 @@ export class ComplexReservations implements OnInit {
         this.allReservations = this.sortReservations(reservations);
       },
       error: (err) => {
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.messageService.add({
-          severity:'error',
-          summary: backendError.title || 'Error',
-          detail: message,
-          life: 2000
-        })
-        this.router.navigate(['/']);
+        this.showBackendError(err);
+        this.allReservations = [];
       }
     })
   }
@@ -172,5 +155,15 @@ export class ComplexReservations implements OnInit {
       queryParamsHandling: 'merge'
     }).toString();
     this.location.replaceState(newUrl);
+  }
+
+  private showBackendError(err: any, life = 2000): void {
+    const backendError = err?.error;
+    this.messageService.add({
+      severity: 'error',
+      summary: backendError?.title || 'Error',
+      detail: backendError?.detail || 'Error desconocido',
+      life
+    });
   }
 }

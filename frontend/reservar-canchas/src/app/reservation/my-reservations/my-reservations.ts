@@ -28,13 +28,10 @@ export class MyReservations implements OnInit {
   ngOnInit(){
     this.reservationService.getMyReservations().subscribe( (data) =>{
       data.sort((a, b) => {
-
         if (a.date < b.date) return 1;  
         if (a.date > b.date) return -1; 
-      
         if (a.startTime < b.startTime) return 1;
         if (a.startTime > b.startTime) return -1;
-      
         return 0; 
       });
 

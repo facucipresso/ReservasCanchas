@@ -6,6 +6,7 @@ import { Complex } from '../../services/complex';
 import { ComplexCard } from '../complex-card/complex-card';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-complex-list',
@@ -20,7 +21,7 @@ export class ComplexList implements OnInit {
   empty!: string;
   isAdmin!: boolean;
   isLoading: boolean = false;
-  constructor(public route: ActivatedRoute, private complexService: Complex, private router: Router) {}
+  constructor(public route: ActivatedRoute, private complexService: Complex, private router: Router, private messageService:MessageService) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -44,23 +45,42 @@ export class ComplexList implements OnInit {
   }
 
   getComplexCardsFilters(params:any){
-    this.complexService.getComplexesWithFilters(params).subscribe(result => {
-      console.log(params);
-      console.log('Resultado filtro: ', result);
-      this.isLoading = false;
-      this.complexes = result;
+    this.complexService.getComplexesWithFilters(params).subscribe({
+      next: (result) => {
+        this.isLoading = false;
+        this.complexes = result;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.showBackendError(err);
+      }
     })
   }
 
   getComplexCardsAdmin(){
-    this.complexService.getMyComplexes().subscribe(result => {
-      console.log('Resultado mios: ', result);
-      this.isLoading = false;
-      this.complexes = result;
+    this.complexService.getMyComplexes().subscribe({
+      next: (result) => {
+        this.isLoading = false;
+        this.complexes = result;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.showBackendError(err);
+      }
     })
   }
 
   onAddComplex(){
     this.router.navigate(['/register-complex']);
+  }
+
+  private showBackendError(err: any, life = 2000): void {
+    const backendError = err?.error;
+    this.messageService.add({
+      severity: 'error',
+      summary: backendError?.title || 'Error',
+      detail: backendError?.detail || 'Error desconocido',
+      life
+    });
   }
 }

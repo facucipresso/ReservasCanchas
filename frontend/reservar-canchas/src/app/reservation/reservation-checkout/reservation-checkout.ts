@@ -26,6 +26,7 @@ import { PaymentType } from '../../models/reservation/paymenttype.enum';
   styleUrl: './reservation-checkout.css',
 })
 export class ReservationCheckout implements OnInit, OnDestroy {
+
   complex!:ComplexDetailModel;
   field!:FieldDetailModel;
   checkoutInfo!:CheckoutInfo;
@@ -37,6 +38,7 @@ export class ReservationCheckout implements OnInit, OnDestroy {
   paymentOption: 'total' | 'partial' = 'total';
   selectedImage: File | null = null;
   imageErrorMessage: string | null = null;
+
   constructor(private reservationService: Reservation, private route: ActivatedRoute, 
     private messageService: MessageService, private router: Router, private complexService:Complex,
     private fieldService:Field, private userService:User) { }
@@ -48,19 +50,11 @@ export class ReservationCheckout implements OnInit, OnDestroy {
       this.reservationService.getCheckoutInfo(this.checkoutId).subscribe({
         next: (data)=>{
           this.checkoutInfo = data;
-          console.log(this.checkoutInfo);
           this.loadData();
         },
         error: (err)=>{
-          const backendError = err?.error;
-          const message = backendError?.detail || 'Error desconocido';
-
-          this.messageService.add({
-            severity:'error',
-            summary:backendError?.title || 'Error',
-            detail: message,
-            life: 2000
-          })
+          this.showBackendError(err);
+          this.isLoading = false;
           this.router.navigate(['/']);
         }
       });
@@ -106,13 +100,12 @@ export class ReservationCheckout implements OnInit, OnDestroy {
         })
 
         this.isLoading = false;
-        this.router.navigate(['/']);
+        this.router.navigate(['/complexes', this.checkoutInfo.complexId]);
       }
     });
   }
 
   startCountdown() {
-
     const endTime = new Date(this.checkoutInfo.expirationTime).getTime();
     console.log('End Time (ms):', endTime);
     this.timerSubscription = interval(1000).subscribe(() => {
@@ -131,11 +124,8 @@ export class ReservationCheckout implements OnInit, OnDestroy {
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-
-    // Rellenar con ceros (ej: 5 -> 05)
     const minStr = minutes < 10 ? '0' + minutes : minutes;
     const secStr = seconds < 10 ? '0' + seconds : seconds;
-
     return `${minStr}:${secStr}`;
   }
 
@@ -230,31 +220,38 @@ export class ReservationCheckout implements OnInit, OnDestroy {
           severity:'success',
           summary:'Reserva creada con exito.',
           life: 3000
-        })//deberiamos redirigir a mis reservas
+        })
         this.router.navigate(['/reservations']);
       },
       error: (error)=>{
-        const backendError = error?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 3000
-        })
-        this.router.navigate(['/']);
+        this.showBackendError(error);
       }
     });
   }
 
   onCancel(){
-    this.reservationService.deleteProcessReservation(this.checkoutId!).subscribe( () =>{
-      this.messageService.add({
-        severity:'info',
-        summary:'Proceso de reserva cancelado con éxito.',
-        life: 2000
-      });
-        this.router.navigate(['/complexes', this.complex.id]);
+    this.reservationService.deleteProcessReservation(this.checkoutId!).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity:'info',
+          summary:'Proceso de reserva cancelado con éxito.',
+          life: 2000
+        });
+      },
+      error: (error) => {
+        this.showBackendError(error);
+      }
+    });
+    this.router.navigate(['/complexes', this.complex.id]);
+  }
+
+  private showBackendError(err: any, life = 2000): void {
+    const backendError = err?.error;
+    this.messageService.add({
+      severity: 'error',
+      summary: backendError?.title || 'Error',
+      detail: backendError?.detail || 'Error desconocido',
+      life
     });
   }
 }

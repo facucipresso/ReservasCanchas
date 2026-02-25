@@ -17,14 +17,14 @@ import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Complex } from '../../services/complex';
 import { Router } from '@angular/router';
+import { AVAILABLE_HOURS } from '../../constants/available-hours';
 
 @Component({
   selector: 'app-createcomplex-form',
   imports: [SelectModule,AutoComplete,CommonModule,AutoCompleteModule, TextareaModule,
     InputTextModule,Button,InputNumber,CheckboxModule,InputNumberModule,ReactiveFormsModule,Select,Toast],
   templateUrl: './createcomplex-form.html',
-  styleUrl: './createcomplex-form.css',
-  providers:[MessageService]
+  styleUrl: './createcomplex-form.css'
 })
 export class CreatecomplexForm {
   createComplexForm!: FormGroup;
@@ -41,11 +41,7 @@ export class CreatecomplexForm {
 
   weekDays : WeekDay[] = Object.values(WeekDay);
 
-  availableHours = [
-    '08:00','09:00','10:00','11:00','12:00','13:00',
-    '14:00','15:00','16:00','17:00','18:00','19:00',
-    '20:00','21:00','22:00','23:00','00:00','01:00','02:00'
-  ]
+  availableHours = AVAILABLE_HOURS;
 
   invalidSchedulesError: string | null = null;
 
@@ -109,11 +105,10 @@ export class CreatecomplexForm {
 
     this.complexServices.getAllServices().subscribe({
       next: (complexServices:ComplexServiceModel[]) => {
-      console.log(complexServices);
       this.services = complexServices;
     },
       error: (err) => {
-        console.log(err);
+        this.showBackendError(err);
       }})
 
     
@@ -124,12 +119,10 @@ export class CreatecomplexForm {
   }
 
   onFileSelected(event: any) {
-    console.log(event);
     const file = event.target.files[0];
     this.selectedImage = file;
     this.imageError = null;
 
-    console.log(this.selectedImage);
 
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
     if (!validTypes.includes(file.type)) {
@@ -170,12 +163,7 @@ export class CreatecomplexForm {
     const control = this.createComplexForm.get('locality');
     const value = control?.value;
     control?.markAsTouched();
-    // Si no coincide exactamente con ninguna localidad -> borrar
-    if (
-      !this.localities
-        .map((l) => l.toLowerCase())
-        .includes(value?.toLowerCase())
-    ) {
+    if (!this.localities.map((l) => l.toLowerCase()).includes(value?.toLowerCase())){
       this.createComplexForm.get('locality')?.reset('');
     }
   }
@@ -238,7 +226,6 @@ export class CreatecomplexForm {
 
     this.complexService.createComplex(formData).subscribe({
       next: (response) => {
-        console.log("COMPLEJO CREADO EXITOSAMENTE: ", response.body);
         this.messageService.add({
           severity:'success',
           summary:'Complejo creado exitosamente.',
@@ -251,17 +238,18 @@ export class CreatecomplexForm {
         this.router.navigate(["complexes",response.body.complex.id])
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
       }
     })
+  }
+
+    private showBackendError(err: any, life = 2000): void {
+    const backendError = err?.error;
+    this.messageService.add({
+      severity: 'error',
+      summary: backendError?.title || 'Error',
+      detail: backendError?.detail || 'Error desconocido',
+      life
+    });
   }
 }

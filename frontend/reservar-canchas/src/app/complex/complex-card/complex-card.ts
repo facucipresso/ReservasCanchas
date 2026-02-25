@@ -16,6 +16,7 @@ export class ComplexCard implements OnInit{
 
   @Input() complexCard!: ComplexCardModel;
   @Input() selectedDate!: string|null;
+
   isAdmin!: boolean;
   isOwnerComplex!: boolean;
   backendUrl = 'https://localhost:7004';
@@ -27,7 +28,7 @@ export class ComplexCard implements OnInit{
     this.isOwnerComplex = parseInt(this.authService.getUserId()) === this.complexCard.userId;
   }
 
-  viewComplexDetail(){
+  goToComplexDetail(){
     this.router.navigate(["/complexes", this.complexCard.id],
       {
         queryParams: {
@@ -37,7 +38,7 @@ export class ComplexCard implements OnInit{
     );
   } 
   
-  viewComplexReservations(){
+  goToComplexReservations(){
     this.router.navigate(["/admin", "complexes", this.complexCard.id, "reservations"]);
   }
 }

@@ -12,6 +12,7 @@ import { Dialog } from 'primeng/dialog';
 import { TextareaModule } from 'primeng/textarea';
 import { FieldTypePipe } from '../../pipes/field-type-pipe';
 import { FloorTypePipe } from '../../pipes/floor-type-pipe';
+import { MessageService } from 'primeng/api';
 
 
 @Component({
@@ -25,18 +26,21 @@ export class FieldTable implements OnInit, OnChanges{
   @Input() fields!: FieldDetailModel[];
   @Input() isAdmin !: boolean;
   @Input() selectedDate !: Date;
+
   @Output() editField = new EventEmitter<FieldDetailModel>();
   @Output() deleteField = new EventEmitter<number>();
   @Output() reserveField = new EventEmitter<{field:FieldDetailModel, hour:string}>();
   @Output() recurringBlockField = new EventEmitter<FieldDetailModel>();
   @Output() specificBlockField = new EventEmitter<{field:FieldDetailModel, hour:string, reason:string}>
+
   dayIndex!: number;
   reservationsForField: ReservationsForField[] = [];
   selectedHours: {[fieldId:number]:string} = {};
   visible = false;
   reasonBlock !:string;
   selectedFieldForSpecificBlock: FieldDetailModel | null = null;
-  constructor(private reservationService: Reservation) {}
+
+  constructor(private reservationService: Reservation, private messageService: MessageService) {}
 
   ngOnInit(){
     this.dayIndex = this.getWeekDayIdx(this.selectedDate);
@@ -57,10 +61,15 @@ export class FieldTable implements OnInit, OnChanges{
       .subscribe({
         next: (data)=>{
           this.reservationsForField = data.fieldsWithReservedHours;
-          console.log('Reservas para las canchas: ', this.reservationsForField);
         },
         error: (err)=>{
-          console.error('Error al cargar las reservas para las canchas:', err);
+          const backendError = err?.error;
+          this.messageService.add({
+            severity: 'error',
+            summary: backendError?.title || 'Error',
+            detail: backendError?.detail || 'Error desconocido',
+            life: 2000
+          });
         }
       });
   }
@@ -169,16 +178,13 @@ export class FieldTable implements OnInit, OnChanges{
   onConfirmSpecificBlock(){
     if (this.selectedFieldForSpecificBlock && this.selectedHours[this.selectedFieldForSpecificBlock.id]){
       const hour = this.selectedHours[this.selectedFieldForSpecificBlock?.id];
-      console.log(hour,this.selectedFieldForSpecificBlock,this.reasonBlock);
       this.specificBlockField.emit({
         field: this.selectedFieldForSpecificBlock,
         hour,
         reason: this.reasonBlock
       })
     }
-
     this.closeSpecificBlockDialog();
-    
   }
 
 }

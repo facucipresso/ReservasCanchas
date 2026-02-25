@@ -54,9 +54,11 @@ export class ComplexInfo {
   ];
 
   @ViewChild(FieldTable) fieldTableComponent!: FieldTable;
+
   backendUrl = 'https://localhost:7004';
   complexState = ComplexState;
   visible = false;
+  
   onEditField(field: FieldDetailModel) {
     this.editField.emit(field);
   }

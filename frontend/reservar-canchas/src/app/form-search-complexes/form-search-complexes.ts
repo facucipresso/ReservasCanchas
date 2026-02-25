@@ -9,6 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FieldTypePipe } from '../pipes/field-type-pipe';
+import { AVAILABLE_HOURS } from '../constants/available-hours';
 
 @Component({
   selector: 'app-form-search-complexes',
@@ -25,6 +26,7 @@ import { FieldTypePipe } from '../pipes/field-type-pipe';
   styleUrl: './form-search-complexes.css',
 })
 export class FormSearchComplexes implements OnInit {
+
   provinces!: string[];
   localities!: string[];
   filteredLocalities!: string[];
@@ -33,26 +35,7 @@ export class FormSearchComplexes implements OnInit {
   form!: FormGroup;
   fieldTypeOptions: any[] = [];
   
-  allHours = [
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-    '19:00',
-    '20:00',
-    '21:00',
-    '22:00',
-    '23:00',
-    '00:00',
-    '01:00',
-  ];
+  availableHours = AVAILABLE_HOURS;
 
   hours: { label: string; value: string; disabled: boolean }[] = [];
 
@@ -126,9 +109,8 @@ export class FormSearchComplexes implements OnInit {
     const isToday = selectedDate.toDateString() === now.toDateString();
     const currentHour = now.getHours();
 
-    this.hours = this.allHours.map(timeStr => {
+    this.hours = this.availableHours.map(timeStr => {
       const slotHour = parseInt(timeStr.split(':')[0], 10);
-      // Deshabilitar si es hoy y la hora ya pasó (excepto medianoche y 1am)
       const isPastHour = isToday && slotHour <= currentHour && (slotHour != 0 && slotHour != 1);
       
       return {

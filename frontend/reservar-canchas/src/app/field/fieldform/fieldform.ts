@@ -14,6 +14,7 @@ import { FieldDetailModel } from '../../models/field/field.model';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { FieldTypePipe } from '../../pipes/field-type-pipe';
 import { FloorTypePipe } from '../../pipes/floor-type-pipe';
+import { AVAILABLE_HOURS } from '../../constants/available-hours';
 
 
 @Component({
@@ -23,23 +24,23 @@ import { FloorTypePipe } from '../../pipes/floor-type-pipe';
   styleUrl: './fieldform.css',
 })
 export class Fieldform implements OnInit {
-  weekDays : WeekDay[] = Object.values(WeekDay);
-  availableHours = [
-    '08:00','09:00','10:00','11:00','12:00','13:00',
-    '14:00','15:00','16:00','17:00','18:00','19:00',
-    '20:00','21:00','22:00','23:00','00:00','01:00','02:00'
-  ]
-  fieldTypeOptions: any[] = [];
-  floorTypeOptions: any[] = [];
-  invalidSchedulesError: string | null = null;
-  fieldForm!: FormGroup;
+
   @Input() formMode !:string;
   @Input() field :FieldDetailModel | undefined;
   @Input() complex !: ComplexDetailModel;
+
   @Output() create = new EventEmitter<any>();
   @Output() updateBasic = new EventEmitter<any>();
   @Output() updateTimeSlots = new EventEmitter<any>();
   @Output() updateState = new EventEmitter<any>();
+
+  weekDays : WeekDay[] = Object.values(WeekDay);
+  availableHours = AVAILABLE_HOURS;
+  fieldTypeOptions: any[] = [];
+  floorTypeOptions: any[] = [];
+  invalidSchedulesError: string | null = null;
+  fieldForm!: FormGroup;
+
   constructor(private fb:FormBuilder){}
 
   ngOnInit(){
