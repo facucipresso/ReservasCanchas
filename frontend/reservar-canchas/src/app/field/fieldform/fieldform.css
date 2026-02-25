@@ -5,12 +5,9 @@
   margin-top: 20px;
 }
 
-/* Inputs ocupan toda la celda */
 .form-grid > div {
   width: 100%;
 }
-
-/* ===== PRIME INPUTS ===== */
 
 .p-inputtext,
 .p-inputnumber,
@@ -19,7 +16,6 @@
   width: 100%;
 }
 
-/* Altura consistente */
 .p-inputtext,
 ::ng-deep.p-inputnumber-input,
 .p-select,
@@ -27,20 +23,15 @@
   min-height: 42px;
 }
 
-/* Textarea */
 textarea[pTextarea] {
   width: 100%;
   min-height: 120px;
   resize:none;
 }
 
-/* ===== FLOAT LABEL ===== */
-
 p-floatlabel {
   width: 100%;
 }
-
-/* ===== ERRORES ===== */
 
 small {
   margin-top: 4px;
@@ -48,8 +39,6 @@ small {
   font-size: 0.85rem;
   color: red;
 }
-
-/* ===== BOTÓN ===== */
 
 .form-section p-button {
   margin-top: 1rem;

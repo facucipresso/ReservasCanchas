@@ -7,15 +7,11 @@
     --card-hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* GENERAL */
 .home-container {
     display: flex;
     flex-direction: column;
 }
 
-/* ===================== */
-/* HERO SECTION           */
-/* ===================== */
 .hero {
     position: relative; 
     height: 100vh;
@@ -55,14 +51,9 @@
     margin-bottom: 2rem;
 }
 
-/* ===================== */
-/* STATS SECTION         */
-/* ===================== */
-
 .stats-section {
     background-color: #ffffff;
     padding: 5rem 1.5rem;
-    /* Eliminamos el border-bottom negro duro */
 }
 
 .stats-container {
@@ -79,9 +70,8 @@
     min-width: 280px;
     background: #ffffff;
     padding: 2.5rem 2rem;
-    border-radius: 24px; /* Bordes muy redondeados */
+    border-radius: 24px; 
     text-align: center;
-    /* Reemplazamos borde negro por sombra suave */
     box-shadow: var(--card-shadow);
     border: 1px solid #f3f4f6; 
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -92,10 +82,8 @@
 .stat-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--card-hover-shadow);
-    /* No cambiamos a negro el fondo, lo mantenemos limpio */
 }
 
-/* Círculos de iconos */
 .icon-circle {
     width: 70px;
     height: 70px;
@@ -107,10 +95,9 @@
     font-size: 2.5rem;
 }
 
-/* Temas de color para los iconos */
-.user-theme { background-color: #dbeafe; color: #2563eb; } /* Azul */
-.complex-theme { background-color: #dcfce7; color: #16a34a; } /* Verde */
-.booking-theme { background-color: #f3e8ff; color: #9333ea; } /* Violeta */
+.user-theme { background-color: #dbeafe; color: #2563eb; } 
+.complex-theme { background-color: #dcfce7; color: #16a34a; } 
+.booking-theme { background-color: #f3e8ff; color: #9333ea; } 
 
 .stat-card h2 {
     font-size: 3rem;
@@ -129,13 +116,9 @@
     letter-spacing: 1px;
 }
 
-/* ===================== */
-/* INFO SECTION          */
-/* ===================== */
-
 .info-section {
     padding: 5rem 2rem;
-    background: var(--bg-light); /* Fondo gris muy suave */
+    background: var(--bg-light); 
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -159,7 +142,6 @@
     font-weight: 400;
 }
 
-/* Agrupadores por rol */
 .role-group {
     width: 100%;
     max-width: 1000px;
@@ -188,33 +170,32 @@
 
 .admin-badge {
     background-color: #fff7ed;
-    color: #ea580c; /* Naranja */
+    color: #ea580c; 
     border: 1px solid #ffedd5;
 }
 
 .user-badge {
     background-color: #eff6ff;
-    color: #2563eb; /* Azul */
+    color: #2563eb; 
     border: 1px solid #dbeafe;
 }
 
-/* Contenedor de Grid */
 .cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Más ancho para mejor lectura */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
     gap: 1.5rem;
     width: 100%;
 }
 
 .info-card {
     background: #ffffff;
-    border: 1px solid #e5e7eb; /* Borde sutil gris */
+    border: 1px solid #e5e7eb; 
     border-radius: 16px;
     padding: 1.5rem;
     display: flex;
-    align-items: center; /* Alineación horizontal icono-texto */
+    align-items: center; 
     gap: 1rem;
-    text-align: left; /* Alineamos a la izquierda para mejor lectura */
+    text-align: left; 
     transition: all 0.2s ease;
 }
 
@@ -235,14 +216,12 @@
     text-align: center;
 }
 
-/* Hover más sutil y elegante */
 .info-card:hover {
     transform: translateY(-3px);
-    border-color: var(--primary-color); /* El borde se pinta verde */
+    border-color: var(--primary-color); 
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .stats-container {
         flex-direction: column;
@@ -251,6 +230,6 @@
         font-size: 2rem;
     }
     .cards-container {
-        grid-template-columns: 1fr; /* Una columna en móvil */
+        grid-template-columns: 1fr; 
     }
 }

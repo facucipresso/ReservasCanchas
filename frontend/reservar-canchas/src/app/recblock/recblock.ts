@@ -1,10 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input,OnInit, Output} from '@angular/core';
 import { FieldDetailModel } from '../models/field/field.model';
 import { ButtonModule } from 'primeng/button';
 import { RecBlockResponseModel } from '../models/recblock/recblockresponse.model';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { WeekDay } from '../models/complex/weekday.enum';
@@ -50,10 +49,8 @@ export class Recblock implements OnInit{
     this.blocks = this.field.recurringCourtBlocks;
     console.log('Bloques recurrentes:', this.blocks);
     
-    // Suscribirse a cambios en el día para actualizar las horas disponibles
     this.blockForm.get('day')?.valueChanges.subscribe((day) => {
       this.updateAvailableHours(day);
-      // Limpiar selecciones de hora cuando cambia el día
       this.blockForm.patchValue({ startTime: '', endTime: '' });
     });
 
@@ -94,7 +91,6 @@ export class Recblock implements OnInit{
       return hours;
     }
 
-    // Cruza medianoche
     for (let h = startH; h < 24; h++) {
       hours.push(h.toString().padStart(2, '0') + ':00');
     }
@@ -117,7 +113,6 @@ export class Recblock implements OnInit{
       return;
     }
 
-    //Validar que el rango sea coherente (máximo 19 horas si abres de 07 a 02)
     if (duration > 19) { 
       this.invalidHoursError = "El rango seleccionado es demasiado extenso";
       return;

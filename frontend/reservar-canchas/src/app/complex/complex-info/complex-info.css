@@ -1,11 +1,9 @@
-/* ========== CONTENEDOR GENERAL ========== */
 .complex-info-container{
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* ========== IMAGEN DEL COMPLEJO ========== */
 .img-container {
   width: 100%;
   border-radius: 16px;
@@ -19,7 +17,6 @@
   object-fit: cover;
 }
 
-/* ========== INFO GENERAL ========== */
 .basicinfo-complex-container {
   padding: 1rem;
   display: flex;
@@ -41,24 +38,23 @@
 
 .rating-container {
   display: flex;
-  align-items: center; /* Alinea verticalmente al centro */
-  gap: 0.5rem; /* Espacio entre los elementos */
+  align-items: center; 
+  gap: 0.5rem; 
 }
 
 .label {
   font-weight: 600;
-  color: black; /* Gris medio */
+  color: black; 
   font-size: 1.2rem;
 }
 
-/* Estilo para el número (Badge) */
 .score-badge {
-  background-color: #f3f4f6; /* Fondo gris muy clarito */
-  color: #1f2937; /* Texto oscuro */
+  background-color: #f3f4f6; 
+  color: #1f2937;
   font-weight: 700;
   font-size: 1.rrem;
   padding: 2px 8px;
-  border-radius: 6px; /* Bordes redondeados */
+  border-radius: 6px; 
   border: 1px solid #e5e7eb;
 }
 
@@ -78,7 +74,6 @@
   font-weight: bold;
 }
 
-/* ========== ESTRELLAS CALIFICACIÓN ========== */
 .rating-stars {
   display: flex;
   gap: 4px;
@@ -93,7 +88,6 @@
   color: gold;
 }
 
-/* ========== PANEL EXTRA (HORARIOS + SERVICIOS) ========== */
 .info-extra-container{
   display: flex;
   flex-direction: column;
@@ -147,32 +141,29 @@ p-panel ::ng-deep .p-panel-content {
   padding: 1rem 1.5rem !important;
 }
 
-/* --- Estilos para cuando son pocas (Estático) --- */
 .static-reviews-container {
     display: flex;
-    justify-content: center; /* Las centra en la pantalla */
-    gap: 1.5rem; /* Espacio entre ellas si hay 2 */
+    justify-content: center; 
+    gap: 1.5rem; 
     flex-wrap: wrap;
 }
 
 .static-card-wrapper {
     width: 100%;
-    max-width: 350px; /* <--- ESTO EVITA QUE SE ESTIRE */
+    max-width: 350px; 
     flex: 0 0 auto;
 }
 
-/* --- Estilos para el Carrusel --- */
 .carousel-item-wrapper {
     padding: 10px;
     height: 100%;
-    display: flex;       /* Flex para centrar si el slot es grande */
+    display: flex;       
     justify-content: center; 
 }
 
-/* Aplicamos el mismo límite de ancho dentro del carrusel */
 .carousel-item-wrapper app-review-card {
     width: 100%;
-    max-width: 350px; /* <--- Mismo tamaño máximo para consistencia */
+    max-width: 350px; 
     display: block;
 }
 
@@ -188,10 +179,9 @@ p-panel ::ng-deep .p-panel-content {
   color: #000;
 }
 
-/* Base del Badge */
 .state-badge {
   padding: 6px 14px;
-  border-radius: 20px; /* Estilo píldora */
+  border-radius: 20px; 
   font-weight: 700;
   font-size: 1rem;
   text-transform: uppercase;
@@ -199,7 +189,6 @@ p-panel ::ng-deep .p-panel-content {
   border: 1px solid transparent;
 }
 
-/* Variaciones por estado */
 .state-badge.habilitado {
   background-color: #dcfce7;
   color: #15803d;
@@ -214,19 +203,19 @@ p-panel ::ng-deep .p-panel-content {
 
 .state-badge.bloqueado {
   background-color: #fee2e2;
-  color: #b91c1c; /* Rojo fuerte */
+  color: #b91c1c; 
   border-color: #fecaca;
 }
 
 .state-badge.rechazado {
   background-color: #fff1f2;
-  color: #fb7185; /* Rojo claro / rosado fuerte */
+  color: #fb7185; 
   border-color: #ffe4e6;
 }
 
 .state-badge.deshabilitado {
   background-color: #ffedd5;
-  color: #c2410c; /* Naranja */
+  color: #c2410c; 
   border-color: #fed7aa;
 }
 
@@ -259,7 +248,6 @@ p-panel ::ng-deep .p-panel-content {
   color: #444;
 }
 
-/* Los puntos de color para vinculación visual rápida */
 .dot {
   width: 10px;
   height: 10px;
@@ -273,7 +261,6 @@ p-panel ::ng-deep .p-panel-content {
 .dot.rechazado { background-color: #f87171; }
 .dot.deshabilitado { background-color: #f97316; }
 
-/* Personalización del componente PrimeNG (opcional) */
 ::ng-deep .p-popover {
   box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
   border-radius: 12px !important;

@@ -1,6 +1,4 @@
-export interface userRequestModel{
-    //id: number; no tiene id
-    //userName: string; no tiene username, solo los 4 de abajo
+export interface UserRequestModel{
     name : string;
     lastName : string;
     email: string;

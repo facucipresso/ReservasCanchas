@@ -1,185 +1,179 @@
 /* Card */
 .card {
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-  }
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
   
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1.25rem 1.5rem;
-    background-color: #3b82f6;
-    color: white;
-  }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background-color: #3b82f6;
+  color: white;
+}
   
-  .reservation-detail-grid{
-    display: flex;
-    justify-content: center;
-  }
-  .card-body {
-    padding: 1.5rem;
-  }
-  
-  /* Info */
-  .info-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  
-  .info-group.compact {
-    gap: 0.25rem;
-  }
-  
-  .highlight-text {
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
-  
-  .inline-row,
-  .user-inline {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    font-size: 0.85rem;
-    background: #f9fafb;
-    padding: 0.6rem 0.75rem;
-    border-radius: 8px;
-  }
-  
-  .inline-row i,
-  .user-inline i {
-    color: #3b82f6;
-  }
+.reservation-detail-grid{
+  display: flex;
+  justify-content: center;
+}
 
-  i{
-    color: #3b82f6;
-    margin-right: 5px;
-  }
+.card-body {
+  padding: 1.5rem;
+}
   
-  .dot {
-    opacity: 0.4;
-  }
+.info-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
   
-  /* Divider */
-  .divider {
-    border: none;
-    border-top: 1px solid #e5e7eb;
-    margin: 1.1rem 0;
-  }
+.info-group.compact {
+  gap: 0.25rem;
+}
   
-  /* Date & time */
-  .date-time-box {
-    display: flex;
-    gap: 1rem;
-  }
+.highlight-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
   
-  .dt-item {
-    flex: 1;
-    background: #f9fafb;
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    display: flex;
-    gap: 0.75rem;
-  }
+.inline-row,
+.user-inline {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  background: #f9fafb;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+}
   
-  /* Field + price */
-  .field-price-box {
-    background: #f9fafb;
-    border-radius: 12px;
-    padding: 1rem;
-  }
+.inline-row i,
+.user-inline i {
+  color: #3b82f6;
+}
+
+i{
+  color: #3b82f6;
+  margin-right: 5px;
+}
   
-  .field-name-large {
-    font-weight: 600;
-  }
+.dot {
+  opacity: 0.4;
+}
   
-  .field-meta-row {
-    font-size: 0.85rem;
-    display: flex;
-    gap: 0.5rem;
-  }
+.divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.1rem 0;
+}
   
-  .breakdown-list {
-    margin-top: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
+.date-time-box {
+  display: flex;
+  gap: 1rem;
+}
   
-  .breakdown-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-  }
+.dt-item {
+  flex: 1;
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  gap: 0.75rem;
+}
   
-  .breakdown-divider {
-    height: 1px;
-    background: #e5e7eb;
-    margin: 0.4rem 0;
-  }
+.field-price-box {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1rem;
+}
   
-  .total-row {
-    font-weight: 600;
-  }
+.field-name-large {
+  font-weight: 600;
+}
   
-  /* Voucher */
-  .voucher-box {
-    background: #f9fafb;
-    padding: 0.75rem;
-    border-radius: 10px;
-  }
+.field-meta-row {
+  font-size: 0.85rem;
+  display: flex;
+  gap: 0.5rem;
+}
   
-  .voucher-box img {
-    max-width: 100%;
-    border-radius: 8px;
-  }
+.breakdown-list {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
   
-  /* Actions */
-  .actions-box {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-  }
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
   
-  .btn {
-    border: none;
-    border-radius: 8px;
-    padding: 0.45rem 0.9rem;
-    font-size: 0.8rem;
-    cursor: pointer;
-  }
+.breakdown-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 0.4rem 0;
+}
   
-  .btn.success { background: #22c55e; color: white; }
-  .btn.danger { background: #ef4444; color: white; }
+.total-row {
+  font-weight: 600;
+}
   
-  /* Layout */
-  .reservation-detail-wrapper {
-    max-width: 1200px;
-    margin: auto;
-    padding: 1rem;
-  }
+.voucher-box {
+  background: #f9fafb;
+  padding: 0.75rem;
+  border-radius: 10px;
+}
   
-  .col-left {
-    width: 90%;
-  }
+.voucher-box img {
+  max-width: 100%;
+  border-radius: 8px;
+}
   
-  .button-voucher{
-    background: #111 ;
-    border: none ;
-    padding: .8rem 1.2rem ;
-    width: 45%;
-    border-radius: 8px ;
-    color: white;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
+.actions-box {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+  
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+  
+.btn.success { background: #22c55e; color: white; }
+.btn.danger { background: #ef4444; color: white; }
+  
+.reservation-detail-wrapper {
+  max-width: 1200px;
+  margin: auto;
+  padding: 1rem;
+}
+  
+.col-left {
+  width: 90%;
+}
+  
+.button-voucher{
+  background: #111 ;
+  border: none ;
+  padding: .8rem 1.2rem ;
+  width: 45%;
+  border-radius: 8px ;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
 
 .loading-container {
   height: 70vh;              
@@ -189,88 +183,79 @@
 }
 
 .field-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* ESTO CENTRA HORIZONTALMENTE */
-    width: 100%;
-    margin-bottom: 1.5rem; /* Separación con los precios */
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  width: 100%;
+  margin-bottom: 1.5rem;
 }
-
-/* --- COLORES POR ESTADO --- */
 
 .status-badge {
   padding: 0.4rem 0.8rem;
-  border-radius: 50px; /* Bordes redondeados tipo píldora */
+  border-radius: 50px;
   font-weight: 700;
   font-size: 0.8rem;
   letter-spacing: 0.3px;
-  text-transform: uppercase; /* Opcional: Para que se vea más uniforme */
+  text-transform: uppercase;
   display: inline-block;
-  min-width: 90px; /* Para que todos tengan un ancho similar */
+  min-width: 90px;
   text-align: center;
 }
 
-
-/* 1. AMARILLO (Pendiente) */
 .status-badge[data-status="Pendiente"] {
-  background-color: #FEF9C3; /* Amarillo suave fondo */
-  color: #854D0E;           /* Amarillo oscuro texto */
+  background-color: #FEF9C3;
+  color: #854D0E;          
   border: 1px solid #FEF08A;
 }
 
-/* 2. VERDE (Aprobada) */
 .status-badge[data-status="Aprobada"] {
-  background-color: #DCFCE7; /* Verde suave fondo */
-  color: #166534;            /* Verde oscuro texto */
+  background-color: #DCFCE7; 
+  color: #166534;           
   border: 1px solid #BBF7D0;
 }
 
-/* 3. AZUL (Completada) */
 .status-badge[data-status="Completada"] {
-  background-color: #DBEAFE; /* Azul suave fondo */
-  color: #1E40AF;            /* Azul oscuro texto */
+  background-color: #DBEAFE; 
+  color: #1E40AF;            
   border: 1px solid #BFDBFE;
 }
 
-/* 4. ROJO (Canceladas - Incluye todas las variantes) */
-/* El selector ~= busca la palabra completa, pero aquí usamos coincidencia exacta o múltiple */
 .status-badge[data-status="Cancelado"],
 .status-badge[data-status="CanceladoConDevolucion"], 
 .status-badge[data-status="CanceladoSinDevolucion"],
 .status-badge[data-status="CanceladoPorAdmin"] {
-  background-color: #FEE2E2; /* Rojo suave fondo */
-  color: #991B1B;            /* Rojo oscuro texto */
+  background-color: #FEE2E2; 
+  color: #991B1B;      
   border: 1px solid #FECACA;
 }
 
-/* 5. OTRO (Rechazada) - Gris Oscuro / Negro suave */
 .status-badge[data-status="Rechazada"] {
-  background-color: #F3F4F6; /* Gris muy suave */
-  color: #374151;            /* Gris oscuro */
+  background-color: #F3F4F6; 
+  color: #374151;           
   border: 1px solid #D1D5DB;
 }
 
 .textarea {
   width: 100%;
-  resize: none; /* Evita que el usuario rompa el diseño redimensionando */
+  resize: none; 
   min-height: 100px;
 }
 
 .info-cancel {
   display: flex;
   gap: 1rem;
-  background-color: #fff7ed; /* Fondo naranja muy suave */
-  border-left: 4px solid #f97316; /* Borde naranja vibrante */
+  background-color: #fff7ed; 
+  border-left: 4px solid #f97316; 
   padding: 1rem;
   border-radius: 6px;
   margin-bottom: 1.5rem;
-  color: #431407; /* Texto marrón oscuro para contraste */
+  color: #431407; 
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .info-icon i {
   font-size: 1.5rem;
-  color: #ea580c; /* Icono naranja fuerte */
+  color: #ea580c;
   margin-top: 2px;
 }
 

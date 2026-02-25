@@ -3,7 +3,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { Fluid } from 'primeng/fluid';
 import { InputMask } from 'primeng/inputmask';
 import { InputTextModule } from 'primeng/inputtext';
 import { Password, PasswordModule } from 'primeng/password';

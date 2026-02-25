@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FieldTable } from './field-table';
+import { FieldTable } from '../field-table/field-table';
 
 describe('FieldTable', () => {
   let component: FieldTable;

@@ -50,13 +50,8 @@ export class ReservationDetail implements OnInit, OnChanges {
   visibleReviewModal = false;
   review!: ReviewResponse;
   public readonly ReservationType = ReservationType;
-  constructor(
-    private reservationService: Reservation, 
-    private reviewService: Review,
-    private messageService : MessageService,
-    private confirmationService : ConfirmationService,
-    private router: Router,
-    private route: ActivatedRoute
+  constructor(private reservationService: Reservation, private reviewService: Review, private messageService : MessageService,
+    private confirmationService : ConfirmationService, private router: Router, private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {

@@ -35,7 +35,6 @@
     justify-content: center;
 }
 
-/* LOGO */
 .logo {
     height: 100%;
     margin-top: 15px;
@@ -44,8 +43,6 @@
     cursor: pointer;
 }
 
-
-/* BOTÓN LOGIN */
 ::ng-deep .header-right .p-button {
   transition: background .2s ease;
 }
@@ -54,7 +51,6 @@
   background: #272d35 !important;
 }
 
-/* AVATAR */
 .avatar-container {
     display: flex;
     align-items: center;
@@ -82,7 +78,6 @@
     margin-bottom: 1rem;
 }
 
-
 .form-row {
     width: 100%;
     gap: 1rem;
@@ -93,7 +88,6 @@
     width: 100%;
 }
 
-/* Input ajustable */
 .form-input {
     flex: 1 1 auto;
 }
@@ -108,7 +102,6 @@
   color: black !important;
 }
 
-/* Contenedor de botones */
 .dialog-buttons {
     display: flex;
     justify-content: flex-end;

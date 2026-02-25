@@ -1,6 +1,5 @@
 :host {
-  /* Variables de Color */
-  --primary-color: #22c55e; /* Verde Cancha */
+  --primary-color: #22c55e;
   --primary-dark: #15803d;
   --text-dark: #1f2937;
   --text-gray: #6b7280;
@@ -19,7 +18,6 @@
   color: var(--text-dark);
 }
 
-/* --- HEADER & TIMER --- */
 .checkout-header {
   display: flex;
   justify-content: space-between;
@@ -61,16 +59,14 @@
   border: 2px solid var(--danger);
 }
 
-/* --- GRID LAYOUT (2 COLUMNAS) --- */
 .checkout-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 50% - 50% */
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-bottom: 2rem;
   align-items: start;
 }
 
-/* --- CARDS GENERAL STYLES --- */
 .card {
   background: var(--white);
   border-radius: var(--border-radius);
@@ -114,7 +110,6 @@
   padding: 1.5rem;
 }
 
-/* --- IZQUIERDA: DETALLES --- */
 .info-group {
   margin-bottom: 1.5rem;
 }
@@ -153,11 +148,10 @@
   margin: 1.5rem 0;
 }
 
-/* Caja de Fecha y Hora */
 .date-time-box {
   display: flex;
   gap: 1rem;
-  background-color: #f0fdf4; /* Verde muy claro */
+  background-color: #f0fdf4; 
   padding: 1rem;
   border-radius: 8px;
   border: 1px solid #dcfce7;
@@ -196,28 +190,28 @@
 }
 
 .field-highlight {
-  background-color: #f8fafc; /* Fondo gris muy suave */
+  background-color: #f8fafc; 
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 1rem;
-  text-align: center; /* Centrado para mayor impacto */
+  text-align: center; 
   margin-bottom: 1rem;
 }
 
 .field-name-large {
-  font-size: 1.5rem; /* Letra grande */
-  font-weight: 800;  /* Muy negrita */
-  color: var(--primary-dark); /* Usamos el verde oscuro o el color principal */
+  font-size: 1.5rem; 
+  font-weight: 800;  
+  color: var(--primary-dark); 
   line-height: 1.2;
-  margin-bottom: 0.5rem; /* Espacio antes de los detalles */
-  text-transform: uppercase; /* Opcional: Nombre en mayúsculas */
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
 }
 
 .field-meta-row {
   display: flex;
-  justify-content: center; /* Centramos los ítems en la fila */
+  justify-content: center;
   align-items: center;
-  gap: 10px; /* Espacio entre elementos */
+  gap: 10px;
   color: var(--text-gray);
   font-size: 0.95rem;
   font-weight: 500;
@@ -230,12 +224,12 @@
 }
 
 .meta-item i {
-  color: var(--primary-color); /* Iconos en verde */
+  color: var(--primary-color); 
   font-size: 0.9rem;
 }
 
 .meta-divider {
-  color: #cbd5e1; /* Color suave para el punto separador */
+  color: #cbd5e1; 
   font-weight: bold;
 }
 
@@ -256,9 +250,6 @@
   color: var(--primary-color);
 }
 
-/* --- DERECHA: PAGO Y DATOS --- */
-
-/* Datos personales grid */
 .personal-info-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -286,14 +277,11 @@
   font-weight: 700;
   color: var(--text-dark);
   font-size: 1rem;
-  /* Para que si el email es muy largo no rompa el diseño */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; 
 }
 
-
-/* Caja CBU */
 .cbu-box {
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -328,7 +316,6 @@
   font-weight: 600;
 }
 
-/* Upload */
 .upload-section {
   margin-bottom: 1.5rem;
 }
@@ -343,7 +330,6 @@
   width: 100%;
 }
 
-/* Para que el botón de PrimeNG ocupe todo el ancho */
 ::ng-deep .custom-fileupload .p-fileupload-basic, 
 ::ng-deep .custom-fileupload .p-button {
   width: 100% !important;
@@ -353,7 +339,7 @@
 .disclaimer-box {
   font-size: 0.85rem;
   color: #6b7280;
-  background-color: #fffbeb; /* Amarillo muy suave */
+  background-color: #fffbeb;
   padding: 1rem;
   border-radius: 8px;
   line-height: 1.5;
@@ -373,7 +359,7 @@
 
 .price-breakdown-container {
   margin-top: 1.5rem;
-  border-top: 2px dashed #e5e7eb; /* Línea punteada tipo ticket */
+  border-top: 2px dashed #e5e7eb; 
   padding-top: 1.5rem;
 }
 
@@ -397,7 +383,6 @@
   margin: 0.5rem 0 1rem 0;
 }
 
-/* --- SELECCIÓN DE PAGO --- */
 
 .payment-selection {
   margin: 1.5rem 0;
@@ -422,10 +407,9 @@
   cursor: pointer;
 }
 
-/* Efecto al seleccionar */
 .radio-option.selected {
   border-color: var(--primary-color);
-  background-color: #f0fdf4; /* Verde muy muy suave */
+  background-color: #f0fdf4; 
   box-shadow: 0 0 0 1px var(--primary-color);
 }
 
@@ -448,13 +432,11 @@
   color: var(--primary-dark);
 }
 
-/* Ajuste fino para el componente de PrimeNG */
 ::ng-deep .p-radiobutton .p-radiobutton-box.p-highlight {
   border-color: var(--primary-color);
   background: var(--primary-color);
 }
 
-/* --- CAJA TOTAL FINAL --- */
 
 .final-total-box {
   background-color: var(--text-dark);
@@ -471,13 +453,12 @@
 .final-total-box .amount {
   font-size: 1.6rem;
   font-weight: 800;
-  color: var(--primary-color); /* El precio resalta en verde sobre fondo oscuro */
+  color: var(--primary-color);
 }
 
-/* --- FOOTER BUTTONS --- */
 .checkout-actions {
   display: flex;
-  justify-content: flex-end; /* Botones a la derecha */
+  justify-content: flex-end;
   gap: 1rem;
   margin-top: 1rem;
   padding-top: 1rem;
@@ -494,10 +475,9 @@
   padding: 1rem 1.5rem;
 }
 
-/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   .checkout-grid {
-    grid-template-columns: 1fr; /* 1 Columna en móviles */
+    grid-template-columns: 1fr;
     gap: 1.5rem;
   }
   
@@ -512,7 +492,7 @@
   }
   
   .checkout-actions {
-    flex-direction: column-reverse; /* Confirmar arriba en móvil */
+    flex-direction: column-reverse;
   }
   
   .checkout-actions button {

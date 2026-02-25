@@ -5,8 +5,6 @@
   color: #111;
 }
 
-/* ========== COMPLEJO NO ENCONTRADO ========== */
-
 .not-found-container {
   height: 70vh;
   display: flex;
@@ -25,7 +23,7 @@
 
 .not-found-icon {
   font-size: 4rem;
-  color: #f59e0b; /* amber */
+  color: #f59e0b; 
   margin-bottom: 1rem;
 }
 
@@ -39,7 +37,6 @@
   font-size: 1rem;
 }
 
-/* ========== LOADING ========== */
 .loading-container {
   height: 70vh;              
   display: flex;

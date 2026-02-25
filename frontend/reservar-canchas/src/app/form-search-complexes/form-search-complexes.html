@@ -18,7 +18,7 @@
     (completeMethod)="search($event)"
     fluid
     (onBlur)="validateLocality()"
-    [style]="{'min-width':'200px'}"
+    [style]="{ 'min-width': '200px' }"
     emptyMessage="No se encontraron resultados"
   >
   </p-autocomplete>
@@ -48,7 +48,7 @@
     showIcon
     [minDate]="dateNow"
     [maxDate]="maxDateValid"
-    [style]="{'max-width':'240px'}"
+    [style]="{ 'max-width': '240px' }"
   />
   <p-select
     formControlName="hour"
@@ -56,7 +56,7 @@
     optionLabel="label"
     optionValue="value"
     placeholder="Horario"
-    [style]="{'max-width':'120px'}"
+    [style]="{ 'max-width': '120px' }"
   >
     <ng-template #dropdownicon>
       <i class="pi pi-clock" style="color: black"></i>
@@ -65,7 +65,11 @@
   <p-button
     label="Buscar canchas"
     type="submit"
-    [style]="{ 'border-radius': '30px', 'margin-left':'10px' , 'padding':'15px'}"
+    [style]="{
+      'border-radius': '30px',
+      'margin-left': '10px',
+      padding: '15px',
+    }"
     [disabled]="form.invalid"
   />
 </form>

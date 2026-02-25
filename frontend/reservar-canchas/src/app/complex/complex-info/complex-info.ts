@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Message } from 'primeng/message';
 import { Panel } from 'primeng/panel';
 import { FieldDetailModel } from '../../models/field/field.model';
-import { FieldTable } from '../field-table/field-table';
+import { FieldTable } from '../../field/field-table/field-table';
 import { ReviewResponse } from '../../models/reservation/reviewresponse.model';
 import { ReviewCard } from '../../review-card/review-card';
 import { CarouselModule } from 'primeng/carousel';

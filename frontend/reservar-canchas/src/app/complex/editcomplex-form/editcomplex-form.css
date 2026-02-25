@@ -17,7 +17,6 @@
   transition: color 0.25s ease;
 }
 
-/* Línea animada */
 .section-tabs button::after {
   content: '';
   position: absolute;
@@ -31,7 +30,6 @@
   border-radius: 2px;
 }
 
-/* ACTIVO */
 .section-tabs button.active {
   color: #111;
 }
@@ -44,8 +42,6 @@
   padding: 0.5rem 0;
 }
 
-/* ===== GRID ===== */
-
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -53,20 +49,14 @@
   margin-top: 20px;
 }
 
-/* Inputs ocupan toda la celda */
 .form-grid > div {
   width: 100%;
 }
 
-/* ===== TEXTAREA ===== */
 
 .container-textarea {
-  grid-column: span 2; /* ocupa ambas columnas */
+  grid-column: span 2; 
 }
-
-
-
-/* ===== PRIME INPUTS ===== */
 
 .p-inputtext,
 .p-inputnumber,
@@ -75,7 +65,6 @@
   width: 100%;
 }
 
-/* Altura consistente */
 .p-inputtext,
 ::ng-deep.p-inputnumber-input,
 .p-select,
@@ -83,20 +72,15 @@
   min-height: 42px;
 }
 
-/* Textarea */
 textarea[pTextarea] {
   width: 100%;
   min-height: 120px;
   resize:none;
 }
 
-/* ===== FLOAT LABEL ===== */
-
 p-floatlabel {
   width: 100%;
 }
-
-/* ===== ERRORES ===== */
 
 small {
   margin-top: 4px;
@@ -105,13 +89,9 @@ small {
   color: red;
 }
 
-/* ===== BOTÓN ===== */
-
 .form-section p-button {
   margin-top: 1rem;
 }
-
-/* ===== RESPONSIVE ===== */
 
 .day-slots {
   display: flex;
@@ -177,7 +157,6 @@ small {
   margin-top: 20px;
 }
 
-/* Upload */
 .upload-section {
   padding: 0.5rem 0;
   margin-top: 1rem;

@@ -12,7 +12,10 @@
     @if (isAdmin) {
       <div class="complex-state-container">
         <span class="state-label">Estado del complejo:</span>
-        <span class="state-badge" [ngClass]="complex.complexState.toLowerCase()">
+        <span
+          class="state-badge"
+          [ngClass]="complex.complexState.toLowerCase()"
+        >
           {{ complex.complexState }}
         </span>
         <i
@@ -79,7 +82,11 @@
         </p-rating>
 
         <div class="score-badge">
-          {{ complex.averageRating | number: "1.1-1" }} / 5
+          @if (complex.averageRating % 1 === 0) {
+            {{ complex.averageRating | number: "1.0-0" }} / 5
+          } @else {
+            {{ complex.averageRating | number: "1.1-1" }} / 5
+          }
         </div>
       </div>
     }
@@ -183,7 +190,8 @@
 <p-dialog
   header="{{
     complex.complexState === complexState.Rechazado
-      ? 'Estado de la Solicitud' : 'Aviso de Restricción'
+      ? 'Estado de la Solicitud'
+      : 'Aviso de Restricción'
   }}"
   [modal]="true"
   [(visible)]="visible"
@@ -192,34 +200,57 @@
   [style]="{ width: '450px' }"
   styleClass="modern-dialog"
 >
-<div class="dialog-content">
-    <div class="status-icon-container" [ngClass]="complex.complexState === complexState.Rechazado ? 'rejected' : 'blocked'">
-      <i [class]="complex.complexState === complexState.Rechazado ? 'pi pi-exclamation-circle' : 'pi pi-lock'"></i>
+  <div class="dialog-content">
+    <div
+      class="status-icon-container"
+      [ngClass]="
+        complex.complexState === complexState.Rechazado ? 'rejected' : 'blocked'
+      "
+    >
+      <i
+        [class]="
+          complex.complexState === complexState.Rechazado
+            ? 'pi pi-exclamation-circle'
+            : 'pi pi-lock'
+        "
+      ></i>
     </div>
 
     @if (complex.complexState === complexState.Rechazado) {
       <div class="message-body">
         <h3>Solicitud de revisión denegada</h3>
-        <p>Lamentamos informarte que tu complejo no ha superado el proceso de validación técnica en este momento.</p>
-        
+        <p>
+          Lamentamos informarte que tu complejo no ha superado el proceso de
+          validación técnica en este momento.
+        </p>
+
         <div class="reason-box">
           <strong>Motivo observado:</strong>
           <p>{{ complex.cancelationReason }}</p>
         </div>
 
         <p class="instruction">
-          Puedes realizar los ajustes necesarios siguiendo nuestras normativas y solicitar una nueva evaluación.
+          Puedes realizar los ajustes necesarios siguiendo nuestras normativas y
+          solicitar una nueva evaluación.
         </p>
       </div>
-      
-      <div class="dialog-footer">
-        <button (click)="onStateChange()" pButton label="Enviar nuevamente a revisión" icon="pi pi-refresh" class="p-button-raised p-button-primary"></button>
-      </div>
 
+      <div class="dialog-footer">
+        <button
+          (click)="onStateChange()"
+          pButton
+          label="Enviar nuevamente a revisión"
+          icon="pi pi-refresh"
+          class="p-button-raised p-button-primary"
+        ></button>
+      </div>
     } @else {
       <div class="message-body">
         <h3>Acceso restringido</h3>
-        <p>El perfil de tu complejo ha sido suspendido temporalmente por el equipo de administración.</p>
+        <p>
+          El perfil de tu complejo ha sido suspendido temporalmente por el
+          equipo de administración.
+        </p>
 
         <div class="reason-box warning">
           <strong>Causa de la suspensión:</strong>
@@ -227,12 +258,18 @@
         </div>
 
         <p class="instruction">
-          Para restablecer el servicio o realizar aclaraciones, por favor contacta a nuestro departamento de soporte técnico.
+          Para restablecer el servicio o realizar aclaraciones, por favor
+          contacta a nuestro departamento de soporte técnico.
         </p>
       </div>
 
       <div class="dialog-footer">
-        <button pButton label="Contactar Soporte" icon="pi pi-envelope" class="p-button-outlined p-button-secondary"></button>
+        <button
+          pButton
+          label="Contactar Soporte"
+          icon="pi pi-envelope"
+          class="p-button-outlined p-button-secondary"
+        ></button>
       </div>
     }
   </div>
