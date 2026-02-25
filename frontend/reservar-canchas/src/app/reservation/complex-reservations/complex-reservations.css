@@ -1,7 +1,6 @@
-/* --- LAYOUT PRINCIPAL --- */
 .main-container {
   display: flex;
-  flex-direction: column; /* Cambiado: Ahora los hijos se apilan uno sobre otro */
+  flex-direction: column;
   gap: 1.5rem; 
   padding: 2rem;
   width: 100%;
@@ -14,7 +13,7 @@
 
 .content-wrapper {
   display: flex;
-  flex-direction: row; /* Estos dos sí van uno al lado del otro */
+  flex-direction: row;
   align-items: flex-start;
   gap: 1.5rem;
   width: 100%;
@@ -121,7 +120,6 @@ app-reservation-list {
   font-size: 1.5rem;
 }
 
-/* Colores de fondo para los iconos */
 .occupancy-bg { background-color: #e0f2fe; color: #0284c7; }
 .revenue-bg { background-color: #dcfce7; color: #16a34a; }
 .reservations-bg { background-color: #fef3c7; color: #d97706; }

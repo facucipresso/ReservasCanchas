@@ -2,8 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit} from '@angular/core';
 import { FormSearchComplexes } from '../form-search-complexes/form-search-complexes';
 
-
-
 @Component({
   selector: 'app-home',
   imports: [CommonModule,FormSearchComplexes],

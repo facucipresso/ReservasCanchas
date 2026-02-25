@@ -157,6 +157,7 @@ namespace ReservasCanchas.BusinessLogic
                 ReservationType = reservation.ReservationType,
 
                 // fecha y hora
+                CreatedAt = reservation.CreatedAt,
                 Date = reservation.Date,
                 StartTime = reservation.StartTime,
 
@@ -243,6 +244,7 @@ namespace ReservasCanchas.BusinessLogic
                 ReservationType = reservation.ReservationType,
 
                 // fecha y hora
+                CreatedAt = reservation.CreatedAt,
                 Date = reservation.Date,
                 StartTime = reservation.StartTime,
 

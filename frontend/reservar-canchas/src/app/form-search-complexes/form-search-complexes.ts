@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder,FormGroup,ReactiveFormsModule,Validators,} from '@angular/forms';
+import { FormBuilder,FormGroup,ReactiveFormsModule,Validators,} from '@angular/forms';
 import { Location } from '../services/location';
 import { Select } from 'primeng/select';
-import {AutoCompleteCompleteEvent,AutoCompleteModule,} from 'primeng/autocomplete';
+import { AutoCompleteCompleteEvent,AutoCompleteModule,} from 'primeng/autocomplete';
 import { FieldType } from '../models/field/fieldtype.enum';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
-import {  Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FieldTypePipe } from '../pipes/field-type-pipe';
 

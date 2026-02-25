@@ -8,14 +8,14 @@ import { InputNumber, InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { Select, SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
-import { Location } from '../services/location';
-import { Complexservices } from '../services/complexservices';
-import { ComplexServiceModel } from '../models/complex/complexservice.model';
-import { WeekDay } from '../models/complex/weekday.enum';
-import { Auth } from '../services/auth';
+import { Location } from '../../services/location';
+import { Complexservices } from '../../services/complexservices';
+import { ComplexServiceModel } from '../../models/complex/complexservice.model';
+import { WeekDay } from '../../models/complex/weekday.enum';
+import { Auth } from '../../services/auth';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { Complex } from '../services/complex';
+import { Complex } from '../../services/complex';
 import { Router } from '@angular/router';
 
 @Component({

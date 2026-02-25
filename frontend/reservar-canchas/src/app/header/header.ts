@@ -5,12 +5,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { Dialog } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder,FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { Menu } from 'primeng/menu';
 import { MenuItem, MessageService } from 'primeng/api';
@@ -79,13 +74,11 @@ export class Header implements OnInit {
           }] : []),
           { label: 'Mi buzón', 
             icon: 'pi pi-envelope',
-            //agregado por facu para darle funcionalidad a 'buzon'
             command: () => this.goToBuzon() 
           },
           { 
             label: 'Mi perfil', 
             icon: 'pi pi-user',
-            //agregado por facu para darle funcionalidad a 'mi perfil'
             command: () => this.goToProfile()
           },
           { separator: true },

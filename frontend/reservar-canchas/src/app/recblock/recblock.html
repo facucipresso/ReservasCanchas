@@ -1,7 +1,15 @@
 <div class="container-recblock">
-  <button pButton style="margin-bottom: 1rem;" (click)="visibleAddBlockModal = true">
+  <button
+    pButton
+    style="margin-bottom: 1rem"
+    (click)="visibleAddBlockModal = true"
+  >
     <i class="pi pi-plus" pButtonIcon></i>
-    <span pButtonLabel style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500;" >Crear nuevo bloqueo recurrente</span>
+    <span
+      pButtonLabel
+      style="color: white; margin-left: 3px; font-size: 1rem; font-weight: 500"
+      >Crear nuevo bloqueo recurrente</span
+    >
   </button>
   <section class="active-blocks">
     <p-table [value]="blocks" [tableStyle]="{ 'min-width': '50rem' }">
@@ -17,11 +25,18 @@
       <ng-template #body let-block>
         <tr>
           <td>{{ block.weekDay }}</td>
-          <td>{{ block.startTime | slice:0:5 }}</td>
-          <td>{{ block.endTime | slice:0:5 }}</td>
+          <td>{{ block.startTime | slice: 0 : 5 }}</td>
+          <td>{{ block.endTime | slice: 0 : 5 }}</td>
           <td>{{ block.reason }}</td>
           <td>
-            <button pButton icon="pi pi-trash" severity="danger" (click)="confirmDeleteBlock(block.id)"> Eliminar </button>
+            <button
+              pButton
+              icon="pi pi-trash"
+              severity="danger"
+              (click)="confirmDeleteBlock(block.id)"
+            >
+              Eliminar
+            </button>
           </td>
         </tr>
       </ng-template>
@@ -29,24 +44,23 @@
   </section>
 </div>
 
-<p-dialog 
-  header="Nuevo bloqueo recurrente" 
-  [modal]="true" 
-  [(visible)]="visibleAddBlockModal" 
+<p-dialog
+  header="Nuevo bloqueo recurrente"
+  [modal]="true"
+  [(visible)]="visibleAddBlockModal"
   [style]="{ width: '40rem' }"
   [draggable]="false"
   [resizable]="false"
   [focusOnShow]="false"
-  [closable]="false">
-
+  [closable]="false"
+>
   <form [formGroup]="blockForm" class="recblock-form">
-    <!-- Fila con Día, Hora Inicio y Hora Fin -->
     <div class="recblock-row">
       <div>
         <label for="day" class="label">Día</label>
-        <p-select 
+        <p-select
           formControlName="day"
-          [options]="daysOfWeek" 
+          [options]="daysOfWeek"
           placeholder="Selecciona un día"
           id="day"
           class="full-width"
@@ -55,9 +69,9 @@
 
       <div>
         <label for="startTime" class="label">Hora inicio</label>
-        <p-select 
+        <p-select
           formControlName="startTime"
-          [options]="availableHours" 
+          [options]="availableHours"
           placeholder="Selecciona hora"
           id="startTime"
           class="full-width"
@@ -67,9 +81,9 @@
 
       <div>
         <label for="endTime" class="label">Hora fin</label>
-        <p-select 
+        <p-select
           formControlName="endTime"
-          [options]="availableHours" 
+          [options]="availableHours"
           placeholder="Selecciona hora"
           id="endTime"
           class="full-width"
@@ -78,34 +92,32 @@
       </div>
     </div>
 
-    <!-- Textarea para la razón -->
     <div>
       <label for="reason" class="label">Razón del bloqueo</label>
-      <textarea 
-        pInputTextarea 
-        formControlName="reason" 
+      <textarea
+        pInputTextarea
+        formControlName="reason"
         id="reason"
         rows="3"
         placeholder="Describe la razón del bloqueo"
         class="full-width textarea"
       ></textarea>
     </div>
-    @if(invalidHoursError){
-      <span style="color: red; font-size: .9rem;">{{invalidHoursError}}</span>
+    @if (invalidHoursError) {
+      <span style="color: red; font-size: 0.9rem">{{ invalidHoursError }}</span>
     }
-    <!-- Botones -->
     <div class="recblock-actions">
-      <button 
+      <button
         type="button"
-        pButton 
-        label="Cancelar" 
-        severity="secondary" 
+        pButton
+        label="Cancelar"
+        severity="secondary"
         (click)="onCancelAddBlock()"
       ></button>
-      <button 
+      <button
         type="button"
-        pButton 
-        label="Guardar" 
+        pButton
+        label="Guardar"
         (click)="onAddBlock()"
         [disabled]="!blockForm.valid"
       ></button>

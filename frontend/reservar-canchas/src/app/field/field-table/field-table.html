@@ -1,0 +1,178 @@
+<div class="info-field-container">
+  <p-table [value]="fields" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+    <ng-template #header>
+      <tr>
+        <th>Nombre</th>
+        <th>Precio por hora</th>
+        <th>Iluminacion</th>
+        <th>Cubierta</th>
+        <th>Horario</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-field>
+      <tr [class.disabled]="field.fieldState === 'Deshabilitada'">
+        <td style="font-weight: bold">
+          {{ field.name }} <br /><small style="color: #555; font-weight: 400"
+            >{{ field.fieldType | fieldTypeText }} -
+            {{ field.floorType | floorTypeText }}
+          </small>
+        </td>
+        <td>$ {{ field.hourPrice }}</td>
+        <td>
+          <i
+            class="pi"
+            style="font-size: 1.7rem; font-weight: bold"
+            [ngClass]="field.illumination ? 'pi-check' : 'pi-times'"
+          >
+          </i>
+        </td>
+        <td>
+          <i
+            class="pi"
+            style="font-size: 1.7rem; font-weight: bold"
+            [ngClass]="field.covered ? 'pi-check' : 'pi-times'"
+          >
+          </i>
+        </td>
+        <td>
+          @if (getTimeSlotForField(field); as slot) {
+            <p-select
+              [options]="
+                getSelectableHours(field.id, slot.startTime, slot.endTime)
+              "
+              [(ngModel)]="selectedHours[field.id]"
+              optionLabel="hour"
+              optionValue="hour"
+              placeholder="Elige un horario"
+              emptyMessage="No hay horarios disponibles"
+              appendTo="body"
+            ></p-select>
+          }
+        </td>
+        <td>
+          @if (isAdmin) {
+            <button
+              pButton
+              style="margin-right: 15px"
+              [disabled]="
+                !selectedHours[field.id] || field.fieldState === 'Deshabilitada'
+              "
+              (click)="openSpecificBlockDialog(field)"
+            >
+              <i class="pi pi-ban" pButtonIcon></i>
+              <span
+                pButtonLabel
+                style="
+                  color: white;
+                  margin-left: 3px;
+                  font-size: 1rem;
+                  font-weight: 500;
+                "
+                >Bloqueo puntual</span
+              >
+            </button>
+          } @else {
+            <button
+              pButton
+              style="margin-right: 15px"
+              [disabled]="!selectedHours[field.id]"
+              (click)="onReserve(field, selectedHours[field.id])"
+            >
+              <i class="pi pi-check" pButtonIcon></i>
+              <span
+                pButtonLabel
+                style="
+                  color: white;
+                  margin-left: 3px;
+                  font-size: 1rem;
+                  font-weight: 500;
+                "
+                >Reservar</span
+              >
+            </button>
+          }
+          @if (isAdmin) {
+            <button pButton style="margin-right: 15px" (click)="onEdit(field)">
+              <i class="pi pi-pencil" pButtonIcon></i>
+              <span
+                pButtonLabel
+                style="
+                  color: white;
+                  margin-left: 3px;
+                  font-size: 1rem;
+                  font-weight: 500;
+                "
+                >Editar</span
+              >
+            </button>
+            <button
+              pButton
+              (click)="onDelete(field.id)"
+              style="margin-right: 15px"
+            >
+              <i class="pi pi-trash" pButtonIcon></i>
+              <span
+                pButtonLabel
+                style="
+                  color: white;
+                  margin-left: 3px;
+                  font-size: 1rem;
+                  font-weight: 500;
+                "
+                >Eliminar</span
+              >
+            </button>
+            <button pButton (click)="onRecurringBlock(field)">
+              <i class="pi pi-ban" pButtonIcon></i>
+              <span
+                pButtonLabel
+                style="
+                  color: white;
+                  margin-left: 3px;
+                  font-size: 1rem;
+                  font-weight: 500;
+                "
+                >Bloqueo rec.</span
+              >
+            </button>
+          }
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  header="Nuevo bloqueo puntual"
+  [modal]="true"
+  [(visible)]="visible"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="false"
+  [style]="{ 'min-width': '25rem' }"
+>
+  <textarea
+    pInputTextarea
+    [(ngModel)]="reasonBlock"
+    id="reason"
+    rows="3"
+    placeholder="Indica la razón del bloqueo"
+    class="full-width textarea"
+  ></textarea>
+  <ng-template pTemplate="footer">
+    <div style="display: flex; gap: 15px">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        (click)="closeSpecificBlockDialog()"
+        ;
+      />
+      <p-button
+        label="Confirmar"
+        (click)="onConfirmSpecificBlock()"
+        [disabled]="!reasonBlock"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

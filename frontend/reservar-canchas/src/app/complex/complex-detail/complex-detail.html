@@ -1,77 +1,87 @@
 <p-toast position="top-center"></p-toast>
 
-
-@if(isLoading){
-    <div class="loading-container">
-      <p-progress-spinner></p-progress-spinner>
-    </div>
-}@else{
-<div class="complex-detail-container">
-    <app-complex-info 
-    #infoComponent
-    [complex]="complex" 
-    [isAdmin]="isAdmin" 
-    [selectedDate]="selectedDate" 
-    [fields]="fields"
-    [reviews]="reviews"
-    (editField)="onEditField($event)" 
-    (deleteField)="confirmDeleteField($event)"
-    (reserveField)="onReserveField($event)"
-    (recurringBlockField)="onRecurringBlockField($event)"
-    (specificBlockField)="onSpecificBlockField($event)"
-    (stateChanged)="changeComplexState()"
+@if (isLoading) {
+  <div class="loading-container">
+    <p-progress-spinner></p-progress-spinner>
+  </div>
+} @else {
+  <div class="complex-detail-container">
+    <app-complex-info
+      #infoComponent
+      [complex]="complex"
+      [isAdmin]="isAdmin"
+      [selectedDate]="selectedDate"
+      [fields]="fields"
+      [reviews]="reviews"
+      (editField)="onEditField($event)"
+      (deleteField)="confirmDeleteField($event)"
+      (reserveField)="onReserveField($event)"
+      (recurringBlockField)="onRecurringBlockField($event)"
+      (specificBlockField)="onSpecificBlockField($event)"
+      (stateChanged)="changeComplexState()"
     >
-        @if(isAdmin){
-          <button pButton (click)="showDialogComplex()" edit-complex-button>
-            <i class="pi pi-pencil" pButtonIcon></i>
-            <span pButtonLabel style="font-weight: 600;">Editar complejo</span>
-          </button>
-        }
-        @if(isAdmin){  
-          <button pButton (click)="confirmDeleteComplex()" class="danger" delete-complex-button>
-            <i class="pi pi-trash" pButtonIcon></i>
-            <span pButtonLabel style="font-weight: 600;">Eliminar complejo</span>
-          </button>
-        }
-        @if(isAdmin && complex.complexState != 'Pendiente'){  
-         <button pButton (click)="changeComplexState()" changestate-complex-button>
-            <span pButtonLabel style="font-weight: 600;">{{complex.complexState === 'Habilitado' ? 'Deshabilitar' : 'Habilitar'}}</span>
-          </button>
-        }
-        <p-datepicker
-          dateFormat="dd.mm.yy"
-          [(ngModel)]="selectedDate"
-          (onSelect)="onDateChange($event)"
-          showIcon
-          [minDate]="dateNow"
-          [maxDate]="maxDateValid"
-          [style]="{'max-width':'240px'}"
-          calendar
-        />
-        @if(isAdmin){
-          <button pButton (click)="onAddField()" add-field-button>
-            <i class="pi pi-plus" pButtonIcon></i>
-            <span pButtonLabel style="font-weight: 600;">Añadir cancha</span>
-          </button>
-        }
+      @if (isAdmin) {
+        <button pButton (click)="showDialogComplex()" edit-complex-button>
+          <i class="pi pi-pencil" pButtonIcon></i>
+          <span pButtonLabel style="font-weight: 600">Editar complejo</span>
+        </button>
+      }
+      @if (isAdmin) {
+        <button
+          pButton
+          (click)="confirmDeleteComplex()"
+          class="danger"
+          delete-complex-button
+        >
+          <i class="pi pi-trash" pButtonIcon></i>
+          <span pButtonLabel style="font-weight: 600">Eliminar complejo</span>
+        </button>
+      }
+      @if (isAdmin && complex.complexState != "Pendiente") {
+        <button
+          pButton
+          (click)="changeComplexState()"
+          changestate-complex-button
+        >
+          <span pButtonLabel style="font-weight: 600">{{
+            complex.complexState === "Habilitado" ? "Deshabilitar" : "Habilitar"
+          }}</span>
+        </button>
+      }
+      <p-datepicker
+        dateFormat="dd.mm.yy"
+        [(ngModel)]="selectedDate"
+        (onSelect)="onDateChange($event)"
+        showIcon
+        [minDate]="dateNow"
+        [maxDate]="maxDateValid"
+        [style]="{ 'max-width': '240px' }"
+        calendar
+      />
+      @if (isAdmin) {
+        <button pButton (click)="onAddField()" add-field-button>
+          <i class="pi pi-plus" pButtonIcon></i>
+          <span pButtonLabel style="font-weight: 600">Añadir cancha</span>
+        </button>
+      }
     </app-complex-info>
-</div>
-<p-dialog
-  header="Bloqueos recurrentes"
-  [modal]="true"
-  [(visible)]="visibleRecBlockModal"
-  [style]="{ width: '60%', minHeight: '90%', color: '#111' }"
-  [draggable]="false"
-  [resizable]="false"
-  [focusOnShow]="false">
-
-  @if (visibleRecBlockModal) {
-    <app-recblock 
-      [field]="selectedField"
-      (blocksUpdated)="infoComponent.refreshFieldReservations()"
-    ></app-recblock>
-  }
-</p-dialog>
+  </div>
+  <p-dialog
+    header="Bloqueos recurrentes"
+    [modal]="true"
+    [(visible)]="visibleRecBlockModal"
+    [style]="{ width: '60%', minHeight: '90%', color: '#111' }"
+    [draggable]="false"
+    [resizable]="false"
+    [focusOnShow]="false"
+  >
+    @if (visibleRecBlockModal) {
+      <app-recblock
+        [field]="selectedField"
+        (blocksUpdated)="infoComponent.refreshFieldReservations()"
+      ></app-recblock>
+    }
+  </p-dialog>
 }
 
 <p-dialog
@@ -85,13 +95,13 @@
   styleClass="custom-dialog-no-scroll"
 >
   <app-editcomplex-form
-  *ngIf="visibleEditComplexModal" 
-  [complex]="complex" 
-  [allServices]="allServices"
-  (saveBasic)="updateBasicInfo($event)"
-  (saveTimeSlots)="updateTimeSlots($event)"
-  (saveServices)="updateServices($event)"
-  (saveImage)="updateImage($event)"
+    *ngIf="visibleEditComplexModal"
+    [complex]="complex"
+    [allServices]="allServices"
+    (saveBasic)="updateBasicInfo($event)"
+    (saveTimeSlots)="updateTimeSlots($event)"
+    (saveServices)="updateServices($event)"
+    (saveImage)="updateImage($event)"
   ></app-editcomplex-form>
 </p-dialog>
 
@@ -104,19 +114,17 @@
   [resizable]="false"
   [focusOnShow]="false"
 >
-
-@if (visibleFieldFormModal) {
-  <app-fieldform 
-    [complex]="complex" 
-    [field]="selectedField" 
-    [formMode]="fieldFormMode" 
-    (create)="createField($event)"
-    (updateBasic)="updateBasicInfoField($event)"
-    (updateTimeSlots)="updateTimeSlotsField($event)"
-    (updateState)="updateStateField($event)"
-  ></app-fieldform>
-}
+  @if (visibleFieldFormModal) {
+    <app-fieldform
+      [complex]="complex"
+      [field]="selectedField"
+      [formMode]="fieldFormMode"
+      (create)="createField($event)"
+      (updateBasic)="updateBasicInfoField($event)"
+      (updateTimeSlots)="updateTimeSlotsField($event)"
+      (updateState)="updateStateField($event)"
+    ></app-fieldform>
+  }
 </p-dialog>
-
 
 <p-confirmdialog />

@@ -1,13 +1,12 @@
 import { Routes } from '@angular/router';
 import { Home } from './home/home';
-import { ComplexList } from './complex-list/complex-list';
+import { ComplexList } from './complex/complex-list/complex-list';
 import { ComplexDetail } from './complex/complex-detail/complex-detail';
 import { RegistrationForm } from './registration-form/registration-form';
-import { CreatecomplexForm } from './createcomplex-form/createcomplex-form';
+import { CreatecomplexForm } from './complex/createcomplex-form/createcomplex-form';
 import { ReservationCheckout } from './reservation/reservation-checkout/reservation-checkout';
 import { Profile } from './profile/profile';
 import { Buzon } from './buzon/buzon';
-import { ReservationDetail } from './reservation/reservation-detail/reservation-detail';
 import { MyReservations } from './reservation/my-reservations/my-reservations';
 import { ComplexReservations } from './reservation/complex-reservations/complex-reservations';
 import { adminGuard } from './guards/admin-guard';

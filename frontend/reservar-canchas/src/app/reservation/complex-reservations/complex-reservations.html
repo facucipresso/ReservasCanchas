@@ -48,7 +48,7 @@
       </div>
       <div class="stat-content">
         <span class="stat-label">Bloqueos específicos</span>
-        <div class="stat-value">{{ complexStats.specificBlocks}}</div>
+        <div class="stat-value">{{ complexStats.specificBlocks }}</div>
         <div class="stat-subtext">Mantenimiento / Cierre temporal</div>
       </div>
     </div>
@@ -58,7 +58,13 @@
       </div>
       <div class="stat-content">
         <span class="stat-label">Bloqueos recurrentes</span>
-        <div class="stat-value">{{ complexStats.occupiedSlots - complexStats.matches - complexStats.specificBlocks}}</div>
+        <div class="stat-value">
+          {{
+            complexStats.occupiedSlots -
+              complexStats.matches -
+              complexStats.specificBlocks
+          }}
+        </div>
         <div class="stat-subtext">Horas de bloqueo recurrente</div>
       </div>
     </div>
@@ -70,7 +76,8 @@
       [isAdminView]="true"
       [complex]="complex"
       [fields]="fields"
-      (onSelect)="selectedReservationId = $event"
+      [filterDateToQuery]="currentFilters.date"
+      (onSelect)="onReservationSelected($event)"
       (onSearch)="searchReservations($event)"
     ></app-reservation-list>
     <div class="detail-reservations card-style" style="padding: 0">

@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ComplexCardModel } from '../models/complex/complexcard.model';
+import { ComplexCardModel } from '../../models/complex/complexcard.model';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-import {Router } from '@angular/router';
-import { Auth } from '../services/auth';
+import { Router } from '@angular/router';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-complex-card',

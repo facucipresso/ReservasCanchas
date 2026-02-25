@@ -72,7 +72,6 @@
   flex: 1 1 230px;          
 }
 
-/* INPUTS */
 .container-form input[pInputText],
 .container-form input,
 ::ng-deep .p-inputtext,

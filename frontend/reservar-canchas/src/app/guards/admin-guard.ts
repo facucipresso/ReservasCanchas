@@ -17,5 +17,7 @@ export const adminGuard: CanActivateFn = (route, state) => {
     life: 3000
   });
 
-  return router.navigate(["/"]);
+  router.navigate(["/"]);
+  return false;
+  
 };

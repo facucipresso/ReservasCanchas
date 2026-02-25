@@ -1,0 +1,45 @@
+<div class="complex-card">
+  <div class="card-header">
+    <img [src]="backendUrl + complexCard.imagePath" alt="Imagen del complejo" />
+  </div>
+
+  <div class="card-body">
+    <h2 class="card-title">{{ complexCard.name }}</h2>
+
+    <p class="card-subtitle">
+      <i class="pi pi-map-marker"></i>
+      {{ complexCard.street }} {{ complexCard.number }} -
+      {{ complexCard.locality }}, {{ complexCard.province }}
+    </p>
+    @if (isOwnerComplex) {
+      <p class="status-text">Estado: {{ complexCard.complexState }}</p>
+    }
+    @if (isAdmin && complexCard.lowestPricePerField === 0) {
+      <p class="price-text">
+        <i
+          class="pi pi-exclamation-triangle"
+          style="font-size: 1.3rem; color: #e3d668"
+        ></i>
+        Aún no añadiste canchas al complejo.
+      </p>
+    } @else {
+      <p class="price-text">
+        Canchas desde
+        <strong style="color: black"
+          >${{ complexCard.lowestPricePerField }}</strong
+        >
+        por hora
+      </p>
+    }
+  </div>
+
+  <div class="card-footer">
+    @if (isOwnerComplex) {
+      <p-button
+        label="Ver reservas"
+        (onClick)="viewComplexReservations()"
+      ></p-button>
+    }
+    <p-button label="Ver complejo" (onClick)="viewComplexDetail()" />
+  </div>
+</div>

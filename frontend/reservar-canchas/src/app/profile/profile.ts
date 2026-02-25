@@ -6,7 +6,7 @@ import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { User } from '../services/user';
 import { Auth } from '../services/auth';
-import { userRequestModel } from '../models/user/userRequest.model';
+import { UserRequestModel } from '../models/user/userRequest.model';
 import { UserInfoModel } from '../models/user/userinfo.model';
 import { MessageService } from 'primeng/api';
 import { OnInit } from '@angular/core';
@@ -86,7 +86,7 @@ export class Profile implements OnInit{
   
     const formValue = this.profileForm.value;
 
-    const payload: userRequestModel = {
+    const payload: UserRequestModel = {
       name: formValue.name,
       lastName: formValue.lastName,
       email: formValue.email,

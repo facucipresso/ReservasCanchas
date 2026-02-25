@@ -1,5 +1,5 @@
 .complex-wrapper {
-  background-color: rgb(250,250,250); /* crema */
+  background-color: rgb(250,250,250); 
   min-height: 100vh;
   padding: 2rem;
   display: flex;
@@ -33,9 +33,9 @@
 }
 
 hr{
-  border: none; /* Elimina el borde predeterminado */
-  height: 1px; /* Define el grosor de la línea */
-  background-color: rgba(0,0,0,.2); /* Color deseado (ej. naranja) */
+  border: none; 
+  height: 1px; 
+  background-color: rgba(0,0,0,.2);
 }
 
 ::ng-deep .p-textarea  {
@@ -98,7 +98,6 @@ textarea {
   resize: none;
 }
 
-/* O solo para los de PrimeNG en tu formulario */
 .p-textarea {
   resize: none;
 }

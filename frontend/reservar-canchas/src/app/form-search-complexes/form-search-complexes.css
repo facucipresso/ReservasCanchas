@@ -35,23 +35,20 @@
   border-radius: 20px;          
 }
 
-/* items más pequeños */
 .form-grid.compact-form > * {
   flex: 0 0 140px;              
   max-width: 140px;
 }
 
-/* inputs, selects, botones */
 .form-grid.compact-form .p-inputtext,
 .form-grid.compact-form .p-dropdown,
 .form-grid.compact-form .p-autocomplete,
 .form-grid.compact-form .p-datepicker,
 .form-grid.compact-form .p-button {
-  font-size: 0.75rem;           /* texto más chico */
-  padding: 0.35rem !important;   /* más delgado */
+  font-size: 0.75rem;           
+  padding: 0.35rem !important;   
 }
 
-/* botón más compacto */
 .form-grid.compact-form .p-button {
   padding: 10px 12px !important;
   border-radius: 20px !important;

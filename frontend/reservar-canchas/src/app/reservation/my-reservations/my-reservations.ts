@@ -3,7 +3,7 @@ import { Reservation } from '../../services/reservation';
 import { ReservationForUserResponse } from '../../models/reservation/reservationforuserresponse.model';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ReservationState } from '../../models/reservation/reservationstate.enum';
 import { ReservationDetail } from '../reservation-detail/reservation-detail';
 import { ReservationList } from '../reservation-list/reservation-list';
@@ -21,7 +21,9 @@ export class MyReservations implements OnInit {
   selectedReservationId!: number | null;
   selectedStatus: string = 'all';
   
-  constructor(private reservationService: Reservation, private route : ActivatedRoute, private router:Router){}
+  constructor(private reservationService:Reservation, private route:ActivatedRoute, private router:Router,
+    private location:Location
+  ){}
 
   ngOnInit(){
     this.reservationService.getMyReservations().subscribe( (data) =>{
@@ -36,11 +38,9 @@ export class MyReservations implements OnInit {
         return 0; 
       });
 
-    // Asignamos ya ordenado
     this.allReservations = data;
     });
 
-    // bloque de queryparams por si navega desde el buzon
     this.route.queryParamMap.subscribe(params => {
       const reservationId = params.get('reservationId');
   
@@ -68,5 +68,17 @@ export class MyReservations implements OnInit {
     this.router.navigate(['reservations'], {
       replaceUrl: true
     });
+  }
+
+  onReservationSelected(reservationId: number) {
+    if (this.selectedReservationId === reservationId) return;
+
+    this.selectedReservationId = reservationId;
+    const newUrl = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams: { reservationId },
+      queryParamsHandling: 'merge'
+    }).toString();
+    this.location.replaceState(newUrl);
   }
 }

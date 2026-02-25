@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, numberAttribute, OnInit } from '@angular/core';
-import { ComplexCardModel } from '../models/complex/complexcard.model';
+import { Component,OnInit } from '@angular/core';
+import { ComplexCardModel } from '../../models/complex/complexcard.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Complex } from '../services/complex';
+import { Complex } from '../../services/complex';
 import { ComplexCard } from '../complex-card/complex-card';
-import { Auth } from '../services/auth';
-import { Toast, ToastModule } from 'primeng/toast';
+import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({

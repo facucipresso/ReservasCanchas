@@ -1,5 +1,3 @@
-import { InitEditableRow } from "primeng/table";
-
 export interface CreateReservationResponse{
   reservationId: number;
   fieldId: number;

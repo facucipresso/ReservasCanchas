@@ -17,6 +17,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
         public ReservationType ReservationType { get; set; }
 
         // Fecha y hora
+        public DateTime CreatedAt { get; set; }
         public DateOnly Date { get; set; }
         public TimeOnly StartTime { get; set; }
 

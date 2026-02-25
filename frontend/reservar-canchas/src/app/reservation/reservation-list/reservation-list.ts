@@ -24,6 +24,7 @@ export class ReservationList implements OnChanges, OnInit {
   @Input() selectedReservationId!: number | null;
   @Input() complex!: ComplexDetailModel;
   @Input() fields!: FieldDetailModel[];
+  @Input() filterDateToQuery!: string;
   @Output() onSelect = new EventEmitter<number>();
   @Output() onSearch = new EventEmitter<{date:Date, fieldId: number | null}>();
   filteredReservations: ReservationForUserResponse[] = [];
@@ -47,6 +48,11 @@ export class ReservationList implements OnChanges, OnInit {
     if (changes['fields'] && this.fields) {
       this.setupFieldOptions();
     }
+
+    if (this.filterDateToQuery) {
+      const [year, month, day] = this.filterDateToQuery.split('-').map(Number);
+      this.filterDate = new Date(year, month-1, day);
+    }
   }
     
   
@@ -68,7 +74,6 @@ export class ReservationList implements OnChanges, OnInit {
   }
 
   setupFieldOptions() {
-    // Creamos la opción "Todas" + las canchas reales
     this.fieldOptions = [
       { label: 'Todas las canchas', value: null },
       ...this.fields.map(f => ({ label: f.name, value: f.id }))
