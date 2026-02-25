@@ -61,6 +61,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 
         // Review
 
-        public bool hasReservation { get; set; }
+        public bool hasReview { get; set; }
     }
 }

@@ -266,7 +266,7 @@ export class ReservationDetail implements OnInit, OnChanges {
           detail: 'Reseña realizada correctamente.',
           life: 2500
         });
-        this.reservationDetail.hasReservation = true;
+        this.reservationDetail.hasReview = true;
         this.visibleReviewCreateModal = false;
         this.commentReview = '';
         this.ratingScore = 0;

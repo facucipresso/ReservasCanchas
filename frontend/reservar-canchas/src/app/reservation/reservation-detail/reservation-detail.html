@@ -238,7 +238,7 @@
                 !isAdminRoute &&
                 reservationDetail.reservationState ==
                   ReservationState.Completada &&
-                !reservationDetail.hasReservation &&
+                !reservationDetail.hasReview &&
                 reservationDetail.reservationType === ReservationType.Partido
               ) {
                 <button class="btn success" (click)="openReviewDialog()">
@@ -249,7 +249,7 @@
               @if (
                 reservationDetail.reservationState ==
                   ReservationState.Completada &&
-                reservationDetail.hasReservation &&
+                reservationDetail.hasReview &&
                 reservationDetail.reservationType === ReservationType.Partido
               ) {
                 <button

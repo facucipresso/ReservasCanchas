@@ -179,6 +179,5 @@ namespace ReservasCanchas.DataAccess.Repositories
 
             return lastFourComplexes; 
         }
-
     }
 }

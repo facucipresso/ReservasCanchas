@@ -45,41 +45,32 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<List<ReservationForUserResponseDTO>> GetReservationsByUserIdAsync()
         {
-            // el usuario tiene que existir
-            // obtengo el id del usuario desde el token
             var userId = _authService.GetUserId();
-
             var reservations = await _reservationRepository.GetReservationsByUserIdAsync(userId);
             return reservations.Select(ReservationMapper.ToReservationForUserDTO).ToList();
         }
 
         public async Task<ReservationForUserResponseDTO> GetReservationByIdAsync(int reservationId)
         {
-            //obtenemos rol y id del usuario desde el token
             var userRol = _authService.GetUserRole();
             var userId = _authService.GetUserId();
             var reservation = await GetReservationWithRelationsOrThrow(reservationId);
-            //El admin puede ver cualquier reserva de canchas de su complejo o realizada por el, el usuario puede ver las reservas que realizo
-            if (userRol == "AdminComplejo" && userId == reservation.Field.Complex.UserId)
-            {
-                return ReservationMapper.ToReservationForUserDTO(reservation);
-            }
-            if (userRol == "AdminComplejo" && userId == reservation.UserId)
-            {
-                return ReservationMapper.ToReservationForUserDTO(reservation);
-            }
 
+            //El admin puede ver cualquier reserva de canchas de su complejo o realizada por el, el usuario puede ver las reservas que realizo
+            if (userRol == "AdminComplejo" && (userId == reservation.Field.Complex.UserId || userId == reservation.UserId))
+            {
+                return ReservationMapper.ToReservationForUserDTO(reservation);
+            }
             if (userRol == "Usuario" && userId == reservation.UserId)
             {
                 return ReservationMapper.ToReservationForUserDTO(reservation);
             }
 
-            throw new BadRequestException($"No tiene permisos para ver la reserva con id {reservationId}");
+            throw new ForbiddenException($"No tiene permisos para ver la reserva con id {reservationId}");
         }
 
         public async Task<List<ReservationResponseDTO>> GetReservationsByComplexIdAsync(int complexId)
         {
-            //user y rol desde el token
             var userId = _authService.GetUserId();
             var userRol = _authService.GetUserRole();
 
@@ -102,7 +93,6 @@ namespace ReservasCanchas.BusinessLogic
             var userRol = _authService.GetUserRole();
             var userId = _authService.GetUserId();
 
-            // resuelto
             var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(fieldId);
 
             if (userRol != "SuperAdmin")
@@ -147,47 +137,39 @@ namespace ReservasCanchas.BusinessLogic
             decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalAmount.Value, field.HourPrice);
 
 
-            var response = new ReservationDetailResponseDTO
+            var reservationDetail = new ReservationDetailResponseDTO
             {
                 ReservationId = reservation.Id,
 
-                // contexto
                 IsAdmin = userId == complex.UserId,
                 ReservationState = reservation.ReservationState,
                 ReservationType = reservation.ReservationType,
 
-                // fecha y hora
                 CreatedAt = reservation.CreatedAt,
                 Date = reservation.Date,
                 StartTime = reservation.StartTime,
 
-                // pago
                 PaymentType = reservation.PaymentType,
                 TotalAmount = reservation.TotalAmount ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
                 AmountPaid = reservation.AmountPaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
 
-                // iluminación
                 HasFieldIllumination = field.Illumination,
                 PaidIllumination = illuminationAmount > 0,
                 IlluminationAmount = illuminationAmountT,
 
-                // comprobante
                 VoucherUrl = reservation.VoucherPath,
 
-                // usuario
                 UserId = reservation.UserId,
                 UserFullName = $"{reservation.User.Name} {reservation.User.LastName}",
                 UserEmail = reservation.User.Email,
                 UserPhone = reservation.User.PhoneNumber,
 
-                // cancha
                 FieldId = field.Id,
                 FieldName = field.Name,
                 FieldType = field.FieldType.ToString(),
                 FloorType = field.FloorType.ToString(),
                 HourPrice = field.HourPrice,
 
-                // complejo
                 ComplexId = complex.Id,
                 ComplexName = complex.Name,
                 Street = complex.Street,
@@ -195,14 +177,13 @@ namespace ReservasCanchas.BusinessLogic
                 Locality = complex.Locality,
                 Phone = complex.Phone,
 
-                //bloqueo 
                 BlockReason = reservation.BlockReason,
-                //review
-                hasReservation = reservation.Review != null ? true : false
+
+                hasReview = reservation.Review != null ? true : false
 
             };
 
-            return response;
+            return reservationDetail;
         }
 
         public async Task<ReservationDetailResponseDTO> GetAdminReservationDetailAsync(int complexId, int reservationId)
@@ -234,47 +215,39 @@ namespace ReservasCanchas.BusinessLogic
             decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalAmount.Value, field.HourPrice);
 
 
-            var response = new ReservationDetailResponseDTO
+            var reservationDetail = new ReservationDetailResponseDTO
             {
                 ReservationId = reservation.Id,
 
-                // contexto
                 IsAdmin = userId == complex.UserId,
                 ReservationState = reservation.ReservationState,
                 ReservationType = reservation.ReservationType,
 
-                // fecha y hora
                 CreatedAt = reservation.CreatedAt,
                 Date = reservation.Date,
                 StartTime = reservation.StartTime,
 
-                // pago
                 PaymentType = reservation.PaymentType,
                 TotalAmount = reservation.TotalAmount ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
                 AmountPaid = reservation.AmountPaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
 
-                // iluminación
                 HasFieldIllumination = field.Illumination,
                 PaidIllumination = illuminationAmount > 0,
                 IlluminationAmount = illuminationAmountT,
 
-                // comprobante
                 VoucherUrl = reservation.VoucherPath,
 
-                // usuario
                 UserId = reservation.UserId,
                 UserFullName = $"{reservation.User.Name} {reservation.User.LastName}",
                 UserEmail = reservation.User.Email,
                 UserPhone = reservation.User.PhoneNumber,
 
-                // cancha
                 FieldId = field.Id,
                 FieldName = field.Name,
                 FieldType = field.FieldType.ToString(),
                 FloorType = field.FloorType.ToString(),
                 HourPrice = field.HourPrice,
 
-                // complejo
                 ComplexId = complex.Id,
                 ComplexName = complex.Name,
                 Street = complex.Street,
@@ -282,14 +255,11 @@ namespace ReservasCanchas.BusinessLogic
                 Locality = complex.Locality,
                 Phone = complex.Phone,
 
-                //bloqueo 
                 BlockReason = reservation.BlockReason,
-                //review
-                hasReservation = reservation.Review != null ? true : false
-
+                hasReview = reservation.Review != null ? true : false
             };
 
-            return response;
+            return reservationDetail;
         }
 
         public async Task<DailyReservationsForComplexResponseDTO> GetReservationsByDateForComplexAsync(int complexId, DateOnly date, bool withBlocks)
@@ -297,7 +267,6 @@ namespace ReservasCanchas.BusinessLogic
 
             var complex = await _complexBusinessLogic.GetComplexWithFieldsOrThrow(complexId);
 
-            // valido la fecha
             if (date < DateOnly.FromDateTime(DateTime.Today) && withBlocks)
                 throw new BadRequestException("La fecha no puede ser anterior al día actual.");
 
@@ -335,27 +304,23 @@ namespace ReservasCanchas.BusinessLogic
                 var reservationsHoursForField = reservationsForFieldFiltered.Select(r => r.StartTime).ToList();
                 reservationsForFieldDTO.ReservedHours.AddRange(reservationsHoursForField);
 
-                //if (withBlocks)
-                //{
-                    var recurringBlocksForField = field.RecurringCourtBlocks.Where(b => b.WeekDay == requestWeekDay).ToList();
-                    foreach (var block in recurringBlocksForField)
+                var recurringBlocksForField = field.RecurringCourtBlocks.Where(b => b.WeekDay == requestWeekDay).ToList();
+                foreach (var block in recurringBlocksForField)
+                {
+                    var current = block.StartTime;
+                    while (current != block.EndTime)
                     {
-                        var current = block.StartTime;
-                        while (current != block.EndTime)
+                        if (!withBlocks)
                         {
-                            if (!withBlocks)
+                            if (current.Hour >= 0 && current.Hour < 6 && block.StartTime.Hour > block.EndTime.Hour)
                             {
-                                if (current.Hour >= 0 && current.Hour < 6 && block.StartTime.Hour > block.EndTime.Hour)
-                                {
-                                    break; 
-                                }
+                                break; 
                             }
-                            reservationsForFieldDTO.ReservedHours.Add(current);
-                            current = current.AddHours(1);
                         }
-                    }
-                //}
-
+                        reservationsForFieldDTO.ReservedHours.Add(current);
+                        current = current.AddHours(1);
+                     }
+                }
                 reservationsForFieldDTO.ReservedHours = reservationsForFieldDTO.ReservedHours.OrderBy(h => h).ToList();
                 dailyReservationForComplexResponse.FieldsWithReservedHours.Add(reservationsForFieldDTO);
             }
@@ -439,7 +404,7 @@ namespace ReservasCanchas.BusinessLogic
             var weekDay = _complexBusinessLogic.ConvertToWeekDay(request.Date);
 
             var timeSlot = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
-            Console.WriteLine($"Dia: {timeSlot.WeekDay}, Horarios: {timeSlot.StartTime} y {timeSlot.EndTime}");
+
             if (timeSlot.StartTime == timeSlot.EndTime)
                 throw new BadRequestException($"El complejo está cerrado los días {weekDay}.");
 
@@ -459,7 +424,6 @@ namespace ReservasCanchas.BusinessLogic
                     throw new BadRequestException("El horario está fuera del horario de atención del complejo.");
                 }
             }
-
 
             string userKey = $"user:{userId}";
 
@@ -575,7 +539,7 @@ namespace ReservasCanchas.BusinessLogic
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
             _complexBusinessLogic.ValidateAccessForBasicUser(complex);
 
-            // obtengo del id del admin del complejo para la notificacion #######
+            // obtengo del id del admin del complejo para la notificacion 
             var complexAdminId = complex.UserId;
 
             bool isBlock = request.ReservationType == ReservationType.Bloqueo;
@@ -601,7 +565,7 @@ namespace ReservasCanchas.BusinessLogic
             var timeSlot = complex.TimeSlots.FirstOrDefault(ts => ts.WeekDay == weekDay);
 
             if (timeSlot == null || timeSlot.StartTime == timeSlot.EndTime)
-                throw new BadRequestException($"El complejo está cerrado el día operativo {weekDay}.");
+                throw new BadRequestException($"El complejo está cerrado el día {weekDay}.");
 
             bool isValidTime = false;
             bool crossesMidnight = timeSlot.EndTime < timeSlot.StartTime; 
@@ -700,6 +664,24 @@ namespace ReservasCanchas.BusinessLogic
             };
 
             await _reservationRepository.CreateReservationAsync(reservation);
+            string? fullVoucherPath = null;
+
+            try
+            {
+                if (!isBlock)
+                {
+                    fullVoucherPath = await ValidateAndSavePaymentVoucher(request.Image, uploadPath, reservation.Id);
+                    reservation.VoucherPath = fullVoucherPath;
+                    await _reservationRepository.SaveAsync();
+                }
+            }
+            catch
+            {
+                if (!string.IsNullOrEmpty(fullVoucherPath) && File.Exists(fullVoucherPath))
+                    File.Delete(fullVoucherPath);
+                await _reservationRepository.DeleteAsync(reservation);
+                throw;
+            }
 
 
             if (!isBlock)
@@ -742,7 +724,6 @@ namespace ReservasCanchas.BusinessLogic
             }
             else
             {
-                // notificacion de bloqueo realizado
                 var notificationForAdmin = new Notification
                 {
                     UserId = userId,
@@ -848,102 +829,6 @@ namespace ReservasCanchas.BusinessLogic
             return now.AddMinutes(30);
         }
 
-        public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)
-        {
-            var userRol =_authService.GetUserRole();
-            var userId = _authService.GetUserId();
-
-            var user = await _userBusinessLogic.GetUserOrThrow(userId);
-            await _userBusinessLogic.ValidateUserState(user);
-
-            var reservation = await GetReservationWithRelationsOrThrow(reservationId);
-
-            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(reservation.FieldId);
-            _fieldBusinessLogic.ValidateStatusField(field);
-
-            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
-            _complexBusinessLogic.ValidateAccessForBasicUser(complex);
-
-            bool changed = false;
-
-            //  CANCELACIÓN REALIZADA POR EL USUARIO (o admin actuando como usuario)
-            if ((userRol == "Usuario" && userId == reservation.UserId) ||
-                (userRol == "AdminComplejo" && userId == reservation.UserId))
-            {
-                var reservationDateTime = reservation.Date.ToDateTime(reservation.StartTime);
-                var diff = reservationDateTime - DateTime.Now;
-
-                if (reservation.ReservationState == ReservationState.Aprobada &&
-                    request.newState == ReservationState.CanceladoConDevolucion &&
-                    diff.TotalHours >= 4)
-                {
-                    reservation.ReservationState = request.newState;
-                    reservation.CancellationReason = null;
-                    changed = true;
-                }
-                else if (reservation.ReservationState == ReservationState.Aprobada &&
-                         request.newState == ReservationState.CanceladoSinDevolucion)
-                {
-                    reservation.ReservationState = request.newState;
-                    reservation.CancellationReason = null;
-                    changed = true;
-                }
-
-                if (changed)
-                {
-                    await _notificationBusinessLogic.CreateNotificationAsync(new Notification
-                    {
-                        UserId = complex.UserId,
-                        Title = "Reserva cancelada por usuario",
-                        Message = $"El usuario {user.Name} {user.LastName} canceló la reserva del dia {reservation.Date}, horario {reservation.StartTime} con id {reservation.Id}.",
-                        ReservationId = reservation.Id,
-                    });
-                }
-            }
-
-            // ACCIONES DEL ADMIN DEL COMPLEJO
-            if (userRol == "AdminComplejo" && complex.UserId == userId)
-            {
-                if (reservation.ReservationState == ReservationState.Pendiente &&
-                   (request.newState == ReservationState.Aprobada || request.newState == ReservationState.Rechazada))
-                {
-                    reservation.ReservationState = request.newState;
-                    reservation.CancellationReason = null;
-                    changed = true;
-                }
-                else if (reservation.ReservationState == ReservationState.Aprobada &&
-                         request.newState == ReservationState.CanceladoPorAdmin)
-                {
-                    if (string.IsNullOrWhiteSpace(request.CancelationReason))
-                        throw new BadRequestException("Para cancelar una reserva aprobada debes incluir la razón de cancelación");
-
-                    reservation.ReservationState = request.newState;
-                    reservation.CancellationReason = request.CancelationReason;
-                    changed = true;
-                }
-
-                if (changed)
-                {
-                    await _notificationBusinessLogic.CreateNotificationAsync(new Notification
-                    {
-                        UserId = reservation.UserId,
-                        Title = "Tu reserva fue cancelada",
-                        Message = $"La reserva con id {reservation.Id} fue cancelada por el administrador. " +
-                                  (reservation.CancellationReason != null ?
-                                    $"Motivo: {reservation.CancellationReason}" :
-                                    ""),
-                        ReservationId = reservation.Id,
-                    });
-                }
-            }
-
-            if (!changed)
-                throw new BadRequestException($"No puedes cambiar la reserva al estado {request.newState}");
-
-            await _reservationRepository.SaveAsync();
-        }
-
-
         public async Task<Reservation?> GetReservationWithRelationsOrThrow(int reservationId)
         {
             var reservation = await _reservationRepository.GetReservationByIdWithRelationsAsync(reservationId);
@@ -978,105 +863,7 @@ namespace ReservasCanchas.BusinessLogic
             return $"uploads/reservations/{fileName}";
         }
 
-        public async Task ApproveReservationAsync(ApproveReservationRequestDTO request)
-        {
-            var userId = _authService.GetUserId();
-            var userRol = _authService.GetUserRole();
-
-            var reservation = await GetReservationWithRelationsOrThrow(request.ReservationId);
-
-            // Validaciones
-            ValidateReservationApproval(reservation, userId, userRol);
-
-            reservation.ReservationState = ReservationState.Aprobada;
-            await _reservationRepository.SaveAsync();
-
-            // creo la notificacion 
-            var notification = new Notification
-            {
-                UserId = reservation.UserId,
-                Title = "Tu reserva fue aprobada",
-                Message = $"Tu reserva en '{reservation.Field.Name}' para el {reservation.Date} a las {reservation.StartTime:HH\\:mm} fue aprobada.",
-                ReservationId = reservation.Id,
-                ComplexId = reservation.Field.ComplexId
-            };
-
-            await _notificationBusinessLogic.CreateNotificationAsync(notification);
-        }
-
-        public async Task RejectReservationAsync(RejectReservationRequestDTO request)
-        {
-            var userId = _authService.GetUserId();
-            var userRol = _authService.GetUserRole();
-
-            var reservation = await GetReservationWithRelationsOrThrow(request.ReservationId);
-
-            ValidateReservationRejection(reservation, userId, userRol);
-
-            reservation.ReservationState = ReservationState.Rechazada;
-            await _reservationRepository.SaveAsync();
-
-            var notification = new Notification
-            {
-                UserId = reservation.UserId,
-                Title = "Tu reserva fue rechazada",
-                Message = $"La reserva fue rechazada. Motivo: {request.Reason}.",
-                ReservationId = reservation.Id,
-                ComplexId = reservation.Field.ComplexId
-            };
-
-            await _notificationBusinessLogic.CreateNotificationAsync(notification);
-        }
-
-        private void ValidateReservationApproval(Reservation reservation, int userId, string userRol)
-        {
-            // debe existir
-            if (reservation == null)
-                throw new BadRequestException("La reserva no existe");
-
-            // debe estar pendiente
-            if (reservation.ReservationState != ReservationState.Pendiente)
-                throw new BadRequestException("Solo se pueden aprobar reservas pendientes");
-
-            // debe ser admin del complejo o superuser
-            if (userRol == "AdminComplejo")
-            {
-                if (reservation.Field.Complex.UserId != userId)
-                    throw new BadRequestException("No tiene permisos para aprobar reservas de este complejo");
-            }
-            else if (userRol != "SuperAdmin")
-            {
-                throw new BadRequestException("No tiene permisos para aprobar reservas");
-            }
-        }
-
-        private void ValidateReservationRejection(Reservation reservation, int userId, string userRol)
-        {
-            // debe existir
-            if (reservation == null)
-                throw new BadRequestException("La reserva no existe");
-
-            // debe estar pendiente
-            if (reservation.ReservationState != ReservationState.Pendiente)
-                throw new BadRequestException("Solo se pueden aprobar reservas pendientes");
-
-            // debe ser admin del complejo o superuser
-            if (userRol == "AdminComplejo")
-            {
-                if (reservation.Field.Complex.UserId != userId)
-                    throw new BadRequestException("No tiene permisos para aprobar reservas de este complejo");
-            }
-            else if (userRol != "SuperAdmin")
-            {
-                throw new BadRequestException("No tiene permisos para aprobar reservas");
-            }
-        }
-
-
-
-
-
-        public async Task ChangeStateReservationAsyncccc(int reservationId, ChangeStateReservationRequestDTO request)
+        public async Task ChangeStateReservationAsync(int reservationId, ChangeStateReservationRequestDTO request)
         {
             var userRol = _authService.GetUserRole(); 
             var userId = _authService.GetUserId();
@@ -1215,99 +1002,6 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException($"No puedes cambiar la reserva al estado {request.newState}");
 
             await _reservationRepository.SaveAsync();
-        }
-
-        public async Task<ReservationDetailResponseDTO> GetReservationDetailAsync(int reservationId)
-        {
-            var userId = _authService.GetUserId();
-
-            var user = await _userBusinessLogic.GetUserOrThrow(userId);
-            await _userBusinessLogic.ValidateUserState(user);
-
-            var reservation = await GetReservationWithRelationsOrThrow(reservationId);
-
-            var field = await _fieldBusinessLogic.GetFieldWithRelationsOrThrow(reservation.FieldId);
-            _fieldBusinessLogic.ValidateStatusField(field);
-
-            var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);
-            _complexBusinessLogic.ValidateAccessForBasicUser(complex);
-
-            var isReservationOwner = reservation.UserId == userId;
-            var isComplexAdmin = complex.UserId == userId;
-
-            if (!isReservationOwner && !isComplexAdmin)
-            {
-                
-                if (!isComplexAdmin)
-                {
-                    throw new ForbiddenException("No puedes ver una reserva de otro usuario.");
-                }
-
-                throw new ForbiddenException("No puedes ver una reserva de un complejo que no administras.");
-            }
-
-            // LA PROPIEDAD TOTALPRICE DE LA RESERVA YA VIENE CON EL ADICIONAL DE LA ILUMINACION(SI ES QUE LO HAY)
-
-            //
-            decimal illuminationAmount = CalculateIlluminationAmount(field, complex, reservation.StartTime);
-            decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalAmount.Value, field.HourPrice);
-
-
-            var response = new ReservationDetailResponseDTO
-            {
-                ReservationId = reservation.Id,
-
-                // contexto
-                IsAdmin = userId == complex.UserId,
-                ReservationState = reservation.ReservationState,
-                ReservationType = reservation.ReservationType,
-
-                // fecha y hora
-                Date = reservation.Date,
-                StartTime = reservation.StartTime,
-
-                // pago
-                PaymentType = reservation.PaymentType,
-                TotalAmount = reservation.TotalAmount ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
-                AmountPaid = reservation.AmountPaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
-
-                // iluminación
-                HasFieldIllumination = field.Illumination,
-                PaidIllumination = illuminationAmount > 0,
-                IlluminationAmount = illuminationAmountT,
-
-                // comprobante
-                VoucherUrl = reservation.VoucherPath,
-
-                // usuario
-                UserId = reservation.UserId,    
-                UserFullName = $"{reservation.User.Name} {reservation.User.LastName}",
-                UserEmail = reservation.User.Email,
-                UserPhone = reservation.User.PhoneNumber,
-
-                // cancha
-                FieldId = field.Id,
-                FieldName = field.Name,
-                FieldType = field.FieldType.ToString(),
-                FloorType = field.FloorType.ToString(),
-                HourPrice = field.HourPrice,
-
-                // complejo
-                ComplexId = complex.Id,
-                ComplexName = complex.Name,
-                Street = complex.Street,
-                Number = complex.Number,
-                Locality = complex.Locality,
-                Phone = complex.Phone,
-
-                //bloqueo 
-                BlockReason = reservation.BlockReason,
-                //review
-                hasReservation = reservation.Review != null ? true : false
-
-            };
-
-            return response;
         }
 
         private decimal CalculateIlluminationAmounTt(decimal totalPrice, decimal hourPrice)

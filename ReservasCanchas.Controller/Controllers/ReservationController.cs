@@ -35,7 +35,7 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(result);
         }
 
-        // SuperUser puede ver las reservas de cualquier complejo, o ComplexAdmin puede ver todas las reservas SOLO de sus complejos
+        // SuperAdmin puede ver las reservas de cualquier complejo, o ComplexAdmin puede ver todas las reservas SOLO de sus complejos
         [HttpGet("complex/{complexId}")]
         public async Task<ActionResult<List<ReservationResponseDTO>>> GetAllReservationsByComplexId([FromRoute] int complexId)
         {
@@ -120,25 +120,9 @@ namespace ReservasCanchas.Controller.Controllers
         }
 
         [HttpPatch("{reservationId}/state")]
-        public async Task<ActionResult> ChangeStateReservation ([FromRoute] int reservationId, ChangeStateReservationRequestDTO request)
+        public async Task<ActionResult> ChangeStateReservation([FromRoute] int reservationId, ChangeStateReservationRequestDTO request)
         {
-            await _reservationBusinessLogic.ChangeStateReservationAsyncccc(reservationId, request); 
-            return NoContent();
-        }
-
-        //notifico la aprobacion de la reserva
-        [HttpPatch("approveReservation")]
-        public async Task<IActionResult> ApproveReservation([FromBody] ApproveReservationRequestDTO request)
-        {
-            await _reservationBusinessLogic.ApproveReservationAsync(request);
-            return NoContent();
-        }
-
-        //notifico el rechazo de la reserva
-        [HttpPatch("rejectReservation")]
-        public async Task<IActionResult> RejectReservation([FromBody] RejectReservationRequestDTO request)
-        {
-            await _reservationBusinessLogic.RejectReservationAsync(request);
+            await _reservationBusinessLogic.ChangeStateReservationAsync(reservationId, request); 
             return NoContent();
         }
     }

@@ -46,7 +46,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 CancelationReason = complex.CancelationReason,
                 CBU = complex.CBU,
                 ComplexState = complex.ComplexState,
-                Services = complex.Services.Select(ServiceMapper.ToServiceResponseDTO).ToList(),
+                Services = complex.Services.Where(s => s.Active).Select(ServiceMapper.ToServiceResponseDTO).ToList(),
                 TimeSlots = complex.TimeSlots.Select(ToTimeSlotComplexResponseDTO).ToList()
             };
         }

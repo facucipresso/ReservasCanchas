@@ -34,5 +34,5 @@ export interface ReservationDetailResponse{
     locality: string;
     phone: string;
     blockReason: string;
-    hasReservation: boolean;
+    hasReview: boolean;
   }

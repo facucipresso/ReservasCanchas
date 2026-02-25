@@ -165,21 +165,6 @@ namespace ReservasCanchas.BusinessLogic
                 }
             }
 
-            /*
-            foreach (var slot in slots)
-            {
-                if (slot.EndTime < slot.StartTime)
-                {
-                    throw new BadRequestException($"El horario de fin debe ser mayor al horario de inicio para el día: {slot.WeekDay}");
-                }
-                if(slot.EndTime > // 2 de la mañana || slot.InitTme < 8 de la mañana)
-                {
-                    throw new BadRequestException($"El horario de apertura no debe ser anterior a las 8 de la mañana y el horario de cierre no debe ser posterior a las 2 de la mañana");
-                }
-            }
-            */
-
-
             if (await _userBusinessLogic.GetUserByIdAsync(userId) == null)
             {
                 throw new NotFoundException($"No se encontró el usuario con id {userId} asociado al complejo");
@@ -208,20 +193,28 @@ namespace ReservasCanchas.BusinessLogic
                 complex.Services = services;
             }
 
-            var imagePath = await ValidateAndSaveImage(createComplexDTO.Image, uploadPath);
+            string? imagePath = null;
+            try
+            {
+                imagePath = await ValidateAndSaveImage(createComplexDTO.Image, uploadPath);
 
-            complex.ImagePath = imagePath;
-            complex.Active = true;
-            complex.ComplexState = ComplexState.Pendiente;
-            await _complexRepository.CreateComplexAsync(complex);
+                complex.ImagePath = imagePath;
+                complex.Active = true;
+                complex.ComplexState = ComplexState.Pendiente;
+
+                await _complexRepository.CreateComplexAsync(complex);
+            }
+            catch
+            {
+                if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
+                {
+                    File.Delete(imagePath);
+                }
+
+                throw;
+            }
             
             await _userBusinessLogic.UpdateUserRolAsync(complex.UserId, "AdminComplejo");
-
-
-            //aca deberia crear la notificacion
-            //necesito el id del SuperUser
-            // SACO ESTO PARA PRUEBA
-            //var superUserId = await _userBusinessLogic.GetUserIdByUserRolOrThrow("SuperAdmin");
 
             // PONGO ESTO PARA PROBAR QUE LES LLEGUEN LAS NOTIFICACIONES
             var superUserId = 1;
@@ -383,16 +376,9 @@ namespace ReservasCanchas.BusinessLogic
             }
 
             bool changed = false;
-            // TRANSICIONES ADMIN DEL COMPLEJO 
 
             var userId = _authService.GetUserId();
             var userRol = _authService.GetUserRole();
-
-
-
-
-            // bug silencioso, el admin tiene que ser el dueño del complejo
-            //ValidateOwnerShip(complex, userId);
 
             Console.WriteLine("UserId: " + userId + ", Rol: " + userRol);
 
@@ -445,152 +431,6 @@ namespace ReservasCanchas.BusinessLogic
             await _complexRepository.SaveAsync();
             return ComplexMapper.toComplexDetailResponseDTO(complex);
         }
-
-        // metodo que hace lo mismo que el de arriba pero refactorizado sin bugs
-        /*
-        public async Task<ComplexDetailResponseDTO> ChangeStateCompIexAsync( int complexId, UpdateComplexStateDTO requestUpdateDTO)
-        {
-            var complex = await GetComplexBasicOrThrow(complexId);
-            var newState = requestUpdateDTO.ComplexState;
-
-            if (complex.ComplexState == newState)
-                throw new BadRequestException("El complejo ya se encuentra en este estado");
-
-            var userId = _authService.GetUserId();
-            var userRol = _authService.GetUserRole();
-
-            // Validación de permisos base
-            if (userRol == "AdminComplejo")
-            {
-                ValidateOwnerShip(complex, userId);
-            }
-            else if (userRol != "SuperAdmin")
-            {
-                throw new ForbiddenException("No tiene los permisos para hacer esta operación");
-            }
-
-            var previousState = complex.ComplexState;
-            bool changed = false;
-
-            
-            // TRANSICIONES ADMIN COMPLEJO
-            if (userRol == "AdminComplejo")
-            {
-                if (
-                    (previousState == ComplexState.Habilitado && newState == ComplexState.Deshabilitado) ||
-                    (previousState == ComplexState.Deshabilitado && newState == ComplexState.Habilitado) ||
-                    (previousState == ComplexState.Rechazado && newState == ComplexState.Pendiente)
-                )
-                {
-                    complex.ComplexState = newState;
-                    changed = true;
-                }
-            }
-
-            // TRANSICIONES SUPERADMIN
-            if (userRol == "SuperAdmin")
-            {
-                // Pendiente → Habilitado / Rechazado
-                if (
-                    previousState == ComplexState.Pendiente &&
-                    (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado)
-                )
-                {
-                    complex.ComplexState = newState;
-                    changed = true;
-                }
-
-                // Habilitado / Deshabilitado → Bloqueado
-                else if (
-                    (previousState == ComplexState.Habilitado || previousState == ComplexState.Deshabilitado) &&
-                    newState == ComplexState.Bloqueado
-                )
-                {
-                    if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
-                    {
-                        throw new BadRequestException(
-                            "No se puede bloquear el complejo porque tiene reservas activas");
-                    }
-                    if (string.IsNullOrWhiteSpace(requestUpdateDTO.CancelationReason))
-                        throw new BadRequestException("Debe ingresar un motivo");
-
-                    complex.ComplexState = newState;
-                    changed = true;
-                }
-
-                // Bloqueado → Habilitado
-                else if (
-                    previousState == ComplexState.Bloqueado &&
-                    newState == ComplexState.Habilitado
-                )
-                {
-                    complex.ComplexState = newState;
-                    changed = true;
-                }
-            }
-
-            if (!changed)
-                throw new BadRequestException(
-                    $"No se puede cambiar el estado de {previousState} a {newState}");
-
-
-            // NOTIFICACIÓN (POST CAMBIO)
-            if (userRol == "SuperAdmin" && (previousState == ComplexState.Pendiente && newState == ComplexState.Habilitado))
-            {
-                var notification = new Notification
-                {
-                    UserId = complex.UserId,
-                    Title = "Tu complejo fue aprobado",
-                    Message =  $"Tu complejo '{complex.Name}' fue aprobado.",
-                    ComplexId = complex.Id,
-                    Context = NotificationContext.AdminComplexAction
-                };
-
-                await _notificationBusinessLogic.CreateNotificationAsync(notification);
-
-            }else if(userRol == "SuperAdmin" && (previousState == ComplexState.Pendiente && newState == ComplexState.Rechazado))
-            {
-                var notification = new Notification
-                {
-                    UserId = complex.UserId,
-                    Title = "Tu complejo fue rechazado",
-                    Message =  $"La complejo: {complex.Name} fue rechazado por el administrador. " +
-                                      (requestUpdateDTO.CancelationReason != null ?
-                                        $"Motivo: {requestUpdateDTO.CancelationReason}" :
-                                        ""),
-                    ComplexId = complex.Id,
-                    Context = NotificationContext.AdminComplexAction
-                };
-                
-                //ACA IRIA LO DE PONER EL CANCELATIONREAZOM, LA PROPIDAD DEL COMPLEJO (QUE TODAVIA NO TENEMOS) PARA DESPUES LLEVARLA AL COMPLEJO
-                complex.CancelationReason = requestUpdateDTO.CancelationReason;
-                await _notificationBusinessLogic.CreateNotificationAsync(notification);
-            
-            }
-            else if (userRol == "SuperAdmin" && (previousState == ComplexState.Habilitado && newState == ComplexState.Bloqueado))
-            {
-                var notification = new Notification
-                {
-                    UserId = complex.UserId,
-                    Title = "Tu complejo fue bloqueado",
-                    Message = $"La complejo: {complex.Name} fue bloqueado por el administrador. " +
-                                      (requestUpdateDTO.CancelationReason != null ?
-                                        $"Motivo: {requestUpdateDTO.CancelationReason}" :
-                                        ""),
-                    ComplexId = complex.Id,
-                    Context = NotificationContext.AdminComplexAction
-                };
-
-                //ACA IRIA LO DE PONER EL CANCELATIONREAZOM, LA PROPIDAD DEL COMPLEJO (QUE TODAVIA NO TENEMOS) PARA DESPUES LLEVARLA AL COMPLEJO
-                complex.CancelationReason = requestUpdateDTO.CancelationReason;
-                await _notificationBusinessLogic.CreateNotificationAsync(notification);
-            }
-
-            await _complexRepository.SaveAsync();
-
-            return ComplexMapper.toComplexDetailResponseDTO(complex);
-        }
-        */
 
         public async Task<ComplexDetailResponseDTO> ChangeStateCompIexAsync(int complexId, UpdateComplexStateDTO requestUpdateDTO)
         {

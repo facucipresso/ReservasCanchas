@@ -120,7 +120,7 @@ namespace ReservasCanchas.DataAccess.Repositories
                     r.FieldId == fieldId &&
                     r.Date == date &&
                     r.StartTime == initTime &&
-                    (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Pendiente)
+                    (r.ReservationState == ReservationState.Aprobada || r.ReservationState == ReservationState.Pendiente || r.ReservationState == ReservationState.Completada)
                 );
         }
 
@@ -143,6 +143,12 @@ namespace ReservasCanchas.DataAccess.Repositories
                     )
                 )
                 .ToListAsync();
+        }
+
+        public async Task DeleteAsync(Reservation reservation)
+        {
+            _context.Reservation.Remove(reservation);
+            await _context.SaveChangesAsync();
         }
 
     }
