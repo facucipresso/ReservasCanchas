@@ -28,7 +28,6 @@ export class Home implements OnInit, OnDestroy{
     }, 3000);
   }
 
-
   ngOnDestroy() {
     clearInterval(this.intervalId);
   }

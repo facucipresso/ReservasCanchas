@@ -68,13 +68,11 @@ export class ComplexDetail implements OnInit{
     this.complexId=Number(this.route.snapshot.paramMap.get('id'));
     this.maxDateValid.setDate(this.maxDateValid.getDate() + 7);
     this.dateNow.setHours(0, 0, 0, 0);
-    //this.selectedDate = this.dateNow;
 
     this.loadComplex(this.complexId);
 
     this.route.queryParams.subscribe(params => {
       const dateParam = params['date'];
-
       if(dateParam){
         const parsedDate = new Date(dateParam + 'T00:00:00');
         console.log("Fecha parseada:", parsedDate);
@@ -82,39 +80,29 @@ export class ComplexDetail implements OnInit{
       }else{
         this.selectedDate = this.dateNow;
       }
-
-      console.log('Selected date: ', this.selectedDate)
     });
-
-    this.reviewService.getReviewsByComplexId(this.complexId).subscribe((reviews) => {
-      this.reviews = reviews;
-      console.log('REVIEWS: ',reviews);
+    this.reviewService.getReviewsByComplexId(this.complexId).subscribe({
+      next: (reviews) => {
+        this.reviews = reviews;
+      },
+      error: (err) => {
+        this.reviews = [];
+        this.showBackendError(err);
+      }
     })
   }
 
   loadComplex(complexId:number){
     this.complexService.getComplexById(complexId).subscribe({
       next: (complex) => {
-        console.log('COMPLEJO RESPUESTA: ', complex);
         this.complex = complex;
-        console.log('Complejo: ', this.complex);
         this.isAdmin = this.complex.userId === parseInt(this.authService.getUserId());
         this.loadFields(this.complexId);
         this.loadServices();
         this.isLoading = false;
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.isLoading = false;
-
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
         this.router.navigate(['/']);
       }
     })
@@ -125,6 +113,10 @@ export class ComplexDetail implements OnInit{
       next: (fields) => {
         this.fields = fields;
         console.log('CANCHAS: ', fields);
+      },
+      error: (err) => {
+        this.fields = [];
+        this.showBackendError(err);
       }
     })
   }
@@ -133,6 +125,10 @@ export class ComplexDetail implements OnInit{
     this.servicesComplex.getAllServices().subscribe({
       next: (services) => {
         this.allServices = services;
+      },
+      error: (err) => {
+        this.allServices = [];
+        this.showBackendError(err);
       }
     })
   }
@@ -177,12 +173,10 @@ export class ComplexDetail implements OnInit{
     this.visibleFieldFormModal = true;
   }
 
-
-  updateBasicInfo(basicInfo: any) {
+  updateComplexBasicInfo(basicInfo: any) {
     console.log('Data: ' ,basicInfo);
     this.complexService.updateComplexBasicInfo(basicInfo, this.complex.id).subscribe({
       next: response => {
-        console.log("INFORMACION BASICA DEL COMPLEJO ACTUALIZADA EXITOSAMENTE: ", response);
         this.messageService.add({
           severity:'success',
           summary:'Complejo actualizado exitosamente.',
@@ -191,24 +185,14 @@ export class ComplexDetail implements OnInit{
         this.loadComplex(this.complexId);
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
       }
     });
   }
 
-  updateTimeSlots(data: any) {
+  updateComplexTimeSlots(data: any) {
     this.complexService.updateComplexTimeSlots(data, this.complex.id).subscribe({
       next: (response) => {
-        console.log("HORARIOS DEL COMPLEJO ACTUALIZADOS EXITOSAMENTE: ", response);
         this.messageService.add({
           severity:'success',
           summary:'Horarios del complejo actualizado exitosamente.',
@@ -217,73 +201,41 @@ export class ComplexDetail implements OnInit{
         this.loadComplex(this.complexId);
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
       }
     });
   }
 
-  updateServices(serviceIds: number[]) {
-    this.complexService.updateComplexServices(
-      { servicesIds: serviceIds },
-      this.complex.id).subscribe({
-        next: response => {
-          console.log("SERVICIOS DEL COMPLEJO ACTUALIZADOS EXITOSAMENTE: ", response);
-          this.messageService.add({
-            severity:'success',
-            summary:'Servicios del complejo actualizados exitosamente.',
-            life: 2000
-          })        
-          this.loadComplex(this.complexId);
-        },
-        error: err => {
-          console.log('ERROR DEL BACKEND:', err);
-          const backendError = err?.error;
-          const message = backendError?.detail || 'Error desconocido';
-
-          this.messageService.add({
-            severity:'error',
-            summary:backendError?.title || 'Error',
-            detail: message,
-            life: 2000
-          })        
-        } 
-      });
+  updateComplexServices(serviceIds: number[]) {
+    this.complexService.updateComplexServices({ servicesIds: serviceIds },this.complex.id).subscribe({
+      next: response => {
+        this.messageService.add({
+          severity:'success',
+          summary:'Servicios del complejo actualizados exitosamente.',
+          life: 2000
+        })        
+        this.loadComplex(this.complexId);
+      },
+      error: err => {
+        this.showBackendError(err);   
+      } 
+    });
   }
 
-  updateImage(formImage: FormData){
-    this.complexService.updateComplexImage(
-      formImage,
-      this.complex.id).subscribe({
-        next: response => {
-          this.messageService.add({
-            severity:'success',
-            summary:'Imagen del complejo actualizada exitosamente.',
-            life: 2000
-          })        
-          this.loadComplex(this.complexId);
-        },
-        error: err => {
-          console.log('ERROR DEL BACKEND:', err);
-          const backendError = err?.error;
-          const message = backendError?.detail || 'Error desconocido';
-
-          this.messageService.add({
-            severity:'error',
-            summary:backendError?.title || 'Error',
-            detail: message,
-            life: 2000
-          })        
-        } 
-      });
+  updateComplexImage(formImage: FormData){
+    this.complexService.updateComplexImage(formImage,this.complex.id).subscribe({
+      next: response => {
+        this.messageService.add({
+          severity:'success',
+          summary:'Imagen del complejo actualizada exitosamente.',
+          life: 2000
+        })        
+        this.loadComplex(this.complexId);
+      },
+      error: err => {
+        this.showBackendError(err);       
+      } 
+    });
   }
 
   changeComplexState(){
@@ -295,8 +247,6 @@ export class ComplexDetail implements OnInit{
     }else{
       newState = ComplexState.Pendiente;
     }
-
-    console.log(newState);
     
     const payload = { complexState: newState };
     console.log('Nuevo estado: ',payload);
@@ -311,15 +261,7 @@ export class ComplexDetail implements OnInit{
         this.loadComplex(this.complexId);
       },
       error: err => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })  
+        this.showBackendError(err);
       }
     }); 
   }
@@ -335,11 +277,9 @@ export class ComplexDetail implements OnInit{
       acceptLabel: 'Eliminar',
       rejectLabel: 'Cancelar',
       accept: () => {
-      // Si el usuario hace clic en "Aceptar", ejecutamos el borrado
         this.deleteComplex();
       },
       reject: () => {
-      // Opcional: acción al cancelar
         console.log('Eliminación cancelada');
       }
     });
@@ -349,8 +289,6 @@ export class ComplexDetail implements OnInit{
     this.complexService.deleteComplex(this.complex.id).subscribe({
       next: response => {
         this.router.navigate(['/admin/complexes']).then(() => {
-        // Un pequeño delay de 100ms ayuda a que el nuevo componente 
-        // esté totalmente inicializado antes de disparar el mensaje
           setTimeout(() => {
             this.messageService.add({
               severity: 'success',
@@ -362,15 +300,7 @@ export class ComplexDetail implements OnInit{
         });
       },
       error: err => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })  
+        this.showBackendError(err);
       }
     })
   }
@@ -378,7 +308,6 @@ export class ComplexDetail implements OnInit{
   createField(field:any){
     this.fieldService.createField(field).subscribe({
       next: (response) => {
-        console.log("CANCHA CREADO EXITOSAMENTE: ", response);
         this.messageService.add({
           severity:'success',
           summary:'Cancha creada exitosamente.',
@@ -387,23 +316,14 @@ export class ComplexDetail implements OnInit{
         this.loadComplex(this.complexId);
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
       }
     })
   }
 
-  updateBasicInfoField(basicInfo:any){
+  updateFieldBasicInfo(basicInfo:any){
     this.fieldService.updateBasicInfoField(basicInfo, this.selectedField!.id).subscribe({
       next: response => {
-        console.log("INFORMACION BASICA DE LA CANCHA ACTUALIZADA EXITOSAMENTE: ", response);
         this.messageService.add({
           severity:'success',
           summary:'Cancha actualizada exitosamente.',
@@ -412,27 +332,17 @@ export class ComplexDetail implements OnInit{
         this.loadComplex(this.complexId);
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
       }
     });
   }
 
-  updateTimeSlotsField(timeSlots:any){
+  updateFieldTimeSlots(timeSlots:any){
     const body = {
       timeSlotsField: timeSlots
     }
     this.fieldService.updateTimeSlotsField(body, this.selectedField!.id).subscribe({
       next: (response) => {
-        console.log("HORARIOS DE LA CANCHA ACTUALIZADOS EXITOSAMENTE: ", response);
         this.messageService.add({
           severity:'success',
           summary:'Horarios del complejo actualizado exitosamente.',
@@ -441,16 +351,7 @@ export class ComplexDetail implements OnInit{
         this.loadComplex(this.complexId);
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
       }
     });
   }
@@ -466,11 +367,9 @@ export class ComplexDetail implements OnInit{
       acceptLabel: 'Eliminar',
       rejectLabel: 'Cancelar',
       accept: () => {
-      // Si el usuario hace clic en "Aceptar", ejecutamos el borrado
         this.deleteField(fieldId);
       },
       reject: () => {
-      // Opcional: acción al cancelar
         console.log('Eliminación cancelada');
       }
     });
@@ -503,13 +402,12 @@ export class ComplexDetail implements OnInit{
     })
   }
 
-  updateStateField(state:string){
+  updateFieldState(state:string){
     const payload = {
       fieldState:state
     }
     this.fieldService.updateStateField(payload,this.selectedField!.id).subscribe({
       next: (response) => {
-        console.log(`LA CANCHA CON ID ${this.selectedField?.id} FUE MODIFICADA EN SU ESTADO EXITOSAMENTE`, response);
         this.messageService.add({
           severity:'success',
           summary:'El estado de la cancha ha sido actualizado exitosamente.',
@@ -518,33 +416,20 @@ export class ComplexDetail implements OnInit{
         this.loadComplex(this.complexId);
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
       }
     })
   }
 
   onReserveField(event:{field:FieldDetailModel, hour:string}){
-    console.log('Reserva solicitada: ', event);
-    console.log(this.selectedDate.toISOString().substring(0,10));
     if(!this.authService.isLoggedIn()){
       this.messageService.add({
         severity:'warn',
         summary:'Debes iniciar sesión para reservar una cancha.',
         life: 2000
       })
-
       return;
     }
-
     const reservationData:ReservationProcessRequest = {
       complexId: this.complex.id,
       fieldId: event.field.id,
@@ -552,10 +437,8 @@ export class ComplexDetail implements OnInit{
       startTime: event.hour
     }
 
-    console.log('Datos para el proceso de reserva: ', reservationData);
     this.reservationService.createProcessReservation(reservationData).subscribe({
       next: (response) => {
-        console.log(response);
         if(response.existReservationProcessForUser){
           this.confirmationService.confirm({
             message: 'Ya tienes una reserva en proceso. Debes completarla o cancelarla antes de realizar otra.',
@@ -572,16 +455,7 @@ export class ComplexDetail implements OnInit{
         }
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido'; 
-
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
       }
     });
   }
@@ -589,12 +463,9 @@ export class ComplexDetail implements OnInit{
   onRecurringBlockField(field: FieldDetailModel){
     this.selectedField = field;
     this.visibleRecBlockModal = true;
-    console.log('Solicitud de bloqueo recurrente para la cancha: ', field);
   }
 
   onSpecificBlockField(event:{field:FieldDetailModel,hour:string,reason:string}){
-    console.log('Reserva solicitada: ', event);
-    console.log(this.selectedDate.toISOString().substring(0,10));
 
     const formData = new FormData();
     formData.append('fieldId', event.field.id.toString());
@@ -613,16 +484,18 @@ export class ComplexDetail implements OnInit{
         this.router.navigate([`/admin/complexes/${this.complexId}/reservations`]);
       },
       error: (error)=>{
-        const backendError = error?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 3000
-        })
-        this.router.navigate(['/']);
+        this.showBackendError(error);
       }
     })
+  }
+
+  private showBackendError(err: any, life = 2000): void {
+    const backendError = err?.error;
+    this.messageService.add({
+      severity: 'error',
+      summary: backendError?.title || 'Error',
+      detail: backendError?.detail || 'Error desconocido',
+      life
+    });
   }
 }

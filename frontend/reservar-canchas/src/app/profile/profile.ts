@@ -25,9 +25,9 @@ import { OnInit } from '@angular/core';
   styleUrl: './profile.css',
 })
 export class Profile implements OnInit{
+
   profileForm: FormGroup;
   canSave = false;
-
   //copia del usuario original de cuando lo llamo al back
   private originalUser!: UserInfoModel;
 
@@ -109,7 +109,6 @@ export class Profile implements OnInit{
           lastName: payload.lastName,
           phone: payload.phone
         });
-        
 
         this.messageService.add({
           severity: 'success',
@@ -117,21 +116,17 @@ export class Profile implements OnInit{
           detail: 'Los datos se guardaron correctamente',
           life: 2000
         });
-
-
       },
       error: (err) => {
         const backendError = err?.error;
-      const message =
-        backendError?.detail ||
-        'No se pudieron guardar los cambios';
+        const message =backendError?.detail ||'No se pudieron guardar los cambios';
 
-      this.messageService.add({
-        severity: 'error',
-        summary: backendError?.title || 'Error',
-        detail: message,
-        life: 2500
-      });
+        this.messageService.add({
+          severity: 'error',
+          summary: backendError?.title || 'Error',
+          detail: message,
+          life: 2500
+        });
       }
     });
   }

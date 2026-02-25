@@ -30,6 +30,7 @@ import { Toast } from 'primeng/toast';
   providers: [MessageService]
 })
 export class Header implements OnInit {
+
   isLoggedIn!:boolean;
   isAdmin!:boolean;
   visible: boolean = false;
@@ -108,8 +109,6 @@ export class Header implements OnInit {
     this.authService.login(formLoginInfo).subscribe({
       next: (response) => {
         this.authService.setToken(response.token);
-        console.log("LOGEO EXITOSO", response);
-        console.log(this.authService.getUserRole());
         this.messageService.add({
           severity:'success',
           summary:'Inicio de sesión exitoso',
@@ -124,7 +123,6 @@ export class Header implements OnInit {
         this.loginForm.reset();
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
         const backendError = err?.error;
         const message = backendError?.detail || 'Error desconocido';
         this.messageService.add({

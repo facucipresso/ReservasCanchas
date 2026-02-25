@@ -37,7 +37,6 @@ export class Recblock implements OnInit{
   constructor(private fb: FormBuilder, private fieldService: Field,
      private messageService: MessageService, private confirmationService:ConfirmationService) {}
 
-
   ngOnInit(): void {
     this.blockForm = this.fb.group({
       day: ['', Validators.required],
@@ -45,9 +44,7 @@ export class Recblock implements OnInit{
       endTime: ['', Validators.required],
       reason: ['', Validators.required]
     });
-    console.log('Cancha recibida en recblock:', this.field);
     this.blocks = this.field.recurringCourtBlocks;
-    console.log('Bloques recurrentes:', this.blocks);
     
     this.blockForm.get('day')?.valueChanges.subscribe((day) => {
       this.updateAvailableHours(day);
@@ -71,8 +68,6 @@ export class Recblock implements OnInit{
     } else {
       this.availableHours = [];
     }
-
-    console.log('Horas disponibles para', day, ':', this.availableHours);
   }
 
   private generateHourRange(start: string, end: string): string[] {
@@ -140,16 +135,7 @@ export class Recblock implements OnInit{
           this.blocksUpdated.emit();
         },
         error: (err) => {
-          console.error('Error al crear bloqueo:', err);
-          const backendError = err?.error;
-          const message = backendError?.detail || 'Error desconocido';
-
-          this.messageService.add({
-            severity:'error',
-            summary:backendError?.title || 'Error',
-            detail: message,
-            life: 2000
-          })
+          this.showBackendError(err);
         }
       });
     }
@@ -193,17 +179,18 @@ export class Recblock implements OnInit{
         this.blocksUpdated.emit();
       },
       error: (err) => {
-        console.error('Error al eliminar bloqueo:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-
-        this.messageService.add({
-          severity:'error',
-          summary:backendError?.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
       }
+    });
+  }
+
+  private showBackendError(err: any, life = 2000): void {
+    const backendError = err?.error;
+    this.messageService.add({
+      severity: 'error',
+      summary: backendError?.title || 'Error',
+      detail: backendError?.detail || 'Error desconocido',
+      life
     });
   }
 }

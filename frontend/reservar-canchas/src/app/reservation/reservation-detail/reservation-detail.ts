@@ -33,13 +33,15 @@ import { FieldTypePipe } from '../../pipes/field-type-pipe';
 })
 export class ReservationDetail implements OnInit, OnChanges {
 
+  @Input() selectedReservationId!: number;
+
+  @Output() stateChanged = new EventEmitter<ReservationState>();
+  @Output() accessDenied = new EventEmitter<void>();
+
   reservationDetail!: ReservationDetailResponse;
   visibleVoucherModal = false;
   visible = false;
   isLoading = true;
-  @Input() selectedReservationId!: number;
-  @Output() stateChanged = new EventEmitter<ReservationState>();
-  @Output() accessDenied = new EventEmitter<void>();
   isAdminRoute = false;
   pendingState: ReservationState | null = null;
   reason!: string;
@@ -50,6 +52,7 @@ export class ReservationDetail implements OnInit, OnChanges {
   visibleReviewModal = false;
   review!: ReviewResponse;
   public readonly ReservationType = ReservationType;
+
   constructor(private reservationService: Reservation, private reviewService: Review, private messageService : MessageService,
     private confirmationService : ConfirmationService, private router: Router, private route: ActivatedRoute
   ) {}
@@ -66,8 +69,6 @@ export class ReservationDetail implements OnInit, OnChanges {
 
   private loadReservation(){
     if (!this.selectedReservationId) return; 
-    console.log("holaaaaaaa")
-
     const complexIdParam = this.route.snapshot.paramMap.get('id');
     const complexId = complexIdParam ? Number(complexIdParam) : null;
 
@@ -82,20 +83,11 @@ export class ReservationDetail implements OnInit, OnChanges {
     this.reservationService.getUserReservationDetail(this.selectedReservationId).subscribe({
       next: (resDetail) => {
         this.reservationDetail = resDetail;
-        console.log('RESPUESTA DETALLE: ', resDetail);
         this.isLoading = false;
         
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.messageService.add({
-          severity:'error',
-          summary: backendError.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
         this.isLoading = false;
         this.accessDenied.emit();
       }
@@ -106,24 +98,15 @@ export class ReservationDetail implements OnInit, OnChanges {
     this.reservationService.getAdminReservationDetail(complexId, this.selectedReservationId).subscribe({
       next: (resDetail) => {
         this.reservationDetail = resDetail;
-        console.log('RESPUESTA DETALLE: ', resDetail);
         this.isLoading = false;
       },
       error: (err) => {
-        console.log('ERROR DEL BACKEND:', err);
-        const backendError = err?.error;
-        const message = backendError?.detail || 'Error desconocido';
-        this.messageService.add({
-          severity:'error',
-          summary: backendError.title || 'Error',
-          detail: message,
-          life: 2000
-        })
+        this.showBackendError(err);
         this.isLoading = false;
         this.accessDenied.emit();
       }
     });
-}
+  }
 
   get isAdmin(): boolean {
     return this.reservationDetail?.isAdmin;
@@ -164,18 +147,11 @@ export class ReservationDetail implements OnInit, OnChanges {
             detail: 'El estado de la reserva fue actualizado correctamente',
             life: 2500
           });
-  
-          // refrescamos detalle
-          this.reservationDetail.reservationState = newState;
+            this.reservationDetail.reservationState = newState;
           this.stateChanged.emit(newState);
         },
         error: (err) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: err?.error?.detail || 'No se pudo actualizar la reserva',
-            life: 3000
-          });
+          this.showBackendError(err);
         }
       });
   }
@@ -195,29 +171,24 @@ export class ReservationDetail implements OnInit, OnChanges {
     };
   
     this.reservationService.changeStateReservation(this.reservationDetail.reservationId, dto).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'El estado de la reserva fue actualizado correctamente',
-            life: 2500
-          });
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'El estado de la reserva fue actualizado correctamente',
+          life: 2500
+        });
   
-          this.reservationDetail.reservationState = this.pendingState!;
-          this.stateChanged.emit(this.pendingState!);
-          this.pendingState = null;
-          this.visible = false;
-        },
-        error: (err) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: err?.error?.detail || 'No se pudo actualizar la reserva',
-            life: 3000
-          });
-          this.visible = false;
-        }
-      });
+        this.reservationDetail.reservationState = this.pendingState!;
+        this.stateChanged.emit(this.pendingState!);
+        this.pendingState = null;
+        this.visible = false;
+      },
+      error: (err) => {
+        this.showBackendError(err);
+        this.visible = false;
+      }
+    });
   }
 
   onReasonCancel() {
@@ -289,55 +260,64 @@ export class ReservationDetail implements OnInit, OnChanges {
 
     this.reviewService.createReview(reviewDTO).subscribe({
       next: (res) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Reseña realizada correctamente.',
-            life: 2500
-          });
-          console.log(res)
-          this.reservationDetail.hasReservation = true;
-          this.visibleReviewCreateModal = false;
-          this.commentReview = '';
-          this.ratingScore = 0;
-        },
-        error: (err) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: err?.error?.detail || 'Error al realizar la reseña.',
-            life: 3000
-          });
-          console.log(err);
-          this.visibleReviewCreateModal = false;
-          this.commentReview = '';
-          this.ratingScore = 0;
-        }
-      });
-    }
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Reseña realizada correctamente.',
+          life: 2500
+        });
+        this.reservationDetail.hasReservation = true;
+        this.visibleReviewCreateModal = false;
+        this.commentReview = '';
+        this.ratingScore = 0;
+      },
+      error: (err) => {
+        this.showBackendError(err);
+        this.visibleReviewCreateModal = false;
+        this.commentReview = '';
+        this.ratingScore = 0;
+      }
+    });
+  }
 
-    openViewReviewDialog(){
-      this.visibleReviewModal = true
-      this.reviewService.getReviewByReservationId(this.reservationDetail.reservationId).subscribe((review) => {
+  openViewReviewDialog(){
+    this.visibleReviewModal = true
+    this.reviewService.getReviewByReservationId(this.reservationDetail.reservationId).subscribe({
+      next: (review) => {
         this.review = review;
-      })
-    }
+      },
+      error: (err) => {
+        this.showBackendError(err);
+        this.visibleReviewModal = false;
+      }
+    })
+  }
 
-    canCancel(): boolean {
-      if (!this.reservationDetail) return false;
+  canCancel(): boolean {
+    if (!this.reservationDetail) return false;
 
-      const dateStr = this.reservationDetail.date.toString();
-      const timeStr = this.reservationDetail.startTime.toString();
+    const dateStr = this.reservationDetail.date.toString();
+    const timeStr = this.reservationDetail.startTime.toString();
 
-      const [year, month, day] = dateStr.split('-').map(Number);
-      const [hours, minutes] = timeStr.split(':').map(Number);
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const [hours, minutes] = timeStr.split(':').map(Number);
 
-      const reservationStart = new Date(year, month - 1, day, hours, minutes);
+    const reservationStart = new Date(year, month - 1, day, hours, minutes);
 
-      const now = new Date();
+    const now = new Date();
 
-      return now < reservationStart;
-    }
+    return now < reservationStart;
+  }
+
+  private showBackendError(err: any, life = 2000): void {
+    const backendError = err?.error;
+    this.messageService.add({
+      severity: 'error',
+      summary: backendError?.title || 'Error',
+      detail: backendError?.detail || 'Error desconocido',
+      life
+    });
+  }
 }
   
   

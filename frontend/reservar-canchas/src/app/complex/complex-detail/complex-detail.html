@@ -98,10 +98,10 @@
     *ngIf="visibleEditComplexModal"
     [complex]="complex"
     [allServices]="allServices"
-    (saveBasic)="updateBasicInfo($event)"
-    (saveTimeSlots)="updateTimeSlots($event)"
-    (saveServices)="updateServices($event)"
-    (saveImage)="updateImage($event)"
+    (saveBasic)="updateComplexBasicInfo($event)"
+    (saveTimeSlots)="updateComplexTimeSlots($event)"
+    (saveServices)="updateComplexServices($event)"
+    (saveImage)="updateComplexImage($event)"
   ></app-editcomplex-form>
 </p-dialog>
 
@@ -120,9 +120,9 @@
       [field]="selectedField"
       [formMode]="fieldFormMode"
       (create)="createField($event)"
-      (updateBasic)="updateBasicInfoField($event)"
-      (updateTimeSlots)="updateTimeSlotsField($event)"
-      (updateState)="updateStateField($event)"
+      (updateBasic)="updateFieldBasicInfo($event)"
+      (updateTimeSlots)="updateFieldTimeSlots($event)"
+      (updateState)="updateFieldState($event)"
     ></app-fieldform>
   }
 </p-dialog>
