@@ -156,13 +156,13 @@ namespace WinFormsApp1.UserControls
                     buttonCambioDeEstado1.Text = "Habilitar";
                     buttonCambioDeEstado1.BackColor = Color.Green;
                     buttonCambioDeEstado2.Text = "Rechazar";
-                    buttonCambioDeEstado2.BackColor = Color.Red;
+                    buttonCambioDeEstado2.BackColor = Color.IndianRed;
                     break;
                 case "Habilitado":
                     buttonCambioDeEstado1.Hide();
                     buttonCambioDeEstado2.Show();
                     buttonCambioDeEstado2.Text = "Bloquear";
-                    buttonCambioDeEstado2.BackColor = Color.Red;
+                    buttonCambioDeEstado2.BackColor = Color.IndianRed;
                     break;
                 case "Rechazado":
                     buttonCambioDeEstado1.Hide();
@@ -173,7 +173,7 @@ namespace WinFormsApp1.UserControls
                     buttonCambioDeEstado1.Hide();
                     buttonCambioDeEstado2.Show();
                     buttonCambioDeEstado2.Text = "Bloquear";
-                    buttonCambioDeEstado2.BackColor = Color.Red;
+                    buttonCambioDeEstado2.BackColor = Color.IndianRed;
                     break;
                 
                 case "Bloqueado":

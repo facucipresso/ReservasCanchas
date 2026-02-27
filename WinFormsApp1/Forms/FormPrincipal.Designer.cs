@@ -211,7 +211,7 @@
             buttomServisios1.ShadowDecoration.CustomizableEdges = customizableEdges8;
             buttomServisios1.Size = new Size(225, 74);
             buttomServisios1.TabIndex = 0;
-            buttomServisios1.Text = "Servisios";
+            buttomServisios1.Text = "Servicios";
             buttomServisios1.Click += buttomServisios1_Click;
             // 
             // buttomComplejos1

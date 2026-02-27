@@ -13,14 +13,14 @@ using WinFormsApp1.Services;
 
 namespace WinFormsApp1.UserControls
 {
-    public partial class UC_Servisios : UserControl
+    public partial class UC_Servicios : UserControl
     {
         private readonly ServicesService _serService;
         private BindingList<ServiceResponseDTO> _services;
 
         private bool editar = false;
         private string idSeleccionado = null;
-        public UC_Servisios()
+        public UC_Servicios()
         {
             InitializeComponent();
             flowLayoutPanel1.SizeChanged += flowLayoutPanel1_SizeChanged;

@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             tlpMain = new TableLayoutPanel();
-            flpCards = new FlowLayoutPanel();
             tlpBottom = new TableLayoutPanel();
             panelComplejos = new Panel();
             flpUltimosComplejos = new FlowLayoutPanel();
@@ -40,6 +39,7 @@
             panelReseñas = new Panel();
             flpUltimasReseñas = new FlowLayoutPanel();
             labelReseñas = new Label();
+            tableLayoutPanelForCards = new TableLayoutPanel();
             tlpMain.SuspendLayout();
             tlpBottom.SuspendLayout();
             panelComplejos.SuspendLayout();
@@ -51,8 +51,8 @@
             // 
             tlpMain.ColumnCount = 1;
             tlpMain.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tlpMain.Controls.Add(flpCards, 0, 0);
             tlpMain.Controls.Add(tlpBottom, 0, 1);
+            tlpMain.Controls.Add(tableLayoutPanelForCards, 0, 0);
             tlpMain.Dock = DockStyle.Fill;
             tlpMain.Location = new Point(0, 0);
             tlpMain.Name = "tlpMain";
@@ -61,16 +61,6 @@
             tlpMain.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tlpMain.Size = new Size(1244, 385);
             tlpMain.TabIndex = 0;
-            // 
-            // flpCards
-            // 
-            flpCards.Dock = DockStyle.Fill;
-            flpCards.Location = new Point(3, 3);
-            flpCards.Name = "flpCards";
-            flpCards.Padding = new Padding(10);
-            flpCards.Size = new Size(1238, 114);
-            flpCards.TabIndex = 0;
-            flpCards.WrapContents = false;
             // 
             // tlpBottom
             // 
@@ -194,6 +184,21 @@
             labelReseñas.TabIndex = 0;
             labelReseñas.Text = "Ultimas reseñas";
             // 
+            // tableLayoutPanelForCards
+            // 
+            tableLayoutPanelForCards.ColumnCount = 4;
+            tableLayoutPanelForCards.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanelForCards.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanelForCards.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanelForCards.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanelForCards.Dock = DockStyle.Top;
+            tableLayoutPanelForCards.Location = new Point(3, 3);
+            tableLayoutPanelForCards.Name = "tableLayoutPanelForCards";
+            tableLayoutPanelForCards.RowCount = 1;
+            tableLayoutPanelForCards.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanelForCards.Size = new Size(1238, 114);
+            tableLayoutPanelForCards.TabIndex = 2;
+            // 
             // UC_Dashboard
             // 
             AutoScaleDimensions = new SizeF(11F, 28F);
@@ -218,7 +223,6 @@
         #endregion
 
         private TableLayoutPanel tlpMain;
-        private FlowLayoutPanel flpCards;
         private TableLayoutPanel tlpBottom;
         private Panel panelComplejos;
         private Label labelComplejos;
@@ -229,5 +233,6 @@
         private FlowLayoutPanel flpUltimosComplejos;
         private FlowLayoutPanel flpUltimosUsuarios;
         private FlowLayoutPanel flpUltimasReseñas;
+        private TableLayoutPanel tableLayoutPanelForCards;
     }
 }

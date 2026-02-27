@@ -34,6 +34,7 @@ namespace ReservasCanchas.BusinessLogic.Mappers
             return new UserResponseWithRoleDTO
             {
                 Id = user.Id,
+                FullName = $"{user.LastName} {user.Name}",
                 UserName = user.UserName,
                 Email = user.Email,
                 Phone = user.PhoneNumber,

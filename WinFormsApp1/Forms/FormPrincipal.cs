@@ -51,7 +51,7 @@ namespace WinFormsApp1.Forms
 
         private void buttomServisios1_Click(object sender, EventArgs e)
         {
-            UC_Servisios uc = new UC_Servisios();
+            UC_Servicios uc = new UC_Servicios();
 
             uc.Dock = DockStyle.Fill;
             addUserControl(uc);

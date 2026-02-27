@@ -32,10 +32,15 @@
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Usuarios));
             dgvUsuarios = new DataGridView();
             ColumnAcciones = new DataGridViewImageColumn();
+            panelFiltrosUsuarios = new Panel();
+            comboBoxInicialApellido = new ComboBox();
+            comboBoxRoles = new ComboBox();
+            labelInicialApellido = new Label();
+            labelRol = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvUsuarios).BeginInit();
+            panelFiltrosUsuarios.SuspendLayout();
             SuspendLayout();
             // 
             // dgvUsuarios
@@ -69,7 +74,7 @@
             dgvUsuarios.DefaultCellStyle = dataGridViewCellStyle2;
             dgvUsuarios.Dock = DockStyle.Fill;
             dgvUsuarios.EnableHeadersVisualStyles = false;
-            dgvUsuarios.Location = new Point(0, 0);
+            dgvUsuarios.Location = new Point(0, 60);
             dgvUsuarios.MultiSelect = false;
             dgvUsuarios.Name = "dgvUsuarios";
             dgvUsuarios.ReadOnly = true;
@@ -88,14 +93,13 @@
             dgvUsuarios.RowsDefaultCellStyle = dataGridViewCellStyle4;
             dgvUsuarios.RowTemplate.Height = 33;
             dgvUsuarios.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvUsuarios.Size = new Size(1244, 385);
+            dgvUsuarios.Size = new Size(1244, 325);
             dgvUsuarios.TabIndex = 0;
             dgvUsuarios.CellContentClick += dgvUsuarios_CellContentClick;
             // 
             // ColumnAcciones
             // 
             ColumnAcciones.HeaderText = "Acciones";
-            ColumnAcciones.Image = (Image)resources.GetObject("ColumnAcciones.Image");
             ColumnAcciones.ImageLayout = DataGridViewImageCellLayout.Zoom;
             ColumnAcciones.MinimumWidth = 6;
             ColumnAcciones.Name = "ColumnAcciones";
@@ -103,15 +107,67 @@
             ColumnAcciones.Resizable = DataGridViewTriState.True;
             ColumnAcciones.SortMode = DataGridViewColumnSortMode.Automatic;
             // 
+            // panelFiltrosUsuarios
+            // 
+            panelFiltrosUsuarios.Controls.Add(comboBoxInicialApellido);
+            panelFiltrosUsuarios.Controls.Add(comboBoxRoles);
+            panelFiltrosUsuarios.Controls.Add(labelInicialApellido);
+            panelFiltrosUsuarios.Controls.Add(labelRol);
+            panelFiltrosUsuarios.Dock = DockStyle.Top;
+            panelFiltrosUsuarios.Location = new Point(0, 0);
+            panelFiltrosUsuarios.Name = "panelFiltrosUsuarios";
+            panelFiltrosUsuarios.Size = new Size(1244, 60);
+            panelFiltrosUsuarios.TabIndex = 1;
+            // 
+            // comboBoxInicialApellido
+            // 
+            comboBoxInicialApellido.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxInicialApellido.FormattingEnabled = true;
+            comboBoxInicialApellido.Location = new Point(532, 17);
+            comboBoxInicialApellido.Name = "comboBoxInicialApellido";
+            comboBoxInicialApellido.Size = new Size(151, 33);
+            comboBoxInicialApellido.TabIndex = 1;
+            // 
+            // comboBoxRoles
+            // 
+            comboBoxRoles.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxRoles.FormattingEnabled = true;
+            comboBoxRoles.Location = new Point(89, 17);
+            comboBoxRoles.Name = "comboBoxRoles";
+            comboBoxRoles.Size = new Size(151, 33);
+            comboBoxRoles.TabIndex = 1;
+            // 
+            // labelInicialApellido
+            // 
+            labelInicialApellido.AutoSize = true;
+            labelInicialApellido.Font = new Font("Segoe UI Semibold", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelInicialApellido.Location = new Point(354, 20);
+            labelInicialApellido.Name = "labelInicialApellido";
+            labelInicialApellido.Size = new Size(172, 25);
+            labelInicialApellido.TabIndex = 0;
+            labelInicialApellido.Text = "Inicial del apellido: ";
+            // 
+            // labelRol
+            // 
+            labelRol.AutoSize = true;
+            labelRol.Location = new Point(35, 20);
+            labelRol.Name = "labelRol";
+            labelRol.Size = new Size(48, 25);
+            labelRol.TabIndex = 0;
+            labelRol.Text = "Rol: ";
+            // 
             // UC_Usuarios
             // 
             AutoScaleMode = AutoScaleMode.None;
             Controls.Add(dgvUsuarios);
+            Controls.Add(panelFiltrosUsuarios);
             Font = new Font("Segoe UI Semibold", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
             ForeColor = Color.FromArgb(64, 64, 64);
             Name = "UC_Usuarios";
             Size = new Size(1244, 385);
             ((System.ComponentModel.ISupportInitialize)dgvUsuarios).EndInit();
+            panelFiltrosUsuarios.ResumeLayout(false);
+            panelFiltrosUsuarios.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -119,5 +175,10 @@
 
         private DataGridView dgvUsuarios;
         private DataGridViewImageColumn ColumnAcciones;
+        private Panel panelFiltrosUsuarios;
+        private Label labelRol;
+        private ComboBox comboBoxInicialApellido;
+        private ComboBox comboBoxRoles;
+        private Label labelInicialApellido;
     }
 }
