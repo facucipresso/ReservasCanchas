@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
+using ReservasCanchas.BusinessLogic.Dtos.Dashboard;
 using ReservasCanchas.BusinessLogic.JWTService;
 using ReservasCanchas.Domain.Entities;
 
@@ -128,6 +129,22 @@ namespace ReservasCanchas.Controller.Controllers
         {
             var datos = await _complexBusinessLogic.GetComplexOwnerAsync(id);
             return Ok(datos);
+        }
+
+
+
+        [HttpGet("dashboard-summary")]
+        public async Task<ActionResult<SumaryDashboardDTO>> GetDashboardData()
+        {
+            var response = await _statisticsBusinessLogic.GetDashboardDataAsync();
+            return Ok(response);
+        }
+
+        [HttpGet("dashboard-complex")]
+        public async Task<ActionResult<List<ComplexSuperAdminResponseDTO>>> GetLastFiveComplexesBySuperAdminAsync()
+        {
+            var response = await _statisticsBusinessLogic.GetLastFiveComplexesBySuperAdminAsync();
+            return Ok(response);
         }
 
     }

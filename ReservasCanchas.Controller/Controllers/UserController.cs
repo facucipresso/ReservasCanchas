@@ -12,10 +12,12 @@ namespace ReservasCanchas.Controller.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserBusinessLogic _usuarioBusinessLogic;
+        private readonly StatisticsBusinessLogic _statisticsBusinessLogic;
 
-        public UserController(UserBusinessLogic usuarioBusinessLogic)
+        public UserController(UserBusinessLogic usuarioBusinessLogic, StatisticsBusinessLogic statisticsBusinessLogic)
         {
             _usuarioBusinessLogic = usuarioBusinessLogic;
+            _statisticsBusinessLogic = statisticsBusinessLogic;
         }
 
         [HttpGet]
@@ -75,6 +77,13 @@ namespace ReservasCanchas.Controller.Controllers
         {
             await _usuarioBusinessLogic.DeleteUserAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("dashboard-users")]
+        public async Task<ActionResult<List<UserResponseWithRoleDTO>>> GetLastSixUsersWithRoleAsync()
+        {
+            var response = await _statisticsBusinessLogic.GetLastSixUsersWithRoleAsync();
+            return Ok(response);
         }
 
 

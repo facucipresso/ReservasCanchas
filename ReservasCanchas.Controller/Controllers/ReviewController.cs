@@ -9,9 +9,11 @@ namespace ReservasCanchas.Controller.Controllers
     public class ReviewController : ControllerBase
     {
         private readonly ReviewBusinessLogic _reviewBusinessLogic;
-        public ReviewController(ReviewBusinessLogic reviewBusinessLogic)
+        private readonly StatisticsBusinessLogic _statisticsBusinessLogic;
+        public ReviewController(ReviewBusinessLogic reviewBusinessLogic, StatisticsBusinessLogic statisticsBusinessLogic)
         {
             _reviewBusinessLogic = reviewBusinessLogic;
+            _statisticsBusinessLogic = statisticsBusinessLogic;
         }
 
         [HttpGet("{id}")]
@@ -54,6 +56,13 @@ namespace ReservasCanchas.Controller.Controllers
         {
             await _reviewBusinessLogic.DeleteReview(id);
             return NoContent();
+        }
+
+        [HttpGet("dashboard-review")]
+        public async Task<ActionResult<List<ReviewResponseDTO>>> GetLastFourReviewsAsync()
+        {
+            var response = await _statisticsBusinessLogic.GetLastFourReviewsAsync();
+            return Ok(response);
         }
     }
 }

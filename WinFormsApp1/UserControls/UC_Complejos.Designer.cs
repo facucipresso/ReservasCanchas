@@ -25,6 +25,127 @@
             flowLayoutPanelComplexes = new FlowLayoutPanel();
             panelFiltros.SuspendLayout();
             SuspendLayout();
+
+            // 
+            // panelFiltros
+            // 
+            panelFiltros.BackColor = Color.WhiteSmoke;
+            panelFiltros.Controls.Add(labelEstado);
+            panelFiltros.Controls.Add(comboEstado);
+            panelFiltros.Controls.Add(labelProvincia);
+            panelFiltros.Controls.Add(comboProvincia);
+            panelFiltros.Dock = DockStyle.Top;
+            panelFiltros.Location = new Point(0, 0);
+            panelFiltros.Name = "panelFiltros";
+            panelFiltros.Size = new Size(1244, 60);
+            panelFiltros.TabIndex = 1;
+
+            // 
+            // labelEstado
+            // 
+            labelEstado.AutoSize = true;
+            labelEstado.Location = new Point(35, 20);
+            labelEstado.Name = "labelEstado";
+            labelEstado.Size = new Size(71, 25);
+            labelEstado.TabIndex = 0;
+            labelEstado.Text = "Estado:";
+
+            // 
+            // comboEstado
+            // 
+            comboEstado.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboEstado.FormattingEnabled = true;
+            comboEstado.Location = new Point(112, 17);
+            comboEstado.Name = "comboEstado";
+            comboEstado.Size = new Size(151, 33);
+            comboEstado.TabIndex = 1;
+
+            // 
+            // labelProvincia
+            // 
+            labelProvincia.AutoSize = true;
+            labelProvincia.Location = new Point(300, 20);
+            labelProvincia.Name = "labelProvincia";
+            labelProvincia.Size = new Size(92, 25);
+            labelProvincia.TabIndex = 2;
+            labelProvincia.Text = "Provincia:";
+
+            // 
+            // comboProvincia
+            // 
+            comboProvincia.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboProvincia.FormattingEnabled = true;
+            comboProvincia.Location = new Point(398, 17);
+            comboProvincia.Name = "comboProvincia";
+            comboProvincia.Size = new Size(151, 33);
+            comboProvincia.TabIndex = 3;
+
+            // 
+            // flowLayoutPanelComplexes
+            // 
+            flowLayoutPanelComplexes.AutoScroll = true;
+            flowLayoutPanelComplexes.Dock = DockStyle.Fill;
+            flowLayoutPanelComplexes.Location = new Point(0, 60);
+            flowLayoutPanelComplexes.Name = "flowLayoutPanelComplexes";
+            flowLayoutPanelComplexes.Size = new Size(1244, 325);
+            flowLayoutPanelComplexes.TabIndex = 0;
+
+            // 
+            // UC_Complejos
+            // 
+            AutoScaleMode = AutoScaleMode.None;
+            Font = new Font("Segoe UI Semibold", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            ForeColor = Color.FromArgb(64, 64, 64);
+            Controls.Add(flowLayoutPanelComplexes);
+            Controls.Add(panelFiltros);
+            Name = "UC_Complejos";
+            Size = new Size(1244, 385);
+            panelFiltros.ResumeLayout(false);
+            panelFiltros.PerformLayout();
+            ResumeLayout(false);
+        }
+
+        #endregion
+
+        private Panel panelFiltros;
+        private Label labelEstado;
+        private ComboBox comboEstado;
+        private Label labelProvincia;
+        private ComboBox comboProvincia;
+        private FlowLayoutPanel flowLayoutPanelComplexes;
+    }
+}
+
+
+
+/*
+namespace WinFormsApp1.UserControls
+{
+    partial class UC_Complejos
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Código generado por el Diseñador de componentes
+
+        private void InitializeComponent()
+        {
+            panelFiltros = new Panel();
+            labelEstado = new Label();
+            comboEstado = new ComboBox();
+            labelProvincia = new Label();
+            comboProvincia = new ComboBox();
+            flowLayoutPanelComplexes = new FlowLayoutPanel();
+            panelFiltros.SuspendLayout();
+            SuspendLayout();
             // 
             // panelFiltros
             // 
@@ -106,4 +227,5 @@
         private FlowLayoutPanel flowLayoutPanelComplexes;
     }
 }
+*/
 

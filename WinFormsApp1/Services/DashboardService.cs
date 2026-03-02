@@ -28,7 +28,7 @@ namespace WinFormsApp1.Services
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
 
-            var response = await _httpClient.GetAsync("api/admin/dashboard-summary");
+            var response = await _httpClient.GetAsync("api/complexes/dashboard-summary");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -49,7 +49,7 @@ namespace WinFormsApp1.Services
 
         public async Task<List<ComplexSuperrAdminResponseDTO>> GetLastFiveComplexesBySuperAdminAsync()
         {
-            var response = await _httpClient.GetAsync("api/admin/dashboard-complex");
+            var response = await _httpClient.GetAsync("api/complexes/dashboard-complex");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -81,7 +81,7 @@ namespace WinFormsApp1.Services
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
  
-            var response = await _httpClient.GetAsync("api/admin/dashboard-users");
+            var response = await _httpClient.GetAsync("api/users/dashboard-users");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -114,7 +114,7 @@ namespace WinFormsApp1.Services
         {
             var authHeader = _httpClient.DefaultRequestHeaders.Authorization;
 
-            var response = await _httpClient.GetAsync("api/admin/dashboard-review");
+            var response = await _httpClient.GetAsync("api/reviews/dashboard-review");
 
             if (!response.IsSuccessStatusCode)
             {

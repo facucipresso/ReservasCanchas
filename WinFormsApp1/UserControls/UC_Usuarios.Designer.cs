@@ -123,7 +123,7 @@
             // 
             comboBoxInicialApellido.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxInicialApellido.FormattingEnabled = true;
-            comboBoxInicialApellido.Location = new Point(532, 17);
+            comboBoxInicialApellido.Location = new Point(472, 17);
             comboBoxInicialApellido.Name = "comboBoxInicialApellido";
             comboBoxInicialApellido.Size = new Size(151, 33);
             comboBoxInicialApellido.TabIndex = 1;
@@ -141,7 +141,7 @@
             // 
             labelInicialApellido.AutoSize = true;
             labelInicialApellido.Font = new Font("Segoe UI Semibold", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            labelInicialApellido.Location = new Point(354, 20);
+            labelInicialApellido.Location = new Point(294, 20);
             labelInicialApellido.Name = "labelInicialApellido";
             labelInicialApellido.Size = new Size(172, 25);
             labelInicialApellido.TabIndex = 0;
