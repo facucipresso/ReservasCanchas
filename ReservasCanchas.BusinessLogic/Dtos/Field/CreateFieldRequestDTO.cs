@@ -27,7 +27,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Field
         [Required(ErrorMessage = "El cerramiento de la cancha es obligatorio")]
         public bool Covered { get; set; }
 
-        //[Length(7, 7, ErrorMessage = "Se debe especificar una franja horaria por día")] lo comento para probar con swagger
         [MinLength(7, ErrorMessage = "Debe haber 7 días")]
         [MaxLength(7, ErrorMessage = "Debe haber 7 días")]
         public ICollection<TimeSlotFieldRequestDTO> TimeSlotsField { get; set; } = new List<TimeSlotFieldRequestDTO>();

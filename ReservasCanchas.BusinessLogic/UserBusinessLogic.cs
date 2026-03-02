@@ -23,15 +23,13 @@ namespace ReservasCanchas.BusinessLogic
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly AuthService _authService;
-        //private readonly ComplexBusinessLogic _complexBusinessLogic;
         private readonly ComplexRepository _complexRepo;
-        public UserBusinessLogic(UserRepository userRepo, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, AuthService authService, /*ComplexBusinessLogic complexBusinessLogic,*/ ComplexRepository complexRepository)
+        public UserBusinessLogic(UserRepository userRepo, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, AuthService authService, ComplexRepository complexRepository)
         {
             _userRepo = userRepo;
             _userManager = userManager;
             _roleManager = roleManager;
             _authService = authService;
-            //_complexBusinessLogic = complexBusinessLogic;
             _complexRepo = complexRepository;
         }
 
@@ -94,78 +92,6 @@ namespace ReservasCanchas.BusinessLogic
             return await _userRepo.GetTotalUsersAsync();
         }
 
-
-        // Esto lo voy a sacar porque no quiero que se cree un usuario por otro lado que no sea el account controller
-        /*
-        public async Task<UserResponseDTO> CreateUserAsync(UserRequestDTO usuarioRequest)
-        {
-            if ((await _userRepo.ExistByPhoneAsync(usuarioRequest.Phone) && await _userRepo.ExistByEmailAsync(usuarioRequest.Email)))
-            {
-                throw new BadRequestException("Ya existe un usuario con ese email y telefono ingresados: " + usuarioRequest.Email + " , " + usuarioRequest.Phone);
-            }
-            if (await _userRepo.ExistByEmailAsync(usuarioRequest.Email))
-            {
-                throw new BadRequestException("Ya existe un usuario con ese email ingresados: "+ usuarioRequest.Email);
-            }
-            if(await _userRepo.ExistByPhoneAsync(usuarioRequest.Phone))
-            {
-                throw new BadRequestException("Ya existe un usuario con ese telefono ingresados: " + usuarioRequest.Phone);
-            }
-            
-
-            var usuario = UserMapper.ToUser(usuarioRequest);
-            var usuario2 = await _userRepo.CreateUserAsync(usuario);
-            return UserMapper.ToUsusarioResponseDTO(usuario2);
-        }
-        */
-
-        /* cambio esto por el metodo de abajo
-        public async Task<UserResponseDTO> UpdateUserAsync(int id, UserRequestDTO userDTO)
-        {
-            var user = await _userRepo.GetUserByIdAsync(id);
-            if (user == null)
-            {
-                throw new NotFoundException("Usuario con id " + id + " no encontrado");
-            }
-            // Validaciones excluyendo al usuario actual
-            var userEmailOwner = await _userManager.FindByEmailAsync(userDTO.Email);
-            if (userEmailOwner != null && userEmailOwner.Id != id)
-                throw new BadRequestException($"Ya existe un usuario con el email {userDTO.Email}");
-
-            if (await _userRepo.ExistByPhoneExceptIdAsync(userDTO.Phone, id))
-                throw new BadRequestException($"Ya existe un usuario con el teléfono {userDTO.Phone}");
-
-
-
-            user.Name = userDTO.Name;
-            user.LastName = userDTO.LastName;
-            user.PhoneNumber = userDTO.Phone;
-
-             Email → SIEMPRE con UserManager
-            var emailResult = await _userManager.SetEmailAsync(user, userDTO.Email);
-            if (!emailResult.Succeeded)
-            {
-                var errors = string.Join(" | ", emailResult.Errors.Select(e => e.Description));
-                throw new BadRequestException(errors);
-            }
-
-             Update con Identity
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded) 
-            {
-                throw new BadRequestException($"No se pudo actualizar correctamente el usuario {user.UserName}");
-
-                agrego estas lineas para debug
-                var errors = string.Join(" | ", result.Errors.Select(e => e.Description));
-                
-                throw new BadRequestException(errors);                
-            }
-
-            //await _userRepo.SaveAsync();
-            return UserMapper.ToUsusarioResponseDTO(user);
-        }
-        */
-
         public async Task<UserResponseDTO> UpdateUserAsync(int id, UserRequestDTO userDTO)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -193,25 +119,7 @@ namespace ReservasCanchas.BusinessLogic
 
             return UserMapper.ToUsusarioResponseDTO(user);
         }
-        /*
-        public async Task<User> UpdateUserRolAsync(int userId, string newRol)
-        {
-            var user = await _userRepo.GetUserByIdAsync(userId);
 
-            if (user == null)
-                throw new NotFoundException($"No se encontró el usuario con id {userId}");
-
-            if(!await _roleManager.RoleExistsAsync(newRol))
-                throw new BadRequestException($"El rol {newRol} no existe");
-
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, currentRoles);
-
-            await _userManager.AddToRoleAsync(user, newRol);
-
-            return user;
-        }
-        */
 
         public async Task<User> UpdateUserRolAsync(int userId, string newRol)
         {
@@ -240,7 +148,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new NotFoundException("Usuario con id " + id + " no encontrado");
 
             //aca me traigo sus complejos, si es que tiene, y los deshabilito tambien
-            var userComplex = await _complexRepo.GetComplexesByUserIdAsync(id);// await _complexBusinessLogic.GetComplexesByOwnerIdAsync(id);
+            var userComplex = await _complexRepo.GetComplexesByUserIdAsync(id);
             if (userComplex != null)
             {
                 foreach(var item in userComplex)
@@ -257,7 +165,6 @@ namespace ReservasCanchas.BusinessLogic
             {
                 throw new Exception("No se pudo actualizar el estado del usuario");
             }
-            //await _userRepo.SaveAsync();
         }
 
         public async Task UnBlockUserAsync(int id)
@@ -266,8 +173,8 @@ namespace ReservasCanchas.BusinessLogic
             if (user == null)
                 throw new NotFoundException("Usuario con id " + id + " no encontrado");
 
-            //aca me traigo sus complejos, si es que tiene, y los pongo en pendiente
-            var userComplex = await _complexRepo.GetComplexesByUserIdAsync(id);// await _complexBusinessLogic.GetComplexesByOwnerIdAsync(id);
+            //me traigo sus complejos, si es que tiene, y los pongo en pendiente
+            var userComplex = await _complexRepo.GetComplexesByUserIdAsync(id);
             if (userComplex != null)
             {
                 foreach (var item in userComplex)
@@ -285,12 +192,11 @@ namespace ReservasCanchas.BusinessLogic
                 throw new Exception("No se pudo actualizar el estado del usuario");
             }
 
-            //await _userRepo.SaveAsync();
         }
 
         public async Task DeleteUserAsync(int id)
         {
-            int authenticatedUserId = _authService.GetUserId();// puse el 3 porque queria probar eliminar el user con id 3
+            int authenticatedUserId = _authService.GetUserId();
 
             var user = await GetUserOrThrow(id);
 
@@ -326,8 +232,6 @@ namespace ReservasCanchas.BusinessLogic
             if (usersInRole == null || usersInRole.Count == 0)
                 throw new NotFoundException($"No existe ningún usuario con el rol {rol}");
 
-            // si solo existe un SuperAdmin (como va a pasar) → devolvemos ese
-            //PERO SI TENGO MAS, HAGO CAGADA (QUE ES LO QUE ME PASO)
             return usersInRole.First().Id;
         }
 

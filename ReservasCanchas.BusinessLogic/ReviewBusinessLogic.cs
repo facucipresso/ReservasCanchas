@@ -120,7 +120,7 @@ namespace ReservasCanchas.BusinessLogic
         public async Task DeleteReview(int id)
         {
             var userRol = _authService.GetUserRole();
-            var userId = _authService.GetUserId(); //_authService.GetUserIdFromToken();
+            var userId = _authService.GetUserId();
 
             var review = await _reviewRepository.GetReviewByIdAsync(id);
 

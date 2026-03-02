@@ -68,12 +68,7 @@ namespace ReservasCanchas.BusinessLogic
             var slotsComplex = complex.TimeSlots;
 
             var slots = createFieldDTO.TimeSlotsField;
-            /*
-            if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
-            {
-                throw new BadRequestException($"No se pueden repetir dias de la semana en los horarios del complejo");
-            }
-            */
+
 
             if (slots.Count != 7)
                 throw new BadRequestException("Debes enviar exactamente 7 franjas horarias (una por día)");
@@ -119,7 +114,7 @@ namespace ReservasCanchas.BusinessLogic
                     continue;
                 }
 
-                // si la cancha está cerrada y el complejo abierto → OK
+                // si la cancha está cerrada y el complejo abierto, OK
                 if (fieldClosed)
                     continue;
 
@@ -188,12 +183,7 @@ namespace ReservasCanchas.BusinessLogic
             var slotsComplex = complex.TimeSlots;
 
             var slots = updateTimeSlotFieldRequestDTO.TimeSlotsField;
-            /*
-            if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
-            {
-                throw new BadRequestException($"No se pueden repetir dias de la semana en los horarios del complejo");
-            }
-            */
+
 
             if (slots.Count != 7)
                 throw new BadRequestException("Debes enviar exactamente 7 franjas horarias (una por día)");
@@ -308,7 +298,6 @@ namespace ReservasCanchas.BusinessLogic
 
         public async Task<FieldDetailResponseDTO> AddRecurringFieldBlockAsync(int fieldId, RecurringFieldBlockRequestDTO recurringBlockDTO)
         {
-            //QUE HACER SI SE CREA UN BLOQUEO RECURRENTE Y LA CANCHA TIENE RESERVAS SIN COMPLETAR EN ESE HORARIO?
             var field = await GetFieldWithRelationsOrThrow(fieldId);
 
             var complex = await _complexBusinessLogic.GetComplexBasicOrThrow(field.ComplexId);

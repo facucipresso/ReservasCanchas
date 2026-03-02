@@ -74,7 +74,7 @@ namespace ReservasCanchas.BusinessLogic
 
                 int fieldHoursOpen = 0;
 
-                // 1. Horas que la cancha abre HOY
+                // Horas que la cancha abre HOY
                 if (timeSlotToday != null && timeSlotToday.StartTime != timeSlotToday.EndTime)
                 {
                     var start = timeSlotToday.StartTime.Hour;
@@ -90,7 +90,7 @@ namespace ReservasCanchas.BusinessLogic
                     }
                 }
 
-                // 2. Horas que la cancha trae desde AYER (madrugada de hoy)
+                // Horas que la cancha trae desde AYER (madrugada de hoy)
                 if (timeSlotYesterday != null && timeSlotYesterday.StartTime != timeSlotYesterday.EndTime)
                 {
                     var yStart = timeSlotYesterday.StartTime.Hour;

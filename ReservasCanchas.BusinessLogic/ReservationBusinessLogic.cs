@@ -208,9 +208,7 @@ namespace ReservasCanchas.BusinessLogic
                 throw new ForbiddenException("No puedes ver una reserva de un complejo que no administras.");
             }
 
-            // LA PROPIEDAD TOTALPRICE DE LA RESERVA YA VIENE CON EL ADICIONAL DE LA ILUMINACION(SI ES QUE LO HAY)
 
-            //
             decimal illuminationAmount = CalculateIlluminationAmount(field, complex, reservation.StartTime);
             decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalAmount.Value, field.HourPrice);
 
@@ -575,17 +573,17 @@ namespace ReservasCanchas.BusinessLogic
                 // CASO A: Madrugada (00, 01)
                 if (request.StartTime.Hour < 2)
                 {
-                    // Debe ser menor al cierre (ej: 01:00 < 02:00)
+                    // Debe ser menor al cierre (01:00 < 02:00)
                     if (request.StartTime < timeSlot.EndTime) isValidTime = true;
                 }
                 // CASO B: Noche normal (20:00, 21:00)
                 else
                 {
-                    // Debe ser mayor al inicio (ej: 20:00 >= 18:00)
+                    // Debe ser mayor al inicio (20:00 >= 18:00)
                     if (request.StartTime >= timeSlot.StartTime) isValidTime = true;
                 }
             }
-            else // Horario normal (ej: 09:00 a 23:00)
+            else // Horario normal 
             {
                 if (request.StartTime >= timeSlot.StartTime && request.StartTime < timeSlot.EndTime)
                     isValidTime = true;
@@ -758,7 +756,7 @@ namespace ReservasCanchas.BusinessLogic
             var complex = field.Complex;
             var timeSlots = complex.TimeSlots;
 
-            // Convertimos DayOfWeek (0=Sunday) a tu enum (0=Lunes)
+            // Convierto DayOfWeek (0=Sunday) a nuestro enum (0=Lunes)
             WeekDay todayWeekDay = now.DayOfWeek switch
             {
                 DayOfWeek.Monday => WeekDay.Lunes,
@@ -825,7 +823,7 @@ namespace ReservasCanchas.BusinessLogic
                 searchDate = searchDate.AddDays(1);
             }
 
-            // Fallback extremo (nunca debería pasar)
+            // nunca debería pasar
             return now.AddMinutes(30);
         }
 

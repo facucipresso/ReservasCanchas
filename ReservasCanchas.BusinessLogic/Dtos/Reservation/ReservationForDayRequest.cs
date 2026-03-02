@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 {
-    //sacar este metodo, que venga el date en una consuta
     public class ReservationsForDayRequestDTO
     {
         [Required(ErrorMessage = "La fecha es obligatoria")]

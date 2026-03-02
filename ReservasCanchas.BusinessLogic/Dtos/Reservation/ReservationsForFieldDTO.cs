@@ -10,7 +10,6 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
     {
         public int FieldId { get; set; }
 
-        // todos los horarios reservados/bloqueados en ese día, de 1h cada uno
         public List<TimeOnly> ReservedHours { get; set; } = new();
     }
 }

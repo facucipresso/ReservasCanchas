@@ -42,11 +42,10 @@ namespace ReservasCanchas.BusinessLogic
         }
 
         public async Task<List<ComplexCardResponseDTO>> GetComplexesForAdminComplexIdAsync()
-        { //El admin del complejo puede ver todos sus complejos (Active = true), en cualquier estado.
+        { 
             var userId = _authService.GetUserId();
-            //var userId = 1; Valor para probar
             List<Complex> complexes = await _complexRepository.GetComplexesByUserIdAsync(userId);
-            List<ComplexCardResponseDTO> complexesCardsDTO = new List<ComplexCardResponseDTO>(); //= complexes.Select(ComplexMapper.toComplexCardResponseDTO).ToList();
+            List<ComplexCardResponseDTO> complexesCardsDTO = new List<ComplexCardResponseDTO>(); 
 
             foreach (var complejo in complexes)
             {
@@ -60,8 +59,7 @@ namespace ReservasCanchas.BusinessLogic
         }
 
         public async Task<List<ComplexSuperAdminResponseDTO>> GetAllComplexesBySuperAdminAsync()
-        { //El  SuperAdmin puede ver todos, existentes y en cualquier estado
-            //chequear que tenga rol superadmin
+        { 
             var userRol = _authService.GetUserRole();
 
             if(userRol != "SuperAdmin")
@@ -78,8 +76,7 @@ namespace ReservasCanchas.BusinessLogic
         }
 
         public async Task<List<ComplexSuperAdminResponseDTO>> GetLastFiveComplexesBySuperAdminAsync()
-        { //El  SuperAdmin puede ver todos, existentes y en cualquier estado
-            //chequear que tenga rol superadmin
+        { 
             var userRol = _authService.GetUserRole();
 
             if (userRol != "SuperAdmin")
@@ -101,8 +98,7 @@ namespace ReservasCanchas.BusinessLogic
         }
 
         public async Task<ComplexDetailResponseDTO> GetComplexByIdAsync(int complexId)
-        { //El admin del complejo puede acceder a cualquier complejo que le pertenezca, en cualquier estado, el usuario solo a habilitados.
-
+        { 
             var userId = _authService.GetUserIdOrNull();
 
             var userRol = userId.HasValue ?  _authService.GetUserRole() : null;
@@ -216,7 +212,6 @@ namespace ReservasCanchas.BusinessLogic
             
             await _userBusinessLogic.UpdateUserRolAsync(complex.UserId, "AdminComplejo");
 
-            // PONGO ESTO PARA PROBAR QUE LES LLEGUEN LAS NOTIFICACIONES
             var superUserId = 1;
 
             var notification = new Notification
@@ -237,7 +232,6 @@ namespace ReservasCanchas.BusinessLogic
             var complex = await GetComplexBasicOrThrow(complexId);
             //Chequeamos owner
             var userId = _authService.GetUserId();
-            //var userId = 1;
             ValidateOwnerShip(complex, userId);
             ValidateEditable(complex);
             if (await _complexRepository.ExistsByNameAsync(updateComplexDTO.Name) && complex.Name != updateComplexDTO.Name)
@@ -330,9 +324,7 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<ComplexDetailResponseDTO> UpdateServicesAsync(int complexId, List<int> servicesIds)
         {
             var complex = await GetComplexBasicOrThrow(complexId);
-            //Chequeamos owner
             var userId = _authService.GetUserId();
-            //var userId = 1;
             ValidateOwnerShip(complex, userId);
             ValidateEditable(complex);
             var services = await _serviceBusinessLogic.GetServicesByIdsAsync(servicesIds);
@@ -344,9 +336,7 @@ namespace ReservasCanchas.BusinessLogic
         public async Task<ComplexDetailResponseDTO> UpdateImageAsync(int complexId, IFormFile image, string uploadPath)
         {
             var complex = await GetComplexBasicOrThrow(complexId);
-            //Chequeamos owner
             var userId = _authService.GetUserId();
-            //var userId = 1;
             ValidateOwnerShip(complex, userId);
             ValidateEditable(complex);
 
@@ -473,7 +463,7 @@ namespace ReservasCanchas.BusinessLogic
             // TRANSICIONES SUPERADMIN
             if (userRol == "SuperAdmin")
             {
-                // Pendiente → Habilitado / Rechazado
+                // Pendiente, Habilitado / Rechazado
                 if (
                     previousState == ComplexState.Pendiente &&
                     (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado)
@@ -489,7 +479,7 @@ namespace ReservasCanchas.BusinessLogic
                     changed = true;
                 }
 
-                // Habilitado / Deshabilitado → Bloqueado
+                // Habilitado / Deshabilitado, Bloqueado
                 else if (
                     (previousState == ComplexState.Habilitado || previousState == ComplexState.Deshabilitado) &&
                     newState == ComplexState.Bloqueado
@@ -508,7 +498,7 @@ namespace ReservasCanchas.BusinessLogic
                     changed = true;
                 }
 
-                // Bloqueado → Habilitado
+                // Bloqueado, Habilitado
                 else if (
                     previousState == ComplexState.Bloqueado &&
                     newState == ComplexState.Habilitado
@@ -594,10 +584,9 @@ namespace ReservasCanchas.BusinessLogic
             var weekDay = ConvertToWeekDay(complexFiltersDTO.Date);
 
 
-            // Me traigo los complejos ya filtrados por localidad, si esta activo y si esta habilitado, incluyendo timeSlot, canchas, reservas y reservas recurrentes
+            // Me traigo los complejos filtrados
             var complexes = await _complexRepository.GetComplexesWithFiltersAsync(complexFiltersDTO.Province, complexFiltersDTO.Locality, complexFiltersDTO.FieldType);
 
-            // Aca es donde voy a ir metiendo los complejos que voy a devolver
             List<ComplexCardResponseDTO> result = new();
 
             foreach (var c in complexes)
@@ -662,9 +651,7 @@ namespace ReservasCanchas.BusinessLogic
         public async Task DeleteComplexAsync(int complexId)
         {
             var complex = await GetComplexBasicOrThrow(complexId);
-            //Chequeamos owner
             var userId = _authService.GetUserId();
-            //var userId = 1;
             ValidateOwnerShip(complex, userId);
             if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
             {
@@ -765,57 +752,6 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException("No se pueden manipular las canchas del complejo en el estado actual");
             }
         }
-
-        /*
-        public async Task ApproveComplexAsync(AproveComplexRequestDTO request)
-        {
-            var userId = _authService.GetUserId();
-            var userRol = _authService.GetUserRole();
-
-            var complex = await _complexRepository.GetComplexByIdWithBasicInfoAsync(request.ComplexId);
-
-
-            // Validaciones
-            ValidateComplexApproval(complex, userRol);
-
-            complex.ComplexState = ComplexState.Habilitado;
-            await _complexRepository.SaveAsync();
-
-            // creo la notificacion 
-            var notification = new Notification
-            {
-                UserId = complex.UserId,
-                Title = "Tu complejo fue aprobado",
-                Message = $"Tu complejo '{complex.Name}' fue aprobado.",
-                ComplexId = complex.Id,
-            };
-
-            await _notificationBusinessLogic.CreateNotificationAsync(notification);
-        }
-
-        public async Task RejectComplexAsync(RejectComplexRequestDTO request)
-        {
-            var userId = _authService.GetUserId();
-            var userRol = _authService.GetUserRole();
-
-            var complex = await _complexRepository.GetComplexByIdWithBasicInfoAsync(request.ComplexId);
-
-            ValidateComplexApproval(complex, userRol);
-
-            complex.ComplexState = ComplexState.Rechazado;
-            await _complexRepository.SaveAsync();
-
-            var notification = new Notification
-            {
-                UserId = complex.UserId,
-                Title = "Tu complejo fue rechazado",
-                Message = $"El complejo fue rechazado. Motivo: {request.Reason}.",
-                ComplexId = complex.Id,
-            };
-
-            await _notificationBusinessLogic.CreateNotificationAsync(notification);
-        }
-        */
 
         private void ValidateComplexApproval(Complex complex, string userRol)
         {

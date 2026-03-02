@@ -30,23 +30,6 @@ namespace ReservasCanchas.BusinessLogic.JWTService
         }
         public async Task<string> CreateToken(User user)
         {
-            /*
-            //pares clave/valor que quiero yo que vayan en el token
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName)
-            };
-
-            var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
-
-            if (role != null)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role)); // El rol principal
-            }
-            */
-
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
@@ -70,7 +53,7 @@ namespace ReservasCanchas.BusinessLogic.JWTService
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(1), //ver que onda con esto DateTime.UtcNow por la base de datos
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = creds,
                 Issuer = _config["JWT:Issuer"],
                 Audience = _config["JWT:Audience"]

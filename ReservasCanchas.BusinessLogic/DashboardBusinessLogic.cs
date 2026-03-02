@@ -42,7 +42,6 @@ namespace ReservasCanchas.BusinessLogic
             };
         }
 
-        // PARA OBTENER LOS ULTMOS 6 USUARIO ACTIVOS USAR GetLastSixUsersWithRoleAsync DE USER BUSINESS LOGIC
         public async Task<List<UserResponseWithRoleDTO>> GetLastSixUsersWithRoleAsync()
         {
             var usuarios = await _userBusinessLogic.GetLastSixUsersWithRoleAsync();
@@ -50,7 +49,6 @@ namespace ReservasCanchas.BusinessLogic
             
             return usuarios;
         }
-        // PARA OBTENER LOS ULTIMOS 5 COMPLEJOS HABILITADOS USAR GetLastFiveComplexesBySuperAdminAsync DE COMPLEX BUSINESS LOGIC
         public async Task<List<ComplexSuperAdminResponseDTO>> GetLastFiveComplexesBySuperAdminAsync()
         {
             var complejos = await _complexBusinessLogic.GetLastFiveComplexesBySuperAdminAsync();
@@ -59,7 +57,6 @@ namespace ReservasCanchas.BusinessLogic
             return complejos;
         }
 
-        // PARA OBTENES LOS ULTIMOS 4 REVIEWS USAR GetLastFourReviewsAsync DE REVIEW BUSINESS LOGIC
         public async Task<List<ReviewResponseDTO>> GetLastFourReviewsAsync()
         {
             var reviews = await _reviewBusinessLogic.GetLastFourReviewsAsync();

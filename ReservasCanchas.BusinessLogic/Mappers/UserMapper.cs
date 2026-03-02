@@ -52,7 +52,6 @@ namespace ReservasCanchas.BusinessLogic.Mappers
                 Email = userRequest.Email,
                 PhoneNumber = userRequest.Phone, 
                 UserState = UserState.Activo
-                // Faltaria agregar el rol
             };
         }
     }
