@@ -7,10 +7,11 @@ import { ComplexCard } from '../complex-card/complex-card';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
+import { FormSearchComplexes } from '../../form-search-complexes/form-search-complexes';
 
 @Component({
   selector: 'app-complex-list',
-  imports: [CommonModule, ComplexCard, ToastModule, ProgressSpinnerModule],
+  imports: [CommonModule, ComplexCard, ToastModule, ProgressSpinnerModule, FormSearchComplexes],
   templateUrl: './complex-list.html',
   styleUrl: './complex-list.css',
 })
@@ -24,24 +25,25 @@ export class ComplexList implements OnInit {
   constructor(public route: ActivatedRoute, private complexService: Complex, private router: Router, private messageService:MessageService) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params) => {
-      this.params = params;
-    });
-
     this.route.data.subscribe(data => {
-      this.isLoading = true;
-      if(data['mode'] === 'admin'){
-        this.title = 'Mis complejos'
-        this.empty = 'No tienes complejos registrados aún. ¡Agrega uno nuevo!';
-        this.isAdmin = true;
-        this.getComplexCardsAdmin();
-      }else{
-        this.empty = 'No se encontraron complejos que coincidan con la búsqueda.';
-        this.title = 'Complejos que coinciden con la busqueda'
-        this.getComplexCardsFilters(this.params);
-      }
-    })
+    this.isAdmin = data['mode'] === 'admin';
 
+    if (this.isAdmin) {
+      this.isLoading = true;
+      this.title = 'Mis complejos';
+      this.empty = 'No tienes complejos registrados aún. ¡Agrega uno nuevo!';
+      this.getComplexCardsAdmin();
+    } else {
+      this.title = 'Complejos que coinciden con la búsqueda';
+      this.empty = 'No se encontraron complejos que coincidan con la búsqueda.';
+
+      this.route.queryParams.subscribe(params => {
+        this.params = params;
+        this.isLoading = true;
+        this.getComplexCardsFilters(params);
+      });
+    }
+  });
   }
 
   getComplexCardsFilters(params:any){

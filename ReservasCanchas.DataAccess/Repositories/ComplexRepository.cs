@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Complex = ReservasCanchas.Domain.Entities.Complex;
 
 namespace ReservasCanchas.DataAccess.Repositories
@@ -110,23 +111,21 @@ namespace ReservasCanchas.DataAccess.Repositories
             var today = DateOnly.FromDateTime(DateTime.Today);
             var limit = today.AddDays(7);
 
-            // 1) Cargamos TODO sin filtros en el Include (EF Core seguro)
             var complexes = await _context.Complex
                 .Include(c => c.TimeSlots)
-                .Include(c => c.Fields)                      // ✔ sin Where
+                .Include(c => c.Fields)                      
                     .ThenInclude(f => f.Reservations
                         .Where(r => r.Date >= today && r.Date <= limit))
-                .Include(c => c.Fields)                      // ✔ sin Where
+                .Include(c => c.Fields)                      
                     .ThenInclude(f => f.RecurringCourtBlocks)
                 .Where(c =>
-                    c.Locality == locality &&
                     c.Province == province &&
+                    (string.IsNullOrWhiteSpace(locality) || c.Locality == locality) &&
                     c.Active &&
                     c.ComplexState == ComplexState.Habilitado
                 )
                 .ToListAsync();
 
-            // 2) Filtramos Fields manualmente (SIN EF)
             foreach (var c in complexes)
             {
                 c.Fields = c.Fields

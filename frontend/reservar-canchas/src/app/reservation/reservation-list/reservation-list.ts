@@ -25,15 +25,15 @@ export class ReservationList implements OnChanges, OnInit {
   @Input() complex!: ComplexDetailModel;
   @Input() fields!: FieldDetailModel[];
   @Input() filterDateToQuery!: string;
+
   @Output() onSelect = new EventEmitter<number>();
   @Output() onSearch = new EventEmitter<{date:Date, fieldId: number | null}>();
+
   filteredReservations: ReservationForUserResponse[] = [];
   selectedStatus: string = 'all';
-
   filterDate: Date = new Date(); 
   selectedFieldId: number | null = null; 
   fieldOptions: any[] = [];
-
   maxDateValid = new Date();
 
   ngOnInit(): void {

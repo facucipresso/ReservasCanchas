@@ -1,5 +1,10 @@
 <p-toast position="top-center"></p-toast>
 <div class="complex-list-container">
+  @if(!isAdmin){
+    <app-form-search-complexes
+      [initialValues]="params"
+    ></app-form-search-complexes>
+  }
   <h1 style="margin-top: 1.5rem">{{ title }}</h1>
   @if (isLoading) {
     <div

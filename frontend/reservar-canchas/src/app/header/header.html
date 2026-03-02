@@ -21,14 +21,12 @@
       @if (!isLoggedIn) {
         <p-button label="Iniciar sesión" (click)="showDialog()" size="large" />
       } @else {
-        <div class="avatar-container">
+        <div class="avatar-container" (click)="menu.toggle($event)" style="cursor: pointer;">
           <p-menu #menu [model]="options" [popup]="true" />
           <p-avatar
             icon="pi pi-user"
             class="mr-2"
             size="large"
-            [style]="{ cursor: 'pointer' }"
-            (click)="menu.toggle($event)"
           />
           <p style="font-weight: 500; font-size: 1.2rem; margin-left: 10px">
             {{ username }}

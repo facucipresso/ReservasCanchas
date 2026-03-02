@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder,FormGroup,ReactiveFormsModule,Validators,} from '@angular/forms';
 import { Location } from '../services/location';
 import { Select } from 'primeng/select';
@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FieldTypePipe } from '../pipes/field-type-pipe';
 import { AVAILABLE_HOURS } from '../constants/available-hours';
+import { value } from '@primeuix/themes/aura/knob';
 
 @Component({
   selector: 'app-form-search-complexes',
@@ -26,6 +27,8 @@ import { AVAILABLE_HOURS } from '../constants/available-hours';
   styleUrl: './form-search-complexes.css',
 })
 export class FormSearchComplexes implements OnInit {
+  
+  @Input() initialValues!: any;
 
   provinces!: string[];
   localities!: string[];
@@ -39,17 +42,15 @@ export class FormSearchComplexes implements OnInit {
 
   hours: { label: string; value: string; disabled: boolean }[] = [];
 
-  constructor(
-    private fb: FormBuilder,
-    private locationService: Location,
-    private router: Router
+  constructor(private fb: FormBuilder,private locationService: Location, private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.dateNow.setHours(0, 0, 0, 0);
     this.maxDateValid.setDate(this.maxDateValid.getDate() + 7);
     this.form = this.fb.group({
       province: ['', Validators.required],
-      locality: [{ value: '', disabled: true }, Validators.required],
+      locality: [{ value: '', disabled: true }],
       fieldType: ['', Validators.required],
       date: [this.dateNow, Validators.required],
       hour: ['', Validators.required],
@@ -60,13 +61,15 @@ export class FormSearchComplexes implements OnInit {
       value: val  
     }));
 
-    // Inicializar horas con la fecha actual
-    this.updateSelectableHours(this.dateNow);
+    if(this.initialValues){
+      console.log(this.initialValues);
+      this.applyInitialValues(this.initialValues);
+    }else{
+      this.updateSelectableHours(this.dateNow);
+    }
 
-    // Subscribirse a cambios en la fecha
     this.form.get('date')?.valueChanges.subscribe((selectedDate) => {
       this.updateSelectableHours(selectedDate);
-      // Resetear hora si no es válida
       const currentHour = this.form.get('hour')?.value;
       if (currentHour) {
         const isDisabled = this.hours.find(h => h.value === currentHour)?.disabled;
@@ -88,19 +91,7 @@ export class FormSearchComplexes implements OnInit {
       }
       this.form.get('locality')?.enable();
       this.form.get('locality')?.reset();
-      if (selectedProvince.toLowerCase() == 'ciudad autónoma de buenos aires') {
-        this.locationService.getCABALocalities().subscribe((localities) => {
-          this.localities = localities;
-          this.filteredLocalities = localities;
-        });
-      } else {
-        this.locationService
-          .getLocalities(selectedProvince)
-          .subscribe((localities) => {
-            this.localities = localities;
-            this.filteredLocalities = localities;
-          });
-      }
+      this.loadLocalities(selectedProvince);
     });
   }
 
@@ -122,6 +113,7 @@ export class FormSearchComplexes implements OnInit {
   }
 
   search(event: AutoCompleteCompleteEvent) {
+    if (!this.localities) return;
     const query = event.query.toLowerCase();
 
     this.filteredLocalities = this.localities.filter((loc) =>
@@ -132,7 +124,6 @@ export class FormSearchComplexes implements OnInit {
   validateLocality() {
     const value = this.form.get('locality')?.value;
     
-    // Si no coincide exactamente con ninguna localidad -> borrar
     if (
       !this.localities
         .map((l) => l.toLowerCase())
@@ -148,13 +139,61 @@ export class FormSearchComplexes implements OnInit {
     const { province, locality, fieldType, date, hour } = this.form.value;
     const dateOnly = date.toISOString().substring(0, 10);
     console.log(dateOnly);
-    const queryParams = {
-      province,
-      locality,
+    
+    const queryParams:any = {
+      province,  
       fieldType,
       date: dateOnly,
       hour,
     };
+
+    if (locality) {
+      queryParams.locality = locality;
+    }
+
     this.router.navigate(['search/complexes'], { queryParams });
+  }
+
+  private loadLocalities(selectedProvince: string) {
+    if (selectedProvince.toLowerCase() === 'ciudad autónoma de buenos aires') {
+      this.locationService.getCABALocalities().subscribe((localities) => {
+        this.localities = localities;
+        this.filteredLocalities = localities;
+      });
+    }else {
+      this.locationService.getLocalities(selectedProvince).subscribe((localities) => {
+        this.localities = localities;
+        this.filteredLocalities = localities;
+      });
+    }
+  }
+
+  private applyInitialValues(values: any) {
+    const { province, locality, fieldType, date, hour } = values;
+
+    if (province) {
+      this.form.patchValue({ province });
+      this.form.get('locality')?.enable();
+      this.loadLocalities(province);
+    }
+
+    if (fieldType) {
+      this.form.patchValue({ fieldType });
+    }
+
+    if (date) {
+      const [y, m, d] = date.split('-').map(Number);
+      const parsedDate = new Date(y, m - 1, d);
+      this.form.patchValue({ date: parsedDate });
+      this.updateSelectableHours(parsedDate);
+    }
+
+    if (hour) {
+      this.form.patchValue({ hour });
+    }
+
+    if (locality) {
+      this.form.patchValue({ locality });
+    }
   }
 }
