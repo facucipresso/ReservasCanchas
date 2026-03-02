@@ -1,15 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Account;
-using ReservasCanchas.BusinessLogic.Dtos.Dashboard;
-using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.JWTService;
 using ReservasCanchas.Domain.Entities;
-using ReservasCanchas.Domain.Enums;
 
 namespace ReservasCanchas.Controller.Controllers
 {

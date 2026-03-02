@@ -3,11 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
-using ReservasCanchas.BusinessLogic.Dtos.Notification;
 using ReservasCanchas.BusinessLogic.JWTService;
 using ReservasCanchas.Domain.Entities;
-using ReservasCanchas.Domain.Enums;
-using System.Runtime.CompilerServices;
 
 namespace ReservasCanchas.Controller.Controllers
 {
@@ -114,15 +111,14 @@ namespace ReservasCanchas.Controller.Controllers
         [HttpPatch("{id}/state")]
         public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateComplexState([FromRoute] int id, [FromBody] UpdateComplexStateDTO requestUpdateDTO)
         {//Cambio de estado del complejo (Super Admin o Admin del complejo, dependiendo de la transición)
-            //var updated = await _complexBusinessLogic.ChangeStateComplexAsync(id, requestUpdateDTO.ComplexState); reemplazo pero no elimine metodo
-            var updated = await _complexBusinessLogic.ChangeStateCompIexAsync(id, requestUpdateDTO);
+            var updated = await _complexBusinessLogic.ChangeStateComplexAsync(id, requestUpdateDTO);
 
             return Ok(updated);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteComplex([FromRoute] int id)
-        {//Eliminacion de complejo (Solo Admin del complejo)
+        {
             await _complexBusinessLogic.DeleteComplexAsync(id);
             return NoContent();
         }

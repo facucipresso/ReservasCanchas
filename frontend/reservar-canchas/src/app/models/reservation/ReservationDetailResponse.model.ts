@@ -15,7 +15,7 @@ export interface ReservationDetailResponse{
     totalAmount: number;
     amountPaid: number;
     hasFieldIllumination: boolean;
-    paidIllumination: boolean;
+    hasIllumination: boolean;
     illuminationAmount: number;
     voucherUrl?: string;
     userId: number;

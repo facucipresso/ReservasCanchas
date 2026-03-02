@@ -1,12 +1,6 @@
 ﻿using ReservasCanchas.BusinessLogic.Dtos.Notification;
-using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic
 {

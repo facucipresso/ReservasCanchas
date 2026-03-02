@@ -3,13 +3,6 @@ using ReservasCanchas.BusinessLogic.Dtos.Dashboard;
 using ReservasCanchas.BusinessLogic.Dtos.Review;
 using ReservasCanchas.BusinessLogic.Dtos.User;
 using ReservasCanchas.BusinessLogic.Exceptions;
-using ReservasCanchas.DataAccess.Repositories;
-using ReservasCanchas.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic
 {

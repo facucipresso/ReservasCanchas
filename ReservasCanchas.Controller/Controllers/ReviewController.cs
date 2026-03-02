@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
 using ReservasCanchas.BusinessLogic.Dtos.Review;
-using ReservasCanchas.Domain.Entities;
 
 namespace ReservasCanchas.Controller.Controllers
 {

@@ -2,11 +2,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservasCanchas.DataAccess.Persistance
 {
@@ -43,14 +38,6 @@ namespace ReservasCanchas.DataAccess.Persistance
                 .HasMany(c => c.TimeSlots)
                 .WithOne(t => t.Complex)
                 .HasForeignKey(j => j.ComplexId);
-
-            // Modelo la relacion 1 a n de complejo con la franja horaria
-            /*modelBuilder.Entity<TimeSlotComplex>()
-                .HasOne(c => c.Complex)
-                .WithMany(t => t.TimeSlots)
-                .HasForeignKey(j => j.ComplexId);*/
-
-
 
             // Modelo la relacion 1 a muchos de complejo y canchas
             modelBuilder.Entity<Complex>()

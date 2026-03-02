@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using ReservasCanchas.BusinessLogic.Dtos.Notification;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Http;
 using ReservasCanchas.BusinessLogic.Dtos.Reservation;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Jobs;
@@ -8,15 +7,7 @@ using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using Hangfire;
 
 namespace ReservasCanchas.BusinessLogic
 {
@@ -127,14 +118,11 @@ namespace ReservasCanchas.BusinessLogic
 
             if (!isReservationOwner )
             {
-                    throw new ForbiddenException("No puedes ver una reserva de otro usuario.");
+                throw new ForbiddenException("No puedes ver una reserva de otro usuario.");
             }
 
-            // LA PROPIEDAD TOTALPRICE DE LA RESERVA YA VIENE CON EL ADICIONAL DE LA ILUMINACION(SI ES QUE LO HAY)
-
-            //
             decimal illuminationAmount = CalculateIlluminationAmount(field, complex, reservation.StartTime);
-            decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalAmount.Value, field.HourPrice);
+
 
 
             var reservationDetail = new ReservationDetailResponseDTO
@@ -150,12 +138,12 @@ namespace ReservasCanchas.BusinessLogic
                 StartTime = reservation.StartTime,
 
                 PaymentType = reservation.PaymentType,
-                TotalAmount = reservation.TotalAmount ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
-                AmountPaid = reservation.AmountPaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
+                TotalAmount = reservation.TotalAmount ?? 0, 
+                AmountPaid = reservation.AmountPaid ?? 0, 
 
                 HasFieldIllumination = field.Illumination,
-                PaidIllumination = illuminationAmount > 0,
-                IlluminationAmount = illuminationAmountT,
+                HasIllumination = illuminationAmount > 0,
+                IlluminationAmount = illuminationAmount,
 
                 VoucherUrl = reservation.VoucherPath,
 
@@ -210,8 +198,6 @@ namespace ReservasCanchas.BusinessLogic
 
 
             decimal illuminationAmount = CalculateIlluminationAmount(field, complex, reservation.StartTime);
-            decimal illuminationAmountT = CalculateIlluminationAmounTt(reservation.TotalAmount.Value, field.HourPrice);
-
 
             var reservationDetail = new ReservationDetailResponseDTO
             {
@@ -226,12 +212,12 @@ namespace ReservasCanchas.BusinessLogic
                 StartTime = reservation.StartTime,
 
                 PaymentType = reservation.PaymentType,
-                TotalAmount = reservation.TotalAmount ?? 0, //ESTO YA TIENE LA ADICION DEL LUZ INCLUIDO
-                AmountPaid = reservation.AmountPaid ?? 0, // ESTO ES LO QUE PAGO, SI TODO O EL MONTO DE LA SEÑA
+                TotalAmount = reservation.TotalAmount ?? 0, 
+                AmountPaid = reservation.AmountPaid ?? 0,
 
                 HasFieldIllumination = field.Illumination,
-                PaidIllumination = illuminationAmount > 0,
-                IlluminationAmount = illuminationAmountT,
+                HasIllumination = illuminationAmount > 0,
+                IlluminationAmount = illuminationAmount,
 
                 VoucherUrl = reservation.VoucherPath,
 
@@ -1002,29 +988,19 @@ namespace ReservasCanchas.BusinessLogic
             await _reservationRepository.SaveAsync();
         }
 
-        private decimal CalculateIlluminationAmounTt(decimal totalPrice, decimal hourPrice)
-        {
-            var illuminationValue = totalPrice - hourPrice;
- 
-            return (illuminationValue > 0) ? illuminationValue : 0;
-        }
-
-        private decimal CalculateIlluminationAmount(Field field, Domain.Entities.Complex complex, TimeOnly initTime)
+        private decimal CalculateIlluminationAmount(Field field,Complex complex,TimeOnly initTime)
         {
             if (!field.Illumination)
                 return 0;
 
             TimeOnly globalDayStart = new TimeOnly(8, 0);
 
-            bool isNightTime = initTime >= complex.StartIllumination;
-            bool isEarlyMorningTime = initTime < globalDayStart;
+            bool requiresIllumination =initTime >= complex.StartIllumination ||initTime < globalDayStart;
 
-            if (isNightTime || isEarlyMorningTime)
-            {
-                return (field.HourPrice * complex.AditionalIllumination) / 100;
-            }
+            if (!requiresIllumination)
+                return 0;
 
-            return 0;
+            return Math.Round(field.HourPrice * complex.AditionalIllumination / 100,2);
         }
 
     }

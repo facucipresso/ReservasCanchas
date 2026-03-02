@@ -1,9 +1,4 @@
 ﻿using ReservasCanchas.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 {
@@ -28,7 +23,7 @@ namespace ReservasCanchas.BusinessLogic.Dtos.Reservation
 
         // Iluminación
         public bool HasFieldIllumination { get; set; }
-        public bool PaidIllumination { get; set; }
+        public bool HasIllumination { get; set; }
         public decimal IlluminationAmount { get; set; }
 
         // Comprobante

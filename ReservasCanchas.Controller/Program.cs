@@ -15,7 +15,6 @@ using ReservasCanchas.DataAccess.Persistance;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
 using StackExchange.Redis;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 

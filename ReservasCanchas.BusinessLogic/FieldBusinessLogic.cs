@@ -4,13 +4,7 @@ using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic
 {
@@ -76,7 +70,6 @@ namespace ReservasCanchas.BusinessLogic
             if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
                 throw new BadRequestException("Los días de la semana no pueden repetirse");
 
-            //aca hay que cheachear que el time slot sea dentro del horario de apertura y cierre del complejo
             foreach (var fieldSlot in slots)
             {
 
@@ -118,7 +111,7 @@ namespace ReservasCanchas.BusinessLogic
                 if (fieldClosed)
                     continue;
 
-                // normalización de cierre post medianoche
+                //  cierre post medianoche
                 if (cEnd <= cInit)
                     cEnd = cEnd.Add(TimeSpan.FromDays(1));
 
@@ -191,7 +184,6 @@ namespace ReservasCanchas.BusinessLogic
             if (slots.Select(s => s.WeekDay).Distinct().Count() != 7)
                 throw new BadRequestException("Los días de la semana no pueden repetirse");
 
-            //aca hay que cheachear que el time slot sea dentro del horario de apertura y cierre del complejo
             foreach (var fieldSlot in slots)
             {
 
@@ -230,7 +222,7 @@ namespace ReservasCanchas.BusinessLogic
                 if (fieldClosed)
                     continue;
 
-                // normalización de cierre post medianoche
+                // cierre post medianoche
                 if (cEnd <= cInit)
                     cEnd = cEnd.Add(TimeSpan.FromDays(1));
 

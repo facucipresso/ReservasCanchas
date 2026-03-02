@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservasCanchas.BusinessLogic;
-using ReservasCanchas.BusinessLogic.Dtos.Notification;
 using ReservasCanchas.BusinessLogic.Dtos.Reservation;
-using ReservasCanchas.Domain.Entities;
-using ReservasCanchas.Domain.Enums;
 
 namespace ReservasCanchas.Controller.Controllers
 {
@@ -43,7 +40,7 @@ namespace ReservasCanchas.Controller.Controllers
             return Ok(result);
         }
 
-        // SuperUser puede ver las reservas de una cancha en particular de un complejo 'X', o ComplexAdmin puede ver las reservas de una cancha de un complejo suyo
+        // SuperAdmin puede ver las reservas de una cancha en particular de un complejo 'X', o ComplexAdmin puede ver las reservas de una cancha de un complejo suyo
         [HttpGet("field/{fieldId}")]
         public async Task<ActionResult<List<ReservationResponseDTO>>> GetAllReservationsByFieldId([FromRoute] int fieldId)
         {

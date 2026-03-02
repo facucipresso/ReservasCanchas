@@ -1,14 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using ReservasCanchas.BusinessLogic.Dtos;
-using ReservasCanchas.BusinessLogic.Dtos.User;
+﻿using ReservasCanchas.BusinessLogic.Dtos.User;
 using ReservasCanchas.BusinessLogic.Dtos.Usuario;
 using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Mappers
 {

@@ -1,15 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ReservasCanchas.BusinessLogic.Dtos.Review;
+﻿using ReservasCanchas.BusinessLogic.Dtos.Review;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic
 {

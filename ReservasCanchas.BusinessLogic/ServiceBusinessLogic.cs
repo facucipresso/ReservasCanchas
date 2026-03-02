@@ -1,15 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ReservasCanchas.BusinessLogic.Dtos.Service;
+﻿using ReservasCanchas.BusinessLogic.Dtos.Service;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
-using ReservasCanchas.DataAccess.Persistance;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ReservasCanchas.BusinessLogic
 {

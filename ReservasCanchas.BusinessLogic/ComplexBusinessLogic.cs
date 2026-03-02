@@ -1,22 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using ReservasCanchas.BusinessLogic.Dtos.Complex;
-using ReservasCanchas.BusinessLogic.Dtos.Notification;
-using ReservasCanchas.BusinessLogic.Dtos.Reservation;
 using ReservasCanchas.BusinessLogic.Exceptions;
 using ReservasCanchas.BusinessLogic.Mappers;
 using ReservasCanchas.DataAccess.Repositories;
 using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-//using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace ReservasCanchas.BusinessLogic
 {
@@ -124,7 +112,7 @@ namespace ReservasCanchas.BusinessLogic
             var slots = createComplexDTO.TimeSlots;
             var userId = _authService.GetUserId();
 
-            //checkear que el complejo pueda tener mismo horario de apertura y de cierre, eso singifica que ese dia esta cerrado
+            //chequear que el complejo pueda tener mismo horario de apertura y de cierre, eso singifica que ese dia esta cerrado
 
             if (weekDays.Distinct().Count() != 7)
             {
@@ -354,75 +342,7 @@ namespace ReservasCanchas.BusinessLogic
             await _complexRepository.SaveAsync();
             return ComplexMapper.toComplexDetailResponseDTO(complex);
         }
-
-        public async Task<ComplexDetailResponseDTO> ChangeStateComplexAsync(int complexId, ComplexState newState)
-        {//Hay transiciones de estado que puede hacer el superadmin y otras que puede hacer el admin del complejo.
-
-            var complex = await GetComplexBasicOrThrow(complexId);
-
-            if (complex.ComplexState == newState)
-            {
-                throw new BadRequestException($"El complejo ya se encuentra en este estado");
-            }
-
-            bool changed = false;
-
-            var userId = _authService.GetUserId();
-            var userRol = _authService.GetUserRole();
-
-            Console.WriteLine("UserId: " + userId + ", Rol: " + userRol);
-
-            if (userRol != "AdminComplejo" && userRol != "SuperAdmin")
-            {
-                throw new ForbiddenException($"No tiene los permisos para hacer esta operacion");
-            }
-
-
-            if (userRol == "AdminComplejo")
-            {
-                ValidateOwnerShip(complex, userId);
-                if(complex.ComplexState == ComplexState.Habilitado && newState == ComplexState.Deshabilitado ||
-                   complex.ComplexState == ComplexState.Deshabilitado && newState == ComplexState.Habilitado ||
-                   complex.ComplexState == ComplexState.Rechazado && newState == ComplexState.Pendiente)
-                {
-                    complex.ComplexState = newState;
-                    changed = true;
-                }
-            }
-            else if(userRol == "SuperAdmin")
-            {
-                if(complex.ComplexState == ComplexState.Pendiente && (newState == ComplexState.Habilitado || newState == ComplexState.Rechazado))
-                {
-                    complex.ComplexState = newState;
-                    changed = true;
-                }
-                else if ((complex.ComplexState == ComplexState.Habilitado || complex.ComplexState == ComplexState.Deshabilitado) && newState == ComplexState.Bloqueado)
-                {
-                    if (await _complexRepository.HasActiveReservationsInComplexAsync(complexId))
-                    {
-                        throw new BadRequestException("No se puede bloquear el complejo porque tiene reservas activas en sus canchas");
-                    }
-                    complex.ComplexState = newState;
-                    changed = true;
-                }else if (complex.ComplexState == ComplexState.Bloqueado && newState == ComplexState.Habilitado)
-                {
-                    complex.ComplexState = newState;
-                    changed = true;
-                }
-            }
-            else
-            {
-                throw new ForbiddenException("No tiene los permisos para hacer esta operación");
-            }
-
-            if (!changed)
-                throw new BadRequestException($"Transición no permitida: no se puede cambiar de {complex.ComplexState} a {newState} con su rol actual");
-
-            await _complexRepository.SaveAsync();
-            return ComplexMapper.toComplexDetailResponseDTO(complex);
-        }
-
-        public async Task<ComplexDetailResponseDTO> ChangeStateCompIexAsync(int complexId, UpdateComplexStateDTO requestUpdateDTO)
+        public async Task<ComplexDetailResponseDTO> ChangeStateComplexAsync(int complexId, UpdateComplexStateDTO requestUpdateDTO)
         {
             var complex = await GetComplexBasicOrThrow(complexId);
             var newState = requestUpdateDTO.ComplexState;
@@ -752,25 +672,6 @@ namespace ReservasCanchas.BusinessLogic
                 throw new BadRequestException("No se pueden manipular las canchas del complejo en el estado actual");
             }
         }
-
-        private void ValidateComplexApproval(Complex complex, string userRol)
-        {
-            // debe existir
-            if (complex == null)
-                throw new BadRequestException("El complejo no existe");
-
-            // debe estar pendiente
-            if (complex.ComplexState != ComplexState.Pendiente)
-                throw new BadRequestException("Solo se pueden aprobar complejos pendientes");
-
-            // debe ser admin del complejo o superuser
-            if (userRol != "SuperAdmin")
-            {
-                throw new BadRequestException("No tiene permisos para aprobar complejos");
-            }
-            
-        }
-
         private decimal LowPriceForField(Complex complex)
         {
             if (complex.Fields == null || !complex.Fields.Any())

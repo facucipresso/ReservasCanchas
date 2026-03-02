@@ -128,7 +128,7 @@ export class ReservationDetail implements OnInit, OnChanges {
   }
   
   get hasIllumination(): boolean {
-    return this.reservationDetail?.paidIllumination === true;
+    return this.reservationDetail?.hasIllumination === true;
   }
 
 

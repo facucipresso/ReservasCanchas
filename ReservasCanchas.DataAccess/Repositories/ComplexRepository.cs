@@ -1,14 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ReservasCanchas.DataAccess.Persistance;
-using ReservasCanchas.Domain.Entities;
 using ReservasCanchas.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Complex = ReservasCanchas.Domain.Entities.Complex;
 
 namespace ReservasCanchas.DataAccess.Repositories

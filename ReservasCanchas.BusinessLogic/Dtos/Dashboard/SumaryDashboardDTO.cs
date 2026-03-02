@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ReservasCanchas.BusinessLogic.Dtos.Dashboard
+﻿namespace ReservasCanchas.BusinessLogic.Dtos.Dashboard
 {
     public class SumaryDashboardDTO
     {

@@ -1,11 +1,5 @@
-﻿using ReservasCanchas.BusinessLogic.Dtos.Complex;
-using ReservasCanchas.Domain.Enums;
-using System;
-using System.Collections.Generic;
+﻿using ReservasCanchas.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservasCanchas.BusinessLogic.Dtos.Field
 {

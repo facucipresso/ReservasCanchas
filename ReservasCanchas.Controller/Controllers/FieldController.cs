@@ -54,7 +54,7 @@ namespace ReservasCanchas.Controller.Controllers
 
         [HttpPatch("{fieldId}/state")]
         public async Task<ActionResult<ComplexDetailResponseDTO>> UpdateFieldState([FromRoute] int fieldId, [FromBody] UpdateFieldStateRequestDTO stateUpdateDTO)
-        {//Cambio de estado del complejo (Super Admin o Admin del complejo, dependiendo de la transición)
+        {
             var updated = await _fieldBusinessLogic.UpdateFieldStateAsync(fieldId, stateUpdateDTO);
 
             return Ok(updated);
