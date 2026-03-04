@@ -54,11 +54,11 @@ El sistema sigue una arquitectura cliente-servidor:
 
 ---
 
-# 🚀 Cómo Levantar el Proyecto
+## 🚀 Cómo Levantar el Proyecto
 
 ---
 
-# 📋 Requisitos Previos
+### 📋 Requisitos Previos
 
 Instalar previamente:
 
@@ -71,16 +71,16 @@ Instalar previamente:
 
 ---
 
-# ⚙️ Configuración del Backend (.NET API)
+### ⚙️ Configuración del Backend (.NET API)
 
-## 1️⃣ Configurar archivo de entorno
+1️⃣ Configurar archivo de entorno
 
 El proyecto incluye:
 
 * `appsettings.json` → Configuración base sin credenciales
 * `appsettings.Example.json` → Archivo guía
 
-### 📌 Crear archivo local
+📌 Crear archivo local
 
 En la carpeta `ReservasCanchas/Controller`:
 
@@ -116,7 +116,7 @@ appsettings.Development.json
 
 ---
 
-## 2️⃣ Crear Base de Datos
+2️⃣ Crear Base de Datos
 
 Ingresar a PostgreSQL y ejecutar:
 
@@ -126,7 +126,7 @@ CREATE DATABASE reservefieldDB;
 
 ---
 
-## 3️⃣ Ejecutar Migraciones
+3️⃣ Ejecutar Migraciones
 
 Desde la carpeta raíz:
 
@@ -143,7 +143,7 @@ ReservasCanchas.DataAccess/Migrations
 
 ---
 
-## 4️⃣ Verificar Redis
+4️⃣ Verificar Redis
 
 Asegurarse de que Redis esté corriendo en:
 
@@ -153,7 +153,7 @@ localhost:6379
 
 ---
 
-## 5️⃣ Levantar la API
+5️⃣ Levantar la API
 
 Desde la carpeta del proyecto principal (Controllers):
 
@@ -184,16 +184,16 @@ appsettings.Development.json
 
 ---
 
-# 🌐 Levantar el Frontend (Angular)
+### 🌐 Levantar el Frontend (Angular)
 
-## 6️⃣ Instalar dependencias
+6️⃣ Instalar dependencias
 
 ```bash
 cd frontend/reservar-canchas
 npm install
 ```
 
-## 7️⃣ Ejecutar aplicación
+7️⃣ Ejecutar aplicación
 
 ```bash
 ng serve
@@ -207,7 +207,7 @@ http://localhost:4200
 
 ---
 
-# 🖥 Levantar la App de Escritorio
+### 🖥 Levantar la App de Escritorio
 
 1. Abrir la solución en Visual Studio.
 2. Seleccionar el proyecto:
@@ -222,7 +222,7 @@ ReservasCanchas.WinFormsAppDeEscritorio
 
 ---
 
-# ✅ Orden Correcto de Ejecución
+### ✅ Orden Correcto de Ejecución
 
 1. Iniciar PostgreSQL
 2. Iniciar Redis
