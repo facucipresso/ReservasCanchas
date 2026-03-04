@@ -92,9 +92,11 @@ Para evitar reservas duplicadas en el mismo horario:
 * Se utiliza Redis como mecanismo de lock distribuido.
 * Antes de confirmar una reserva:
 
-  * Se genera un lock temporal por cancha + horario.
-  * Si el lock ya existe, la reserva se rechaza.
-  * Si no existe, se crea el lock y se procesa la reserva.
+  * Se genera un lock temporal de 15 minutos por cancha + dia + horario.
+  * Si el lock ya existe (otro usuario esta reservando esa cancha, en ese día y horario), no se le permite a otro usuario realizar la reserva.
+  * Si no existe, se crea el lock y se redirige al checkout.
+  * Dentro del lapso de 15 minutos el usuario puede confirmar la reserva, en tal caso se elimina el lock de Redis, y se crea la reserva en la base de datos.
+  * Si pasado los 15 minutos el usuario no confirmo la reserva, o la cancelo, el lock se libera y la cancha en ese día y horario queda liberada para ser reservada por otro usuario.
 
 Esto evita condiciones de carrera cuando múltiples usuarios intentan reservar el mismo turno simultáneamente.
 
