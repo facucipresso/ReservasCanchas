@@ -56,8 +56,6 @@ El sistema sigue una arquitectura cliente-servidor:
 
 ## 🚀 Cómo Levantar el Proyecto
 
----
-
 ### 📋 Requisitos Previos
 
 Instalar previamente:
