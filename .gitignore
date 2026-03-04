@@ -431,3 +431,8 @@ ClassLibrary1/
 # Imagenes comprobantes y complejos
 **/wwwroot/uploads/complexes/
 **/wwwroot/uploads/reservations/
+
+# AppSettings de desarrollo
+appsettings.*.json
+!appsettings.json
+!appsettings.Example.json
